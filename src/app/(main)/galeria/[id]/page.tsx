@@ -95,7 +95,8 @@ export default function MiniatureDetailPage() {
       console.error('Error fetching miniature:', error)
     } else {
       setMiniature(data)
-      setLikesCount(data.likes_count || 0)
+      // likes_count is computed from the miniature_likes table via trigger
+      setLikesCount((data as unknown as { likes_count?: number }).likes_count || 0)
     }
     setIsLoading(false)
   }
