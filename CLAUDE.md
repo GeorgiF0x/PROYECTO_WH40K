@@ -19,7 +19,8 @@
 
 ## Pendiente
 - [ ] Sistema de likes y comentarios en galería
-- [ ] **REDISEÑAR MERCADO**: No será marketplace P2P directo, sino **directorio de tiendas locales** / punto de encuentro (el dueño no tiene tienda propia de Warhammer)
+- [ ] **Mercado P2P**: Usuarios venden/compran miniaturas entre ellos (tipo Wallapop)
+- [ ] **Directorio de Tiendas Locales**: Mapa/listado de tiendas físicas de Warhammer por zona geográfica
 - [ ] Feed social
 - [ ] Blog/Tutoriales
 - [ ] Chat en tiempo real
