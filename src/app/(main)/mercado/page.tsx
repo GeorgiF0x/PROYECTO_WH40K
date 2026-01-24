@@ -36,12 +36,12 @@ async function getListings(searchParams: SearchParams): Promise<{
     `)
     .eq('status', 'active')
 
-  // Apply filters
+  // Apply filters (type assertions needed for Supabase enum types)
   if (condition && condition !== 'all') {
-    query = query.eq('condition', condition)
+    query = query.eq('condition', condition as 'nib' | 'nos' | 'assembled' | 'painted' | 'pro_painted')
   }
   if (type && type !== 'all') {
-    query = query.eq('listing_type', type)
+    query = query.eq('listing_type', type as 'sale' | 'trade' | 'both')
   }
   if (location) {
     query = query.ilike('location', `%${location}%`)
