@@ -33,7 +33,8 @@ async function getListingAndIncrementViews(id: string): Promise<ListingWithSelle
       .eq('id', id)
       .single(),
     // Increment views in parallel (fire-and-forget, we don't need the result)
-    supabase.rpc('increment_listing_views', { listing_id: id }),
+    // Type assertion needed because custom RPC functions aren't in generated types
+    (supabase.rpc as Function)('increment_listing_views', { listing_id: id }),
   ])
 
   if (listingResult.error || !listingResult.data) {
