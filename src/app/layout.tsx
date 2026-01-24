@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/react'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'FORGE OF WAR | Tienda Warhammer',
-  description: 'En la oscuridad del lejano futuro, solo existe la guerra. Tu tienda de Warhammer 40k.',
+  title: 'Grimdark Legion | Comunidad Warhammer 40K',
+  description: 'En la oscuridad del lejano futuro, solo existe la guerra. Comunidad de Warhammer 40k.',
 }
 
 export default function RootLayout({
@@ -16,6 +17,7 @@ export default function RootLayout({
       <body className="antialiased">
         <div className="noise-overlay" />
         {children}
+        <Analytics />
       </body>
     </html>
   )
