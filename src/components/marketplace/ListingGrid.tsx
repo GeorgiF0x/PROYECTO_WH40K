@@ -1,8 +1,31 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import ListingCard, { type ListingWithSeller } from './ListingCard'
+import dynamic from 'next/dynamic'
 import { Package } from 'lucide-react'
+import type { ListingWithSeller } from './ListingCard'
+
+// Dynamic import to reduce initial bundle size (bundle-dynamic-imports best practice)
+const ListingCard = dynamic(() => import('./ListingCard'), {
+  loading: () => <ListingCardSkeleton />,
+})
+
+
+function ListingCardSkeleton() {
+  return (
+    <div className="bg-void-light rounded-xl overflow-hidden animate-pulse">
+      <div className="aspect-[4/3] bg-void" />
+      <div className="p-4 space-y-3">
+        <div className="h-6 bg-void rounded w-3/4" />
+        <div className="h-4 bg-void rounded w-full" />
+        <div className="h-4 bg-void rounded w-2/3" />
+        <div className="pt-4 border-t border-bone/10 flex items-center gap-2">
+          <div className="w-6 h-6 rounded-full bg-void" />
+          <div className="h-4 bg-void rounded w-20" />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 interface ListingGridProps {
   listings: ListingWithSeller[]
@@ -41,11 +64,7 @@ export default function ListingGrid({
 
   if (listings.length === 0) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center justify-center py-20 text-center"
-      >
+      <div className="flex flex-col items-center justify-center py-20 text-center animate-fadeIn">
         <div className="w-20 h-20 rounded-full bg-void-light flex items-center justify-center mb-6">
           <Package className="w-10 h-10 text-bone/30" />
         </div>
@@ -53,7 +72,7 @@ export default function ListingGrid({
           Sin resultados
         </h3>
         <p className="text-bone/40 font-body max-w-md">{emptyMessage}</p>
-      </motion.div>
+      </div>
     )
   }
 

@@ -1,7 +1,12 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import MiniatureCard, { type MiniatureWithStats } from './MiniatureCard'
+import dynamic from 'next/dynamic'
+import type { MiniatureWithStats } from './MiniatureCard'
+
+// Dynamic import to reduce initial bundle size (bundle-dynamic-imports best practice)
+const MiniatureCard = dynamic(() => import('./MiniatureCard'), {
+  loading: () => <SkeletonCard />,
+})
 
 interface MiniatureGridProps {
   miniatures: MiniatureWithStats[]
@@ -51,26 +56,12 @@ export default function MiniatureGrid({
 
   if (miniatures.length === 0) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center justify-center py-20"
-      >
+      <div className="flex flex-col items-center justify-center py-20 animate-fadeIn">
         <div className="relative w-32 h-32 mb-6">
-          {/* Empty state illustration */}
-          <motion.div
-            className="absolute inset-0 rounded-full bg-gradient-to-br from-bone/5 to-transparent"
-            animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.5, 0.3, 0.5],
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
-          />
+          {/* Empty state illustration with CSS animation */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-bone/5 to-transparent animate-pulse" />
           <div className="absolute inset-4 rounded-full border-2 border-dashed border-bone/20 flex items-center justify-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            >
+            <div className="animate-spin-slow">
               <svg
                 className="w-12 h-12 text-bone/20"
                 fill="none"
@@ -84,7 +75,7 @@ export default function MiniatureGrid({
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-            </motion.div>
+            </div>
           </div>
         </div>
         <h3 className="text-xl font-display font-bold text-bone/60 mb-2">
@@ -93,7 +84,7 @@ export default function MiniatureGrid({
         <p className="text-bone/40 text-center max-w-sm font-body">
           {emptyMessage}
         </p>
-      </motion.div>
+      </div>
     )
   }
 
