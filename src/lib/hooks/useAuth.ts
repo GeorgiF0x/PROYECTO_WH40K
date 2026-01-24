@@ -25,6 +25,55 @@ export function useAuth() {
   useEffect(() => {
     const supabase = getSupabase()
 
+    // Helper to fetch or create profile
+    const fetchOrCreateProfile = async (user: User) => {
+      // Try to fetch existing profile
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (existingProfile) {
+        return existingProfile
+      }
+
+      // Profile doesn't exist, create it (fallback if trigger didn't run)
+      if (fetchError?.code === 'PGRST116') {
+        const metadata = user.user_metadata || {}
+        const email = user.email || ''
+
+        // Generate username from email
+        const baseUsername = email.split('@')[0]
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, '')
+          .slice(0, 20) || 'user'
+
+        const username = `${baseUsername}${Math.floor(Math.random() * 1000)}`
+
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            username,
+            display_name: metadata.full_name || metadata.name || null,
+            avatar_url: metadata.avatar_url || metadata.picture || null,
+          })
+          .select()
+          .single()
+
+        if (insertError) {
+          console.error('Error creating profile:', insertError)
+          return null
+        }
+
+        return newProfile
+      }
+
+      console.error('Error fetching profile:', fetchError)
+      return null
+    }
+
     // Get initial session
     const getInitialSession = async () => {
       try {
@@ -33,11 +82,7 @@ export function useAuth() {
         setUser(session?.user ?? null)
 
         if (session?.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
+          const profile = await fetchOrCreateProfile(session.user)
           setProfile(profile)
         }
       } catch (error) {
@@ -56,11 +101,7 @@ export function useAuth() {
         setUser(session?.user ?? null)
 
         if (session?.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
+          const profile = await fetchOrCreateProfile(session.user)
           setProfile(profile)
         } else {
           setProfile(null)
