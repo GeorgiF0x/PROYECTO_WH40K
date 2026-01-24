@@ -157,7 +157,7 @@ export default async function MarketplacePage({
 
           {/* Load More - Client Component for cursor pagination */}
           {nextCursor && (
-            <LoadMoreButton cursor={nextCursor} searchParams={params} />
+            <LoadMoreButton cursor={nextCursor} searchParams={params as Record<string, string | undefined>} />
           )}
         </div>
       </section>
