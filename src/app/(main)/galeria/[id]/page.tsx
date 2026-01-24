@@ -61,6 +61,25 @@ export default function MiniatureDetailPage() {
     }
   }, [miniatureId])
 
+  // Check if user has liked this miniature
+  useEffect(() => {
+    if (miniatureId && user?.id) {
+      checkIfLiked()
+    }
+  }, [miniatureId, user?.id])
+
+  const checkIfLiked = async () => {
+    if (!user?.id) return
+    const { data } = await supabase
+      .from('miniature_likes')
+      .select('id')
+      .eq('miniature_id', miniatureId as string)
+      .eq('user_id', user.id)
+      .single()
+
+    setIsLiked(!!data)
+  }
+
   const fetchMiniature = async () => {
     setIsLoading(true)
     const { data, error } = await supabase
@@ -76,7 +95,7 @@ export default function MiniatureDetailPage() {
       console.error('Error fetching miniature:', error)
     } else {
       setMiniature(data)
-      setLikesCount(Math.floor(Math.random() * 500))
+      setLikesCount(data.likes_count || 0)
     }
     setIsLoading(false)
   }
@@ -109,12 +128,46 @@ export default function MiniatureDetailPage() {
   }
 
   const handleLike = async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user?.id) {
       router.push('/login')
       return
     }
-    setIsLiked(!isLiked)
-    setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1))
+
+    // Optimistic update
+    const wasLiked = isLiked
+    setIsLiked(!wasLiked)
+    setLikesCount((prev) => (wasLiked ? prev - 1 : prev + 1))
+
+    if (wasLiked) {
+      // Remove like
+      const { error } = await supabase
+        .from('miniature_likes')
+        .delete()
+        .eq('miniature_id', miniatureId as string)
+        .eq('user_id', user.id)
+
+      if (error) {
+        // Revert on error
+        setIsLiked(true)
+        setLikesCount((prev) => prev + 1)
+        console.error('Error removing like:', error)
+      }
+    } else {
+      // Add like
+      const { error } = await supabase
+        .from('miniature_likes')
+        .insert({
+          miniature_id: miniatureId as string,
+          user_id: user.id,
+        })
+
+      if (error) {
+        // Revert on error
+        setIsLiked(false)
+        setLikesCount((prev) => prev - 1)
+        console.error('Error adding like:', error)
+      }
+    }
   }
 
   const handleSubmitComment = async () => {

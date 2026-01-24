@@ -45,3 +45,4 @@ Thumbs.db
 build.log
 
 .claude
+client_secret_*.json

@@ -2,65 +2,97 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MiniatureGrid, type MiniatureWithStats } from '@/components/gallery'
+import { ListingGrid, type ListingWithSeller } from '@/components/marketplace'
 import { createClient } from '@/lib/supabase/client'
-import { Search, Filter, SlidersHorizontal, Grid3X3, LayoutGrid, Sparkles, TrendingUp, Clock, Flame } from 'lucide-react'
+import {
+  Search,
+  SlidersHorizontal,
+  Plus,
+  Clock,
+  TrendingUp,
+  DollarSign,
+  Package,
+  MapPin,
+  Store,
+} from 'lucide-react'
+import Link from 'next/link'
 
-type SortOption = 'recent' | 'popular' | 'trending'
-type ViewMode = 'grid' | 'masonry'
+type SortOption = 'recent' | 'price_low' | 'price_high'
+type ConditionFilter = 'all' | 'nib' | 'nos' | 'assembled' | 'painted' | 'pro_painted'
+type TypeFilter = 'all' | 'sale' | 'trade' | 'both'
 
 const sortOptions = [
   { value: 'recent', label: 'Recientes', icon: Clock },
-  { value: 'popular', label: 'Populares', icon: TrendingUp },
-  { value: 'trending', label: 'Tendencia', icon: Flame },
+  { value: 'price_low', label: 'Precio: Menor', icon: DollarSign },
+  { value: 'price_high', label: 'Precio: Mayor', icon: TrendingUp },
 ] as const
 
-export default function GalleryPage() {
-  const [miniatures, setMiniatures] = useState<MiniatureWithStats[]>([])
+const conditionOptions = [
+  { value: 'all', label: 'Todos' },
+  { value: 'nib', label: 'Nuevo en caja' },
+  { value: 'nos', label: 'Nuevo sin caja' },
+  { value: 'assembled', label: 'Montado' },
+  { value: 'painted', label: 'Pintado' },
+  { value: 'pro_painted', label: 'Pro Painted' },
+] as const
+
+const typeOptions = [
+  { value: 'all', label: 'Todos' },
+  { value: 'sale', label: 'Venta' },
+  { value: 'trade', label: 'Intercambio' },
+  { value: 'both', label: 'Ambos' },
+] as const
+
+export default function MarketplacePage() {
+  const [listings, setListings] = useState<ListingWithSeller[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('recent')
-  const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [showFilters, setShowFilters] = useState(false)
-  const [selectedFaction, setSelectedFaction] = useState<string | null>(null)
+  const [conditionFilter, setConditionFilter] = useState<ConditionFilter>('all')
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
+  const [locationFilter, setLocationFilter] = useState('')
 
   const supabase = createClient()
 
   useEffect(() => {
-    fetchMiniatures()
-  }, [sortBy, selectedFaction])
+    fetchListings()
+  }, [sortBy, conditionFilter, typeFilter])
 
-  const fetchMiniatures = async () => {
+  const fetchListings = async () => {
     setIsLoading(true)
 
     let query = supabase
-      .from('miniatures')
+      .from('listings')
       .select(`
         *,
-        profiles:user_id (
+        profiles:seller_id (
           id,
           username,
           display_name,
           avatar_url
         )
       `)
+      .eq('status', 'active')
 
-    if (selectedFaction) {
-      query = query.eq('faction_id', selectedFaction)
+    // Apply filters
+    if (conditionFilter !== 'all') {
+      query = query.eq('condition', conditionFilter)
+    }
+    if (typeFilter !== 'all') {
+      query = query.eq('listing_type', typeFilter)
     }
 
-    // Sort based on selection
+    // Sort
     switch (sortBy) {
       case 'recent':
         query = query.order('created_at', { ascending: false })
         break
-      case 'popular':
-        // In a real app, you'd join with likes count
-        query = query.order('created_at', { ascending: false })
+      case 'price_low':
+        query = query.order('price', { ascending: true })
         break
-      case 'trending':
-        // In a real app, you'd calculate trending score
-        query = query.order('created_at', { ascending: false })
+      case 'price_high':
+        query = query.order('price', { ascending: false })
         break
     }
 
@@ -69,17 +101,23 @@ export default function GalleryPage() {
     const { data, error } = await query
 
     if (error) {
-      console.error('Error fetching miniatures:', error)
+      console.error('Error fetching listings:', error)
     } else {
-      setMiniatures(data || [])
+      setListings(data || [])
     }
 
     setIsLoading(false)
   }
 
-  const filteredMiniatures = miniatures.filter((m) =>
-    m.title.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredListings = listings.filter((listing) => {
+    const matchesSearch =
+      listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      listing.description.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesLocation =
+      !locationFilter ||
+      listing.location?.toLowerCase().includes(locationFilter.toLowerCase())
+    return matchesSearch && matchesLocation
+  })
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -115,18 +153,21 @@ export default function GalleryPage() {
               transition={{ delay: 0.2 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-imperial-gold/10 border border-imperial-gold/30 rounded-full mb-6"
             >
-              <Sparkles className="w-4 h-4 text-imperial-gold" />
-              <span className="text-sm font-body text-imperial-gold">Comunidad de Artistas</span>
+              <Store className="w-4 h-4 text-imperial-gold" />
+              <span className="text-sm font-body text-imperial-gold">
+                Compra, Vende e Intercambia
+              </span>
             </motion.div>
 
             {/* Title */}
             <h1 className="text-4xl md:text-6xl font-display font-bold tracking-wide mb-4">
-              <span className="text-bone">Galería de </span>
-              <span className="text-gradient">Miniaturas</span>
+              <span className="text-bone">Mercado </span>
+              <span className="text-gradient">P2P</span>
             </h1>
 
             <p className="text-lg text-bone/60 font-body max-w-2xl mx-auto">
-              Explora las obras maestras de nuestra comunidad. Cada miniatura cuenta una historia de dedicación y arte.
+              Encuentra miniaturas de segunda mano, intercambia con otros coleccionistas
+              o vende las que ya no uses.
             </p>
           </motion.div>
 
@@ -142,13 +183,15 @@ export default function GalleryPage() {
               <div className="relative flex-1">
                 <motion.div
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-bone/40"
-                  animate={{ color: searchQuery ? '#C9A227' : 'rgba(232, 232, 240, 0.4)' }}
+                  animate={{
+                    color: searchQuery ? '#C9A227' : 'rgba(232, 232, 240, 0.4)',
+                  }}
                 >
                   <Search className="w-5 h-5" />
                 </motion.div>
                 <input
                   type="text"
-                  placeholder="Buscar miniaturas..."
+                  placeholder="Buscar miniaturas, ejércitos..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-12 pr-4 py-3.5 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors"
@@ -193,29 +236,20 @@ export default function GalleryPage() {
                 <span className="hidden sm:inline">Filtros</span>
               </motion.button>
 
-              {/* View Mode Toggle */}
-              <div className="flex items-center gap-1 bg-void rounded-xl border border-bone/10 p-1">
+              {/* Create Listing Button */}
+              <Link href="/mercado/nuevo">
                 <motion.button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2.5 rounded-lg transition-colors ${
-                    viewMode === 'grid' ? 'bg-imperial-gold text-void' : 'text-bone/60 hover:text-bone'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-imperial-gold to-yellow-500 text-void font-display font-bold text-sm rounded-xl"
+                  whileHover={{
+                    scale: 1.02,
+                    boxShadow: '0 8px 30px rgba(201, 162, 39, 0.3)',
+                  }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <Grid3X3 className="w-4 h-4" />
+                  <Plus className="w-4 h-4" />
+                  <span>Publicar</span>
                 </motion.button>
-                <motion.button
-                  onClick={() => setViewMode('masonry')}
-                  className={`p-2.5 rounded-lg transition-colors ${
-                    viewMode === 'masonry' ? 'bg-imperial-gold text-void' : 'text-bone/60 hover:text-bone'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <LayoutGrid className="w-4 h-4" />
-                </motion.button>
-              </div>
+              </Link>
             </div>
 
             {/* Expanded Filters */}
@@ -229,31 +263,72 @@ export default function GalleryPage() {
                   className="overflow-hidden"
                 >
                   <div className="pt-4 mt-4 border-t border-bone/10">
-                    <div className="flex flex-wrap gap-4">
-                      {/* Faction Filter */}
-                      <div className="flex-1 min-w-[200px]">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {/* Condition Filter */}
+                      <div>
                         <label className="block text-sm text-bone/60 mb-2 font-body">
-                          Facción
+                          <Package className="w-4 h-4 inline mr-2" />
+                          Estado
                         </label>
                         <div className="flex flex-wrap gap-2">
-                          {['Imperium', 'Chaos', 'Xenos', 'Necrons'].map((faction) => (
+                          {conditionOptions.map((option) => (
                             <motion.button
-                              key={faction}
-                              onClick={() => setSelectedFaction(
-                                selectedFaction === faction ? null : faction
-                              )}
+                              key={option.value}
+                              onClick={() =>
+                                setConditionFilter(option.value as ConditionFilter)
+                              }
                               className={`px-3 py-1.5 rounded-lg text-sm font-body transition-colors ${
-                                selectedFaction === faction
+                                conditionFilter === option.value
                                   ? 'bg-imperial-gold text-void'
                                   : 'bg-void border border-bone/10 text-bone/60 hover:border-imperial-gold/30'
                               }`}
                               whileHover={{ scale: 1.02 }}
                               whileTap={{ scale: 0.98 }}
                             >
-                              {faction}
+                              {option.label}
                             </motion.button>
                           ))}
                         </div>
+                      </div>
+
+                      {/* Type Filter */}
+                      <div>
+                        <label className="block text-sm text-bone/60 mb-2 font-body">
+                          <Store className="w-4 h-4 inline mr-2" />
+                          Tipo
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          {typeOptions.map((option) => (
+                            <motion.button
+                              key={option.value}
+                              onClick={() => setTypeFilter(option.value as TypeFilter)}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-body transition-colors ${
+                                typeFilter === option.value
+                                  ? 'bg-imperial-gold text-void'
+                                  : 'bg-void border border-bone/10 text-bone/60 hover:border-imperial-gold/30'
+                              }`}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              {option.label}
+                            </motion.button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Location Filter */}
+                      <div>
+                        <label className="block text-sm text-bone/60 mb-2 font-body">
+                          <MapPin className="w-4 h-4 inline mr-2" />
+                          Ubicación
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Ciudad o provincia..."
+                          value={locationFilter}
+                          onChange={(e) => setLocationFilter(e.target.value)}
+                          className="w-full px-4 py-2 bg-void border border-bone/10 rounded-lg font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors"
+                        />
                       </div>
                     </div>
                   </div>
@@ -264,7 +339,7 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* Gallery Grid */}
+      {/* Listings Grid */}
       <section className="px-6">
         <div className="max-w-7xl mx-auto">
           {/* Results count */}
@@ -286,25 +361,28 @@ export default function GalleryPage() {
                 </span>
               ) : (
                 <span>
-                  <span className="text-imperial-gold font-semibold">{filteredMiniatures.length}</span> miniaturas encontradas
+                  <span className="text-imperial-gold font-semibold">
+                    {filteredListings.length}
+                  </span>{' '}
+                  anuncios encontrados
                 </span>
               )}
             </p>
           </motion.div>
 
           {/* Grid */}
-          <MiniatureGrid
-            miniatures={filteredMiniatures}
+          <ListingGrid
+            listings={filteredListings}
             isLoading={isLoading}
             emptyMessage={
               searchQuery
-                ? `No se encontraron miniaturas para "${searchQuery}"`
-                : 'Aún no hay miniaturas en la galería. ¡Sé el primero en subir la tuya!'
+                ? `No se encontraron anuncios para "${searchQuery}"`
+                : 'Aún no hay anuncios publicados. ¡Sé el primero en vender algo!'
             }
           />
 
           {/* Load More Button */}
-          {!isLoading && filteredMiniatures.length > 0 && (
+          {!isLoading && filteredListings.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -354,24 +432,30 @@ export default function GalleryPage() {
                 transition={{ type: 'spring', delay: 0.2 }}
                 className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-imperial-gold/20 border border-imperial-gold/40 mb-6"
               >
-                <Sparkles className="w-8 h-8 text-imperial-gold" />
+                <Package className="w-8 h-8 text-imperial-gold" />
               </motion.div>
 
               <h2 className="text-2xl md:text-3xl font-display font-bold text-bone mb-4">
-                ¿Tienes miniaturas que mostrar?
+                ¿Tienes miniaturas que ya no usas?
               </h2>
               <p className="text-bone/60 font-body mb-8 max-w-xl mx-auto">
-                Únete a nuestra comunidad y comparte tus obras con miles de entusiastas del hobby.
+                Dales una segunda vida vendiéndolas o intercambiándolas con otros
+                coleccionistas de la comunidad.
               </p>
 
-              <motion.a
-                href="/mi-galeria/subir"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-imperial-gold to-yellow-500 text-void font-display font-bold tracking-wider uppercase text-sm rounded-lg"
-                whileHover={{ scale: 1.05, boxShadow: '0 10px 40px rgba(201, 162, 39, 0.4)' }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Subir Miniatura
-              </motion.a>
+              <Link href="/mercado/nuevo">
+                <motion.span
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-imperial-gold to-yellow-500 text-void font-display font-bold tracking-wider uppercase text-sm rounded-lg cursor-pointer"
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: '0 10px 40px rgba(201, 162, 39, 0.4)',
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Plus className="w-5 h-5" />
+                  Publicar Anuncio
+                </motion.span>
+              </Link>
             </div>
           </motion.div>
         </div>

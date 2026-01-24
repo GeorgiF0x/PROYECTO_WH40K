@@ -19,7 +19,11 @@
 
 ## Pendiente
 - [ ] Sistema de likes y comentarios en galería
-- [ ] **Mercado P2P**: Usuarios venden/compran miniaturas entre ellos (tipo Wallapop)
+- [x] **Mercado P2P**: Usuarios venden/compran miniaturas entre ellos (tipo Wallapop)
+  - `/mercado` - Listado con filtros (estado, tipo, ubicación)
+  - `/mercado/[id]` - Detalle de anuncio con galería de imágenes
+  - `/mercado/nuevo` - Crear nuevo anuncio
+  - Componentes: ListingCard, ListingGrid
 - [ ] **Directorio de Tiendas Locales**: Mapa/listado de tiendas físicas de Warhammer por zona geográfica
 - [ ] Feed social
 - [ ] Blog/Tutoriales
@@ -41,6 +45,9 @@ src/app/
 - Header con iconos Lucide animados (no emojis)
 - Logo hexagonal estático con glow pulsante
 - Estética grimdark: colores void, imperial-gold, blood-red, bone
+
+## Dominio
+https://grimdarklegion.com
 
 ## Repositorio
 https://github.com/GeorgiF0x/PROYECTO_WH40K.git
