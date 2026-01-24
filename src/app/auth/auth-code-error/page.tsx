@@ -1,10 +1,16 @@
 'use client'
 
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { AlertTriangle, ArrowLeft } from 'lucide-react'
+import { Suspense } from 'react'
 
-export default function AuthCodeErrorPage() {
+function ErrorContent() {
+  const searchParams = useSearchParams()
+  const error = searchParams.get('error')
+  const errorCode = searchParams.get('code')
+
   return (
     <div className="min-h-screen bg-void flex items-center justify-center p-6">
       <motion.div
@@ -20,10 +26,19 @@ export default function AuthCodeErrorPage() {
           Error de Autenticación
         </h1>
 
-        <p className="text-bone/60 font-body mb-8">
+        <p className="text-bone/60 font-body mb-4">
           Hubo un problema al iniciar sesión. Esto puede ocurrir si el enlace ha expirado
           o si hubo un error con el proveedor de autenticación.
         </p>
+
+        {(error || errorCode) && (
+          <div className="mb-6 p-4 bg-blood/10 border border-blood/30 rounded-lg text-left">
+            <p className="text-xs text-bone/50 font-mono">
+              {errorCode && <span className="block">Code: {errorCode}</span>}
+              {error && <span className="block">Error: {error}</span>}
+            </p>
+          </div>
+        )}
 
         <div className="space-y-3">
           <Link href="/login">
@@ -49,5 +64,13 @@ export default function AuthCodeErrorPage() {
         </div>
       </motion.div>
     </div>
+  )
+}
+
+export default function AuthCodeErrorPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-void" />}>
+      <ErrorContent />
+    </Suspense>
   )
 }
