@@ -18,6 +18,10 @@ export interface Database {
           bio: string | null
           location: string | null
           website: string | null
+          instagram: string | null
+          twitter: string | null
+          youtube: string | null
+          favorite_factions: string[] | null
           created_at: string
           updated_at: string
         }
@@ -29,6 +33,10 @@ export interface Database {
           bio?: string | null
           location?: string | null
           website?: string | null
+          instagram?: string | null
+          twitter?: string | null
+          youtube?: string | null
+          favorite_factions?: string[] | null
           created_at?: string
           updated_at?: string
         }
@@ -40,6 +48,10 @@ export interface Database {
           bio?: string | null
           location?: string | null
           website?: string | null
+          instagram?: string | null
+          twitter?: string | null
+          youtube?: string | null
+          favorite_factions?: string[] | null
           created_at?: string
           updated_at?: string
         }
@@ -270,6 +282,9 @@ export interface Database {
           name: string
           slug: string
           category: 'faction' | 'technique' | 'game_system' | 'other'
+          primary_color: string | null
+          secondary_color: string | null
+          icon_url: string | null
           created_at: string
         }
         Insert: {
@@ -277,6 +292,9 @@ export interface Database {
           name: string
           slug: string
           category?: 'faction' | 'technique' | 'game_system' | 'other'
+          primary_color?: string | null
+          secondary_color?: string | null
+          icon_url?: string | null
           created_at?: string
         }
         Update: {
@@ -284,6 +302,9 @@ export interface Database {
           name?: string
           slug?: string
           category?: 'faction' | 'technique' | 'game_system' | 'other'
+          primary_color?: string | null
+          secondary_color?: string | null
+          icon_url?: string | null
           created_at?: string
         }
         Relationships: []

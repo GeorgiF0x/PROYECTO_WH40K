@@ -1,3 +1,7 @@
 export { UserCard } from './UserCard'
 export { FollowButton } from './FollowButton'
 export { ProfileHeader } from './ProfileHeader'
+export { UserListModal } from './UserListModal'
+export { ProfileTabs } from './ProfileTabs'
+export { FactionSelector, generateGradient, FACTION_ICONS } from './FactionSelector'
+export type { Faction } from './FactionSelector'

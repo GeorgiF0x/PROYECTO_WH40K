@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useInView, useSpring, useTransform } from 'framer-motion'
 import { MiniatureGrid } from '@/components/gallery'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/hooks/useAuth'
@@ -21,6 +21,24 @@ import {
   MoreVertical,
 } from 'lucide-react'
 import type { Miniature, Profile } from '@/lib/types/database.types'
+
+// Animated counter component
+function AnimatedCounter({ value, duration = 1 }: { value: number; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const isInView = useInView(ref, { once: true })
+  const spring = useSpring(0, { duration: duration * 1000 })
+  const display = useTransform(spring, (current) =>
+    Math.round(current).toLocaleString()
+  )
+
+  useEffect(() => {
+    if (isInView) {
+      spring.set(value)
+    }
+  }, [isInView, value, spring])
+
+  return <motion.span ref={ref}>{display}</motion.span>
+}
 
 interface Stats {
   totalMiniatures: number
@@ -54,28 +72,35 @@ export default function MyGalleryPage() {
     if (!user?.id) return
     setIsLoading(true)
 
+    // Fetch miniatures with real likes and comments counts
     const { data, error } = await supabase
       .from('miniatures')
-      .select('*')
+      .select(`
+        *,
+        miniature_likes(count),
+        miniature_comments(count)
+      `)
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 
     if (error) {
       console.error('Error fetching miniatures:', error)
     } else {
-      const withStats = (data || []).map((m) => ({
+      // Transform the aggregated counts into simple numbers
+      const withStats = (data || []).map((m: Record<string, unknown>) => ({
         ...m,
-        likes_count: Math.floor(Math.random() * 500),
-        comments_count: Math.floor(Math.random() * 50),
+        likes_count: (m.miniature_likes as { count: number }[])?.[0]?.count || 0,
+        comments_count: (m.miniature_comments as { count: number }[])?.[0]?.count || 0,
       }))
       setMiniatures(withStats)
 
-      // Calculate stats
+      // Calculate total stats from real data
       const totalLikes = withStats.reduce((sum, m) => sum + (m.likes_count || 0), 0)
+      const totalComments = withStats.reduce((sum, m) => sum + (m.comments_count || 0), 0)
       setStats({
         totalMiniatures: withStats.length,
         totalLikes,
-        totalViews: totalLikes * 10 + Math.floor(Math.random() * 1000),
+        totalViews: totalLikes * 3 + totalComments * 2, // Estimated views based on engagement
       })
     }
 
@@ -160,31 +185,48 @@ export default function MyGalleryPage() {
             className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
           >
             {[
-              { label: 'Miniaturas', value: stats.totalMiniatures, icon: ImageIcon, color: 'imperial-gold' },
-              { label: 'Likes Totales', value: stats.totalLikes, icon: Heart, color: 'red-400' },
-              { label: 'Visualizaciones', value: stats.totalViews, icon: Eye, color: 'blue-400' },
+              { label: 'Miniaturas', value: stats.totalMiniatures, icon: ImageIcon, gradient: 'from-imperial-gold to-yellow-500', bgColor: 'bg-imperial-gold/10', textColor: 'text-imperial-gold' },
+              { label: 'Likes Totales', value: stats.totalLikes, icon: Heart, gradient: 'from-red-400 to-pink-500', bgColor: 'bg-red-400/10', textColor: 'text-red-400' },
+              { label: 'Engagement', value: stats.totalViews, icon: TrendingUp, gradient: 'from-blue-400 to-cyan-400', bgColor: 'bg-blue-400/10', textColor: 'text-blue-400' },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + index * 0.1 }}
-                className="relative overflow-hidden bg-void-light/50 backdrop-blur-sm rounded-xl border border-bone/10 p-6"
+                whileHover={{ scale: 1.02, y: -4 }}
+                className="relative overflow-hidden bg-void-light/50 backdrop-blur-sm rounded-xl border border-bone/10 p-6 group"
               >
-                <div className="flex items-center justify-between">
+                {/* Background glow on hover */}
+                <motion.div
+                  className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br ${stat.gradient}`}
+                  style={{ opacity: 0.05 }}
+                />
+
+                <div className="relative flex items-center justify-between">
                   <div>
                     <p className="text-bone/50 text-sm font-body mb-1">{stat.label}</p>
                     <p className="text-3xl font-display font-bold text-bone">
-                      {stat.value.toLocaleString()}
+                      <AnimatedCounter value={stat.value} duration={1.5} />
                     </p>
                   </div>
-                  <div className={`p-3 rounded-xl bg-${stat.color}/10`}>
-                    <stat.icon className={`w-6 h-6 text-${stat.color}`} />
-                  </div>
+                  <motion.div
+                    className={`p-3 rounded-xl ${stat.bgColor}`}
+                    whileHover={{ rotate: 10, scale: 1.1 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <stat.icon className={`w-6 h-6 ${stat.textColor}`} />
+                  </motion.div>
                 </div>
 
-                {/* Decorative gradient */}
-                <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-${stat.color} to-transparent opacity-50`} />
+                {/* Decorative gradient bar */}
+                <motion.div
+                  className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r ${stat.gradient}`}
+                  initial={{ width: '0%' }}
+                  animate={{ width: '100%' }}
+                  transition={{ delay: 0.5 + index * 0.1, duration: 0.8, ease: 'easeOut' }}
+                  style={{ opacity: 0.6 }}
+                />
               </motion.div>
             ))}
           </motion.div>

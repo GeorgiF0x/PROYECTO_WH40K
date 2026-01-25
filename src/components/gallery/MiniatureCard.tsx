@@ -109,9 +109,9 @@ export default function MiniatureCard({ miniature, index = 0 }: MiniatureCardPro
                 transition={{ duration: 0.3 }}
               >
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-void/80 backdrop-blur-sm rounded-lg">
-                  <Eye className="w-4 h-4 text-bone/60" />
+                  <Heart className="w-4 h-4 text-bone/60" />
                   <span className="text-xs font-medium text-bone/80">
-                    {Math.floor(Math.random() * 1000)}
+                    {miniature.likes_count || 0}
                   </span>
                 </div>
               </motion.div>

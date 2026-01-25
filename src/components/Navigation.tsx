@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/hooks/useAuth'
 import { Avatar } from '@/components/ui'
 import {
   User,
+  Users,
   LogOut,
   Image,
   Store,
@@ -125,6 +126,7 @@ const sparkleAnimation = {
 const navLinks = [
   { href: '/', label: 'Inicio', icon: Home },
   { href: '/galeria', label: 'Galería', icon: Palette },
+  { href: '/usuarios', label: 'Usuarios', icon: Users },
   { href: '/mercado', label: 'Mercado', icon: Scale },
   { href: '/facciones', label: 'Facciones', icon: Shield },
 ]

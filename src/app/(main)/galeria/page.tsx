@@ -274,11 +274,11 @@ export default function GalleryPage() {
             transition={{ delay: 0.4 }}
             className="flex items-center justify-between mb-8"
           >
-            <p className="text-bone/50 font-body">
+            <div className="text-bone/50 font-body">
               {isLoading ? (
                 <span className="inline-flex items-center gap-2">
-                  <motion.div
-                    className="w-4 h-4 border-2 border-bone/20 border-t-imperial-gold rounded-full"
+                  <motion.span
+                    className="inline-block w-4 h-4 border-2 border-bone/20 border-t-imperial-gold rounded-full"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   />
@@ -289,7 +289,7 @@ export default function GalleryPage() {
                   <span className="text-imperial-gold font-semibold">{filteredMiniatures.length}</span> miniaturas encontradas
                 </span>
               )}
-            </p>
+            </div>
           </motion.div>
 
           {/* Grid */}
