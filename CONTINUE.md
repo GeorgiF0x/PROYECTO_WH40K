@@ -24,101 +24,180 @@ Antes de escribir código, invoca estas skills para seguir las mejores práctica
 - [x] OAuth configurado (Google + Discord)
 - [x] Likes conectados a base de datos real
 - [x] Middleware migrado a proxy.ts (Next.js 16+)
+- [x] Autenticación funcionando (API keys corregidas, RLS policies añadidas)
+- [x] Perfil de usuario se crea automáticamente al login
 
-### Pendiente de Arreglar (Errores TypeScript en Vercel)
-1. **`src/app/(main)/mercado/page.tsx:160`** - LoadMoreButton props type incompatible
-   - Error: `Type 'SearchParams' is not assignable to type 'Record<string, string | undefined>'`
-   - Solución: Convertir `params` a `Record<string, string | undefined>` antes de pasarlo
+---
 
-2. **Verificar instalación de dependencias:**
-   ```bash
-   npm install @vercel/analytics @vercel/speed-insights --save
-   ```
+## PRÓXIMA TAREA: Rediseño de Páginas de Perfil
 
-### Pendiente por Implementar
+### Resumen
+Rediseño completo de las 4 páginas relacionadas con el perfil de usuario, corrigiendo bugs críticos de datos, implementando funcionalidad faltante, y mejorando la estética grimdark.
+
+### Fase 1: Correcciones Críticas de Datos
+
+#### 1.1 Arreglar stats falsos en `/mi-galeria`
+
+**Archivo:** `src/app/(main)/mi-galeria/page.tsx`
+
+**Problema:** Líneas 66-79 usan `Math.random()` para likes/comments.
+
+**Solución:**
+```typescript
+// Reemplazar con query real
+const { data } = await supabase
+  .from('miniatures')
+  .select(`
+    *,
+    likes_count:miniature_likes(count),
+    comments_count:miniature_comments(count)
+  `)
+  .eq('user_id', user.id)
+  .order('created_at', { ascending: false })
+
+// Transformar resultados
+const withStats = (data || []).map((m) => ({
+  ...m,
+  likes_count: m.likes_count?.[0]?.count || 0,
+  comments_count: m.comments_count?.[0]?.count || 0,
+}))
+```
+
+#### 1.2 Implementar modales de seguidores/siguiendo
+
+**Archivo:** `src/components/user/ProfileHeader.tsx`
+
+**Problema:** TODOs en líneas 156 y 170 - modales vacíos.
+
+**Solución:**
+- Cargar datos reales con `getFollowers()` y `getFollowing()` de `users.ts`
+- Mostrar lista de `UserCard` con `FollowButton` para cada usuario
+- Añadir estados de carga y vacío
+
+### Fase 2: Funcionalidad Faltante
+
+#### 2.1 Crear página de editar miniatura
+
+**Nuevo archivo:** `src/app/(main)/mi-galeria/editar/[id]/page.tsx`
+
+**Funcionalidades:**
+- Cargar miniatura existente por ID
+- Verificar que el usuario es el propietario
+- Formulario para editar título, descripción, facción
+- Grid de imágenes con drag & drop para reordenar
+- Botón para eliminar con confirmación
+- Regenerar embedding si cambia título/descripción
+
+#### 2.2 Implementar tabs funcionales en perfil público
+
+**Archivo:** `src/app/(main)/usuarios/[username]/page.tsx`
+
+**Nuevo componente:** `src/components/user/ProfileTabs.tsx`
+
+**Tabs:**
+- **Miniaturas**: Grid con las miniaturas del usuario
+- **Likes**: Miniaturas que el usuario ha dado like
+- **Insignias**: Badges del usuario (si existen)
+
+#### 2.3 Cargar miniaturas en perfil público
+
+**Problema actual:** El grid de miniaturas está vacío aunque se muestra el conteo.
+
+**Solución:** Fetch real de miniaturas del usuario con stats de engagement.
+
+### Fase 3: Mejoras Visuales
+
+#### 3.1 Mejorar `/perfil` (editar perfil)
+
+- Header animado con icono imperial
+- Secciones con cards `bg-void-light/80 backdrop-blur-sm`
+- Preview en vivo del perfil mientras se edita
+- Indicador de disponibilidad de username en tiempo real
+- Selector de facción con cards animadas
+
+#### 3.2 Mejorar ProfileHeader
+
+- Banner animado con gradiente basado en facción
+- Efecto de scan line sutil
+- Animación de entrada para stats
+- Avatar con ring glow pulsante
+
+#### 3.3 Mejorar cards de stats en `/mi-galeria`
+
+- Contador animado que incrementa al cargar
+- Iconos con micro-animaciones
+- Gradientes decorativos en bordes
+
+### Fase 4: Animaciones con Framer Motion
+
+```typescript
+// Entrada de página
+const pageVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+}
+
+// Cards con spring
+const cardVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.98 },
+  visible: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { type: 'spring', stiffness: 100, damping: 15 }
+  }
+}
+```
+
+### Archivos a Modificar
+
+| Archivo | Cambios |
+|---------|---------|
+| `src/app/(main)/mi-galeria/page.tsx` | Fix stats falsos, mejorar UI |
+| `src/app/(main)/mi-galeria/editar/[id]/page.tsx` | **NUEVO** - Página de edición |
+| `src/app/(main)/usuarios/[username]/page.tsx` | Tabs funcionales, cargar miniaturas |
+| `src/app/(dashboard)/perfil/page.tsx` | Mejorar diseño, añadir preview |
+| `src/components/user/ProfileHeader.tsx` | Modales funcionales, banner animado |
+| `src/components/user/ProfileTabs.tsx` | **NUEVO** - Componente de tabs |
+| `src/components/user/UserListModal.tsx` | **NUEVO** - Modal reutilizable para listas |
+
+### Orden de Implementación
+
+1. **Fase 1** (30 min): Corregir datos falsos en mi-galeria
+2. **Fase 2.3** (20 min): Cargar miniaturas en perfil público
+3. **Fase 2.1** (45 min): Crear página editar miniatura
+4. **Fase 2.2** (30 min): Implementar tabs funcionales
+5. **Fase 1.2** (30 min): Modales de seguidores/siguiendo
+6. **Fase 3** (45 min): Mejoras visuales
+7. **Fase 4** (30 min): Animaciones finales
+
+### Verificación
+
+- [ ] Stats en Mi Galería muestran números reales de la BD
+- [ ] Botón editar lleva a página funcional
+- [ ] Eliminar miniatura funciona con confirmación
+- [ ] Página editar carga datos existentes
+- [ ] Tabs en perfil público funcionan
+- [ ] Miniaturas se muestran en grid del perfil público
+- [ ] Modal de seguidores muestra lista real
+- [ ] Modal de siguiendo muestra lista real
+
+---
+
+## Pendiente por Implementar (Futuro)
 - [ ] Directorio de tiendas locales (mapa/listado por zona)
 - [ ] Sistema de comentarios en galería
 - [ ] Feed social
 - [ ] Chat en tiempo real
 - [ ] Panel de administración
 
-## Archivos Clave Modificados
-
-### Server Components (fetching en servidor)
-```
-src/app/(main)/mercado/page.tsx - Server Component con cursor pagination
-src/app/(main)/mercado/[id]/page.tsx - Server Component con Promise.all()
-```
-
-### Client Components (interactividad)
-```
-src/components/marketplace/MarketplaceFilters.tsx - Filtros con URL state
-src/components/marketplace/LoadMoreButton.tsx - Paginación con cursor
-src/components/marketplace/ListingDetail.tsx - Galería de imágenes, favoritos, contacto
-src/components/marketplace/MarketplaceHero.tsx - Hero section animado
-src/components/marketplace/MarketplaceCTA.tsx - Call to action
-```
-
-### Loading/Error Boundaries
-```
-src/app/(main)/mercado/loading.tsx
-src/app/(main)/mercado/error.tsx
-src/app/(main)/mercado/[id]/loading.tsx
-src/app/(main)/mercado/[id]/error.tsx
-src/app/(main)/mercado/[id]/not-found.tsx
-src/app/(main)/galeria/loading.tsx
-src/app/(main)/galeria/error.tsx
-src/app/(main)/galeria/[id]/loading.tsx
-src/app/(main)/galeria/[id]/error.tsx
-src/app/(main)/galeria/[id]/not-found.tsx
-```
-
-### Configuración
-```
-src/app/layout.tsx - Analytics + SpeedInsights
-src/proxy.ts - Supabase session handling (reemplaza middleware.ts en Next.js 16+)
-tailwind.config.ts - Animaciones fadeIn y spin-slow añadidas
-```
-
-## Instrucciones para Continuar
-
-1. **Primero ejecuta:**
-   ```bash
-   cd H:/z-innova/DEMOS/warhammer-forge
-   npm install
-   ```
-
-2. **Arregla el error de TypeScript en LoadMoreButton:**
-   En `src/app/(main)/mercado/page.tsx` línea 160, cambiar:
-   ```tsx
-   <LoadMoreButton cursor={nextCursor} searchParams={params} />
-   ```
-   Por:
-   ```tsx
-   <LoadMoreButton cursor={nextCursor} searchParams={params as Record<string, string | undefined>} />
-   ```
-
-3. **Verifica el build localmente:**
-   ```bash
-   npm run build
-   ```
-
-4. **Si el build pasa, haz push:**
-   ```bash
-   git add -A && git commit -m "fix: TypeScript errors" && git push
-   ```
-
-5. **Continúa con las tareas pendientes**
-
 ## Credenciales (en .env.local)
 - Supabase URL: yvjflhvbtjjmdwkgqqfs.supabase.co
 - OpenAI API Key configurada
 - Google OAuth configurado
 - Discord OAuth configurado
-- Resend configurado para emails
 
 ## Notas de Diseño
 - Commits SIN Co-Authored-By (configurado en .claude/settings.md)
 - Header con iconos Lucide animados (no emojis)
 - Logo hexagonal estático con glow pulsante
 - Estética grimdark: colores void, imperial-gold, blood-red, bone
+- Tipografía: Orbitron (títulos), Rajdhani (body)

@@ -276,12 +276,13 @@ export default function EditProfilePage() {
 
   return (
     <div className="min-h-screen bg-void">
-      {/* Scan line effect */}
+      {/* Scan line effect - single pass on load */}
       <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
         <motion.div
-          className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent"
-          animate={{ y: ['0vh', '100vh'] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold/30 to-transparent"
+          initial={{ y: '-10vh' }}
+          animate={{ y: '110vh' }}
+          transition={{ duration: 2, ease: 'easeInOut' }}
         />
       </div>
 

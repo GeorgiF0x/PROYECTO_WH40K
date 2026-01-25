@@ -164,15 +164,6 @@ export default function UsersPage() {
 
   return (
     <div className="min-h-screen bg-void pt-20 pb-16">
-      {/* Scan line effect */}
-      <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
-        <motion.div
-          className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent"
-          animate={{ y: ['0vh', '100vh'] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-        />
-      </div>
-
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         {/* Header */}
         <motion.div
