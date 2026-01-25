@@ -608,7 +608,7 @@ function UserCard({
       {/* Follow button (outside link to prevent navigation) */}
       {currentUserId && currentUserId !== user.id && (
         <div className="absolute top-20 right-4" onClick={(e) => e.stopPropagation()}>
-          <FollowButton userId={user.id} size="sm" />
+          <FollowButton userId={user.id} />
         </div>
       )}
     </motion.div>
