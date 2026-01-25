@@ -49,7 +49,7 @@ interface Stats {
 export default function MyGalleryPage() {
   const router = useRouter()
   const { user, isAuthenticated, isLoading: authLoading } = useAuth()
-  const [miniatures, setMiniatures] = useState<(Miniature & { profiles?: Profile; likes_count?: number })[]>([])
+  const [miniatures, setMiniatures] = useState<(Miniature & { profiles?: Profile; likes_count?: number; comments_count?: number })[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [stats, setStats] = useState<Stats>({ totalMiniatures: 0, totalLikes: 0, totalViews: 0 })
@@ -85,13 +85,19 @@ export default function MyGalleryPage() {
 
     if (error) {
       console.error('Error fetching miniatures:', error)
-    } else {
+    } else if (data) {
       // Transform the aggregated counts into simple numbers
-      const withStats = (data || []).map((m: Record<string, unknown>) => ({
-        ...m,
-        likes_count: (m.miniature_likes as { count: number }[])?.[0]?.count || 0,
-        comments_count: (m.miniature_comments as { count: number }[])?.[0]?.count || 0,
-      }))
+      const withStats = data.map((m) => {
+        const miniature = m as Miniature & {
+          miniature_likes?: { count: number }[]
+          miniature_comments?: { count: number }[]
+        }
+        return {
+          ...miniature,
+          likes_count: miniature.miniature_likes?.[0]?.count || 0,
+          comments_count: miniature.miniature_comments?.[0]?.count || 0,
+        }
+      })
       setMiniatures(withStats)
 
       // Calculate total stats from real data
