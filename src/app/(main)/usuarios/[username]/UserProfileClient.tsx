@@ -127,15 +127,25 @@ export function UserProfileClient({ data }: UserProfileClientProps) {
     if (!error && data) {
       const miniatures = data
         .map((item) => item.miniature)
-        .filter((m): m is Record<string, unknown> => m !== null)
-        .map((m) => ({
-          id: m.id as string,
-          title: m.title as string,
-          thumbnail_url: m.thumbnail_url as string | null,
-          images: m.images as string[],
-          likes_count: (m.miniature_likes as { count: number }[])?.[0]?.count || 0,
-          comments_count: (m.miniature_comments as { count: number }[])?.[0]?.count || 0,
-        }))
+        .filter((m) => m !== null)
+        .map((m) => {
+          const mini = m as {
+            id: string
+            title: string
+            thumbnail_url: string | null
+            images: string[]
+            miniature_likes: { count: number }[]
+            miniature_comments: { count: number }[]
+          }
+          return {
+            id: mini.id,
+            title: mini.title,
+            thumbnail_url: mini.thumbnail_url,
+            images: mini.images,
+            likes_count: mini.miniature_likes?.[0]?.count || 0,
+            comments_count: mini.miniature_comments?.[0]?.count || 0,
+          }
+        })
       setLikedMiniatures(miniatures)
     }
 
