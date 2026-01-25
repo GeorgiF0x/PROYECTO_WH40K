@@ -530,11 +530,11 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                       layout
                       className="relative aspect-square rounded-xl overflow-hidden group cursor-move"
                       draggable
-                      onDragStart={(e) => {
+                      onDragStart={(e: React.DragEvent) => {
                         e.dataTransfer.setData('text/plain', index.toString())
                       }}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e) => {
+                      onDragOver={(e: React.DragEvent) => e.preventDefault()}
+                      onDrop={(e: React.DragEvent) => {
                         e.preventDefault()
                         const from = parseInt(e.dataTransfer.getData('text/plain'))
                         if (from !== index) {
