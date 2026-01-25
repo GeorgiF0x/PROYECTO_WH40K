@@ -85,12 +85,18 @@ export function ProfileTabs({ userId, isOwnProfile = false }: ProfileTabsProps) 
     if (!error && data) {
       const miniatures = data
         .map((item) => item.miniature)
-        .filter((m): m is Record<string, unknown> => m !== null)
-        .map((m) => ({
-          ...m,
-          likes_count: (m.miniature_likes as { count: number }[])?.[0]?.count || 0,
-          comments_count: (m.miniature_comments as { count: number }[])?.[0]?.count || 0,
-        })) as MiniatureWithStats[]
+        .filter((m) => m !== null)
+        .map((m) => {
+          const mini = m as MiniatureWithStats & {
+            miniature_likes?: { count: number }[]
+            miniature_comments?: { count: number }[]
+          }
+          return {
+            ...mini,
+            likes_count: mini.miniature_likes?.[0]?.count || 0,
+            comments_count: mini.miniature_comments?.[0]?.count || 0,
+          }
+        })
       setLikedMiniatures(miniatures)
     }
 
