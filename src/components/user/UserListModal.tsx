@@ -117,7 +117,7 @@ export function UserListModal({ isOpen, onClose, title, userId, type }: UserList
               >
                 <UserCard user={user} className="flex-1 border-0 p-0 bg-transparent" />
                 {currentUser && currentUser.id !== user.id && (
-                  <FollowButton userId={user.id} size="sm" />
+                  <FollowButton userId={user.id} />
                 )}
               </motion.div>
             ))}
