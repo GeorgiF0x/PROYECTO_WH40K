@@ -522,19 +522,15 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-4">
                 <AnimatePresence>
                   {images.map((img, index) => (
-                    <motion.div
+                    <div
                       key={img.isNew ? img.id : img.url}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      layout
                       className="relative aspect-square rounded-xl overflow-hidden group cursor-move"
                       draggable
-                      onDragStart={(e: React.DragEvent) => {
+                      onDragStart={(e) => {
                         e.dataTransfer.setData('text/plain', index.toString())
                       }}
-                      onDragOver={(e: React.DragEvent) => e.preventDefault()}
-                      onDrop={(e: React.DragEvent) => {
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => {
                         e.preventDefault()
                         const from = parseInt(e.dataTransfer.getData('text/plain'))
                         if (from !== index) {
@@ -595,7 +591,7 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                           Principal
                         </div>
                       )}
-                    </motion.div>
+                    </div>
                   ))}
                 </AnimatePresence>
 
