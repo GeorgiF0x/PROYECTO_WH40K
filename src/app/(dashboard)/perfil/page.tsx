@@ -824,7 +824,7 @@ export default function EditProfilePage() {
 interface AccordionSectionProps {
   id: string
   title: string
-  icon: React.ElementType
+  icon: React.ComponentType<{ className?: string }>
   isExpanded: boolean
   onToggle: () => void
   status: 'complete' | 'incomplete'
