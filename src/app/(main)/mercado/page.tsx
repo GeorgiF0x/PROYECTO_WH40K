@@ -10,6 +10,7 @@ interface SearchParams {
   sort?: string
   condition?: string
   type?: string
+  category?: string
   location?: string
   q?: string
   cursor?: string
@@ -21,7 +22,7 @@ async function getListings(searchParams: SearchParams): Promise<{
 }> {
   const supabase = await createClient()
 
-  const { sort = 'recent', condition, type, location, q, cursor } = searchParams
+  const { sort = 'recent', condition, type, category, location, q, cursor } = searchParams
 
   let query = supabase
     .from('listings')
@@ -42,6 +43,9 @@ async function getListings(searchParams: SearchParams): Promise<{
   }
   if (type && type !== 'all') {
     query = query.eq('listing_type', type as 'sale' | 'trade' | 'both')
+  }
+  if (category && category !== 'all') {
+    query = query.eq('category', category)
   }
   if (location) {
     query = query.ilike('location', `%${location}%`)
@@ -87,9 +91,27 @@ async function getListings(searchParams: SearchParams): Promise<{
     return { listings: [], nextCursor: null }
   }
 
-  const listings = data || []
+  const listings = (data || []) as ListingWithSeller[]
   const hasMore = listings.length > 24
   const returnListings = hasMore ? listings.slice(0, 24) : listings
+
+  // Check which listings are favorited by the current user
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user && returnListings.length > 0) {
+    const listingIds = returnListings.map((l) => l.id)
+    const { data: favorites } = await supabase
+      .from('listing_favorites')
+      .select('listing_id')
+      .eq('user_id', user.id)
+      .in('listing_id', listingIds)
+
+    if (favorites) {
+      const favoritedIds = new Set(favorites.map((f) => f.listing_id))
+      returnListings.forEach((listing) => {
+        listing.is_favorited = favoritedIds.has(listing.id)
+      })
+    }
+  }
 
   // Generate next cursor from last item
   let nextCursor: string | null = null
@@ -126,6 +148,7 @@ export default async function MarketplacePage({
               initialSort={params.sort}
               initialCondition={params.condition}
               initialType={params.type}
+              initialCategory={params.category}
               initialLocation={params.location}
               initialSearch={params.q}
             />

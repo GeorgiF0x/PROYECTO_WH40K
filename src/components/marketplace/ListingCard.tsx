@@ -1,11 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Heart, MapPin, Tag, Eye, MessageCircle, Package } from 'lucide-react'
+import {
+  Heart,
+  MapPin,
+  Tag,
+  Eye,
+  MessageCircle,
+  Package,
+  Swords,
+  BookOpen,
+  BookMarked,
+  Paintbrush,
+  Wrench,
+  Mountain,
+  Dice5,
+} from 'lucide-react'
+import type { ListingCategory } from '@/lib/types/database.types'
 import { Avatar } from '@/components/ui'
+import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/lib/hooks/useAuth'
 import type { Listing, Profile } from '@/lib/types/database.types'
 
 export type ListingWithSeller = Listing & {
@@ -37,20 +54,49 @@ const typeLabels: Record<string, string> = {
   both: 'Venta/Intercambio',
 }
 
+const categoryConfig: Record<string, { label: string; icon: typeof Swords }> = {
+  miniatures: { label: 'Miniaturas', icon: Swords },
+  novels: { label: 'Novelas', icon: BookOpen },
+  codex: { label: 'Codex', icon: BookMarked },
+  paints: { label: 'Pinturas', icon: Paintbrush },
+  tools: { label: 'Herramientas', icon: Wrench },
+  terrain: { label: 'Terreno', icon: Mountain },
+  accessories: { label: 'Accesorios', icon: Dice5 },
+  other: { label: 'Otros', icon: Package },
+}
+
 export default function ListingCard({ listing, index = 0 }: ListingCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [isFavorited, setIsFavorited] = useState(listing.is_favorited || false)
+  const { user } = useAuth()
+  const supabase = createClient()
 
   const thumbnailUrl = listing.images?.[0] || '/placeholder-miniature.jpg'
   const condition = conditionLabels[listing.condition] || conditionLabels.assembled
 
-  const handleFavorite = (e: React.MouseEvent) => {
+  const handleFavorite = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setIsFavorited(!isFavorited)
-    // TODO: Implementar llamada a Supabase
-  }
+    if (!user) return
+
+    const newFavorited = !isFavorited
+    setIsFavorited(newFavorited) // Optimistic update
+
+    if (newFavorited) {
+      const { error } = await supabase
+        .from('listing_favorites')
+        .insert({ listing_id: listing.id, user_id: user.id })
+      if (error) setIsFavorited(false) // Rollback
+    } else {
+      const { error } = await supabase
+        .from('listing_favorites')
+        .delete()
+        .eq('listing_id', listing.id)
+        .eq('user_id', user.id)
+      if (error) setIsFavorited(true) // Rollback
+    }
+  }, [user, isFavorited, supabase, listing.id])
 
   return (
     <motion.div
@@ -153,6 +199,18 @@ export default function ListingCard({ listing, index = 0 }: ListingCardProps) {
               <h3 className="font-display font-bold text-bone text-lg leading-tight line-clamp-1 group-hover:text-imperial-gold transition-colors duration-300">
                 {listing.title}
               </h3>
+
+              {/* Category badge */}
+              {listing.category && listing.category !== 'miniatures' && (() => {
+                const cat = categoryConfig[listing.category] || categoryConfig.other
+                const CatIcon = cat.icon
+                return (
+                  <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-xs font-body text-imperial-gold/70 bg-imperial-gold/10 border border-imperial-gold/20 rounded-md w-fit">
+                    <CatIcon className="w-3 h-3" />
+                    {cat.label}
+                  </span>
+                )
+              })()}
 
               {/* Description preview */}
               <p className="mt-1 text-sm text-bone/50 line-clamp-2 font-body">

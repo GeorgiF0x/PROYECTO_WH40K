@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Lock, AlertTriangle, Loader2 } from 'lucide-react'
 import { useAuth } from '@/lib/hooks/useAuth'
+import BootSequence from '@/components/auth/BootSequence'
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -46,6 +47,7 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [focusedField, setFocusedField] = useState<string | null>(null)
+  const [showBoot, setShowBoot] = useState(false)
 
   const {
     register,
@@ -69,7 +71,7 @@ function LoginForm() {
       )
       setIsLoading(false)
     } else {
-      router.push(redirect)
+      setShowBoot(true)
     }
   }
 
@@ -84,9 +86,16 @@ function LoginForm() {
       setError(error.message)
       setIsLoading(false)
     }
+    // OAuth redirects externally — no boot sequence needed here
   }
 
   return (
+    <>
+      <AnimatePresence>
+        {showBoot && (
+          <BootSequence onComplete={() => router.push(redirect)} />
+        )}
+      </AnimatePresence>
     <motion.div
       variants={containerVariants}
       initial="hidden"
@@ -346,6 +355,7 @@ function LoginForm() {
         </div>
       </div>
     </motion.div>
+    </>
   )
 }
 

@@ -20,7 +20,10 @@ export async function GET(request: Request) {
     })
 
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+      // Redirect through the boot sequence animation page
+      const bootUrl = new URL(`${origin}/auth/boot`)
+      bootUrl.searchParams.set('next', next)
+      return NextResponse.redirect(bootUrl.toString())
     }
 
     // Redirect with error details for debugging

@@ -166,6 +166,7 @@ export interface Database {
           thumbnail_url: string | null
           faction_id: string | null
           embedding: string | null
+          view_count: number
           created_at: string
           updated_at: string
         }
@@ -178,6 +179,7 @@ export interface Database {
           thumbnail_url?: string | null
           faction_id?: string | null
           embedding?: string | null
+          view_count?: number
           created_at?: string
           updated_at?: string
         }
@@ -190,6 +192,7 @@ export interface Database {
           thumbnail_url?: string | null
           faction_id?: string | null
           embedding?: string | null
+          view_count?: number
           created_at?: string
           updated_at?: string
         }
@@ -443,6 +446,7 @@ export interface Database {
           condition: 'nib' | 'nos' | 'assembled' | 'painted' | 'pro_painted'
           listing_type: 'sale' | 'trade' | 'both'
           status: 'active' | 'reserved' | 'sold' | 'inactive'
+          category: ListingCategory
           images: string[]
           location: string | null
           latitude: number | null
@@ -462,6 +466,7 @@ export interface Database {
           condition: 'nib' | 'nos' | 'assembled' | 'painted' | 'pro_painted'
           listing_type?: 'sale' | 'trade' | 'both'
           status?: 'active' | 'reserved' | 'sold' | 'inactive'
+          category?: ListingCategory
           images?: string[]
           location?: string | null
           latitude?: number | null
@@ -481,6 +486,7 @@ export interface Database {
           condition?: 'nib' | 'nos' | 'assembled' | 'painted' | 'pro_painted'
           listing_type?: 'sale' | 'trade' | 'both'
           status?: 'active' | 'reserved' | 'sold' | 'inactive'
+          category?: ListingCategory
           images?: string[]
           location?: string | null
           latitude?: number | null
@@ -817,6 +823,7 @@ export interface Database {
     }
     Enums: {
       article_category: 'warhammer_40k' | 'age_of_sigmar' | 'painting' | 'tournaments' | 'news'
+      listing_category: ListingCategory
       listing_condition: 'nib' | 'nos' | 'assembled' | 'painted' | 'pro_painted'
       listing_status: 'active' | 'reserved' | 'sold' | 'inactive'
       listing_type: 'sale' | 'trade' | 'both'
@@ -834,6 +841,17 @@ export interface Database {
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
 export type Insertable<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert']
 export type Updatable<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update']
+
+// Listing category enum
+export type ListingCategory =
+  | 'miniatures'
+  | 'novels'
+  | 'codex'
+  | 'paints'
+  | 'tools'
+  | 'terrain'
+  | 'accessories'
+  | 'other'
 
 // Commonly used types
 export type Profile = Tables<'profiles'>

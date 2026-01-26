@@ -21,7 +21,7 @@ interface FactionSelectorProps {
 }
 
 // Category tabs with icons
-const CATEGORIES = [
+export const CATEGORIES = [
   { id: 'all', label: 'Todas', icon: null },
   { id: 'marines', label: 'Marines', icon: '/icons/Imperium/Adeptus Astartes [Imperium, Space Marines].svg' },
   { id: 'chaos', label: 'Caos', icon: '/icons/Chaos/chaos-star-01.svg' },
@@ -34,7 +34,7 @@ const CATEGORIES = [
 ]
 
 // Mapping slugs to categories
-const SLUG_TO_CATEGORY: Record<string, string> = {
+export const SLUG_TO_CATEGORY: Record<string, string> = {
   // Marines
   'ultramarines': 'marines', 'blood-angels': 'marines', 'dark-angels': 'marines',
   'space-wolves': 'marines', 'imperial-fists': 'marines', 'salamanders': 'marines',
@@ -196,10 +196,10 @@ export const FACTION_ICONS: Record<string, string> = {
   'tau-empire': '/icons/Xenos/Tau/tau.svg',
   // Septs con icono propio
   'tau-sept': '/icons/Xenos/Tau/T_au [T_au_va, Greater Good, T_au Empire, Sept].svg',
-  'viorla-sept': "/icons/Xenos/Tau/Vior'la [T_au_va, Greater Good, T_au Empire, Sept].svg",
-  'sacea-sept': "/icons/Xenos/Tau/Sa'cea [T_au_va, Greater Good, T_au Empire, Sept].svg",
+  'viorla-sept': '/icons/Xenos/Tau/Viorla [T_au_va, Greater Good, T_au Empire, Sept].svg',
+  'sacea-sept': '/icons/Xenos/Tau/Sacea [T_au_va, Greater Good, T_au Empire, Sept].svg',
   'farsight-enclaves': '/icons/Xenos/Tau/Farsight Enclaves [T_au_va, Greater Good, T_au, Renegades].svg',
-  'borkan-sept': "/icons/Xenos/Tau/Bork'an [T_au_va, Greater Good, T_au Empire, Sept].svg",
+  'borkan-sept': '/icons/Xenos/Tau/Borkan [T_au_va, Greater Good, T_au Empire, Sept].svg',
   'dalyth-sept': '/icons/Xenos/Tau/dalyth.svg',
 }
 

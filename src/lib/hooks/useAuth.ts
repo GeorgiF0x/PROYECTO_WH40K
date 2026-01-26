@@ -14,18 +14,14 @@ export function useAuth() {
   // Get supabase client (singleton)
   const supabase = createClient()
 
-  // Fetch or create profile with timeout
-  const fetchProfile = useCallback(async (userId: string, userEmail?: string, metadata?: Record<string, unknown>) => {
-    console.log('[useAuth] Fetching profile for:', userId)
-    console.log('[useAuth] Supabase client URL:', (supabase as unknown as { supabaseUrl?: string }).supabaseUrl || 'hidden')
-
+  // Fetch or create profile — resolves to null on timeout (never throws)
+  const fetchProfile = useCallback(async (userId: string, userEmail?: string, metadata?: Record<string, unknown>): Promise<Profile | null> => {
     try {
-      console.log('[useAuth] Starting Supabase query...')
-
-      // Wrap in Promise.race with timeout
-      const timeoutPromise = new Promise<never>((_, reject) => {
+      // Race query against a 10s timeout that resolves to null
+      const timeoutPromise = new Promise<{ data: null; error: null }>((resolve) => {
         setTimeout(() => {
-          reject(new Error('Profile fetch TIMEOUT after 10 seconds - check network/RLS'))
+          console.warn('[useAuth] Profile fetch timed out — continuing without profile')
+          resolve({ data: null, error: null })
         }, 10000)
       })
 
@@ -40,21 +36,12 @@ export function useAuth() {
         timeoutPromise
       ])
 
-      console.log('[useAuth] Profile fetch result:', {
-        found: !!existingProfile,
-        error: fetchError?.message,
-        code: fetchError?.code,
-        profile: existingProfile ? { username: existingProfile.username, id: existingProfile.id } : null
-      })
-
       if (existingProfile) {
-        console.log('[useAuth] Returning existing profile:', existingProfile.username)
         return existingProfile
       }
 
       // Profile doesn't exist, create it
       if (fetchError?.code === 'PGRST116') {
-        console.log('[useAuth] Creating new profile...')
         const email = userEmail || ''
         const baseUsername = email.split('@')[0]
           .toLowerCase()
@@ -78,7 +65,6 @@ export function useAuth() {
           return null
         }
 
-        console.log('[useAuth] Profile created:', newProfile?.username)
         return newProfile
       }
 
@@ -93,16 +79,8 @@ export function useAuth() {
     let mounted = true
 
     const initAuth = async () => {
-      console.log('[useAuth] Initializing auth...')
-
       try {
-        const { data: { session }, error } = await supabase.auth.getSession()
-
-        console.log('[useAuth] getSession result:', {
-          hasSession: !!session,
-          error: error?.message,
-          email: session?.user?.email
-        })
+        const { data: { session } } = await supabase.auth.getSession()
 
         if (!mounted) return
 
@@ -110,19 +88,19 @@ export function useAuth() {
           setSession(session)
           setUser(session.user)
 
-          const profile = await fetchProfile(
+          // Fetch profile but don't block isLoading on it
+          fetchProfile(
             session.user.id,
             session.user.email,
             session.user.user_metadata
-          )
-          console.log('[useAuth] initAuth: Setting profile state:', profile?.username || 'null')
-          if (mounted) setProfile(profile)
+          ).then((profile) => {
+            if (mounted && profile) setProfile(profile)
+          })
         }
       } catch (error) {
         console.error('[useAuth] Init error:', error)
       } finally {
         if (mounted) {
-          console.log('[useAuth] initAuth complete, setting isLoading to false')
           setIsLoading(false)
         }
       }
@@ -130,25 +108,16 @@ export function useAuth() {
 
     initAuth()
 
-    // Listen for auth changes - but skip INITIAL_SESSION since initAuth handles it
+    // Listen for auth changes - skip INITIAL_SESSION since initAuth handles it
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('[useAuth] Auth state changed:', event, session?.user?.email)
-
-        // Skip INITIAL_SESSION - initAuth already handles the initial load
-        // This prevents race conditions where both try to fetch profile
-        if (event === 'INITIAL_SESSION') {
-          console.log('[useAuth] Skipping INITIAL_SESSION (handled by initAuth)')
-          return
-        }
-
+        if (event === 'INITIAL_SESSION') return
         if (!mounted) return
 
         setSession(session)
         setUser(session?.user ?? null)
 
         if (event === 'SIGNED_OUT') {
-          console.log('[useAuth] User signed out, clearing profile')
           setProfile(null)
           setIsLoading(false)
           return
@@ -160,11 +129,9 @@ export function useAuth() {
             session.user.email,
             session.user.user_metadata
           )
-          console.log('[useAuth] onAuthStateChange: Setting profile state:', profile?.username || 'null')
           if (mounted && profile) setProfile(profile)
         }
 
-        console.log('[useAuth] onAuthStateChange complete')
         setIsLoading(false)
       }
     )
@@ -190,12 +157,10 @@ export function useAuth() {
   }
 
   const signInWithGoogle = async () => {
-    console.log('[useAuth] Starting Google sign in...')
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     })
-    console.log('[useAuth] Google sign in result:', { data, error: error?.message })
     return { data, error }
   }
 
@@ -208,14 +173,12 @@ export function useAuth() {
   }
 
   const signOut = async () => {
-    console.log('[useAuth] Signing out...')
     const { error } = await supabase.auth.signOut()
     if (!error) {
       setUser(null)
       setProfile(null)
       setSession(null)
     }
-    console.log('[useAuth] Sign out result:', { error: error?.message })
     return { error }
   }
 

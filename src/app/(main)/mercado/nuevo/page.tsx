@@ -18,7 +18,15 @@ import {
   ImagePlus,
   AlertCircle,
   Check,
+  Swords,
+  BookOpen,
+  BookMarked,
+  Paintbrush,
+  Wrench,
+  Mountain,
+  Dice5,
 } from 'lucide-react'
+import type { ListingCategory } from '@/lib/types/database.types'
 
 type ListingCondition = 'nib' | 'nos' | 'assembled' | 'painted' | 'pro_painted'
 type ListingType = 'sale' | 'trade' | 'both'
@@ -37,6 +45,17 @@ const typeOptions: { value: ListingType; label: string; icon: typeof Tag }[] = [
   { value: 'both', label: 'Ambos', icon: Package },
 ]
 
+const categoryOptions: { value: ListingCategory; label: string; icon: typeof Swords }[] = [
+  { value: 'miniatures', label: 'Miniaturas', icon: Swords },
+  { value: 'novels', label: 'Novelas', icon: BookOpen },
+  { value: 'codex', label: 'Codex / Reglas', icon: BookMarked },
+  { value: 'paints', label: 'Pinturas', icon: Paintbrush },
+  { value: 'tools', label: 'Herramientas', icon: Wrench },
+  { value: 'terrain', label: 'Terreno', icon: Mountain },
+  { value: 'accessories', label: 'Accesorios', icon: Dice5 },
+  { value: 'other', label: 'Otros', icon: Package },
+]
+
 export default function NewListingPage() {
   const router = useRouter()
   const supabase = createClient()
@@ -52,6 +71,7 @@ export default function NewListingPage() {
   const [price, setPrice] = useState('')
   const [condition, setCondition] = useState<ListingCondition>('assembled')
   const [listingType, setListingType] = useState<ListingType>('sale')
+  const [category, setCategory] = useState<ListingCategory>('miniatures')
   const [location, setLocation] = useState('')
   const [images, setImages] = useState<File[]>([])
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([])
@@ -138,6 +158,7 @@ export default function NewListingPage() {
           price: parseFloat(price),
           condition,
           listing_type: listingType,
+          category,
           location: location.trim() || null,
           images: uploadedUrls,
           status: 'active',
@@ -345,6 +366,42 @@ export default function NewListingPage() {
               <span className="text-xs text-bone/40 mt-1 block">
                 Pon 0 si solo aceptas intercambio
               </span>
+            </div>
+          </div>
+
+          {/* Category */}
+          <div className="p-6 bg-void-light rounded-2xl border border-bone/10">
+            <h2 className="text-lg font-display font-semibold text-bone mb-4 flex items-center gap-2">
+              <Swords className="w-5 h-5 text-imperial-gold" />
+              Categoria de producto
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {categoryOptions.map((option) => {
+                const CatIcon = option.icon
+                return (
+                  <motion.button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setCategory(option.value)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border text-center transition-colors ${
+                      category === option.value
+                        ? 'bg-imperial-gold/20 border-imperial-gold/50'
+                        : 'bg-void border-bone/10 hover:border-bone/30'
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <CatIcon className={`w-6 h-6 ${
+                      category === option.value ? 'text-imperial-gold' : 'text-bone/60'
+                    }`} />
+                    <span className={`text-sm font-body ${
+                      category === option.value ? 'text-imperial-gold font-semibold' : 'text-bone/70'
+                    }`}>
+                      {option.label}
+                    </span>
+                  </motion.button>
+                )
+              })}
             </div>
           </div>
 

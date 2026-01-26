@@ -50,6 +50,7 @@ const config: Config = {
         'gradient': 'gradient 8s ease infinite',
         'fadeIn': 'fadeIn 0.5s ease-out forwards',
         'spin-slow': 'spin 20s linear infinite',
+        'holo-flicker': 'holoFlicker 4s ease-in-out infinite',
       },
       keyframes: {
         float: {
@@ -71,6 +72,12 @@ const config: Config = {
         fadeIn: {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        holoFlicker: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.97' },
+          '76%': { opacity: '0.95' },
+          '77%': { opacity: '1' },
         },
       },
       backgroundImage: {

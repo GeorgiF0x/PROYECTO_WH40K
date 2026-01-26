@@ -52,6 +52,12 @@ https://grimdarklegion.com
 ## Repositorio
 https://github.com/GeorgiF0x/PROYECTO_WH40K.git
 
+## Workaround Windows (Claude Code)
+- `npm run dev` / `npx` no producen output en Windows (bug #19294)
+- Usar siempre: `node node_modules/next/dist/bin/next dev --turbopack`
+- Para build: `node node_modules/next/dist/bin/next build`
+- Para tsc: `npx tsc --noEmit` sí funciona
+
 ## Próxima Sesión
 1. Rediseñar concepto de "Mercado" → Directorio de tiendas locales
 2. Continuar con likes/comentarios en galería

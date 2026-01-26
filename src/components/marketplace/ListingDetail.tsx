@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -21,7 +21,16 @@ import {
   RefreshCw,
   Tag,
   ExternalLink,
+  Swords,
+  BookOpen,
+  BookMarked,
+  Paintbrush,
+  Wrench,
+  Mountain,
+  Dice5,
 } from 'lucide-react'
+import { useAuth } from '@/lib/hooks/useAuth'
+import { getOrCreateConversation, sendMessage } from '@/lib/services/messages'
 import type { ListingWithSeller } from './ListingCard'
 
 const conditionLabels: Record<string, { label: string; description: string }> = {
@@ -38,15 +47,69 @@ const typeLabels: Record<string, { label: string; icon: typeof Tag }> = {
   both: { label: 'Venta o intercambio', icon: Package },
 }
 
+const categoryLabels: Record<string, { label: string; icon: typeof Swords }> = {
+  miniatures: { label: 'Miniaturas', icon: Swords },
+  novels: { label: 'Novelas', icon: BookOpen },
+  codex: { label: 'Codex / Reglas', icon: BookMarked },
+  paints: { label: 'Pinturas', icon: Paintbrush },
+  tools: { label: 'Herramientas', icon: Wrench },
+  terrain: { label: 'Terreno', icon: Mountain },
+  accessories: { label: 'Accesorios', icon: Dice5 },
+  other: { label: 'Otros', icon: Package },
+}
+
 interface ListingDetailProps {
   listing: ListingWithSeller
 }
 
 export default function ListingDetail({ listing }: ListingDetailProps) {
   const router = useRouter()
+  const { user } = useAuth()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isFavorited, setIsFavorited] = useState(false)
   const [showContactModal, setShowContactModal] = useState(false)
+  const [contactMessage, setContactMessage] = useState('')
+  const [isSending, setIsSending] = useState(false)
+  const [contactError, setContactError] = useState<string | null>(null)
+
+  const handleOpenContact = useCallback(() => {
+    if (!user) {
+      router.push('/login?redirect=' + encodeURIComponent(`/mercado/${listing.id}`))
+      return
+    }
+    if (user.id === listing.seller_id) {
+      setContactError('No puedes contactarte con tu propio anuncio')
+      return
+    }
+    setContactError(null)
+    setShowContactModal(true)
+  }, [user, listing.seller_id, listing.id, router])
+
+  const handleSendMessage = useCallback(async () => {
+    if (!user || !contactMessage.trim()) return
+    setIsSending(true)
+    setContactError(null)
+
+    try {
+      const { conversationId, error: convError } = await getOrCreateConversation(
+        listing.id,
+        user.id,
+        listing.seller_id
+      )
+      if (convError || !conversationId) throw convError || new Error('Error al crear conversacion')
+
+      const { error: msgError } = await sendMessage(conversationId, user.id, contactMessage.trim())
+      if (msgError) throw msgError
+
+      setShowContactModal(false)
+      setContactMessage('')
+      router.push(`/mensajes/${conversationId}`)
+    } catch {
+      setContactError('Error al enviar el mensaje. Intentalo de nuevo.')
+    } finally {
+      setIsSending(false)
+    }
+  }, [user, contactMessage, listing.id, listing.seller_id, router])
 
   const handlePrevImage = () => {
     if (listing?.images) {
@@ -231,6 +294,16 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
               <Package className="w-4 h-4" />
               {condition.label}
             </span>
+            {listing.category && (() => {
+              const cat = categoryLabels[listing.category] || categoryLabels.miniatures
+              const CatIcon = cat.icon
+              return (
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-void-light border border-bone/10 rounded-lg text-bone/80 font-body">
+                  <CatIcon className="w-4 h-4" />
+                  {cat.label}
+                </span>
+              )
+            })()}
           </div>
 
           {/* Description */}
@@ -300,9 +373,14 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
             </div>
           </div>
 
+          {/* Contact Error */}
+          {contactError && !showContactModal && (
+            <p className="text-sm text-red-400 text-center font-body">{contactError}</p>
+          )}
+
           {/* Contact Button */}
           <motion.button
-            onClick={() => setShowContactModal(true)}
+            onClick={handleOpenContact}
             className="w-full py-4 bg-gradient-to-r from-imperial-gold to-yellow-500 text-void font-display font-bold text-lg rounded-xl"
             whileHover={{
               scale: 1.02,
@@ -349,17 +427,26 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
               <textarea
                 placeholder="Escribe tu mensaje..."
                 rows={4}
+                value={contactMessage}
+                onChange={(e) => setContactMessage(e.target.value)}
                 className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 resize-none mb-4"
               />
+              {contactError && (
+                <p className="text-sm text-red-400 font-body mb-4">{contactError}</p>
+              )}
               <div className="flex gap-3">
                 <button
-                  onClick={() => setShowContactModal(false)}
+                  onClick={() => { setShowContactModal(false); setContactError(null) }}
                   className="flex-1 py-3 bg-void border border-bone/10 text-bone/60 font-display font-semibold rounded-xl hover:border-bone/30 transition-colors"
                 >
                   Cancelar
                 </button>
-                <button className="flex-1 py-3 bg-imperial-gold text-void font-display font-bold rounded-xl">
-                  Enviar mensaje
+                <button
+                  onClick={handleSendMessage}
+                  disabled={isSending || !contactMessage.trim()}
+                  className="flex-1 py-3 bg-imperial-gold text-void font-display font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSending ? 'Enviando...' : 'Enviar mensaje'}
                 </button>
               </div>
             </motion.div>

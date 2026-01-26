@@ -78,7 +78,7 @@ export async function isFollowing(followerId: string, followingId: string) {
     .select('id')
     .eq('follower_id', followerId)
     .eq('following_id', followingId)
-    .single()
+    .maybeSingle()
 
   return { isFollowing: !!data && !error, error }
 }

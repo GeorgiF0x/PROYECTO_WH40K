@@ -1,10 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 import { MiniatureGrid, type MiniatureWithStats } from '@/components/gallery'
 import { createClient } from '@/lib/supabase/client'
-import { Search, Filter, SlidersHorizontal, Grid3X3, LayoutGrid, Sparkles, TrendingUp, Clock, Flame } from 'lucide-react'
+import { FACTION_ICONS, CATEGORIES, SLUG_TO_CATEGORY } from '@/components/user'
+import type { Faction } from '@/components/user'
+import { Search, SlidersHorizontal, Grid3X3, LayoutGrid, Sparkles, TrendingUp, Clock, Flame } from 'lucide-react'
 
 type SortOption = 'recent' | 'popular' | 'trending'
 type ViewMode = 'grid' | 'masonry'
@@ -15,6 +18,9 @@ const sortOptions = [
   { value: 'trending', label: 'Tendencia', icon: Flame },
 ] as const
 
+// Filter categories (skip 'all' since we handle it separately)
+const FILTER_CATEGORIES = CATEGORIES.filter((c) => c.id !== 'all')
+
 export default function GalleryPage() {
   const [miniatures, setMiniatures] = useState<MiniatureWithStats[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -23,8 +29,36 @@ export default function GalleryPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [showFilters, setShowFilters] = useState(false)
   const [selectedFaction, setSelectedFaction] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+
+  // Faction data from DB
+  const [factions, setFactions] = useState<Faction[]>([])
+  const [factionsLoading, setFactionsLoading] = useState(true)
 
   const supabase = createClient()
+
+  // Fetch factions from DB
+  useEffect(() => {
+    const fetchFactions = async () => {
+      const { data, error } = await supabase
+        .from('tags')
+        .select('id, name, slug, primary_color, secondary_color')
+        .eq('category', 'faction')
+        .order('name')
+
+      if (!error && data) {
+        setFactions(data)
+      }
+      setFactionsLoading(false)
+    }
+    fetchFactions()
+  }, [])
+
+  // Factions filtered by selected category
+  const factionsInCategory = useMemo(() => {
+    if (!selectedCategory) return []
+    return factions.filter((f) => SLUG_TO_CATEGORY[f.slug] === selectedCategory)
+  }, [factions, selectedCategory])
 
   useEffect(() => {
     fetchMiniatures()
@@ -55,11 +89,9 @@ export default function GalleryPage() {
         query = query.order('created_at', { ascending: false })
         break
       case 'popular':
-        // In a real app, you'd join with likes count
         query = query.order('created_at', { ascending: false })
         break
       case 'trending':
-        // In a real app, you'd calculate trending score
         query = query.order('created_at', { ascending: false })
         break
     }
@@ -80,6 +112,22 @@ export default function GalleryPage() {
   const filteredMiniatures = miniatures.filter((m) =>
     m.title.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  // When selecting a category, clear the specific faction filter
+  const handleCategorySelect = (categoryId: string) => {
+    if (selectedCategory === categoryId) {
+      setSelectedCategory(null)
+      setSelectedFaction(null)
+    } else {
+      setSelectedCategory(categoryId)
+      setSelectedFaction(null)
+    }
+  }
+
+  // When selecting a specific faction
+  const handleFactionSelect = (factionId: string) => {
+    setSelectedFaction(selectedFaction === factionId ? null : factionId)
+  }
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -182,7 +230,7 @@ export default function GalleryPage() {
               <motion.button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center gap-2 px-4 py-3 rounded-xl font-body text-sm font-medium transition-all duration-300 ${
-                  showFilters
+                  showFilters || selectedFaction
                     ? 'bg-imperial-gold/20 border border-imperial-gold/50 text-imperial-gold'
                     : 'bg-void border border-bone/10 text-bone/60 hover:border-imperial-gold/30'
                 }`}
@@ -191,6 +239,9 @@ export default function GalleryPage() {
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 <span className="hidden sm:inline">Filtros</span>
+                {selectedFaction && (
+                  <span className="w-2 h-2 rounded-full bg-imperial-gold" />
+                )}
               </motion.button>
 
               {/* View Mode Toggle */}
@@ -229,33 +280,108 @@ export default function GalleryPage() {
                   className="overflow-hidden"
                 >
                   <div className="pt-4 mt-4 border-t border-bone/10">
-                    <div className="flex flex-wrap gap-4">
-                      {/* Faction Filter */}
-                      <div className="flex-1 min-w-[200px]">
-                        <label className="block text-sm text-bone/60 mb-2 font-body">
-                          Facción
-                        </label>
-                        <div className="flex flex-wrap gap-2">
-                          {['Imperium', 'Chaos', 'Xenos', 'Necrons'].map((faction) => (
-                            <motion.button
-                              key={faction}
-                              onClick={() => setSelectedFaction(
-                                selectedFaction === faction ? null : faction
-                              )}
-                              className={`px-3 py-1.5 rounded-lg text-sm font-body transition-colors ${
-                                selectedFaction === faction
-                                  ? 'bg-imperial-gold text-void'
-                                  : 'bg-void border border-bone/10 text-bone/60 hover:border-imperial-gold/30'
-                              }`}
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                            >
-                              {faction}
-                            </motion.button>
-                          ))}
-                        </div>
+                    {/* Category filter tabs */}
+                    <div className="mb-3">
+                      <label className="block text-sm text-bone/60 mb-2 font-body">
+                        Facción
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {FILTER_CATEGORIES.map((cat) => (
+                          <motion.button
+                            key={cat.id}
+                            onClick={() => handleCategorySelect(cat.id)}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-body transition-colors ${
+                              selectedCategory === cat.id
+                                ? 'bg-imperial-gold text-void'
+                                : 'bg-void border border-bone/10 text-bone/60 hover:border-imperial-gold/30'
+                            }`}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            {cat.icon && (
+                              <div className="w-4 h-4 relative">
+                                <Image
+                                  src={cat.icon}
+                                  alt={cat.label}
+                                  fill
+                                  className={selectedCategory === cat.id ? '' : 'opacity-60 invert'}
+                                />
+                              </div>
+                            )}
+                            {cat.label}
+                          </motion.button>
+                        ))}
+
+                        {/* Clear filter */}
+                        {(selectedCategory || selectedFaction) && (
+                          <motion.button
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            onClick={() => {
+                              setSelectedCategory(null)
+                              setSelectedFaction(null)
+                            }}
+                            className="px-3 py-1.5 rounded-lg text-sm font-body text-red-400 border border-red-400/30 hover:bg-red-400/10 transition-colors"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            Limpiar
+                          </motion.button>
+                        )}
                       </div>
                     </div>
+
+                    {/* Specific factions within selected category */}
+                    <AnimatePresence>
+                      {selectedCategory && factionsInCategory.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="flex flex-wrap gap-2 pt-2">
+                            {factionsInCategory.map((faction) => {
+                              const iconPath = FACTION_ICONS[faction.slug]
+                              const isSelected = selectedFaction === faction.id
+
+                              return (
+                                <motion.button
+                                  key={faction.id}
+                                  onClick={() => handleFactionSelect(faction.id)}
+                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body transition-colors ${
+                                    isSelected
+                                      ? 'border-imperial-gold text-imperial-gold'
+                                      : 'border-bone/10 text-bone/60 hover:border-bone/30 hover:text-bone'
+                                  } border`}
+                                  style={isSelected ? {
+                                    background: `linear-gradient(135deg, ${faction.primary_color}20, transparent)`,
+                                  } : {}}
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                >
+                                  {iconPath && (
+                                    <div
+                                      className="w-4 h-4 rounded flex items-center justify-center"
+                                      style={{ background: faction.primary_color || '#666' }}
+                                    >
+                                      <Image
+                                        src={iconPath}
+                                        alt={faction.name}
+                                        width={12}
+                                        height={12}
+                                        className="invert"
+                                      />
+                                    </div>
+                                  )}
+                                  {faction.name}
+                                </motion.button>
+                              )
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </motion.div>
               )}

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback, use } from 'react'
+import { useState, useEffect, useCallback, useMemo, use } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,6 +10,8 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { compressImage } from '@/lib/utils/compressImage'
+import { FACTION_ICONS, CATEGORIES, SLUG_TO_CATEGORY } from '@/components/user'
+import type { Faction } from '@/components/user'
 import {
   Save,
   X,
@@ -19,6 +22,7 @@ import {
   ArrowLeft,
   Trash2,
   GripVertical,
+  Search,
 } from 'lucide-react'
 import type { Miniature } from '@/lib/types/database.types'
 
@@ -48,14 +52,6 @@ interface NewImage {
 
 type ImageItem = ExistingImage | NewImage
 
-const factions = [
-  { id: 'imperium', name: 'Imperium of Man', color: '#C9A227' },
-  { id: 'chaos', name: 'Forces of Chaos', color: '#DC143C' },
-  { id: 'xenos', name: 'Xenos', color: '#00FF87' },
-  { id: 'necrons', name: 'Necrons', color: '#00FFFF' },
-  { id: 'other', name: 'Otros', color: '#888888' },
-]
-
 export default function EditMiniaturePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
@@ -69,6 +65,12 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+
+  // Faction state
+  const [factions, setFactions] = useState<Faction[]>([])
+  const [factionsLoading, setFactionsLoading] = useState(true)
+  const [activeCategory, setActiveCategory] = useState('all')
+  const [factionSearch, setFactionSearch] = useState('')
 
   const supabase = createClient()
 
@@ -84,6 +86,48 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
   })
 
   const selectedFaction = watch('faction_id')
+
+  // Fetch factions from DB
+  useEffect(() => {
+    const fetchFactions = async () => {
+      const { data, error } = await supabase
+        .from('tags')
+        .select('id, name, slug, primary_color, secondary_color')
+        .eq('category', 'faction')
+        .order('name')
+
+      if (!error && data) {
+        setFactions(data)
+      }
+      setFactionsLoading(false)
+    }
+    fetchFactions()
+  }, [])
+
+  // Filter factions by category and search
+  const filteredFactions = useMemo(() => {
+    let filtered = factions
+
+    if (activeCategory !== 'all') {
+      filtered = filtered.filter((f) => SLUG_TO_CATEGORY[f.slug] === activeCategory)
+    }
+
+    if (factionSearch) {
+      const query = factionSearch.toLowerCase()
+      filtered = filtered.filter((f) =>
+        f.name.toLowerCase().includes(query) ||
+        f.slug.toLowerCase().includes(query)
+      )
+    }
+
+    return filtered
+  }, [factions, activeCategory, factionSearch])
+
+  // Get selected faction details
+  const selectedFactionDetails = useMemo(() => {
+    if (!selectedFaction) return null
+    return factions.find((f) => f.id === selectedFaction) || null
+  }, [selectedFaction, factions])
 
   // Load miniature data
   useEffect(() => {
@@ -663,48 +707,190 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
             </div>
 
             {/* Faction Selection */}
-            <div>
+            <div className="bg-void-light/30 border border-bone/10 rounded-2xl p-6">
               <label className="block text-lg font-display font-semibold text-bone mb-4">
                 Faccion
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                {factions.map((faction) => (
-                  <motion.button
-                    key={faction.id}
-                    type="button"
-                    onClick={() =>
-                      setValue('faction_id', selectedFaction === faction.id ? undefined : faction.id)
-                    }
-                    className={`relative p-4 rounded-xl border transition-all ${
-                      selectedFaction === faction.id
-                        ? 'border-imperial-gold/50 bg-imperial-gold/10'
-                        : 'border-bone/10 bg-void-light hover:border-bone/30'
-                    }`}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div
-                      className="w-4 h-4 rounded-full mx-auto mb-2"
-                      style={{ backgroundColor: faction.color }}
-                    />
-                    <p className={`text-sm font-body ${
-                      selectedFaction === faction.id ? 'text-bone' : 'text-bone/60'
-                    }`}>
-                      {faction.name}
-                    </p>
 
-                    {selectedFaction === faction.id && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute top-2 right-2"
-                      >
-                        <Check className="w-4 h-4 text-imperial-gold" />
-                      </motion.div>
+              {/* Selected faction badge */}
+              {selectedFactionDetails && (
+                <motion.div
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-3 mb-4 p-3 rounded-xl border border-imperial-gold/30"
+                  style={{
+                    background: `linear-gradient(135deg, ${selectedFactionDetails.primary_color}20, ${selectedFactionDetails.secondary_color || selectedFactionDetails.primary_color}10)`,
+                  }}
+                >
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                    style={{
+                      background: `linear-gradient(135deg, ${selectedFactionDetails.primary_color || '#666'}, ${selectedFactionDetails.secondary_color || '#333'})`,
+                    }}
+                  >
+                    {FACTION_ICONS[selectedFactionDetails.slug] ? (
+                      <Image
+                        src={FACTION_ICONS[selectedFactionDetails.slug]}
+                        alt={selectedFactionDetails.name}
+                        width={20}
+                        height={20}
+                        className="invert"
+                      />
+                    ) : (
+                      <div className="w-4 h-4 rounded-full bg-white/30" />
                     )}
+                  </div>
+                  <span className="text-sm font-body text-imperial-gold font-medium flex-1">
+                    {selectedFactionDetails.name}
+                  </span>
+                  <motion.button
+                    type="button"
+                    onClick={() => setValue('faction_id', undefined)}
+                    className="p-1 text-bone/40 hover:text-bone transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <X className="w-4 h-4" />
+                  </motion.button>
+                </motion.div>
+              )}
+
+              {/* Category tabs */}
+              <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-none mb-3">
+                {CATEGORIES.map((cat) => (
+                  <motion.button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body whitespace-nowrap transition-all ${
+                      activeCategory === cat.id
+                        ? 'bg-imperial-gold text-void'
+                        : 'bg-void border border-bone/10 text-bone/60 hover:border-bone/30 hover:text-bone'
+                    }`}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {cat.icon && (
+                      <div className="w-4 h-4 relative">
+                        <Image
+                          src={cat.icon}
+                          alt={cat.label}
+                          fill
+                          className={activeCategory === cat.id ? '' : 'opacity-60 invert'}
+                        />
+                      </div>
+                    )}
+                    {cat.label}
                   </motion.button>
                 ))}
               </div>
+
+              {/* Faction search */}
+              <div className="relative mb-3">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/40" />
+                <input
+                  type="text"
+                  placeholder="Buscar faccion..."
+                  value={factionSearch}
+                  onChange={(e) => setFactionSearch(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 bg-void border border-bone/10 rounded-lg font-body text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50"
+                />
+              </div>
+
+              {/* Faction grid */}
+              {factionsLoading ? (
+                <div className="h-[200px] flex items-center justify-center">
+                  <motion.div
+                    className="w-6 h-6 border-2 border-bone/20 border-t-imperial-gold rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  />
+                </div>
+              ) : (
+                <div className="h-[220px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-bone/20">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {filteredFactions.map((faction) => {
+                      const isSelected = selectedFaction === faction.id
+                      const iconPath = FACTION_ICONS[faction.slug]
+
+                      return (
+                        <motion.button
+                          key={faction.id}
+                          type="button"
+                          onClick={() =>
+                            setValue('faction_id', isSelected ? undefined : faction.id)
+                          }
+                          className={`relative p-3 rounded-xl border text-left transition-all ${
+                            isSelected
+                              ? 'border-imperial-gold'
+                              : 'border-bone/10 hover:border-bone/30'
+                          }`}
+                          style={{
+                            background: isSelected
+                              ? `linear-gradient(135deg, ${faction.primary_color}20, ${faction.secondary_color}10)`
+                              : 'rgba(26,26,46,0.5)',
+                          }}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                              style={{
+                                background: `linear-gradient(135deg, ${faction.primary_color || '#666'}, ${faction.secondary_color || '#333'})`,
+                              }}
+                            >
+                              {iconPath ? (
+                                <Image
+                                  src={iconPath}
+                                  alt={faction.name}
+                                  width={20}
+                                  height={20}
+                                  className="invert"
+                                />
+                              ) : (
+                                <div className="w-4 h-4 rounded-full bg-white/30" />
+                              )}
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-xs font-body font-medium truncate ${
+                                isSelected ? 'text-imperial-gold' : 'text-bone/80'
+                              }`}>
+                                {faction.name}
+                              </p>
+                            </div>
+
+                            {isSelected && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                              >
+                                <Check className="w-4 h-4 text-imperial-gold" />
+                              </motion.div>
+                            )}
+                          </div>
+                        </motion.button>
+                      )
+                    })}
+                  </div>
+
+                  {filteredFactions.length === 0 && (
+                    <div className="h-full flex flex-col items-center justify-center py-8">
+                      <p className="text-bone/50 font-body text-sm">No se encontraron facciones</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFactionSearch('')
+                          setActiveCategory('all')
+                        }}
+                        className="text-imperial-gold text-xs mt-2 hover:underline"
+                      >
+                        Limpiar filtros
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Submit Button */}

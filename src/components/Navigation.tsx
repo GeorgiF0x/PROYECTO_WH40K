@@ -6,6 +6,8 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/hooks/useAuth'
+import { useNotifications } from '@/lib/hooks/useNotifications'
+import { useUnreadMessages } from '@/lib/hooks/useMessages'
 import { Avatar } from '@/components/ui'
 import {
   User,
@@ -22,6 +24,7 @@ import {
   Palette,
   Scale,
   Shield,
+  MessageCircle,
 } from 'lucide-react'
 
 // Dynamic import for Lottie to avoid SSR issues
@@ -128,6 +131,7 @@ const navLinks = [
   { href: '/galeria', label: 'Galería', icon: Palette },
   { href: '/usuarios', label: 'Usuarios', icon: Users },
   { href: '/mercado', label: 'Mercado', icon: Scale },
+  { href: '/mensajes', label: 'Mensajes', icon: MessageCircle },
   { href: '/facciones', label: 'Facciones', icon: Shield },
 ]
 
@@ -137,7 +141,9 @@ export default function Navigation() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const [isButtonHovered, setIsButtonHovered] = useState(false)
-  const { profile, isLoading, isAuthenticated, signOut } = useAuth()
+  const { user, profile, isLoading, isAuthenticated, signOut } = useAuth()
+  const { unreadCount } = useNotifications(user?.id)
+  const { unreadCount: unreadMessages } = useUnreadMessages(user?.id)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -266,7 +272,7 @@ export default function Navigation() {
 
                 <span className="relative flex items-center gap-2">
                   <motion.span
-                    className="flex items-center justify-center"
+                    className="flex items-center justify-center relative"
                     animate={{
                       scale: hoveredLink === link.href ? [1, 1.2, 1] : 1,
                       rotate: hoveredLink === link.href ? [0, 10, -10, 0] : 0,
@@ -275,6 +281,11 @@ export default function Navigation() {
                     transition={{ duration: 0.4 }}
                   >
                     <link.icon className="w-4 h-4" />
+                    {link.href === '/mensajes' && unreadMessages > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-blood text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {unreadMessages > 9 ? '9+' : unreadMessages}
+                      </span>
+                    )}
                   </motion.span>
                   {link.label}
                 </span>
@@ -366,7 +377,8 @@ export default function Navigation() {
                             { href: `/usuarios/${profile?.username}`, icon: User, label: 'Mi Perfil' },
                             { href: '/mi-galeria', icon: Image, label: 'Mis Miniaturas' },
                             { href: '/mercado/mis-anuncios', icon: Store, label: 'Mis Anuncios' },
-                            { href: '/notificaciones', icon: Bell, label: 'Notificaciones', badge: 3 },
+                            { href: '/mensajes', icon: MessageCircle, label: 'Mensajes', badge: unreadMessages > 0 ? unreadMessages : undefined },
+                            { href: '/notificaciones', icon: Bell, label: 'Notificaciones', badge: unreadCount > 0 ? unreadCount : undefined },
                             { href: '/perfil', icon: Settings, label: 'Configuración' },
                           ].map((item) => (
                             <Link

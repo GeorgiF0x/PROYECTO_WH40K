@@ -66,7 +66,7 @@ export default function UsersPage() {
       const { data } = await supabase
         .from('tags')
         .select('id, name, slug, primary_color, secondary_color')
-        .eq('type', 'faction')
+        .eq('category', 'faction')
         .order('name')
 
       if (data) setFactions(data)

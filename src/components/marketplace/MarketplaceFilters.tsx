@@ -13,7 +13,16 @@ import {
   Package,
   MapPin,
   Store,
+  Swords,
+  BookOpen,
+  BookMarked,
+  Paintbrush,
+  Wrench,
+  Mountain,
+  Dice5,
+  Layers,
 } from 'lucide-react'
+import type { ListingCategory } from '@/lib/types/database.types'
 import Link from 'next/link'
 
 type SortOption = 'recent' | 'price_low' | 'price_high'
@@ -42,10 +51,25 @@ const typeOptions = [
   { value: 'both', label: 'Ambos' },
 ] as const
 
+type CategoryFilter = 'all' | ListingCategory
+
+const categoryOptions: { value: CategoryFilter; label: string; icon: typeof Layers }[] = [
+  { value: 'all', label: 'Todos', icon: Layers },
+  { value: 'miniatures', label: 'Miniaturas', icon: Swords },
+  { value: 'novels', label: 'Novelas', icon: BookOpen },
+  { value: 'codex', label: 'Codex', icon: BookMarked },
+  { value: 'paints', label: 'Pinturas', icon: Paintbrush },
+  { value: 'tools', label: 'Herramientas', icon: Wrench },
+  { value: 'terrain', label: 'Terreno', icon: Mountain },
+  { value: 'accessories', label: 'Accesorios', icon: Dice5 },
+  { value: 'other', label: 'Otros', icon: Package },
+]
+
 interface MarketplaceFiltersProps {
   initialSort?: string
   initialCondition?: string
   initialType?: string
+  initialCategory?: string
   initialLocation?: string
   initialSearch?: string
 }
@@ -54,6 +78,7 @@ export default function MarketplaceFilters({
   initialSort = 'recent',
   initialCondition = 'all',
   initialType = 'all',
+  initialCategory = 'all',
   initialLocation = '',
   initialSearch = '',
 }: MarketplaceFiltersProps) {
@@ -68,6 +93,7 @@ export default function MarketplaceFilters({
     initialCondition as ConditionFilter
   )
   const [typeFilter, setTypeFilter] = useState<TypeFilter>(initialType as TypeFilter)
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>(initialCategory as CategoryFilter)
   const [locationFilter, setLocationFilter] = useState(initialLocation)
 
   const updateURL = (params: Record<string, string>) => {
@@ -86,27 +112,32 @@ export default function MarketplaceFilters({
 
   const handleSortChange = (value: SortOption) => {
     setSortBy(value)
-    updateURL({ sort: value, condition: conditionFilter, type: typeFilter, location: locationFilter, q: searchQuery })
+    updateURL({ sort: value, condition: conditionFilter, type: typeFilter, category: categoryFilter, location: locationFilter, q: searchQuery })
   }
 
   const handleConditionChange = (value: ConditionFilter) => {
     setConditionFilter(value)
-    updateURL({ sort: sortBy, condition: value, type: typeFilter, location: locationFilter, q: searchQuery })
+    updateURL({ sort: sortBy, condition: value, type: typeFilter, category: categoryFilter, location: locationFilter, q: searchQuery })
   }
 
   const handleTypeChange = (value: TypeFilter) => {
     setTypeFilter(value)
-    updateURL({ sort: sortBy, condition: conditionFilter, type: value, location: locationFilter, q: searchQuery })
+    updateURL({ sort: sortBy, condition: conditionFilter, type: value, category: categoryFilter, location: locationFilter, q: searchQuery })
+  }
+
+  const handleCategoryChange = (value: CategoryFilter) => {
+    setCategoryFilter(value)
+    updateURL({ sort: sortBy, condition: conditionFilter, type: typeFilter, category: value, location: locationFilter, q: searchQuery })
   }
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    updateURL({ sort: sortBy, condition: conditionFilter, type: typeFilter, location: locationFilter, q: searchQuery })
+    updateURL({ sort: sortBy, condition: conditionFilter, type: typeFilter, category: categoryFilter, location: locationFilter, q: searchQuery })
   }
 
   const handleLocationChange = (value: string) => {
     setLocationFilter(value)
-    updateURL({ sort: sortBy, condition: conditionFilter, type: typeFilter, location: value, q: searchQuery })
+    updateURL({ sort: sortBy, condition: conditionFilter, type: typeFilter, category: categoryFilter, location: value, q: searchQuery })
   }
 
   return (
@@ -203,7 +234,38 @@ export default function MarketplaceFilters({
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <div className="pt-4 mt-4 border-t border-bone/10">
+            <div className="pt-4 mt-4 border-t border-bone/10 space-y-6">
+              {/* Category Filter */}
+              <div>
+                <label className="block text-sm text-bone/60 mb-2 font-body">
+                  <Layers className="w-4 h-4 inline mr-2" />
+                  Categoria
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {categoryOptions.map((option) => {
+                    const CatIcon = option.icon
+                    return (
+                      <motion.button
+                        key={option.value}
+                        type="button"
+                        onClick={() => handleCategoryChange(option.value)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-body transition-colors ${
+                          categoryFilter === option.value
+                            ? 'bg-imperial-gold text-void'
+                            : 'bg-void border border-bone/10 text-bone/60 hover:border-imperial-gold/30'
+                        }`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        disabled={isPending}
+                      >
+                        <CatIcon className="w-3.5 h-3.5" />
+                        {option.label}
+                      </motion.button>
+                    )
+                  })}
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Condition Filter */}
                 <div>
