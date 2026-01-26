@@ -373,11 +373,6 @@ export default function MiniatureDetailPage() {
               transition={{ delay: 0.15 }}
               className="flex flex-wrap items-center gap-4 text-xs font-body text-bone/40"
             >
-              {miniature.faction && (
-                <span className="px-2 py-1 border border-bone/10 rounded text-bone/60 uppercase tracking-wider">
-                  {miniature.faction}
-                </span>
-              )}
               <span className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {new Date(miniature.created_at).toLocaleDateString('es-ES', {
