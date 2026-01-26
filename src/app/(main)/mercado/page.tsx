@@ -5,6 +5,7 @@ import MarketplaceFilters from '@/components/marketplace/MarketplaceFilters'
 import MarketplaceHero from '@/components/marketplace/MarketplaceHero'
 import MarketplaceCTA from '@/components/marketplace/MarketplaceCTA'
 import type { ListingWithSeller } from '@/components/marketplace'
+import type { ListingCategory } from '@/lib/types/database.types'
 
 interface SearchParams {
   sort?: string
@@ -45,7 +46,7 @@ async function getListings(searchParams: SearchParams): Promise<{
     query = query.eq('listing_type', type as 'sale' | 'trade' | 'both')
   }
   if (category && category !== 'all') {
-    query = query.eq('category', category)
+    query = query.eq('category', category as ListingCategory)
   }
   if (location) {
     query = query.ilike('location', `%${location}%`)

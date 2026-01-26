@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { ShaderMaterial, TextureLoader, MathUtils, Texture, SRGBColorSpace } from 'three'
+import { Mesh, ShaderMaterial, TextureLoader, MathUtils, Texture, SRGBColorSpace } from 'three'
 import {
   holographicVertexShader,
   holographicFragmentShader,
@@ -17,7 +17,7 @@ export default function HolographicImagePlane({
   imageUrl,
   allImageUrls,
 }: HolographicImagePlaneProps) {
-  const meshRef = useRef<THREE.Mesh>(null)
+  const meshRef = useRef<Mesh>(null)
   const materialRef = useRef<ShaderMaterial>(null)
   const { pointer } = useThree()
   const textureCache = useRef<Map<string, Texture>>(new Map())

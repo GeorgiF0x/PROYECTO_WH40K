@@ -729,7 +729,7 @@ function EmptyState({
   description,
   action,
 }: {
-  icon: React.ElementType
+  icon: React.ComponentType<{ className?: string }>
   title: string
   description: string
   action?: React.ReactNode
