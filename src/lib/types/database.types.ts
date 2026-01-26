@@ -820,6 +820,26 @@ export interface Database {
           similarity: number
         }[]
       }
+      increment_view_count: {
+        Args: {
+          p_miniature_id: string
+        }
+        Returns: undefined
+      }
+      create_conversation_with_participants: {
+        Args: {
+          p_listing_id: string
+          p_user_a: string
+          p_user_b: string
+        }
+        Returns: string
+      }
+      is_conversation_participant: {
+        Args: {
+          conv_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       article_category: 'warhammer_40k' | 'age_of_sigmar' | 'painting' | 'tournaments' | 'news'
