@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
+import { compressImage } from '@/lib/utils/compressImage'
 import {
   ArrowLeft,
   Upload,
@@ -109,13 +110,14 @@ export default function NewListingPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Debes iniciar sesión')
 
-      // Upload images
+      // Compress & upload images
       const uploadedUrls: string[] = []
       for (const image of images) {
-        const fileName = `${user.id}/${Date.now()}-${image.name}`
+        const compressed = await compressImage(image)
+        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.webp`
         const { error: uploadError, data } = await supabase.storage
           .from('listings')
-          .upload(fileName, image)
+          .upload(fileName, compressed, { contentType: compressed.type })
 
         if (uploadError) throw uploadError
 

@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/hooks/useAuth'
+import { compressImage } from '@/lib/utils/compressImage'
 import {
   Save,
   X,
@@ -187,14 +188,15 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
   }
 
   const uploadImage = async (image: NewImage): Promise<string | null> => {
-    const fileExt = image.file.name.split('.').pop()
-    const fileName = `${user?.id}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`
+    const compressed = await compressImage(image.file)
+    const fileName = `${user?.id}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.webp`
 
     const { data, error } = await supabase.storage
       .from('miniatures')
-      .upload(fileName, image.file, {
+      .upload(fileName, compressed, {
         cacheControl: '3600',
         upsert: false,
+        contentType: compressed.type,
       })
 
     if (error) {

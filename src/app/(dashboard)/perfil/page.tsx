@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Avatar } from '@/components/ui'
 import { FactionSelector, generateGradient, type Faction, FACTION_ICONS } from '@/components/user'
 import { useAuth } from '@/lib/hooks/useAuth'
+import { compressAvatar } from '@/lib/utils/compressImage'
 import { createClient } from '@/lib/supabase/client'
 import {
   Camera,
@@ -209,21 +210,23 @@ export default function EditProfilePage() {
     reader.onloadend = () => setAvatarPreview(reader.result as string)
     reader.readAsDataURL(file)
 
-    // Auto-upload avatar
+    // Compress & upload avatar with fixed filename (avoids orphaned files)
     setAvatarUploading(true)
-    const fileExt = file.name.split('.').pop()
-    const filePath = `${user.id}/avatar.${fileExt}`
+    const compressed = await compressAvatar(file)
+    const filePath = `${user.id}/avatar.webp`
 
     const { error: uploadError } = await supabase.storage
       .from('avatars')
-      .upload(filePath, file, { upsert: true })
+      .upload(filePath, compressed, { upsert: true, contentType: 'image/webp' })
 
     if (!uploadError) {
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath)
 
-      await updateProfile({ avatar_url: publicUrl } as Parameters<typeof updateProfile>[0])
+      // Append cache-bust param to force refresh
+      const url = `${publicUrl}?v=${Date.now()}`
+      await updateProfile({ avatar_url: url } as Parameters<typeof updateProfile>[0])
     }
 
     setAvatarUploading(false)
