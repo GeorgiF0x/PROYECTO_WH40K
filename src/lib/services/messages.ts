@@ -123,7 +123,7 @@ export async function getConversations(userId: string): Promise<{
   data: ConversationPreview[]
   error: Error | null
 }> {
-  // Get all conversation IDs where the user is a participant
+  // 1. Get all conversation IDs where the user is a participant
   const { data: participations, error: partError } = await supabase
     .from('conversation_participants')
     .select('conversation_id, last_read_at')
@@ -142,34 +142,28 @@ export async function getConversations(userId: string): Promise<{
     participations.map((p) => [p.conversation_id, p.last_read_at])
   )
 
-  // Fetch conversations with listing info
-  const { data: conversations, error: convError } = await supabase
-    .from('conversations')
-    .select(`
-      id,
-      listing_id,
-      updated_at,
-      listings:listing_id (
-        title,
-        images
-      )
-    `)
-    .in('id', conversationIds)
-    .order('updated_at', { ascending: false })
+  // 2. Fetch conversations, other participants, and last messages IN PARALLEL
+  const [convResult, otherUsersResult, ...messageResults] = await Promise.all([
+    // Conversations with listing info (1 query)
+    supabase
+      .from('conversations')
+      .select(`
+        id,
+        listing_id,
+        updated_at,
+        listings:listing_id (
+          title,
+          images
+        )
+      `)
+      .in('id', conversationIds)
+      .order('updated_at', { ascending: false }),
 
-  if (convError || !conversations) {
-    return { data: [], error: convError }
-  }
-
-  // For each conversation, get the other participant and last message
-  const previews: ConversationPreview[] = []
-
-  for (const conv of conversations) {
-    // Get other participant
-    const { data: otherParticipants } = await supabase
+    // ALL other participants in one batch query (1 query instead of N)
+    supabase
       .from('conversation_participants')
       .select(`
-        user_id,
+        conversation_id,
         profiles:user_id (
           id,
           username,
@@ -177,20 +171,49 @@ export async function getConversations(userId: string): Promise<{
           avatar_url
         )
       `)
-      .eq('conversation_id', conv.id)
-      .neq('user_id', userId)
-      .limit(1)
+      .in('conversation_id', conversationIds)
+      .neq('user_id', userId),
 
-    const otherUser = otherParticipants?.[0]?.profiles as unknown as ConversationPreview['other_user'] | null
+    // Last message per conversation (N queries, but all in parallel)
+    ...conversationIds.map((convId) =>
+      supabase
+        .from('messages')
+        .select('content, sender_id, created_at')
+        .eq('conversation_id', convId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+    ),
+  ])
+
+  if (convResult.error || !convResult.data) {
+    return { data: [], error: convResult.error }
+  }
+
+  // 3. Build lookup maps
+  const otherUserMap = new Map<string, ConversationPreview['other_user']>()
+  if (otherUsersResult.data) {
+    for (const row of otherUsersResult.data) {
+      const profile = row.profiles as unknown as ConversationPreview['other_user'] | null
+      if (profile) {
+        otherUserMap.set(row.conversation_id, profile)
+      }
+    }
+  }
+
+  const lastMessageMap = new Map<string, ConversationPreview['last_message']>()
+  conversationIds.forEach((convId, i) => {
+    const result = messageResults[i]
+    if (result?.data?.[0]) {
+      lastMessageMap.set(convId, result.data[0])
+    }
+  })
+
+  // 4. Assemble previews
+  const previews: ConversationPreview[] = []
+
+  for (const conv of convResult.data) {
+    const otherUser = otherUserMap.get(conv.id)
     if (!otherUser) continue
-
-    // Get last message
-    const { data: lastMessages } = await supabase
-      .from('messages')
-      .select('content, sender_id, created_at')
-      .eq('conversation_id', conv.id)
-      .order('created_at', { ascending: false })
-      .limit(1)
 
     const listing = conv.listings as unknown as { title: string; images: string[] } | null
 
@@ -200,7 +223,7 @@ export async function getConversations(userId: string): Promise<{
       listing_title: listing?.title || null,
       listing_image: listing?.images?.[0] || null,
       other_user: otherUser,
-      last_message: lastMessages?.[0] || null,
+      last_message: lastMessageMap.get(conv.id) || null,
       last_read_at: lastReadMap.get(conv.id) || null,
       updated_at: conv.updated_at,
     })
@@ -262,31 +285,28 @@ export async function getUnreadConversationsCount(userId: string): Promise<{
     .select('conversation_id, last_read_at')
     .eq('user_id', userId)
 
-  if (partError || !participations) {
+  if (partError || !participations || participations.length === 0) {
     return { count: 0, error: partError }
   }
 
-  let unreadCount = 0
+  // Check all conversations in parallel instead of sequential loop
+  const results = await Promise.all(
+    participations.map((p) => {
+      let query = supabase
+        .from('messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('conversation_id', p.conversation_id)
+        .neq('sender_id', userId)
 
-  for (const participation of participations) {
-    const lastRead = participation.last_read_at
+      if (p.last_read_at) {
+        query = query.gt('created_at', p.last_read_at)
+      }
 
-    let query = supabase
-      .from('messages')
-      .select('id', { count: 'exact', head: true })
-      .eq('conversation_id', participation.conversation_id)
-      .neq('sender_id', userId)
+      return query
+    })
+  )
 
-    if (lastRead) {
-      query = query.gt('created_at', lastRead)
-    }
-
-    const { count } = await query
-
-    if (count && count > 0) {
-      unreadCount++
-    }
-  }
+  const unreadCount = results.filter((r) => r.count && r.count > 0).length
 
   return { count: unreadCount, error: null }
 }
