@@ -176,79 +176,27 @@ function StarChart() {
   )
 }
 
-// Realistic wax seal — SVG with 3D gradient, organic blob, embossed rings & Aquila
+// Wax seal price stamp — real PNG seal with price overlay
 function WaxSeal({ price }: { price: number }) {
   const priceStr = `${price}€`
   const fs = priceStr.length > 5 ? '0.85rem' : priceStr.length > 4 ? '1rem' : '1.15rem'
 
   return (
     <div className="relative" style={{ width: 82, height: 82 }}>
-      <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full" overflow="visible">
-        <defs>
-          {/* 3D wax illumination — light from top-left */}
-          <radialGradient id="seal-body" cx="38%" cy="32%" r="60%">
-            <stop offset="0%" stopColor="#c41e3a" />
-            <stop offset="45%" stopColor="#8b0000" />
-            <stop offset="100%" stopColor="#3a0000" />
-          </radialGradient>
-          {/* Specular gloss spot */}
-          <radialGradient id="seal-gloss" cx="28%" cy="22%" r="25%">
-            <stop offset="0%" stopColor="rgba(255,200,200,0.28)" />
-            <stop offset="100%" stopColor="rgba(255,200,200,0)" />
-          </radialGradient>
-          {/* Raised 3D shadow */}
-          <filter id="seal-shadow" x="-15%" y="-10%" width="130%" height="135%">
-            <feDropShadow dx="1" dy="3" stdDeviation="3" floodColor="#1a0000" floodOpacity="0.6" />
-          </filter>
-        </defs>
-
-        {/* Organic wax blob — irregular edges with 3 subtle drip protrusions */}
-        <path
-          d="M50 5 C62 3,76 9,84 19 C92 28,97 40,96 52 Q99 56,95 60 C91 70,83 80,73 87 C64 93,56 97,50 96 Q46 100,44 96 C34 93,22 84,14 74 C7 64,3 50,5 38 Q2 32,6 27 C10 17,22 8,34 5 C42 3,48 5,50 5Z"
-          fill="url(#seal-body)"
-          filter="url(#seal-shadow)"
-        />
-        {/* Gloss highlight overlay */}
-        <path
-          d="M50 5 C62 3,76 9,84 19 C92 28,97 40,96 52 Q99 56,95 60 C91 70,83 80,73 87 C64 93,56 97,50 96 Q46 100,44 96 C34 93,22 84,14 74 C7 64,3 50,5 38 Q2 32,6 27 C10 17,22 8,34 5 C42 3,48 5,50 5Z"
-          fill="url(#seal-gloss)"
-        />
-
-        {/* Outer embossed groove — shadow + highlight pair for depth */}
-        <circle cx="50" cy="50" r="38" fill="none" stroke="#2e0000" strokeWidth="1.8" opacity="0.6" />
-        <circle cx="50" cy="50" r="36.5" fill="none" stroke="#b03030" strokeWidth="0.5" opacity="0.25" />
-
-        {/* Inner embossed groove */}
-        <circle cx="50" cy="50" r="28" fill="none" stroke="#2e0000" strokeWidth="1.2" opacity="0.45" />
-        <circle cx="50" cy="50" r="27" fill="none" stroke="#b03030" strokeWidth="0.4" opacity="0.2" />
-
-        {/* Radial line ornaments at cardinal positions — between rings */}
-        <line x1="50" y1="12" x2="50" y2="22" stroke="#2e0000" strokeWidth="0.8" opacity="0.3" />
-        <line x1="88" y1="50" x2="78" y2="50" stroke="#2e0000" strokeWidth="0.8" opacity="0.3" />
-        <line x1="50" y1="88" x2="50" y2="78" stroke="#2e0000" strokeWidth="0.8" opacity="0.3" />
-        <line x1="12" y1="50" x2="22" y2="50" stroke="#2e0000" strokeWidth="0.8" opacity="0.3" />
-
-        {/* Dot ornaments at diagonal positions — between rings */}
-        <circle cx="77" cy="23" r="1.2" fill="#2e0000" opacity="0.35" />
-        <circle cx="77" cy="77" r="1.2" fill="#2e0000" opacity="0.35" />
-        <circle cx="23" cy="77" r="1.2" fill="#2e0000" opacity="0.35" />
-        <circle cx="23" cy="23" r="1.2" fill="#2e0000" opacity="0.35" />
-
-        {/* Embossed Aquila wings — Imperial stamp mark */}
-        <path d="M36 42 Q43 35,50 38 Q57 35,64 42" fill="none" stroke="#2e0000" strokeWidth="1.3" opacity="0.4" strokeLinecap="round" />
-        <path d="M38 41.5 Q44 36,50 38 Q56 36,62 41.5" fill="none" stroke="#b03030" strokeWidth="0.5" opacity="0.15" strokeLinecap="round" />
-        {/* Aquila skull center */}
-        <circle cx="50" cy="39.5" r="1.8" fill="#2e0000" opacity="0.3" />
-      </svg>
-
-      {/* Price — embossed text with shadow/highlight for pressed-in look */}
+      <Image
+        src="/wax-seal.png"
+        alt="Sello de cera"
+        width={82}
+        height={82}
+        className="absolute inset-0 w-full h-full object-contain drop-shadow-lg pointer-events-none"
+        priority
+      />
       <span
         className="absolute inset-0 flex items-center justify-center font-display font-black"
         style={{
           fontSize: fs,
-          color: 'rgba(232,232,240,0.85)',
-          textShadow: '0 1px 2px rgba(20,0,0,0.8), 0 -1px 1px rgba(200,100,100,0.12)',
-          paddingTop: 6,
+          color: 'rgba(232,232,240,0.9)',
+          textShadow: '0 1px 3px rgba(20,0,0,0.9), 0 0 6px rgba(80,0,0,0.4)',
         }}
       >
         {priceStr}
