@@ -12,6 +12,70 @@ import { Radio, ShieldAlert } from 'lucide-react'
 import type { ConversationPreview } from '@/lib/services/messages'
 import { createClient } from '@/lib/supabase/client'
 
+// Floating warp energy wisps — unique to Astropath theme
+const WARP_WISPS = Array.from({ length: 10 }, (_, i) => ({
+  id: i,
+  left: `${(i * 11 + 7) % 90 + 5}%`,
+  top: `${(i * 17 + 12) % 80 + 10}%`,
+  w: i % 3 === 0 ? 40 : i % 2 === 0 ? 28 : 16,
+  rot: (i * 37) % 180,
+  drift: (i % 2 === 0 ? -1 : 1) * (12 + (i % 4) * 8),
+  dur: 8 + (i % 4) * 3,
+  delay: i * 0.7,
+}))
+
+function WarpWisps() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {WARP_WISPS.map((w) => (
+        <motion.div
+          key={w.id}
+          className="absolute rounded-full"
+          style={{
+            left: w.left,
+            top: w.top,
+            width: w.w,
+            height: 2,
+            background: 'linear-gradient(90deg, transparent, rgba(139,42,123,0.3), transparent)',
+            transform: `rotate(${w.rot}deg)`,
+            filter: 'blur(1px)',
+          }}
+          animate={{
+            y: [0, w.drift, 0],
+            opacity: [0, 0.6, 0],
+            scaleX: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: w.dur,
+            repeat: Infinity,
+            delay: w.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// Psychic eye divider — Astropath motif
+function PsychicDivider() {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-warp-light/15" />
+      <div className="flex items-center gap-1.5">
+        <div className="w-1 h-1 rounded-full bg-warp-light/25" />
+        <svg viewBox="0 0 28 16" className="w-5 h-3 text-warp-light/30" fill="none" stroke="currentColor" strokeWidth="1.2">
+          <path d="M1 8 Q7 1,14 1 Q21 1,27 8 Q21 15,14 15 Q7 15,1 8Z" />
+          <circle cx="14" cy="8" r="3.5" strokeWidth="0.8" opacity="0.7" />
+          <circle cx="14" cy="8" r="1.3" fill="currentColor" opacity="0.6" stroke="none" />
+        </svg>
+        <div className="w-1 h-1 rounded-full bg-warp-light/25" />
+      </div>
+      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-warp-light/15" />
+    </div>
+  )
+}
+
 export default function MensajesPage() {
   const { user, isLoading: authLoading } = useAuth()
   const [conversations, setConversations] = useState<ConversationPreview[]>([])
@@ -103,8 +167,50 @@ export default function MensajesPage() {
     <div className="min-h-screen pt-24 pb-16 relative">
       {/* Warp-tinted background — Astropath */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(107,28,95,0.04)_0%,transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,42,123,0.03)_0%,transparent_40%)]" />
+        {/* Static aurora layers */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(107,28,95,0.06)_0%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,42,123,0.04)_0%,transparent_40%)]" />
+        {/* Breathing aurora — slow psychic pulse */}
+        <motion.div
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(139,42,123,0.07)_0%,transparent_50%)]"
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_80%,rgba(107,28,95,0.05)_0%,transparent_45%)]"
+          animate={{ opacity: [1, 0.3, 1] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
+        />
+        {/* Floating warp wisps */}
+        <WarpWisps />
+        {/* Background psychic eye — large, faint, pulsing */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.svg
+            viewBox="0 0 400 200"
+            className="w-[500px] h-[250px] text-warp-light"
+            fill="none"
+            stroke="currentColor"
+            animate={{ opacity: [0.02, 0.05, 0.02] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <path d="M10 100 Q100 10,200 10 Q300 10,390 100 Q300 190,200 190 Q100 190,10 100Z" strokeWidth="2" opacity="0.5" />
+            <ellipse cx="200" cy="100" rx="55" ry="50" strokeWidth="1.5" opacity="0.4" />
+            <circle cx="200" cy="100" r="22" fill="currentColor" opacity="0.25" stroke="none" />
+          </motion.svg>
+        </div>
+        {/* Warp interference lines — occasional psychic static */}
+        <motion.div
+          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/20 to-transparent"
+          style={{ top: '35%' }}
+          animate={{ opacity: [0, 0.4, 0], scaleY: [1, 2, 1] }}
+          transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut', delay: 5, repeatDelay: 8 }}
+        />
+        <motion.div
+          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/15 to-transparent"
+          style={{ top: '68%' }}
+          animate={{ opacity: [0, 0.3, 0], scaleY: [1, 1.5, 1] }}
+          transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut', delay: 11, repeatDelay: 13 }}
+        />
       </div>
 
       <div className="px-6 relative">
@@ -168,6 +274,8 @@ export default function MensajesPage() {
               </div>
             </div>
           </motion.div>
+
+          <PsychicDivider />
 
           {/* ── Conversation List ─────────────────────────────── */}
           {isLoading ? (

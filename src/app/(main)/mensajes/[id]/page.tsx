@@ -26,6 +26,51 @@ import {
   Loader2,
 } from 'lucide-react'
 
+// Floating warp energy wisps — Astropath theme
+const WARP_WISPS = Array.from({ length: 8 }, (_, i) => ({
+  id: i,
+  left: `${(i * 13 + 5) % 90 + 5}%`,
+  top: `${(i * 19 + 10) % 80 + 10}%`,
+  w: i % 3 === 0 ? 35 : i % 2 === 0 ? 22 : 14,
+  rot: (i * 41) % 180,
+  drift: (i % 2 === 0 ? -1 : 1) * (10 + (i % 3) * 8),
+  dur: 9 + (i % 4) * 2.5,
+  delay: i * 0.9,
+}))
+
+function WarpWisps() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {WARP_WISPS.map((w) => (
+        <motion.div
+          key={w.id}
+          className="absolute rounded-full"
+          style={{
+            left: w.left,
+            top: w.top,
+            width: w.w,
+            height: 2,
+            background: 'linear-gradient(90deg, transparent, rgba(139,42,123,0.25), transparent)',
+            transform: `rotate(${w.rot}deg)`,
+            filter: 'blur(1px)',
+          }}
+          animate={{
+            y: [0, w.drift, 0],
+            opacity: [0, 0.5, 0],
+            scaleX: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: w.dur,
+            repeat: Infinity,
+            delay: w.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
 interface ConversationMeta {
   otherUser: {
     id: string
@@ -209,13 +254,48 @@ export default function ChatPage() {
     <div className="min-h-screen pt-20 flex flex-col relative">
       {/* Warp-tinted background — Astropath */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(107,28,95,0.03)_0%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(107,28,95,0.05)_0%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(139,42,123,0.03)_0%,transparent_40%)]" />
+        {/* Breathing aurora */}
+        <motion.div
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_40%_30%,rgba(139,42,123,0.06)_0%,transparent_50%)]"
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        {/* Floating warp wisps */}
+        <WarpWisps />
+        {/* Faint psychic eye background */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.svg
+            viewBox="0 0 400 200"
+            className="w-[400px] h-[200px] text-warp-light"
+            fill="none"
+            stroke="currentColor"
+            animate={{ opacity: [0.015, 0.04, 0.015] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <path d="M10 100 Q100 10,200 10 Q300 10,390 100 Q300 190,200 190 Q100 190,10 100Z" strokeWidth="2" opacity="0.5" />
+            <ellipse cx="200" cy="100" rx="55" ry="50" strokeWidth="1.5" opacity="0.4" />
+            <circle cx="200" cy="100" r="22" fill="currentColor" opacity="0.25" stroke="none" />
+          </motion.svg>
+        </div>
+        {/* Warp interference line */}
+        <motion.div
+          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/15 to-transparent"
+          style={{ top: '45%' }}
+          animate={{ opacity: [0, 0.3, 0] }}
+          transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut', delay: 7, repeatDelay: 12 }}
+        />
       </div>
 
       {/* ── Sticky Header ────────────────────────────────── */}
-      <div className="sticky top-20 z-30 bg-void/90 backdrop-blur-xl border-b border-bone/10 relative">
-        {/* Top accent line — warp tinted */}
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-warp-light/15 to-transparent" />
+      <div className="sticky top-20 z-30 bg-void/90 backdrop-blur-xl border-b border-warp-light/10 relative">
+        {/* Top accent line — warp tinted, breathing */}
+        <motion.div
+          className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-warp-light/25 to-transparent"
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        />
 
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -319,9 +399,13 @@ export default function ChatPage() {
       </div>
 
       {/* ── Sticky Input ─────────────────────────────────── */}
-      <div className="sticky bottom-0 bg-void/90 backdrop-blur-xl border-t border-bone/10 relative">
-        {/* Top accent line — warp tinted */}
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-warp-light/10 to-transparent" />
+      <div className="sticky bottom-0 bg-void/90 backdrop-blur-xl border-t border-warp-light/10 relative">
+        {/* Top accent line — warp tinted, breathing */}
+        <motion.div
+          className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-warp-light/20 to-transparent"
+          animate={{ opacity: [0.4, 0.9, 0.4] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        />
 
         <div className="max-w-3xl mx-auto px-4 py-3">
           <div className="flex items-end gap-3">
