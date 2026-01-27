@@ -17,7 +17,20 @@ const HERO_DUST = Array.from({ length: 8 }, (_, i) => ({
 export default function MarketplaceHero() {
   return (
     <section className="relative px-6 py-16 overflow-hidden">
-      {/* Warm golden vignette — Rogue Trader */}
+      {/* Star chart background — Rogue Trader */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle, rgba(201,162,39,0.3) 1px, transparent 1px),
+            radial-gradient(circle, rgba(201,162,39,0.2) 0.5px, transparent 0.5px)
+          `,
+          backgroundSize: '80px 80px, 120px 100px',
+          backgroundPosition: '0 0, 40px 60px',
+          opacity: 0.12,
+        }}
+      />
+      {/* Warm golden vignette */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.1)_0%,transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(201,162,39,0.04)_0%,transparent_40%)]" />
 

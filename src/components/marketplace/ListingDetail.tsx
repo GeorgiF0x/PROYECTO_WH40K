@@ -111,6 +111,71 @@ function GoldDust() {
   )
 }
 
+// Baroque filigree corner — SVG curved ornament for Rogue Trader frames
+function BaroqueCorner({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
+  const posClass = { tl: 'top-0 left-0', tr: 'top-0 right-0', bl: 'bottom-0 left-0', br: 'bottom-0 right-0' }[position]
+  const flip = { tl: undefined, tr: 'scaleX(-1)', bl: 'scaleY(-1)', br: 'scale(-1)' }[position]
+
+  return (
+    <svg
+      viewBox="0 0 60 60"
+      className={`absolute w-14 h-14 text-imperial-gold pointer-events-none ${posClass}`}
+      style={flip ? { transform: flip } : undefined}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+    >
+      {/* Main curved L-arm */}
+      <path d="M0 60 V18 Q0 0 18 0 H60" strokeWidth="1.5" opacity="0.5" />
+      {/* Inner parallel curve — filigree doubling */}
+      <path d="M7 48 V22 Q7 7 22 7 H48" strokeWidth="0.75" opacity="0.2" />
+      {/* Volute scroll at the corner bend */}
+      <path d="M14 22 Q6 6 22 6" strokeWidth="1" opacity="0.4" />
+      <path d="M18 18 Q12 10 18 8" strokeWidth="0.75" opacity="0.25" />
+      {/* Center accent dot */}
+      <circle cx="13" cy="13" r="2" fill="currentColor" opacity="0.35" stroke="none" />
+      {/* Arm accent dots */}
+      <circle cx="38" cy="3" r="1" fill="currentColor" opacity="0.2" stroke="none" />
+      <circle cx="3" cy="38" r="1" fill="currentColor" opacity="0.2" stroke="none" />
+    </svg>
+  )
+}
+
+// Star chart dots — Rogue Trader navigation map feel
+const CHART_STARS = Array.from({ length: 35 }, (_, i) => ({
+  left: `${(i * 7.3 + 13.7) % 98 + 1}%`,
+  top: `${(i * 11.9 + 5.3) % 98 + 1}%`,
+  size: i % 7 === 0 ? 2.5 : i % 4 === 0 ? 1.5 : 1,
+  opacity: i % 7 === 0 ? 0.25 : i % 4 === 0 ? 0.15 : 0.08,
+  twinkle: i % 6 === 0,
+  twinkDur: 3 + (i % 4),
+  twinkDelay: (i % 5) * 0.8,
+}))
+
+function StarChart() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {CHART_STARS.map((s, i) =>
+        s.twinkle ? (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-imperial-gold"
+            style={{ left: s.left, top: s.top, width: s.size, height: s.size }}
+            animate={{ opacity: [s.opacity * 0.5, s.opacity * 1.5, s.opacity * 0.5] }}
+            transition={{ duration: s.twinkDur, repeat: Infinity, delay: s.twinkDelay, ease: 'easeInOut' }}
+          />
+        ) : (
+          <div
+            key={i}
+            className="absolute rounded-full bg-imperial-gold"
+            style={{ left: s.left, top: s.top, width: s.size, height: s.size, opacity: s.opacity }}
+          />
+        )
+      )}
+    </div>
+  )
+}
+
 interface ListingDetailProps {
   listing: ListingWithSeller
 }
@@ -237,8 +302,17 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
         transition={{ duration: 0.5 }}
         className="mb-8"
       >
-        <div className="relative bg-void-light/30 backdrop-blur-sm rounded-xl p-4 overflow-hidden border border-imperial-gold/15">
-          {/* Warm golden vignette background */}
+        <div className="relative bg-void-light/30 backdrop-blur-sm rounded-xl p-5 overflow-hidden">
+          {/* Baroque filigree corners */}
+          <BaroqueCorner position="tl" />
+          <BaroqueCorner position="tr" />
+          <BaroqueCorner position="bl" />
+          <BaroqueCorner position="br" />
+
+          {/* Star chart background */}
+          <StarChart />
+
+          {/* Warm golden vignette */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(201,162,39,0.06)_0%,transparent_60%)] pointer-events-none" />
 
           {/* Floating gold dust */}
@@ -303,8 +377,13 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
             <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-imperial-gold/30 via-transparent to-imperial-gold/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             <div className="relative aspect-square rounded-2xl overflow-hidden bg-void-light border border-bone/10">
-              {/* Golden inner frame — Rogue Trader picture frame feel */}
-              <div className="absolute inset-3 rounded-xl border border-imperial-gold/10 z-10 pointer-events-none transition-colors duration-500 group-hover:border-imperial-gold/25" />
+              {/* Baroque filigree frame */}
+              <div className="absolute inset-0 z-10 pointer-events-none">
+                <BaroqueCorner position="tl" />
+                <BaroqueCorner position="tr" />
+                <BaroqueCorner position="bl" />
+                <BaroqueCorner position="br" />
+              </div>
 
               <AnimatePresence mode="wait">
                 <motion.div
@@ -353,15 +432,29 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
                 </div>
               )}
 
-              {/* Price seal */}
-              <div className="absolute top-3 left-3 z-10">
+              {/* Wax seal price stamp — stamp-down spring animation */}
+              <motion.div
+                className="absolute top-4 left-4 z-10"
+                initial={{ scale: 2.5, rotate: -20, opacity: 0 }}
+                animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                transition={{ type: 'spring', damping: 10, stiffness: 120, delay: 0.6 }}
+              >
                 <div className="relative">
-                  <div className="absolute -inset-1 bg-imperial-gold/20 rounded-xl blur-md" />
-                  <div className="relative px-5 py-2.5 bg-gradient-to-br from-imperial-gold via-yellow-500 to-imperial-gold text-void font-display font-black text-2xl rounded-xl shadow-lg border border-yellow-400/50">
-                    {listing.price}€
+                  {/* Seal shadow */}
+                  <div className="absolute -inset-2 bg-blood-dark/40 rounded-full blur-md" />
+                  {/* Seal body */}
+                  <div className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-blood-light via-blood to-blood-dark flex items-center justify-center shadow-lg shadow-blood-dark/50 relative">
+                    {/* Outer ring */}
+                    <div className="absolute inset-1.5 rounded-full border border-bone/10" />
+                    {/* Inner ring */}
+                    <div className="absolute inset-3 rounded-full border border-bone/5" />
+                    {/* Price text */}
+                    <span className="relative text-bone font-display font-black text-lg drop-shadow-sm">
+                      {listing.price}€
+                    </span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Action buttons overlay - top right */}
               <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
@@ -639,8 +732,11 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
               className="relative bg-void-light rounded-2xl max-w-md w-full border border-bone/10 overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Modal header accent */}
-              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-imperial-gold/50 to-transparent" />
+              {/* Baroque filigree corners */}
+              <BaroqueCorner position="tl" />
+              <BaroqueCorner position="tr" />
+              <BaroqueCorner position="bl" />
+              <BaroqueCorner position="br" />
 
               {/* Traveling golden shimmer — Rogue Trader */}
               <motion.div

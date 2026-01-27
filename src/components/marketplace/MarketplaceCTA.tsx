@@ -18,15 +18,38 @@ export default function MarketplaceCTA() {
           <div className="absolute inset-0 bg-gradient-to-br from-imperial-gold/15 via-void-light to-imperial-gold/10" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
 
+          {/* Baroque filigree corners */}
+          <svg viewBox="0 0 60 60" className="absolute w-14 h-14 text-imperial-gold pointer-events-none top-0 left-0" fill="none" stroke="currentColor" strokeLinecap="round">
+            <path d="M0 60 V18 Q0 0 18 0 H60" strokeWidth="1.5" opacity="0.5" />
+            <path d="M7 48 V22 Q7 7 22 7 H48" strokeWidth="0.75" opacity="0.2" />
+            <path d="M14 22 Q6 6 22 6" strokeWidth="1" opacity="0.4" />
+            <circle cx="13" cy="13" r="2" fill="currentColor" opacity="0.35" stroke="none" />
+          </svg>
+          <svg viewBox="0 0 60 60" className="absolute w-14 h-14 text-imperial-gold pointer-events-none top-0 right-0" style={{ transform: 'scaleX(-1)' }} fill="none" stroke="currentColor" strokeLinecap="round">
+            <path d="M0 60 V18 Q0 0 18 0 H60" strokeWidth="1.5" opacity="0.5" />
+            <path d="M7 48 V22 Q7 7 22 7 H48" strokeWidth="0.75" opacity="0.2" />
+            <path d="M14 22 Q6 6 22 6" strokeWidth="1" opacity="0.4" />
+            <circle cx="13" cy="13" r="2" fill="currentColor" opacity="0.35" stroke="none" />
+          </svg>
+          <svg viewBox="0 0 60 60" className="absolute w-14 h-14 text-imperial-gold pointer-events-none bottom-0 left-0" style={{ transform: 'scaleY(-1)' }} fill="none" stroke="currentColor" strokeLinecap="round">
+            <path d="M0 60 V18 Q0 0 18 0 H60" strokeWidth="1.5" opacity="0.5" />
+            <path d="M7 48 V22 Q7 7 22 7 H48" strokeWidth="0.75" opacity="0.2" />
+            <path d="M14 22 Q6 6 22 6" strokeWidth="1" opacity="0.4" />
+            <circle cx="13" cy="13" r="2" fill="currentColor" opacity="0.35" stroke="none" />
+          </svg>
+          <svg viewBox="0 0 60 60" className="absolute w-14 h-14 text-imperial-gold pointer-events-none bottom-0 right-0" style={{ transform: 'scale(-1)' }} fill="none" stroke="currentColor" strokeLinecap="round">
+            <path d="M0 60 V18 Q0 0 18 0 H60" strokeWidth="1.5" opacity="0.5" />
+            <path d="M7 48 V22 Q7 7 22 7 H48" strokeWidth="0.75" opacity="0.2" />
+            <path d="M14 22 Q6 6 22 6" strokeWidth="1" opacity="0.4" />
+            <circle cx="13" cy="13" r="2" fill="currentColor" opacity="0.35" stroke="none" />
+          </svg>
+
           {/* Traveling golden shimmer along top */}
           <motion.div
             className="absolute top-0 left-0 w-32 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold/40 to-transparent pointer-events-none"
             animate={{ left: ['-15%', '115%'] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1 }}
           />
-
-          {/* Subtle inner frame */}
-          <div className="absolute inset-3 rounded-xl border border-imperial-gold/10 pointer-events-none" />
 
           <div className="relative z-10 p-8 md:p-12 text-center">
             <motion.div

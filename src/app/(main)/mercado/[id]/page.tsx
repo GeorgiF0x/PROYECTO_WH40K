@@ -106,8 +106,21 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen pt-24 pb-16 relative">
-      {/* Background grid pattern */}
-      <div className="fixed inset-0 grid-pattern opacity-30 pointer-events-none" />
+      {/* Star chart background — Rogue Trader navigation map */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle, rgba(201,162,39,0.3) 1px, transparent 1px),
+            radial-gradient(circle, rgba(201,162,39,0.2) 0.5px, transparent 0.5px)
+          `,
+          backgroundSize: '80px 80px, 120px 100px',
+          backgroundPosition: '0 0, 40px 60px',
+          opacity: 0.15,
+        }}
+      />
+      {/* Warm golden vignette overlay */}
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.04)_0%,transparent_50%)] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative">
         {/* Back button */}
@@ -131,7 +144,18 @@ export default async function ListingDetailPage({ params }: PageProps) {
 export function NotFound() {
   return (
     <div className="min-h-screen pt-24 pb-16 flex items-center justify-center relative">
-      <div className="fixed inset-0 grid-pattern opacity-30 pointer-events-none" />
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle, rgba(201,162,39,0.3) 1px, transparent 1px),
+            radial-gradient(circle, rgba(201,162,39,0.2) 0.5px, transparent 0.5px)
+          `,
+          backgroundSize: '80px 80px, 120px 100px',
+          backgroundPosition: '0 0, 40px 60px',
+          opacity: 0.12,
+        }}
+      />
       <div className="text-center relative">
         <div className="relative inline-block mb-6">
           <div className="absolute -inset-4 bg-imperial-gold/5 rounded-full blur-xl" />
