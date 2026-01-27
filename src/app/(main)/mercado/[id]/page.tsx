@@ -47,7 +47,7 @@ async function getListingAndIncrementViews(id: string): Promise<ListingWithSelle
     return null
   }
 
-  return listingResult.data
+  return listingResult.data as unknown as ListingWithSeller
 }
 
 // Generate metadata for SEO

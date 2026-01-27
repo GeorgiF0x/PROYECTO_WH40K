@@ -88,7 +88,7 @@ export default function MisAnunciosPage() {
     setDeletingId(null)
   }
 
-  const handleStatusChange = async (listingId: string, newStatus: string) => {
+  const handleStatusChange = async (listingId: string, newStatus: 'active' | 'reserved' | 'sold' | 'inactive') => {
     setStatusUpdatingId(listingId)
 
     const { error } = await supabase
@@ -245,7 +245,7 @@ export default function MisAnunciosPage() {
                           </span>
                           <span className="flex items-center gap-1">
                             <Heart className="w-3.5 h-3.5" />
-                            {listing.favorites_count || 0} favoritos
+                            {(listing as any).favorites_count || 0} favoritos
                           </span>
                           <span>
                             {new Date(listing.created_at).toLocaleDateString('es-ES', {

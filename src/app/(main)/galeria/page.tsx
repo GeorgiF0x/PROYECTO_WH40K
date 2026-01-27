@@ -7,10 +7,10 @@ import { MiniatureGrid, type MiniatureWithStats } from '@/components/gallery'
 import { createClient } from '@/lib/supabase/client'
 import { FACTION_ICONS, CATEGORIES, SLUG_TO_CATEGORY } from '@/components/user'
 import type { Faction } from '@/components/user'
-import { Search, SlidersHorizontal, Grid3X3, LayoutGrid, Sparkles, TrendingUp, Clock, Flame } from 'lucide-react'
+import { Search, SlidersHorizontal, Grid3X3, List, TrendingUp, Clock, Flame, Archive } from 'lucide-react'
 
 type SortOption = 'recent' | 'popular' | 'trending'
-type ViewMode = 'grid' | 'masonry'
+type ViewMode = 'grid' | 'list'
 
 const sortOptions = [
   { value: 'recent', label: 'Recientes', icon: Clock },
@@ -20,6 +20,179 @@ const sortOptions = [
 
 // Filter categories (skip 'all' since we handle it separately)
 const FILTER_CATEGORIES = CATEGORIES.filter((c) => c.id !== 'all')
+
+// --- Decorative components: Galerías Prismáticas de Solemnace ---
+
+// Gauss energy particles — sparks + orbs, Necron atmosphere
+const GAUSS_PARTICLES = Array.from({ length: 16 }, (_, i) => ({
+  id: i,
+  left: `${(i * 7 + 3) % 90 + 5}%`,
+  top: `${(i * 13 + 8) % 82 + 9}%`,
+  isOrb: i >= 10,
+  w: i >= 10 ? (i % 3 === 0 ? 10 : 6) : (i % 3 === 0 ? 45 : i % 2 === 0 ? 32 : 20),
+  h: i >= 10 ? (i % 3 === 0 ? 10 : 6) : 3,
+  rot: i >= 10 ? 0 : (i * 37) % 180,
+  drift: (i % 2 === 0 ? -1 : 1) * (12 + (i % 4) * 8),
+  dur: 6 + (i % 5) * 1.5,
+  delay: i * 0.45,
+  blur: i >= 10 ? (i % 3 === 0 ? 4 : 2) : 1,
+  peak: i >= 10 ? 0.5 : 0.6,
+}))
+
+function GaussParticles() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {GAUSS_PARTICLES.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            left: p.left,
+            top: p.top,
+            width: p.w,
+            height: p.h,
+            background: p.isOrb
+              ? 'radial-gradient(circle, rgba(13,155,138,0.5), transparent 70%)'
+              : 'linear-gradient(90deg, transparent, rgba(0,255,135,0.3), transparent)',
+            transform: p.rot ? `rotate(${p.rot}deg)` : undefined,
+            filter: `blur(${p.blur}px)`,
+          }}
+          animate={{
+            y: [0, p.drift, 0],
+            opacity: [0, p.peak, 0],
+            scale: p.isOrb ? [0.5, 1.3, 0.5] : undefined,
+            scaleX: p.isOrb ? undefined : [0.4, 1, 0.4],
+          }}
+          transition={{
+            duration: p.dur,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// Necron themed divider with Triarch Ankh SVG
+function NecronDivider() {
+  return (
+    <div className="relative flex items-center justify-center py-6">
+      {/* Left line */}
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-necron-dark/20" />
+      {/* Left dot */}
+      <motion.div
+        className="w-1.5 h-1.5 rounded-full bg-necron-teal mx-2"
+        animate={{ opacity: [0.3, 0.7, 0.3] }}
+        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {/* Triarch Ankh SVG */}
+      <div className="mx-3">
+        <svg width="24" height="32" viewBox="0 0 24 32" fill="none" className="text-necron-teal">
+          {/* Oval loop (asa) */}
+          <ellipse cx="12" cy="9" rx="6" ry="8" stroke="currentColor" strokeWidth="1.5" fill="none" />
+          {/* Vertical bar (cruz) */}
+          <line x1="12" y1="17" x2="12" y2="30" stroke="currentColor" strokeWidth="1.5" />
+          {/* Horizontal bar */}
+          <line x1="6" y1="22" x2="18" y2="22" stroke="currentColor" strokeWidth="1.5" />
+          {/* Inner detail */}
+          <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1" fill="none" />
+        </svg>
+      </div>
+      {/* Right dot */}
+      <motion.div
+        className="w-1.5 h-1.5 rounded-full bg-necron-teal mx-2"
+        animate={{ opacity: [0.3, 0.7, 0.3] }}
+        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+      />
+      {/* Right line */}
+      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-necron-dark/20" />
+    </div>
+  )
+}
+
+// Tesseract cube SVG — used as watermark background
+function TesseractIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 200 200" fill="none" className={className}>
+      {/* Outer cube */}
+      <rect x="30" y="30" width="100" height="100" stroke="currentColor" strokeWidth="0.8" />
+      {/* Inner cube (offset for 3D) */}
+      <rect x="70" y="70" width="100" height="100" stroke="currentColor" strokeWidth="0.8" />
+      {/* Connecting lines */}
+      <line x1="30" y1="30" x2="70" y2="70" stroke="currentColor" strokeWidth="0.6" />
+      <line x1="130" y1="30" x2="170" y2="70" stroke="currentColor" strokeWidth="0.6" />
+      <line x1="30" y1="130" x2="70" y2="170" stroke="currentColor" strokeWidth="0.6" />
+      <line x1="130" y1="130" x2="170" y2="170" stroke="currentColor" strokeWidth="0.6" />
+    </svg>
+  )
+}
+
+// Necron angular circuit-trace filigree corner — geometric, cold, technological
+function NecronCorner({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
+  const posClass = { tl: 'top-0 left-0', tr: 'top-0 right-0', bl: 'bottom-0 left-0', br: 'bottom-0 right-0' }[position]
+  const flip = { tl: undefined, tr: 'scaleX(-1)', bl: 'scaleY(-1)', br: 'scale(-1)' }[position]
+
+  return (
+    <svg
+      viewBox="0 0 60 60"
+      className={`absolute w-14 h-14 text-necron-teal pointer-events-none ${posClass}`}
+      style={flip ? { transform: flip } : undefined}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="square"
+    >
+      {/* Main angular L-arm — sharp 90° Necron geometry */}
+      <path d="M0 60 V14 H6 V6 H14 V0 H60" strokeWidth="1.5" opacity="0.45" />
+      {/* Inner parallel trace — circuit doubling */}
+      <path d="M6 52 V20 H12 V12 H20 V6 H52" strokeWidth="0.75" opacity="0.18" />
+      {/* T-junction node at elbow */}
+      <path d="M14 20 H20 V14" strokeWidth="1" opacity="0.3" />
+      {/* Circuit node — square, not circle */}
+      <rect x="11" y="11" width="4" height="4" fill="currentColor" opacity="0.3" stroke="none" />
+      {/* Arm accent nodes */}
+      <rect x="36" y="1" width="2.5" height="2.5" fill="currentColor" opacity="0.2" stroke="none" />
+      <rect x="1" y="36" width="2.5" height="2.5" fill="currentColor" opacity="0.2" stroke="none" />
+      {/* Gauss energy dot at terminus */}
+      <rect x="52" y="1" width="2" height="2" fill="currentColor" opacity="0.15" stroke="none" />
+    </svg>
+  )
+}
+
+// Floating gauss embers — small energy particles for framed sections
+const EMBER_SEEDS = Array.from({ length: 6 }, (_, i) => ({
+  id: i,
+  left: `${(i * 17 + 5) % 90 + 5}%`,
+  top: `${(i * 23 + 10) % 80 + 10}%`,
+  drift: (i % 2 === 0 ? -1 : 1) * (18 + (i % 3) * 10),
+  dur: 5 + (i % 3) * 2,
+  delay: i * 0.7,
+}))
+
+function GaussEmbers() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {EMBER_SEEDS.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute w-1 h-1 rounded-full bg-necron/40"
+          style={{ left: p.left, top: p.top }}
+          animate={{
+            y: [0, p.drift, 0],
+            opacity: [0, 0.6, 0],
+          }}
+          transition={{
+            duration: p.dur,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
 
 export default function GalleryPage() {
   const [miniatures, setMiniatures] = useState<MiniatureWithStats[]>([])
@@ -131,24 +304,81 @@ export default function GalleryPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      {/* Hero Section */}
-      <section className="relative px-6 py-16 overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.08)_0%,transparent_60%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(139,0,0,0.1)_0%,transparent_50%)]" />
+      {/* === Atmospheric Background Layers === */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Static necron auroras */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(13,155,138,0.08)_0%,transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(0,212,170,0.05)_0%,transparent_50%)]" />
 
-        {/* Animated grid pattern */}
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(201, 162, 39, 0.03) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(201, 162, 39, 0.03) 1px, transparent 1px)
-            `,
-            backgroundSize: '60px 60px',
-          }}
+        {/* Breathing auroras */}
+        <motion.div
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(13,155,138,0.06)_0%,transparent_50%)]"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(13,155,138,0.04)_0%,transparent_50%)]"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 5 }}
         />
 
+        {/* Gauss particles */}
+        <GaussParticles />
+
+        {/* Concentric waves from center */}
+        {[0, 1, 2].map((i) => (
+          <motion.div
+            key={`wave-${i}`}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-necron-teal/[0.06]"
+            style={{ width: 600, height: 600 }}
+            animate={{
+              scale: [0.5, 4],
+              opacity: [0.3, 0],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              delay: i * 4,
+              ease: 'linear',
+            }}
+          />
+        ))}
+
+        {/* Tesseract watermark */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] text-necron-teal"
+          animate={{ opacity: [0.03, 0.07, 0.03] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <TesseractIcon className="w-full h-full" />
+        </motion.div>
+
+        {/* Scan lines */}
+        <motion.div
+          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-necron-dark/20 to-transparent"
+          style={{ top: '30%' }}
+          animate={{ opacity: [0, 0, 0.6, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', times: [0, 0.85, 0.92, 1] }}
+        />
+        <motion.div
+          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-necron-dark/20 to-transparent"
+          style={{ top: '70%' }}
+          animate={{ opacity: [0, 0, 0.6, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', times: [0, 0.85, 0.92, 1], delay: 4 }}
+        />
+
+        {/* Holographic dot grid */}
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage: 'radial-gradient(circle, rgba(0,255,135,0.2) 1px, transparent 1px)',
+            backgroundSize: '80px 80px',
+          }}
+        />
+      </div>
+
+      {/* Hero Section */}
+      <section className="relative px-6 py-16 overflow-hidden z-10">
         <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -161,21 +391,32 @@ export default function GalleryPage() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-imperial-gold/10 border border-imperial-gold/30 rounded-full mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-necron-teal/10 border border-necron-teal/30 rounded-full mb-6"
             >
-              <Sparkles className="w-4 h-4 text-imperial-gold" />
-              <span className="text-sm font-body text-imperial-gold">Comunidad de Artistas</span>
+              <Archive className="w-4 h-4 text-necron-dark" />
+              <span className="text-sm font-body text-necron-dark">Galerías Prismáticas de Solemnace</span>
             </motion.div>
 
             {/* Title */}
             <h1 className="text-4xl md:text-6xl font-display font-bold tracking-wide mb-4">
-              <span className="text-bone">Galería de </span>
-              <span className="text-gradient">Miniaturas</span>
+              <span className="text-bone">Galerías </span>
+              <span className="bg-gradient-to-r from-necron-dark via-necron to-necron-dark bg-clip-text text-transparent">
+                Prismáticas
+              </span>
             </h1>
 
             <p className="text-lg text-bone/60 font-body max-w-2xl mx-auto">
-              Explora las obras maestras de nuestra comunidad. Cada miniatura cuenta una historia de dedicación y arte.
+              Explora los especímenes de la colección. Cada pieza, un tesoro preservado por la eternidad.
             </p>
+
+            {/* Nihilakh ornament — 3 rotated diamonds flanked by lines */}
+            <div className="flex items-center justify-center gap-3 mt-6">
+              <div className="w-16 h-px bg-gradient-to-r from-transparent to-necron-teal/40" />
+              <div className="w-1.5 h-1.5 rotate-45 bg-necron-teal/60" />
+              <div className="w-2 h-2 rotate-45 bg-necron-teal" />
+              <div className="w-1.5 h-1.5 rotate-45 bg-necron-teal/60" />
+              <div className="w-16 h-px bg-gradient-to-l from-transparent to-necron-teal/40" />
+            </div>
           </motion.div>
 
           {/* Search and Filters Bar */}
@@ -183,23 +424,35 @@ export default function GalleryPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-void-light/50 backdrop-blur-xl rounded-2xl border border-bone/10 p-4 md:p-6"
+            className="relative bg-void-light/50 backdrop-blur-xl rounded-2xl border border-necron-teal/10 p-4 md:p-6 overflow-hidden"
           >
+            {/* Necron filigree corners */}
+            <NecronCorner position="tl" />
+            <NecronCorner position="tr" />
+            <NecronCorner position="bl" />
+            <NecronCorner position="br" />
+
+            {/* Traveling gauss shimmer along top edge */}
+            <motion.div
+              className="absolute top-0 left-0 w-20 h-[1px] bg-gradient-to-r from-transparent via-necron-dark/40 to-transparent pointer-events-none"
+              animate={{ left: ['-10%', '110%'] }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2 }}
+            />
             <div className="flex flex-col md:flex-row gap-4">
               {/* Search Input */}
               <div className="relative flex-1">
                 <motion.div
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-bone/40"
-                  animate={{ color: searchQuery ? '#C9A227' : 'rgba(232, 232, 240, 0.4)' }}
+                  animate={{ color: searchQuery ? '#0D9B8A' : 'rgba(232, 232, 240, 0.4)' }}
                 >
                   <Search className="w-5 h-5" />
                 </motion.div>
                 <input
                   type="text"
-                  placeholder="Buscar miniaturas..."
+                  placeholder="Buscar especímenes..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors"
+                  className="w-full pl-12 pr-4 py-3.5 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-necron-dark/50 focus:shadow-[0_0_0_3px_rgba(13,155,138,0.06)] transition-colors"
                 />
               </div>
 
@@ -213,8 +466,8 @@ export default function GalleryPage() {
                       onClick={() => setSortBy(option.value)}
                       className={`flex items-center gap-2 px-4 py-3 rounded-xl font-body text-sm font-medium transition-all duration-300 ${
                         sortBy === option.value
-                          ? 'bg-imperial-gold text-void'
-                          : 'bg-void border border-bone/10 text-bone/60 hover:border-imperial-gold/30 hover:text-bone'
+                          ? 'bg-necron-teal text-void'
+                          : 'bg-void border border-bone/10 text-bone/60 hover:border-necron-teal/30 hover:text-bone'
                       }`}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -231,8 +484,8 @@ export default function GalleryPage() {
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center gap-2 px-4 py-3 rounded-xl font-body text-sm font-medium transition-all duration-300 ${
                   showFilters || selectedFaction
-                    ? 'bg-imperial-gold/20 border border-imperial-gold/50 text-imperial-gold'
-                    : 'bg-void border border-bone/10 text-bone/60 hover:border-imperial-gold/30'
+                    ? 'bg-necron-teal/20 border border-necron-teal/50 text-necron-dark'
+                    : 'bg-void border border-bone/10 text-bone/60 hover:border-necron-teal/30'
                 }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -240,7 +493,7 @@ export default function GalleryPage() {
                 <SlidersHorizontal className="w-4 h-4" />
                 <span className="hidden sm:inline">Filtros</span>
                 {selectedFaction && (
-                  <span className="w-2 h-2 rounded-full bg-imperial-gold" />
+                  <span className="w-2 h-2 rounded-full bg-necron-teal" />
                 )}
               </motion.button>
 
@@ -249,7 +502,7 @@ export default function GalleryPage() {
                 <motion.button
                   onClick={() => setViewMode('grid')}
                   className={`p-2.5 rounded-lg transition-colors ${
-                    viewMode === 'grid' ? 'bg-imperial-gold text-void' : 'text-bone/60 hover:text-bone'
+                    viewMode === 'grid' ? 'bg-necron-teal text-void' : 'text-bone/60 hover:text-bone'
                   }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -257,14 +510,14 @@ export default function GalleryPage() {
                   <Grid3X3 className="w-4 h-4" />
                 </motion.button>
                 <motion.button
-                  onClick={() => setViewMode('masonry')}
+                  onClick={() => setViewMode('list')}
                   className={`p-2.5 rounded-lg transition-colors ${
-                    viewMode === 'masonry' ? 'bg-imperial-gold text-void' : 'text-bone/60 hover:text-bone'
+                    viewMode === 'list' ? 'bg-necron-teal text-void' : 'text-bone/60 hover:text-bone'
                   }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <LayoutGrid className="w-4 h-4" />
+                  <List className="w-4 h-4" />
                 </motion.button>
               </div>
             </div>
@@ -279,7 +532,7 @@ export default function GalleryPage() {
                   transition={{ duration: 0.3 }}
                   className="overflow-hidden"
                 >
-                  <div className="pt-4 mt-4 border-t border-bone/10">
+                  <div className="pt-4 mt-4 border-t border-necron-teal/10">
                     {/* Category filter tabs */}
                     <div className="mb-3">
                       <label className="block text-sm text-bone/60 mb-2 font-body">
@@ -292,8 +545,8 @@ export default function GalleryPage() {
                             onClick={() => handleCategorySelect(cat.id)}
                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-body transition-colors ${
                               selectedCategory === cat.id
-                                ? 'bg-imperial-gold text-void'
-                                : 'bg-void border border-bone/10 text-bone/60 hover:border-imperial-gold/30'
+                                ? 'bg-necron-teal text-void'
+                                : 'bg-void border border-bone/10 text-bone/60 hover:border-necron-teal/30'
                             }`}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -351,7 +604,7 @@ export default function GalleryPage() {
                                   onClick={() => handleFactionSelect(faction.id)}
                                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body transition-colors ${
                                     isSelected
-                                      ? 'border-imperial-gold text-imperial-gold'
+                                      ? 'border-necron-teal text-necron-dark'
                                       : 'border-bone/10 text-bone/60 hover:border-bone/30 hover:text-bone'
                                   } border`}
                                   style={isSelected ? {
@@ -391,7 +644,7 @@ export default function GalleryPage() {
       </section>
 
       {/* Gallery Grid */}
-      <section className="px-6">
+      <section className="relative px-6 z-10">
         <div className="max-w-7xl mx-auto">
           {/* Results count */}
           <motion.div
@@ -404,7 +657,7 @@ export default function GalleryPage() {
               {isLoading ? (
                 <span className="inline-flex items-center gap-2">
                   <motion.span
-                    className="inline-block w-4 h-4 border-2 border-bone/20 border-t-imperial-gold rounded-full"
+                    className="inline-block w-4 h-4 border-2 border-bone/20 border-t-necron-dark rounded-full"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   />
@@ -412,7 +665,7 @@ export default function GalleryPage() {
                 </span>
               ) : (
                 <span>
-                  <span className="text-imperial-gold font-semibold">{filteredMiniatures.length}</span> miniaturas encontradas
+                  <span className="text-necron-dark font-semibold">{filteredMiniatures.length}</span> especímenes encontrados
                 </span>
               )}
             </div>
@@ -422,10 +675,11 @@ export default function GalleryPage() {
           <MiniatureGrid
             miniatures={filteredMiniatures}
             isLoading={isLoading}
+            viewMode={viewMode}
             emptyMessage={
               searchQuery
-                ? `No se encontraron miniaturas para "${searchQuery}"`
-                : 'Aún no hay miniaturas en la galería. ¡Sé el primero en subir la tuya!'
+                ? `No se encontraron especímenes para "${searchQuery}"`
+                : 'Aún no hay especímenes en las galerías. ¡Sé el primero en preservar el tuyo!'
             }
           />
 
@@ -438,12 +692,12 @@ export default function GalleryPage() {
               className="flex justify-center mt-12"
             >
               <motion.button
-                className="relative px-8 py-4 bg-transparent border border-imperial-gold/50 text-imperial-gold font-display font-semibold tracking-wider uppercase text-sm rounded-lg overflow-hidden group"
+                className="relative px-8 py-4 bg-transparent border border-necron-teal/50 text-necron-dark font-display font-semibold tracking-wider uppercase text-sm rounded-lg overflow-hidden group"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <motion.div
-                  className="absolute inset-0 bg-imperial-gold/10"
+                  className="absolute inset-0 bg-necron-teal/10"
                   initial={{ x: '-100%' }}
                   whileHover={{ x: 0 }}
                   transition={{ duration: 0.3 }}
@@ -455,9 +709,12 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="px-6 mt-20">
+      {/* CTA Section — Bóveda de Solemnace */}
+      <section className="relative px-6 mt-20 z-10">
         <div className="max-w-4xl mx-auto">
+          {/* NecronDivider above CTA */}
+          <NecronDivider />
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -465,12 +722,28 @@ export default function GalleryPage() {
             className="relative overflow-hidden rounded-2xl"
           >
             {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-imperial-gold/20 via-void-light to-blood/20" />
+            <div className="absolute inset-0 bg-gradient-to-r from-necron-teal/15 via-void-light to-necron-dark/10" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.5)_100%)]" />
 
-            {/* Corner decorations */}
-            <div className="absolute top-0 left-0 w-20 h-20 border-l-2 border-t-2 border-imperial-gold/40" />
-            <div className="absolute bottom-0 right-0 w-20 h-20 border-r-2 border-b-2 border-imperial-gold/40" />
+            {/* Shimmer traveling line */}
+            <motion.div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(90deg, transparent 0%, transparent 40%, rgba(0,212,170,0.15) 50%, transparent 60%, transparent 100%)',
+                backgroundSize: '200% 100%',
+              }}
+              animate={{ backgroundPosition: ['200% 0', '-200% 0'] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+            />
+
+            {/* Necron filigree corners */}
+            <NecronCorner position="tl" />
+            <NecronCorner position="tr" />
+            <NecronCorner position="bl" />
+            <NecronCorner position="br" />
+
+            {/* Floating gauss embers */}
+            <GaussEmbers />
 
             <div className="relative z-10 p-8 md:p-12 text-center">
               <motion.div
@@ -478,25 +751,25 @@ export default function GalleryPage() {
                 whileInView={{ scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ type: 'spring', delay: 0.2 }}
-                className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-imperial-gold/20 border border-imperial-gold/40 mb-6"
+                className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-necron-teal/15 border border-necron-teal/30 mb-6"
               >
-                <Sparkles className="w-8 h-8 text-imperial-gold" />
+                <Archive className="w-8 h-8 text-necron-dark" />
               </motion.div>
 
               <h2 className="text-2xl md:text-3xl font-display font-bold text-bone mb-4">
-                ¿Tienes miniaturas que mostrar?
+                ¿Tienes especímenes para la colección?
               </h2>
               <p className="text-bone/60 font-body mb-8 max-w-xl mx-auto">
-                Únete a nuestra comunidad y comparte tus obras con miles de entusiastas del hobby.
+                Todo Arqueovista merece un lugar en las Galerías. Preserva tus obras para la eternidad.
               </p>
 
               <motion.a
                 href="/mi-galeria/subir"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-imperial-gold to-yellow-500 text-void font-display font-bold tracking-wider uppercase text-sm rounded-lg"
-                whileHover={{ scale: 1.05, boxShadow: '0 10px 40px rgba(201, 162, 39, 0.4)' }}
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-necron-dark to-necron text-void font-display font-bold tracking-wider uppercase text-sm rounded-lg"
+                whileHover={{ scale: 1.05, boxShadow: '0 10px 40px rgba(13, 155, 138, 0.4)' }}
                 whileTap={{ scale: 0.95 }}
               >
-                Subir Miniatura
+                Añadir Espécimen
               </motion.a>
             </div>
           </motion.div>

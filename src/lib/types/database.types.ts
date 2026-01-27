@@ -727,6 +727,149 @@ export interface Database {
           }
         ]
       }
+      stores: {
+        Row: {
+          id: string
+          submitted_by: string
+          name: string
+          slug: string
+          description: string | null
+          store_type: StoreType
+          status: StoreStatus
+          phone: string | null
+          email: string | null
+          website: string | null
+          instagram: string | null
+          facebook: string | null
+          address: string
+          city: string
+          province: string | null
+          postal_code: string | null
+          country: string
+          latitude: number
+          longitude: number
+          images: string[]
+          services: string[]
+          opening_hours: Json
+          avg_rating: number
+          review_count: number
+          reviewed_by: string | null
+          reviewed_at: string | null
+          rejection_reason: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          submitted_by: string
+          name: string
+          slug: string
+          description?: string | null
+          store_type?: StoreType
+          status?: StoreStatus
+          phone?: string | null
+          email?: string | null
+          website?: string | null
+          instagram?: string | null
+          facebook?: string | null
+          address: string
+          city: string
+          province?: string | null
+          postal_code?: string | null
+          country?: string
+          latitude: number
+          longitude: number
+          images?: string[]
+          services?: string[]
+          opening_hours?: Json
+          avg_rating?: number
+          review_count?: number
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          rejection_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          submitted_by?: string
+          name?: string
+          slug?: string
+          description?: string | null
+          store_type?: StoreType
+          status?: StoreStatus
+          phone?: string | null
+          email?: string | null
+          website?: string | null
+          instagram?: string | null
+          facebook?: string | null
+          address?: string
+          city?: string
+          province?: string | null
+          postal_code?: string | null
+          country?: string
+          latitude?: number
+          longitude?: number
+          images?: string[]
+          services?: string[]
+          opening_hours?: Json
+          avg_rating?: number
+          review_count?: number
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          rejection_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'stores_submitted_by_fkey'
+            columns: ['submitted_by']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      store_reviews: {
+        Row: {
+          id: string
+          store_id: string
+          reviewer_id: string
+          rating: number
+          content: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          store_id: string
+          reviewer_id: string
+          rating: number
+          content?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          store_id?: string
+          reviewer_id?: string
+          rating?: number
+          content?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'store_reviews_store_id_fkey'
+            columns: ['store_id']
+            referencedRelation: 'stores'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'store_reviews_reviewer_id_fkey'
+            columns: ['reviewer_id']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
       reports: {
         Row: {
           id: string
@@ -849,6 +992,8 @@ export interface Database {
       listing_type: 'sale' | 'trade' | 'both'
       notification_type: 'like' | 'comment' | 'follow' | 'message' | 'mention' | 'system'
       report_status: 'pending' | 'reviewed' | 'resolved' | 'dismissed'
+      store_type: StoreType
+      store_status: StoreStatus
       tag_category: 'faction' | 'technique' | 'game_system' | 'other'
     }
     CompositeTypes: {
@@ -861,6 +1006,10 @@ export interface Database {
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
 export type Insertable<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert']
 export type Updatable<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update']
+
+// Store enums
+export type StoreType = 'specialist' | 'comics_games' | 'general_hobby' | 'online_only'
+export type StoreStatus = 'pending' | 'approved' | 'rejected' | 'closed'
 
 // Listing category enum
 export type ListingCategory =
@@ -880,3 +1029,5 @@ export type Listing = Tables<'listings'>
 export type Article = Tables<'articles'>
 export type Message = Tables<'messages'>
 export type Notification = Tables<'notifications'>
+export type Store = Tables<'stores'>
+export type StoreReview = Tables<'store_reviews'>

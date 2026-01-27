@@ -23,8 +23,8 @@ import {
   Trash2,
   SendHorizontal,
   X,
-  Cpu,
   Maximize2,
+  Shield,
 } from 'lucide-react'
 import type { Miniature, Profile } from '@/lib/types/database.types'
 
@@ -39,36 +39,152 @@ const HolographicDisplay = dynamic(
 function HoloFallback() {
   return (
     <div className="relative aspect-square bg-void rounded-lg overflow-hidden flex items-center justify-center">
-      {/* Corner brackets */}
-      <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-imperial-gold/60" />
-      <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-imperial-gold/60" />
-      <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-imperial-gold/60" />
-      <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-imperial-gold/60" />
+      <NecronCorner position="tl" />
+      <NecronCorner position="tr" />
+      <NecronCorner position="bl" />
+      <NecronCorner position="br" />
 
       {/* Radial glow */}
-      <div className="absolute inset-0 bg-gradient-radial from-imperial-gold/10 via-transparent to-transparent animate-pulse-glow" />
+      <div className="absolute inset-0 bg-gradient-radial from-necron-teal/10 via-transparent to-transparent animate-pulse-glow" />
 
       {/* Scan line */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="w-full h-px bg-imperial-gold/30 animate-scan" />
+        <div className="w-full h-px bg-necron-teal/30 animate-scan" />
       </div>
 
-      <p className="text-xs font-body uppercase tracking-[0.2em] text-imperial-gold/60 animate-pulse">
-        Inicializando hololitico...
+      <p className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/60 animate-pulse">
+        Inicializando escáner...
       </p>
     </div>
   )
 }
 
-// Divider with label
+// Necron angular circuit-trace filigree corner — geometric, cold, technological
+function NecronCorner({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
+  const posClass = { tl: 'top-0 left-0', tr: 'top-0 right-0', bl: 'bottom-0 left-0', br: 'bottom-0 right-0' }[position]
+  const flip = { tl: undefined, tr: 'scaleX(-1)', bl: 'scaleY(-1)', br: 'scale(-1)' }[position]
+
+  return (
+    <svg
+      viewBox="0 0 60 60"
+      className={`absolute w-14 h-14 text-necron-teal pointer-events-none ${posClass}`}
+      style={flip ? { transform: flip } : undefined}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="square"
+    >
+      {/* Main angular L-arm — sharp 90° Necron geometry */}
+      <path d="M0 60 V14 H6 V6 H14 V0 H60" strokeWidth="1.5" opacity="0.45" />
+      {/* Inner parallel trace — circuit doubling */}
+      <path d="M6 52 V20 H12 V12 H20 V6 H52" strokeWidth="0.75" opacity="0.18" />
+      {/* T-junction node at elbow */}
+      <path d="M14 20 H20 V14" strokeWidth="1" opacity="0.3" />
+      {/* Circuit node — square, not circle */}
+      <rect x="11" y="11" width="4" height="4" fill="currentColor" opacity="0.3" stroke="none" />
+      {/* Arm accent nodes */}
+      <rect x="36" y="1" width="2.5" height="2.5" fill="currentColor" opacity="0.2" stroke="none" />
+      <rect x="1" y="36" width="2.5" height="2.5" fill="currentColor" opacity="0.2" stroke="none" />
+      {/* Gauss energy dot at terminus */}
+      <rect x="52" y="1" width="2" height="2" fill="currentColor" opacity="0.15" stroke="none" />
+    </svg>
+  )
+}
+
+// Gauss data grid — network of nodes with faint connections (Necron tech)
+const GRID_NODES = Array.from({ length: 28 }, (_, i) => ({
+  left: `${(i * 7.9 + 11.3) % 96 + 2}%`,
+  top: `${(i * 12.3 + 7.1) % 96 + 2}%`,
+  size: i % 6 === 0 ? 2.5 : i % 3 === 0 ? 1.5 : 1,
+  opacity: i % 6 === 0 ? 0.25 : i % 3 === 0 ? 0.15 : 0.08,
+  pulse: i % 5 === 0,
+  pulseDur: 3 + (i % 4) * 1.2,
+  pulseDelay: (i % 5) * 0.7,
+}))
+
+function GaussGrid() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {GRID_NODES.map((n, i) =>
+        n.pulse ? (
+          <motion.div
+            key={i}
+            className="absolute bg-necron-teal"
+            style={{ left: n.left, top: n.top, width: n.size, height: n.size }}
+            animate={{ opacity: [n.opacity * 0.4, n.opacity * 1.8, n.opacity * 0.4] }}
+            transition={{ duration: n.pulseDur, repeat: Infinity, delay: n.pulseDelay, ease: 'easeInOut' }}
+          />
+        ) : (
+          <div
+            key={i}
+            className="absolute bg-necron-teal"
+            style={{ left: n.left, top: n.top, width: n.size, height: n.size, opacity: n.opacity }}
+          />
+        )
+      )}
+    </div>
+  )
+}
+
+// Floating gauss embers — small energy particles
+const EMBER_SEEDS = Array.from({ length: 8 }, (_, i) => ({
+  id: i,
+  left: `${(i * 14 + 7) % 88 + 6}%`,
+  top: `${(i * 19 + 12) % 78 + 11}%`,
+  drift: (i % 2 === 0 ? -1 : 1) * (16 + (i % 3) * 10),
+  dur: 5 + (i % 4) * 1.8,
+  delay: i * 0.6,
+  size: i % 3 === 0 ? 1.5 : 1,
+}))
+
+function GaussEmbers() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {EMBER_SEEDS.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full bg-necron/50"
+          style={{ left: p.left, top: p.top, width: p.size, height: p.size }}
+          animate={{
+            y: [0, p.drift, 0],
+            opacity: [0, 0.7, 0],
+          }}
+          transition={{
+            duration: p.dur,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// Triarch Ankh SVG icon — reusable
+function TriarchAnkh({ size = 20, className = '' }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size * 1.33} viewBox="0 0 24 32" fill="none" className={className}>
+      <ellipse cx="12" cy="9" rx="6" ry="8" stroke="currentColor" strokeWidth="1.5" fill="none" />
+      <line x1="12" y1="17" x2="12" y2="30" stroke="currentColor" strokeWidth="1.5" />
+      <line x1="6" y1="22" x2="18" y2="22" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1" fill="none" />
+    </svg>
+  )
+}
+
+// Section divider with Necron glyphs
 function SectionDivider({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-3 my-4">
-      <div className="flex-1 h-px bg-imperial-gold/10" />
-      <span className="text-xs font-body uppercase tracking-[0.2em] text-imperial-gold/50">
-        {label}
-      </span>
-      <div className="flex-1 h-px bg-imperial-gold/10" />
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-necron-teal/15" />
+      <div className="flex items-center gap-2">
+        <div className="w-1 h-1 bg-necron-teal/30" />
+        <span className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/50">
+          {label}
+        </span>
+        <div className="w-1 h-1 bg-necron-teal/30" />
+      </div>
+      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-necron-teal/15" />
     </div>
   )
 }
@@ -307,7 +423,7 @@ export default function MiniatureDetailPage() {
           </h2>
           <Link href="/galeria">
             <motion.button
-              className="px-6 py-3 bg-imperial-gold text-void font-semibold rounded-lg"
+              className="px-6 py-3 bg-necron-teal text-void font-semibold rounded-lg"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -323,13 +439,44 @@ export default function MiniatureDetailPage() {
 
   return (
     <>
-      <div className="min-h-screen pt-24 pb-16">
+      <div className="min-h-screen pt-24 pb-16 relative">
+        {/* === Atmospheric Background — lighter than gallery listing === */}
+        <div className="fixed inset-0 pointer-events-none z-0">
+          {/* Teal aurora */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(13,155,138,0.06)_0%,transparent_55%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(0,212,170,0.04)_0%,transparent_45%)]" />
+
+          {/* Breathing aurora */}
+          <motion.div
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(13,155,138,0.04)_0%,transparent_50%)]"
+            animate={{ opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+          />
+
+          {/* Holographic dot grid */}
+          <div
+            className="absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage: 'radial-gradient(circle, rgba(0,255,135,0.2) 1px, transparent 1px)',
+              backgroundSize: '80px 80px',
+            }}
+          />
+
+          {/* Single scan line */}
+          <motion.div
+            className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-necron-dark/15 to-transparent"
+            style={{ top: '40%' }}
+            animate={{ opacity: [0, 0, 0.5, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', times: [0, 0.85, 0.92, 1] }}
+          />
+        </div>
+
         {/* Back Button */}
-        <div className="px-6 mb-6">
+        <div className="relative z-10 px-6 mb-6">
           <div className="max-w-7xl mx-auto">
             <motion.button
               onClick={() => router.back()}
-              className="flex items-center gap-2 text-bone/60 hover:text-imperial-gold transition-colors"
+              className="flex items-center gap-2 text-bone/60 hover:text-necron-dark transition-colors"
               whileHover={{ x: -4 }}
             >
               <ArrowLeft className="w-5 h-5" />
@@ -338,56 +485,77 @@ export default function MiniatureDetailPage() {
           </div>
         </div>
 
-        <div className="px-6">
+        <div className="relative z-10 px-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            {/* Header Bar */}
+            {/* ── Solemnace Specimen Header ─────────────────────── */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="relative border border-imperial-gold/20 rounded-lg p-3 bg-void-light/30 overflow-hidden"
+              className="mb-2"
             >
-              {/* Corner brackets */}
-              <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-imperial-gold/60" />
-              <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-imperial-gold/60" />
-              <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-imperial-gold/60" />
-              <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-imperial-gold/60" />
+              <div className="relative bg-void-light/30 backdrop-blur-sm rounded-xl p-5 overflow-hidden">
+                {/* Necron angular filigree corners */}
+                <NecronCorner position="tl" />
+                <NecronCorner position="tr" />
+                <NecronCorner position="bl" />
+                <NecronCorner position="br" />
 
-              {/* Scan-line overlay */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-20">
-                <div className="w-full h-px bg-imperial-gold/40 animate-scan" />
+                {/* Gauss data grid background */}
+                <GaussGrid />
+
+                {/* Teal vignette */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(13,155,138,0.06)_0%,transparent_60%)] pointer-events-none" />
+
+                {/* Floating gauss embers */}
+                <GaussEmbers />
+
+                {/* Traveling gauss shimmer along top edge */}
+                <motion.div
+                  className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-transparent via-necron-dark/50 to-transparent pointer-events-none"
+                  animate={{ left: ['-10%', '110%'] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1 }}
+                />
+
+                <div className="relative flex items-center justify-between flex-wrap gap-3">
+                  <div className="flex items-center gap-3">
+                    {/* Pulsing Triarch Ankh */}
+                    <div className="relative">
+                      <motion.div
+                        className="absolute inset-0 bg-necron-teal/20 rounded-lg blur-sm"
+                        animate={{ opacity: [0.4, 0.8, 0.4] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                      />
+                      <div className="relative p-2 bg-necron-teal/10 rounded-lg border border-necron-teal/20">
+                        <motion.div
+                          animate={{ opacity: [0.7, 1, 0.7] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                        >
+                          <TriarchAnkh size={18} className="text-necron-dark" />
+                        </motion.div>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-xs font-mono uppercase tracking-[0.25em] text-necron-dark/70 block">
+                        Solemnace <span className="text-necron-teal/30">◆</span> Registro de Espécimen
+                      </span>
+                      <span className="text-[10px] font-mono text-bone/30 tracking-wider">
+                        REF: {miniature.id.slice(0, 8).toUpperCase()} <span className="text-necron-teal/20">◆</span> FECHA REGISTRO: {new Date(miniature.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-bone/40 text-xs font-mono">
+                    <span className="flex items-center gap-1.5">
+                      <Eye className="w-3.5 h-3.5" />
+                      {miniature.view_count ?? 0} inspecciones
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Shield className="w-3.5 h-3.5 text-necron-dark/60" />
+                      Catalogado
+                    </span>
+                  </div>
+                </div>
               </div>
-
-              <div className="flex items-center gap-3">
-                <Cpu className="w-4 h-4 text-imperial-gold/60 flex-shrink-0" />
-                <span className="text-xs font-body uppercase tracking-[0.2em] text-imperial-gold/70">
-                  Administratum // Ficha Hololitica
-                </span>
-              </div>
-            </motion.div>
-
-            {/* Classification Bar */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.15 }}
-              className="flex flex-wrap items-center gap-4 text-xs font-body text-bone/40"
-            >
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                {new Date(miniature.created_at).toLocaleDateString('es-ES', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                })}
-              </span>
-              <span className="flex items-center gap-1">
-                <Eye className="w-3 h-3" />
-                {miniature.view_count ?? 0}
-              </span>
-              <span className="text-imperial-gold/30">
-                REF: {miniature.id.slice(0, 8).toUpperCase()}
-              </span>
             </motion.div>
 
             {/* Two-Column Grid */}
@@ -399,13 +567,12 @@ export default function MiniatureDetailPage() {
                 transition={{ duration: 0.6 }}
                 className="space-y-4"
               >
-                {/* Holo Display with corner brackets */}
+                {/* Holo Display with Necron filigree corners */}
                 <div className="relative animate-holo-flicker">
-                  {/* Corner brackets */}
-                  <div className="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-imperial-gold/50 z-10" />
-                  <div className="absolute -top-1 -right-1 w-6 h-6 border-t-2 border-r-2 border-imperial-gold/50 z-10" />
-                  <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-2 border-l-2 border-imperial-gold/50 z-10" />
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-2 border-r-2 border-imperial-gold/50 z-10" />
+                  <NecronCorner position="tl" />
+                  <NecronCorner position="tr" />
+                  <NecronCorner position="bl" />
+                  <NecronCorner position="br" />
 
                   <div className="aspect-square rounded-lg overflow-hidden bg-void border border-bone/5">
                     <HolographicDisplay
@@ -454,7 +621,7 @@ export default function MiniatureDetailPage() {
                           onClick={() => setCurrentImageIndex(idx)}
                           className={`relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 border ${
                             idx === currentImageIndex
-                              ? 'border-imperial-gold ring-1 ring-imperial-gold/30'
+                              ? 'border-necron-teal ring-1 ring-necron-teal/30'
                               : 'border-bone/10 opacity-50 hover:opacity-100'
                           }`}
                           whileHover={{ scale: 1.05 }}
@@ -467,8 +634,8 @@ export default function MiniatureDetailPage() {
                   )}
                   <motion.button
                     onClick={() => setShowLightbox(true)}
-                    className="flex items-center gap-2 px-4 py-2.5 border border-imperial-gold/30 text-imperial-gold rounded-lg text-xs font-body uppercase tracking-wider hover:bg-imperial-gold/10 transition-colors flex-shrink-0"
-                    whileHover={{ scale: 1.03 }}
+                    className="relative flex items-center gap-2 px-4 py-2.5 border border-necron-teal/30 text-necron-dark rounded-lg text-xs font-body uppercase tracking-wider hover:bg-necron-teal/10 transition-colors flex-shrink-0 overflow-hidden"
+                    whileHover={{ scale: 1.03, boxShadow: '0 0 20px rgba(13,155,138,0.15)' }}
                     whileTap={{ scale: 0.97 }}
                   >
                     <Maximize2 className="w-4 h-4" />
@@ -486,10 +653,10 @@ export default function MiniatureDetailPage() {
               >
                 {/* DESIGNACION */}
                 <div>
-                  <span className="text-xs font-body uppercase tracking-[0.2em] text-imperial-gold/50 mb-1 block">
+                  <span className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/50 mb-1 block">
                     Designacion
                   </span>
-                  <div className="border-l-2 border-imperial-gold pl-4">
+                  <div className="border-l-2 border-necron-teal pl-4">
                     <h1 className="text-2xl md:text-3xl font-display font-bold text-bone">
                       {miniature.title}
                     </h1>
@@ -498,7 +665,7 @@ export default function MiniatureDetailPage() {
 
                 {/* OPERARIO */}
                 <div className="border border-bone/10 rounded-lg p-4 bg-void-light/30">
-                  <span className="text-xs font-body uppercase tracking-[0.2em] text-imperial-gold/50 mb-3 block">
+                  <span className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/50 mb-3 block">
                     Operario
                   </span>
                   <Link href={`/usuarios/${miniature.profiles.username}`}>
@@ -513,14 +680,14 @@ export default function MiniatureDetailPage() {
                         size="lg"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="font-display font-semibold text-bone group-hover:text-imperial-gold transition-colors truncate">
+                        <p className="font-display font-semibold text-bone group-hover:text-necron-dark transition-colors truncate">
                           {miniature.profiles.display_name || miniature.profiles.username}
                         </p>
                         <p className="text-sm text-bone/50">@{miniature.profiles.username}</p>
                       </div>
                       <motion.span
-                        className="px-3 py-1.5 bg-imperial-gold/10 border border-imperial-gold/30 text-imperial-gold font-semibold text-xs rounded-md"
-                        whileHover={{ scale: 1.02, backgroundColor: 'rgba(201, 162, 39, 0.2)' }}
+                        className="px-3 py-1.5 bg-necron-teal/10 border border-necron-teal/30 text-necron-dark font-semibold text-xs rounded-md"
+                        whileHover={{ scale: 1.02, backgroundColor: 'rgba(13, 155, 138, 0.2)' }}
                         whileTap={{ scale: 0.98 }}
                         onClick={(e) => e.preventDefault()}
                       >
@@ -533,7 +700,7 @@ export default function MiniatureDetailPage() {
                 {/* INFORME TACTICO */}
                 {miniature.description && (
                   <div className="border border-bone/10 rounded-lg p-4 bg-void-light/30">
-                    <span className="text-xs font-body uppercase tracking-[0.2em] text-imperial-gold/50 mb-2 block">
+                    <span className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/50 mb-2 block">
                       Informe Tactico
                     </span>
                     <p className="text-bone/70 font-body leading-relaxed text-sm">
@@ -547,7 +714,7 @@ export default function MiniatureDetailPage() {
                   <div className="flex items-center gap-2">
                     <Link href={`/mi-galeria/editar/${miniature.id}`} className="flex-1">
                       <motion.button
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-imperial-gold/30 text-imperial-gold rounded-lg text-sm font-semibold hover:bg-imperial-gold/10 transition-colors"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-necron-teal/30 text-necron-dark rounded-lg text-sm font-semibold hover:bg-necron-teal/10 transition-colors"
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.98 }}
                       >
@@ -613,7 +780,7 @@ export default function MiniatureDetailPage() {
               <SectionDivider label="Registro de Comunicaciones" />
               <div className="border border-bone/10 rounded-lg p-5 bg-void-light/30">
                 <h3 className="text-sm font-display font-bold text-bone mb-4 flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4 text-imperial-gold" />
+                  <MessageCircle className="w-4 h-4 text-necron-dark" />
                   Comentarios ({comments.length})
                 </h3>
 
@@ -633,12 +800,12 @@ export default function MiniatureDetailPage() {
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSubmitComment()}
-                        className="w-full px-4 py-2.5 pr-12 bg-void border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50"
+                        className="w-full px-4 py-2.5 pr-12 bg-void border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-necron-teal/50"
                       />
                       <motion.button
                         onClick={handleSubmitComment}
                         disabled={!newComment.trim() || isSubmittingComment}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-imperial-gold disabled:text-bone/30 disabled:cursor-not-allowed"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-necron-dark disabled:text-bone/30 disabled:cursor-not-allowed"
                         whileHover={newComment.trim() ? { scale: 1.1 } : {}}
                         whileTap={newComment.trim() ? { scale: 0.9 } : {}}
                       >
@@ -650,7 +817,7 @@ export default function MiniatureDetailPage() {
                   <Link href="/login">
                     <div className="p-3 bg-void rounded-lg text-center mb-5 hover:bg-void-light/50 transition-colors cursor-pointer border border-bone/5">
                       <p className="text-bone/60 text-sm">
-                        <span className="text-imperial-gold">Inicia sesion</span> para comentar
+                        <span className="text-necron-dark">Inicia sesion</span> para comentar
                       </p>
                     </div>
                   </Link>
@@ -758,9 +925,9 @@ export default function MiniatureDetailPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3">
-                <Cpu className="w-3.5 h-3.5 text-imperial-gold/50" />
-                <span className="text-xs font-body uppercase tracking-[0.2em] text-imperial-gold/50">
-                  Visor de detalle
+                <TriarchAnkh size={12} className="text-necron-teal/50 flex-shrink-0" />
+                <span className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/50">
+                  Solemnace <span className="text-necron-teal/25">◆</span> Visor Prismático
                 </span>
                 {images.length > 1 && (
                   <span className="text-xs font-body text-bone/40 ml-2">
@@ -788,11 +955,11 @@ export default function MiniatureDetailPage() {
               className="relative max-w-5xl w-full flex-1 min-h-0"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Corner brackets */}
-              <div className="absolute -top-1 -left-1 w-5 h-5 border-t-2 border-l-2 border-imperial-gold/40 z-10" />
-              <div className="absolute -top-1 -right-1 w-5 h-5 border-t-2 border-r-2 border-imperial-gold/40 z-10" />
-              <div className="absolute -bottom-1 -left-1 w-5 h-5 border-b-2 border-l-2 border-imperial-gold/40 z-10" />
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 border-b-2 border-r-2 border-imperial-gold/40 z-10" />
+              {/* Necron filigree corners */}
+              <NecronCorner position="tl" />
+              <NecronCorner position="tr" />
+              <NecronCorner position="bl" />
+              <NecronCorner position="br" />
 
               <div className="relative w-full h-full flex items-center justify-center border border-bone/5 rounded-lg bg-void-light/20 overflow-hidden">
                 <Image
@@ -806,7 +973,7 @@ export default function MiniatureDetailPage() {
 
                 {/* Scan line overlay */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-10">
-                  <div className="w-full h-px bg-imperial-gold/30 animate-scan" />
+                  <div className="w-full h-px bg-necron-teal/30 animate-scan" />
                 </div>
               </div>
 
@@ -816,7 +983,7 @@ export default function MiniatureDetailPage() {
                   <motion.button
                     onClick={prevImage}
                     className="absolute left-3 top-1/2 -translate-y-1/2 p-3 bg-void/80 backdrop-blur-sm rounded-full text-bone border border-bone/10"
-                    whileHover={{ scale: 1.1, borderColor: 'rgba(201, 162, 39, 0.4)' }}
+                    whileHover={{ scale: 1.1, borderColor: 'rgba(13, 155, 138, 0.4)' }}
                     whileTap={{ scale: 0.9 }}
                   >
                     <ChevronLeft className="w-5 h-5" />
@@ -824,7 +991,7 @@ export default function MiniatureDetailPage() {
                   <motion.button
                     onClick={nextImage}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-void/80 backdrop-blur-sm rounded-full text-bone border border-bone/10"
-                    whileHover={{ scale: 1.1, borderColor: 'rgba(201, 162, 39, 0.4)' }}
+                    whileHover={{ scale: 1.1, borderColor: 'rgba(13, 155, 138, 0.4)' }}
                     whileTap={{ scale: 0.9 }}
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -848,7 +1015,7 @@ export default function MiniatureDetailPage() {
                     onClick={() => setCurrentImageIndex(idx)}
                     className={`relative w-14 h-14 rounded-md overflow-hidden flex-shrink-0 border transition-all ${
                       idx === currentImageIndex
-                        ? 'border-imperial-gold ring-1 ring-imperial-gold/30 opacity-100'
+                        ? 'border-necron-teal ring-1 ring-necron-teal/30 opacity-100'
                         : 'border-bone/10 opacity-40 hover:opacity-80'
                     }`}
                     whileHover={{ scale: 1.08 }}

@@ -22,7 +22,6 @@ import {
   AlertCircle,
   ArrowLeft,
   Info,
-  Cpu,
   Search,
 } from 'lucide-react'
 
@@ -269,7 +268,7 @@ export default function UploadMiniaturePage() {
     return (
       <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
         <motion.div
-          className="w-8 h-8 border-2 border-bone/20 border-t-imperial-gold rounded-full"
+          className="w-8 h-8 border-2 border-bone/20 border-t-necron-dark rounded-full"
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
         />
@@ -281,7 +280,7 @@ export default function UploadMiniaturePage() {
     <div className="min-h-screen pt-24 pb-16">
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.05)_0%,transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(13,155,138,0.05)_0%,transparent_60%)]" />
       </div>
 
       <div className="relative z-10 px-6">
@@ -291,7 +290,7 @@ export default function UploadMiniaturePage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-bone/60 hover:text-imperial-gold transition-colors mb-8"
+            className="flex items-center gap-2 text-bone/60 hover:text-necron-dark transition-colors mb-8"
           >
             <ArrowLeft className="w-5 h-5" />
             <span className="font-body">Volver</span>
@@ -307,17 +306,27 @@ export default function UploadMiniaturePage() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', delay: 0.2 }}
-              className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-imperial-gold/10 border border-imperial-gold/30 mb-4"
+              className="relative inline-flex items-center justify-center w-16 h-16 rounded-full bg-necron-teal/10 border border-necron-teal/30 mb-4"
             >
-              <Cpu className="w-8 h-8 text-imperial-gold" />
+              <motion.div
+                className="absolute inset-0 rounded-full bg-necron-teal/15 blur-md"
+                animate={{ opacity: [0.4, 0.8, 0.4] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <svg width="28" height="37" viewBox="0 0 24 32" fill="none" className="text-necron-dark relative">
+                <ellipse cx="12" cy="9" rx="6" ry="8" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                <line x1="12" y1="17" x2="12" y2="30" stroke="currentColor" strokeWidth="1.5" />
+                <line x1="6" y1="22" x2="18" y2="22" stroke="currentColor" strokeWidth="1.5" />
+                <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1" fill="none" />
+              </svg>
             </motion.div>
 
             <h1 className="text-3xl md:text-4xl font-display font-bold tracking-wide mb-2">
-              <span className="text-bone/60 text-lg block mb-1">ADMINISTRATUM //</span>
-              <span className="text-gradient">Registro de Miniatura</span>
+              <span className="text-necron-dark/50 text-lg block mb-1">SOLEMNACE //</span>
+              <span className="bg-gradient-to-r from-necron-dark via-necron to-necron-dark bg-clip-text text-transparent">Registro de Espécimen</span>
             </h1>
             <p className="text-bone/60 font-body">
-              Comparte tu obra con la comunidad
+              Preserva tu obra en las Galerías Prismáticas
             </p>
           </motion.div>
 
@@ -358,7 +367,7 @@ export default function UploadMiniaturePage() {
             {/* Image Upload Area */}
             <div className="bg-void-light/30 border border-bone/10 rounded-2xl p-6">
               <label className="block text-lg font-display font-semibold text-bone mb-4">
-                Imágenes <span className="text-imperial-gold">*</span>
+                Imágenes <span className="text-necron-dark">*</span>
               </label>
 
               {/* Drop Zone with corner brackets */}
@@ -368,18 +377,18 @@ export default function UploadMiniaturePage() {
                 onDrop={handleDrop}
                 className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ${
                   isDragging
-                    ? 'border-imperial-gold bg-imperial-gold/10'
-                    : 'border-bone/20 hover:border-imperial-gold/50'
+                    ? 'border-necron-teal bg-necron-teal/10'
+                    : 'border-bone/20 hover:border-necron-teal/50'
                 }`}
                 animate={{
                   scale: isDragging ? 1.02 : 1,
                 }}
               >
                 {/* Corner brackets */}
-                <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-imperial-gold/40" />
-                <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-imperial-gold/40" />
-                <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-imperial-gold/40" />
-                <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-imperial-gold/40" />
+                <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-necron-teal/40" />
+                <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-necron-teal/40" />
+                <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-necron-teal/40" />
+                <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-necron-teal/40" />
 
                 <input
                   type="file"
@@ -399,7 +408,7 @@ export default function UploadMiniaturePage() {
 
                   <p className="text-bone/80 font-body mb-2">
                     Arrastra tus imágenes aquí o{' '}
-                    <span className="text-imperial-gold">haz clic para seleccionar</span>
+                    <span className="text-necron-dark">haz clic para seleccionar</span>
                   </p>
                   <p className="text-bone/40 text-sm">
                     PNG, JPG o WEBP. Máximo 10 imágenes.
@@ -446,7 +455,7 @@ export default function UploadMiniaturePage() {
                         {img.uploading && (
                           <div className="absolute inset-0 bg-void/80 flex items-center justify-center">
                             <motion.div
-                              className="w-8 h-8 border-2 border-bone/20 border-t-imperial-gold rounded-full"
+                              className="w-8 h-8 border-2 border-bone/20 border-t-necron-dark rounded-full"
                               animate={{ rotate: 360 }}
                               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                             />
@@ -467,7 +476,7 @@ export default function UploadMiniaturePage() {
 
                         {/* Main image badge */}
                         {index === 0 && (
-                          <div className="absolute top-2 left-2 px-2 py-1 bg-imperial-gold text-void text-xs font-bold rounded">
+                          <div className="absolute top-2 left-2 px-2 py-1 bg-necron-teal text-void text-xs font-bold rounded">
                             Principal
                           </div>
                         )}
@@ -478,7 +487,7 @@ export default function UploadMiniaturePage() {
                   {/* Add more button */}
                   {images.length < 10 && (
                     <motion.label
-                      className="aspect-square rounded-xl border-2 border-dashed border-bone/20 hover:border-imperial-gold/50 flex items-center justify-center cursor-pointer transition-colors"
+                      className="aspect-square rounded-xl border-2 border-dashed border-bone/20 hover:border-necron-teal/50 flex items-center justify-center cursor-pointer transition-colors"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -506,13 +515,13 @@ export default function UploadMiniaturePage() {
             {/* Title */}
             <div>
               <label className="block text-lg font-display font-semibold text-bone mb-2">
-                Título <span className="text-imperial-gold">*</span>
+                Título <span className="text-necron-dark">*</span>
               </label>
               <input
                 type="text"
                 placeholder="Ej: Ultramarines Captain"
                 className={`w-full px-4 py-4 bg-void/50 border rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none transition-colors ${
-                  errors.title ? 'border-red-500/50' : 'border-bone/10 focus:border-imperial-gold/50'
+                  errors.title ? 'border-red-500/50' : 'border-bone/10 focus:border-necron-teal/50'
                 }`}
                 {...register('title')}
               />
@@ -532,7 +541,7 @@ export default function UploadMiniaturePage() {
               <textarea
                 rows={4}
                 placeholder="Describe tu miniatura, técnicas usadas, historia..."
-                className="w-full px-4 py-4 bg-void/50 border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors resize-none"
+                className="w-full px-4 py-4 bg-void/50 border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-necron-teal/50 transition-colors resize-none"
                 {...register('description')}
               />
             </div>
@@ -548,7 +557,7 @@ export default function UploadMiniaturePage() {
                 <motion.div
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-3 mb-4 p-3 rounded-xl border border-imperial-gold/30"
+                  className="flex items-center gap-3 mb-4 p-3 rounded-xl border border-necron-teal/30"
                   style={{
                     background: `linear-gradient(135deg, ${selectedFactionDetails.primary_color}20, ${selectedFactionDetails.secondary_color || selectedFactionDetails.primary_color}10)`,
                   }}
@@ -571,7 +580,7 @@ export default function UploadMiniaturePage() {
                       <div className="w-4 h-4 rounded-full bg-white/30" />
                     )}
                   </div>
-                  <span className="text-sm font-body text-imperial-gold font-medium flex-1">
+                  <span className="text-sm font-body text-necron-dark font-medium flex-1">
                     {selectedFactionDetails.name}
                   </span>
                   <motion.button
@@ -595,7 +604,7 @@ export default function UploadMiniaturePage() {
                     onClick={() => setActiveCategory(cat.id)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body whitespace-nowrap transition-all ${
                       activeCategory === cat.id
-                        ? 'bg-imperial-gold text-void'
+                        ? 'bg-necron-teal text-void'
                         : 'bg-void border border-bone/10 text-bone/60 hover:border-bone/30 hover:text-bone'
                     }`}
                     whileTap={{ scale: 0.95 }}
@@ -623,7 +632,7 @@ export default function UploadMiniaturePage() {
                   placeholder="Buscar facción..."
                   value={factionSearch}
                   onChange={(e) => setFactionSearch(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-void border border-bone/10 rounded-lg font-body text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50"
+                  className="w-full pl-9 pr-4 py-2 bg-void border border-bone/10 rounded-lg font-body text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-necron-teal/50"
                 />
               </div>
 
@@ -631,7 +640,7 @@ export default function UploadMiniaturePage() {
               {factionsLoading ? (
                 <div className="h-[200px] flex items-center justify-center">
                   <motion.div
-                    className="w-6 h-6 border-2 border-bone/20 border-t-imperial-gold rounded-full"
+                    className="w-6 h-6 border-2 border-bone/20 border-t-necron-dark rounded-full"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   />
@@ -652,7 +661,7 @@ export default function UploadMiniaturePage() {
                           }
                           className={`relative p-3 rounded-xl border text-left transition-all ${
                             isSelected
-                              ? 'border-imperial-gold'
+                              ? 'border-necron-teal'
                               : 'border-bone/10 hover:border-bone/30'
                           }`}
                           style={{
@@ -685,7 +694,7 @@ export default function UploadMiniaturePage() {
 
                             <div className="flex-1 min-w-0">
                               <p className={`text-xs font-body font-medium truncate ${
-                                isSelected ? 'text-imperial-gold' : 'text-bone/80'
+                                isSelected ? 'text-necron-dark' : 'text-bone/80'
                               }`}>
                                 {faction.name}
                               </p>
@@ -696,7 +705,7 @@ export default function UploadMiniaturePage() {
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                               >
-                                <Check className="w-4 h-4 text-imperial-gold" />
+                                <Check className="w-4 h-4 text-necron-dark" />
                               </motion.div>
                             )}
                           </div>
@@ -714,7 +723,7 @@ export default function UploadMiniaturePage() {
                           setFactionSearch('')
                           setActiveCategory('all')
                         }}
-                        className="text-imperial-gold text-xs mt-2 hover:underline"
+                        className="text-necron-dark text-xs mt-2 hover:underline"
                       >
                         Limpiar filtros
                       </button>
@@ -726,12 +735,12 @@ export default function UploadMiniaturePage() {
 
             {/* Info Box */}
             <motion.div
-              className="flex items-start gap-3 p-4 bg-imperial-gold/5 border border-imperial-gold/20 rounded-xl"
+              className="flex items-start gap-3 p-4 bg-necron-teal/5 border border-necron-teal/20 rounded-xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              <Info className="w-5 h-5 text-imperial-gold flex-shrink-0 mt-0.5" />
+              <Info className="w-5 h-5 text-necron-dark flex-shrink-0 mt-0.5" />
               <div className="text-sm text-bone/70 font-body">
                 <p className="font-semibold text-bone mb-1">Consejos para mejores fotos:</p>
                 <ul className="list-disc list-inside space-y-1 text-bone/60">
@@ -769,11 +778,11 @@ export default function UploadMiniaturePage() {
               >
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-bone/60">Subiendo imágenes...</span>
-                  <span className="text-imperial-gold font-semibold">{Math.round(uploadProgress)}%</span>
+                  <span className="text-necron-dark font-semibold">{Math.round(uploadProgress)}%</span>
                 </div>
                 <div className="h-2 bg-void-light rounded-full overflow-hidden border border-bone/10">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-imperial-gold to-yellow-500"
+                    className="h-full bg-gradient-to-r from-necron-dark to-yellow-500"
                     initial={{ width: 0 }}
                     animate={{ width: `${uploadProgress}%` }}
                     transition={{ duration: 0.3 }}
@@ -786,15 +795,15 @@ export default function UploadMiniaturePage() {
             <motion.button
               type="submit"
               disabled={isSubmitting || images.length === 0}
-              className="relative w-full py-4 bg-gradient-to-r from-imperial-gold via-yellow-500 to-imperial-gold text-void font-display font-bold tracking-wider uppercase text-sm overflow-hidden rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative w-full py-4 bg-gradient-to-r from-necron-dark via-necron to-necron-dark text-void font-display font-bold tracking-wider uppercase text-sm overflow-hidden rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ backgroundSize: '200% 100%' }}
               whileHover={!isSubmitting && images.length > 0 ? { scale: 1.01, backgroundPosition: '100% 0' } : {}}
               whileTap={!isSubmitting && images.length > 0 ? { scale: 0.99 } : {}}
               animate={!isSubmitting && images.length > 0 ? {
                 boxShadow: [
-                  '0 4px 20px rgba(201, 162, 39, 0.3)',
-                  '0 4px 40px rgba(201, 162, 39, 0.5)',
-                  '0 4px 20px rgba(201, 162, 39, 0.3)',
+                  '0 4px 20px rgba(13, 155, 138, 0.3)',
+                  '0 4px 40px rgba(13, 155, 138, 0.5)',
+                  '0 4px 20px rgba(13, 155, 138, 0.3)',
                 ],
               } : {}}
               transition={{ duration: 2, repeat: Infinity }}

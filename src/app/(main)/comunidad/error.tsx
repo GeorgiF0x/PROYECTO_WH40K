@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
-import { AlertTriangle, RefreshCw, ArrowLeft } from 'lucide-react'
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 
-export default function MiniatureError({
+export default function ComunidadError({
   error,
   reset,
 }: {
@@ -12,7 +12,7 @@ export default function MiniatureError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('Miniature detail error:', error)
+    console.error('Community error:', error)
   }, [error])
 
   return (
@@ -23,28 +23,28 @@ export default function MiniatureError({
         </div>
 
         <h1 className="text-2xl font-display font-bold text-bone mb-4">
-          Error al cargar la miniatura
+          Error al cargar la comunidad
         </h1>
 
         <p className="text-bone/60 font-body mb-8">
-          No se pudo cargar la información de esta miniatura. Por favor,
-          inténtalo de nuevo o vuelve a la galería.
+          Ha ocurrido un error inesperado al cargar la seccion de comunidad. Por favor,
+          intentalo de nuevo.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-necron-teal text-void font-display font-bold rounded-lg hover:bg-necron-teal/90 transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-imperial-gold text-void font-display font-bold rounded-lg hover:bg-imperial-gold/90 transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Intentar de nuevo
           </button>
           <Link
-            href="/galeria"
+            href="/"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-void-light border border-bone/10 text-bone font-body rounded-lg hover:border-bone/30 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Volver a la galería
+            <Home className="w-4 h-4" />
+            Volver al inicio
           </Link>
         </div>
 

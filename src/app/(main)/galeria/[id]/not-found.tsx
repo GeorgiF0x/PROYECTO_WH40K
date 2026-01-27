@@ -14,7 +14,7 @@ export default function MiniatureNotFound() {
         </p>
         <Link
           href="/galeria"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-imperial-gold text-void font-display font-bold rounded-lg"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-necron-teal text-void font-display font-bold rounded-lg"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver a la galería

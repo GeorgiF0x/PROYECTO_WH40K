@@ -12,6 +12,7 @@ interface MiniatureGridProps {
   miniatures: MiniatureWithStats[]
   isLoading?: boolean
   emptyMessage?: string
+  viewMode?: 'grid' | 'list'
 }
 
 // Loading skeleton card
@@ -43,6 +44,7 @@ export default function MiniatureGrid({
   miniatures,
   isLoading = false,
   emptyMessage = 'No hay miniaturas para mostrar',
+  viewMode = 'grid',
 }: MiniatureGridProps) {
   if (isLoading) {
     return (
@@ -59,27 +61,28 @@ export default function MiniatureGrid({
       <div className="flex flex-col items-center justify-center py-20 animate-fadeIn">
         <div className="relative w-32 h-32 mb-6">
           {/* Empty state illustration with CSS animation */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-bone/5 to-transparent animate-pulse" />
-          <div className="absolute inset-4 rounded-full border-2 border-dashed border-bone/20 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-necron-teal/5 to-transparent animate-pulse" />
+          <div className="absolute inset-4 rounded-full border-2 border-dashed border-necron-teal/20 flex items-center justify-center">
             <div className="animate-spin-slow">
+              {/* Tesseract cube SVG */}
               <svg
-                className="w-12 h-12 text-bone/20"
+                className="w-12 h-12 text-necron-dark/20"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24"
+                viewBox="0 0 200 200"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
+                <rect x="30" y="30" width="100" height="100" strokeWidth="6" />
+                <rect x="70" y="70" width="100" height="100" strokeWidth="6" />
+                <line x1="30" y1="30" x2="70" y2="70" strokeWidth="4" />
+                <line x1="130" y1="30" x2="170" y2="70" strokeWidth="4" />
+                <line x1="30" y1="130" x2="70" y2="170" strokeWidth="4" />
+                <line x1="130" y1="130" x2="170" y2="170" strokeWidth="4" />
               </svg>
             </div>
           </div>
         </div>
-        <h3 className="text-xl font-display font-bold text-bone/60 mb-2">
-          Sin Miniaturas
+        <h3 className="text-xl font-display font-bold text-necron-dark/40 mb-2">
+          Galería Vacía
         </h3>
         <p className="text-bone/40 text-center max-w-sm font-body">
           {emptyMessage}
@@ -89,12 +92,17 @@ export default function MiniatureGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className={
+      viewMode === 'list'
+        ? 'flex flex-col gap-4'
+        : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+    }>
       {miniatures.map((miniature, index) => (
         <MiniatureCard
           key={miniature.id}
           miniature={miniature}
           index={index}
+          variant={viewMode === 'list' ? 'list' : 'card'}
         />
       ))}
     </div>

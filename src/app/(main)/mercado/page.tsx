@@ -127,7 +127,7 @@ async function getListings(searchParams: SearchParams): Promise<{
     return { listings: [], nextCursor: null }
   }
 
-  const listings = (data || []) as ListingWithSeller[]
+  const listings = (data || []) as unknown as ListingWithSeller[]
   const hasMore = listings.length > 24
   const returnListings = hasMore ? listings.slice(0, 24) : listings
 

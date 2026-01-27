@@ -35,6 +35,7 @@ const config: Config = {
         necron: {
           DEFAULT: '#00FF87',
           dark: '#00D4AA',
+          teal: '#0D9B8A',
         },
         steel: '#2A2A35',
       },

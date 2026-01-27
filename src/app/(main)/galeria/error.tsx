@@ -34,7 +34,7 @@ export default function GaleriaError({
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-imperial-gold text-void font-display font-bold rounded-lg hover:bg-imperial-gold/90 transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-necron-teal text-void font-display font-bold rounded-lg hover:bg-necron-teal/90 transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Intentar de nuevo

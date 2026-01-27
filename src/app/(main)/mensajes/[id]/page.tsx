@@ -258,7 +258,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen pt-20 flex flex-col relative">
+    <div className="h-screen pt-20 flex flex-col relative overflow-hidden">
       {/* Warp-tinted background — Astropath */}
       <div className="fixed inset-0 pointer-events-none">
         {/* Strong aurora layers */}
