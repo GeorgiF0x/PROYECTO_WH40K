@@ -12,43 +12,50 @@ import { Radio, ShieldAlert } from 'lucide-react'
 import type { ConversationPreview } from '@/lib/services/messages'
 import { createClient } from '@/lib/supabase/client'
 
-// Floating warp energy wisps — unique to Astropath theme
-const WARP_WISPS = Array.from({ length: 10 }, (_, i) => ({
+// Floating warp energy particles — wisps + orbs, Astropath atmosphere
+const WARP_PARTICLES = Array.from({ length: 18 }, (_, i) => ({
   id: i,
-  left: `${(i * 11 + 7) % 90 + 5}%`,
-  top: `${(i * 17 + 12) % 80 + 10}%`,
-  w: i % 3 === 0 ? 40 : i % 2 === 0 ? 28 : 16,
-  rot: (i * 37) % 180,
-  drift: (i % 2 === 0 ? -1 : 1) * (12 + (i % 4) * 8),
-  dur: 8 + (i % 4) * 3,
-  delay: i * 0.7,
+  left: `${(i * 7 + 3) % 92 + 4}%`,
+  top: `${(i * 13 + 8) % 84 + 8}%`,
+  isOrb: i >= 11,
+  w: i >= 11 ? (i % 3 === 0 ? 12 : 7) : (i % 3 === 0 ? 55 : i % 2 === 0 ? 38 : 22),
+  h: i >= 11 ? (i % 3 === 0 ? 12 : 7) : 3,
+  rot: i >= 11 ? 0 : (i * 37) % 180,
+  drift: (i % 2 === 0 ? -1 : 1) * (15 + (i % 4) * 10),
+  dur: 6 + (i % 5) * 2,
+  delay: i * 0.4,
+  blur: i >= 11 ? (i % 3 === 0 ? 4 : 2) : 1,
+  peak: i >= 11 ? 0.5 : 0.7,
 }))
 
 function WarpWisps() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {WARP_WISPS.map((w) => (
+      {WARP_PARTICLES.map((p) => (
         <motion.div
-          key={w.id}
+          key={p.id}
           className="absolute rounded-full"
           style={{
-            left: w.left,
-            top: w.top,
-            width: w.w,
-            height: 2,
-            background: 'linear-gradient(90deg, transparent, rgba(139,42,123,0.3), transparent)',
-            transform: `rotate(${w.rot}deg)`,
-            filter: 'blur(1px)',
+            left: p.left,
+            top: p.top,
+            width: p.w,
+            height: p.h,
+            background: p.isOrb
+              ? 'radial-gradient(circle, rgba(139,42,123,0.6), transparent 70%)'
+              : 'linear-gradient(90deg, transparent, rgba(139,42,123,0.4), transparent)',
+            transform: p.rot ? `rotate(${p.rot}deg)` : undefined,
+            filter: `blur(${p.blur}px)`,
           }}
           animate={{
-            y: [0, w.drift, 0],
-            opacity: [0, 0.6, 0],
-            scaleX: [0.5, 1, 0.5],
+            y: [0, p.drift, 0],
+            opacity: [0, p.peak, 0],
+            scale: p.isOrb ? [0.5, 1.3, 0.5] : undefined,
+            scaleX: p.isOrb ? undefined : [0.4, 1, 0.4],
           }}
           transition={{
-            duration: w.dur,
+            duration: p.dur,
             repeat: Infinity,
-            delay: w.delay,
+            delay: p.delay,
             ease: 'easeInOut',
           }}
         />
@@ -61,17 +68,25 @@ function WarpWisps() {
 function PsychicDivider() {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-warp-light/15" />
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-warp-light/25" />
       <div className="flex items-center gap-1.5">
-        <div className="w-1 h-1 rounded-full bg-warp-light/25" />
-        <svg viewBox="0 0 28 16" className="w-5 h-3 text-warp-light/30" fill="none" stroke="currentColor" strokeWidth="1.2">
+        <motion.div
+          className="w-1.5 h-1.5 rounded-full bg-warp-light/50"
+          animate={{ opacity: [0.3, 0.8, 0.3] }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
+        <svg viewBox="0 0 28 16" className="w-6 h-4 text-warp-light/40" fill="none" stroke="currentColor" strokeWidth="1.2">
           <path d="M1 8 Q7 1,14 1 Q21 1,27 8 Q21 15,14 15 Q7 15,1 8Z" />
           <circle cx="14" cy="8" r="3.5" strokeWidth="0.8" opacity="0.7" />
-          <circle cx="14" cy="8" r="1.3" fill="currentColor" opacity="0.6" stroke="none" />
+          <circle cx="14" cy="8" r="1.3" fill="currentColor" opacity="0.7" stroke="none" />
         </svg>
-        <div className="w-1 h-1 rounded-full bg-warp-light/25" />
+        <motion.div
+          className="w-1.5 h-1.5 rounded-full bg-warp-light/50"
+          animate={{ opacity: [0.3, 0.8, 0.3] }}
+          transition={{ duration: 3, repeat: Infinity, delay: 1.5 }}
+        />
       </div>
-      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-warp-light/15" />
+      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-warp-light/25" />
     </div>
   )
 }
@@ -167,49 +182,67 @@ export default function MensajesPage() {
     <div className="min-h-screen pt-24 pb-16 relative">
       {/* Warp-tinted background — Astropath */}
       <div className="fixed inset-0 pointer-events-none">
-        {/* Static aurora layers */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(107,28,95,0.06)_0%,transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,42,123,0.04)_0%,transparent_40%)]" />
-        {/* Breathing aurora — slow psychic pulse */}
+        {/* Strong aurora layers */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(107,28,95,0.10)_0%,transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,42,123,0.07)_0%,transparent_45%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,rgba(107,28,95,0.05)_0%,transparent_40%)]" />
+        {/* Breathing aurora — slow psychic pulse, strong */}
         <motion.div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(139,42,123,0.07)_0%,transparent_50%)]"
-          animate={{ opacity: [0.4, 1, 0.4] }}
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(139,42,123,0.12)_0%,transparent_50%)]"
+          animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_80%,rgba(107,28,95,0.05)_0%,transparent_45%)]"
-          animate={{ opacity: [1, 0.3, 1] }}
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_80%,rgba(107,28,95,0.10)_0%,transparent_45%)]"
+          animate={{ opacity: [1, 0.2, 1] }}
           transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
         />
-        {/* Floating warp wisps */}
+        {/* Floating warp particles */}
         <WarpWisps />
-        {/* Background psychic eye — large, faint, pulsing */}
+        {/* Concentric psychic waves — expanding from center */}
+        {[0, 1, 2].map((i) => (
+          <motion.div
+            key={`wave-${i}`}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-warp-light/[0.07] rounded-full"
+            style={{ width: 200, height: 200 }}
+            animate={{ scale: [0.5, 4], opacity: [0.4, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeOut', delay: i * 1.7 }}
+          />
+        ))}
+        {/* Background psychic eye — large, pulsing */}
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.svg
             viewBox="0 0 400 200"
-            className="w-[500px] h-[250px] text-warp-light"
+            className="w-[600px] h-[300px] text-warp-light"
             fill="none"
             stroke="currentColor"
-            animate={{ opacity: [0.02, 0.05, 0.02] }}
+            animate={{ opacity: [0.03, 0.08, 0.03] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <path d="M10 100 Q100 10,200 10 Q300 10,390 100 Q300 190,200 190 Q100 190,10 100Z" strokeWidth="2" opacity="0.5" />
-            <ellipse cx="200" cy="100" rx="55" ry="50" strokeWidth="1.5" opacity="0.4" />
-            <circle cx="200" cy="100" r="22" fill="currentColor" opacity="0.25" stroke="none" />
+            <path d="M10 100 Q100 10,200 10 Q300 10,390 100 Q300 190,200 190 Q100 190,10 100Z" strokeWidth="2" opacity="0.6" />
+            <path d="M40 100 Q110 30,200 30 Q290 30,360 100 Q290 170,200 170 Q110 170,40 100Z" strokeWidth="1" opacity="0.3" />
+            <ellipse cx="200" cy="100" rx="55" ry="50" strokeWidth="1.5" opacity="0.5" />
+            <circle cx="200" cy="100" r="22" fill="currentColor" opacity="0.2" stroke="none" />
           </motion.svg>
         </div>
-        {/* Warp interference lines — occasional psychic static */}
+        {/* Warp interference lines — psychic static */}
         <motion.div
-          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/20 to-transparent"
-          style={{ top: '35%' }}
-          animate={{ opacity: [0, 0.4, 0], scaleY: [1, 2, 1] }}
-          transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut', delay: 5, repeatDelay: 8 }}
+          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/30 to-transparent"
+          style={{ top: '30%' }}
+          animate={{ opacity: [0, 0.6, 0], scaleY: [1, 3, 1] }}
+          transition={{ duration: 0.5, repeat: Infinity, ease: 'easeInOut', delay: 4, repeatDelay: 6 }}
         />
         <motion.div
-          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/15 to-transparent"
-          style={{ top: '68%' }}
-          animate={{ opacity: [0, 0.3, 0], scaleY: [1, 1.5, 1] }}
-          transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut', delay: 11, repeatDelay: 13 }}
+          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/25 to-transparent"
+          style={{ top: '62%' }}
+          animate={{ opacity: [0, 0.5, 0], scaleY: [1, 2, 1] }}
+          transition={{ duration: 0.4, repeat: Infinity, ease: 'easeInOut', delay: 9, repeatDelay: 8 }}
+        />
+        <motion.div
+          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/20 to-transparent"
+          style={{ top: '85%' }}
+          animate={{ opacity: [0, 0.4, 0] }}
+          transition={{ duration: 0.3, repeat: Infinity, ease: 'easeInOut', delay: 14, repeatDelay: 11 }}
         />
       </div>
 
@@ -221,27 +254,45 @@ export default function MensajesPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="relative rounded-xl p-4 bg-void-light/30 backdrop-blur-sm overflow-hidden border border-warp-light/15"
+            className="relative rounded-xl p-4 bg-void-light/30 backdrop-blur-sm overflow-hidden border border-warp-light/25"
           >
-            {/* Warp aurora background */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(139,42,123,0.08)_0%,transparent_60%)] pointer-events-none" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(107,28,95,0.05)_0%,transparent_50%)] pointer-events-none" />
+            {/* Warp aurora background — strong */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(139,42,123,0.12)_0%,transparent_60%)] pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(107,28,95,0.08)_0%,transparent_50%)] pointer-events-none" />
+
+            {/* Traveling warp energy pulse */}
+            <motion.div
+              className="absolute top-0 left-0 w-28 h-[2px] bg-gradient-to-r from-transparent via-warp-light/40 to-transparent pointer-events-none"
+              animate={{ left: ['-15%', '115%'] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1 }}
+            />
+            {/* Bottom shimmer — offset timing */}
+            <motion.div
+              className="absolute bottom-0 right-0 w-20 h-[1px] bg-gradient-to-r from-transparent via-warp-light/25 to-transparent pointer-events-none"
+              animate={{ right: ['-10%', '110%'] }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2 }}
+            />
 
             <div className="relative flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                {/* Radio with psychic pulse rings */}
-                <div className="relative flex items-center justify-center" style={{ width: 40, height: 40 }}>
+                {/* Radio with psychic pulse rings — 3 rings */}
+                <div className="relative flex items-center justify-center" style={{ width: 44, height: 44 }}>
                   <motion.div
-                    className="absolute inset-0 border border-warp-light/15 rounded-full"
-                    animate={{ scale: [1, 1.7], opacity: [0.4, 0] }}
+                    className="absolute inset-0 border border-warp-light/20 rounded-full"
+                    animate={{ scale: [1, 2], opacity: [0.5, 0] }}
                     transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut' }}
                   />
                   <motion.div
-                    className="absolute inset-0 border border-warp-light/15 rounded-full"
-                    animate={{ scale: [1, 1.7], opacity: [0.4, 0] }}
+                    className="absolute inset-0 border border-warp-light/20 rounded-full"
+                    animate={{ scale: [1, 2], opacity: [0.5, 0] }}
                     transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut', delay: 0.8 }}
                   />
-                  <div className="relative p-2 bg-warp/15 rounded-full border border-warp-light/20">
+                  <motion.div
+                    className="absolute inset-0 border border-warp-light/15 rounded-full"
+                    animate={{ scale: [1, 2], opacity: [0.4, 0] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut', delay: 1.6 }}
+                  />
+                  <div className="relative p-2 bg-warp/20 rounded-full border border-warp-light/30">
                     <motion.div
                       animate={{ opacity: [0.6, 1, 0.6] }}
                       transition={{ duration: 2, repeat: Infinity }}
@@ -340,20 +391,23 @@ export default function MensajesPage() {
                         <div
                           className={`relative group rounded-xl overflow-hidden transition-all duration-300 ${
                             unread
-                              ? 'bg-void-light/40 border border-imperial-gold/15 hover:border-imperial-gold/30'
-                              : 'bg-void-light/20 border border-bone/5 hover:border-bone/10'
+                              ? 'bg-void-light/40 border border-warp-light/20 hover:border-warp-light/40 hover:shadow-[0_0_25px_rgba(139,42,123,0.1)]'
+                              : 'bg-void-light/20 border border-bone/5 hover:border-warp-light/15 hover:shadow-[0_0_20px_rgba(139,42,123,0.06)]'
                           }`}
                         >
-                          {/* Left accent line */}
+                          {/* Warp aurora on hover */}
+                          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,rgba(139,42,123,0.08)_0%,transparent_60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                          {/* Left accent line — warp tinted */}
                           <div className={`absolute left-0 top-0 bottom-0 w-[3px] transition-colors ${
                             unread
-                              ? 'bg-gradient-to-b from-imperial-gold/80 via-imperial-gold/40 to-transparent'
-                              : 'bg-bone/5 group-hover:bg-bone/10'
+                              ? 'bg-gradient-to-b from-warp-light/80 via-warp-light/40 to-transparent'
+                              : 'bg-bone/5 group-hover:bg-warp-light/20'
                           }`} />
 
-                          {/* Unread psychic glow — warp tinted */}
+                          {/* Unread psychic glow — warp tinted, bigger */}
                           {unread && (
-                            <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-warp-light/5 blur-2xl pointer-events-none" />
+                            <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-warp-light/8 blur-2xl pointer-events-none" />
                           )}
 
                           <div className="relative flex items-center gap-4 p-4 pl-5">

@@ -26,43 +26,50 @@ import {
   Loader2,
 } from 'lucide-react'
 
-// Floating warp energy wisps — Astropath theme
-const WARP_WISPS = Array.from({ length: 8 }, (_, i) => ({
+// Floating warp energy particles — wisps + orbs, Astropath atmosphere
+const WARP_PARTICLES = Array.from({ length: 14 }, (_, i) => ({
   id: i,
-  left: `${(i * 13 + 5) % 90 + 5}%`,
-  top: `${(i * 19 + 10) % 80 + 10}%`,
-  w: i % 3 === 0 ? 35 : i % 2 === 0 ? 22 : 14,
-  rot: (i * 41) % 180,
-  drift: (i % 2 === 0 ? -1 : 1) * (10 + (i % 3) * 8),
-  dur: 9 + (i % 4) * 2.5,
-  delay: i * 0.9,
+  left: `${(i * 8 + 5) % 92 + 4}%`,
+  top: `${(i * 15 + 10) % 84 + 8}%`,
+  isOrb: i >= 9,
+  w: i >= 9 ? (i % 3 === 0 ? 10 : 6) : (i % 3 === 0 ? 50 : i % 2 === 0 ? 34 : 20),
+  h: i >= 9 ? (i % 3 === 0 ? 10 : 6) : 3,
+  rot: i >= 9 ? 0 : (i * 41) % 180,
+  drift: (i % 2 === 0 ? -1 : 1) * (12 + (i % 4) * 8),
+  dur: 7 + (i % 5) * 2,
+  delay: i * 0.5,
+  blur: i >= 9 ? (i % 3 === 0 ? 4 : 2) : 1,
+  peak: i >= 9 ? 0.45 : 0.65,
 }))
 
 function WarpWisps() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {WARP_WISPS.map((w) => (
+      {WARP_PARTICLES.map((p) => (
         <motion.div
-          key={w.id}
+          key={p.id}
           className="absolute rounded-full"
           style={{
-            left: w.left,
-            top: w.top,
-            width: w.w,
-            height: 2,
-            background: 'linear-gradient(90deg, transparent, rgba(139,42,123,0.25), transparent)',
-            transform: `rotate(${w.rot}deg)`,
-            filter: 'blur(1px)',
+            left: p.left,
+            top: p.top,
+            width: p.w,
+            height: p.h,
+            background: p.isOrb
+              ? 'radial-gradient(circle, rgba(139,42,123,0.5), transparent 70%)'
+              : 'linear-gradient(90deg, transparent, rgba(139,42,123,0.35), transparent)',
+            transform: p.rot ? `rotate(${p.rot}deg)` : undefined,
+            filter: `blur(${p.blur}px)`,
           }}
           animate={{
-            y: [0, w.drift, 0],
-            opacity: [0, 0.5, 0],
-            scaleX: [0.5, 1, 0.5],
+            y: [0, p.drift, 0],
+            opacity: [0, p.peak, 0],
+            scale: p.isOrb ? [0.5, 1.3, 0.5] : undefined,
+            scaleX: p.isOrb ? undefined : [0.4, 1, 0.4],
           }}
           transition={{
-            duration: w.dur,
+            duration: p.dur,
             repeat: Infinity,
-            delay: w.delay,
+            delay: p.delay,
             ease: 'easeInOut',
           }}
         />
@@ -254,37 +261,60 @@ export default function ChatPage() {
     <div className="min-h-screen pt-20 flex flex-col relative">
       {/* Warp-tinted background — Astropath */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(107,28,95,0.05)_0%,transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(139,42,123,0.03)_0%,transparent_40%)]" />
-        {/* Breathing aurora */}
+        {/* Strong aurora layers */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(107,28,95,0.09)_0%,transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(139,42,123,0.06)_0%,transparent_40%)]" />
+        {/* Breathing aurora — strong */}
         <motion.div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_40%_30%,rgba(139,42,123,0.06)_0%,transparent_50%)]"
-          animate={{ opacity: [0.4, 1, 0.4] }}
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_40%_30%,rgba(139,42,123,0.10)_0%,transparent_50%)]"
+          animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         />
-        {/* Floating warp wisps */}
+        <motion.div
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_70%,rgba(107,28,95,0.08)_0%,transparent_45%)]"
+          animate={{ opacity: [1, 0.2, 1] }}
+          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 5 }}
+        />
+        {/* Floating warp particles */}
         <WarpWisps />
-        {/* Faint psychic eye background */}
+        {/* Concentric psychic waves */}
+        {[0, 1, 2].map((i) => (
+          <motion.div
+            key={`wave-${i}`}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-warp-light/[0.06] rounded-full"
+            style={{ width: 180, height: 180 }}
+            animate={{ scale: [0.5, 4], opacity: [0.35, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeOut', delay: i * 1.7 }}
+          />
+        ))}
+        {/* Background psychic eye — pulsing */}
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.svg
             viewBox="0 0 400 200"
-            className="w-[400px] h-[200px] text-warp-light"
+            className="w-[500px] h-[250px] text-warp-light"
             fill="none"
             stroke="currentColor"
-            animate={{ opacity: [0.015, 0.04, 0.015] }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+            animate={{ opacity: [0.03, 0.07, 0.03] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <path d="M10 100 Q100 10,200 10 Q300 10,390 100 Q300 190,200 190 Q100 190,10 100Z" strokeWidth="2" opacity="0.5" />
-            <ellipse cx="200" cy="100" rx="55" ry="50" strokeWidth="1.5" opacity="0.4" />
-            <circle cx="200" cy="100" r="22" fill="currentColor" opacity="0.25" stroke="none" />
+            <path d="M10 100 Q100 10,200 10 Q300 10,390 100 Q300 190,200 190 Q100 190,10 100Z" strokeWidth="2" opacity="0.6" />
+            <path d="M40 100 Q110 30,200 30 Q290 30,360 100 Q290 170,200 170 Q110 170,40 100Z" strokeWidth="1" opacity="0.3" />
+            <ellipse cx="200" cy="100" rx="55" ry="50" strokeWidth="1.5" opacity="0.5" />
+            <circle cx="200" cy="100" r="22" fill="currentColor" opacity="0.2" stroke="none" />
           </motion.svg>
         </div>
-        {/* Warp interference line */}
+        {/* Warp interference lines */}
         <motion.div
-          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/15 to-transparent"
-          style={{ top: '45%' }}
-          animate={{ opacity: [0, 0.3, 0] }}
-          transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut', delay: 7, repeatDelay: 12 }}
+          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/25 to-transparent"
+          style={{ top: '40%' }}
+          animate={{ opacity: [0, 0.5, 0], scaleY: [1, 2, 1] }}
+          transition={{ duration: 0.5, repeat: Infinity, ease: 'easeInOut', delay: 6, repeatDelay: 9 }}
+        />
+        <motion.div
+          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/20 to-transparent"
+          style={{ top: '75%' }}
+          animate={{ opacity: [0, 0.4, 0] }}
+          transition={{ duration: 0.4, repeat: Infinity, ease: 'easeInOut', delay: 12, repeatDelay: 10 }}
         />
       </div>
 
@@ -485,14 +515,18 @@ function MessageBubble({
           )}
           <div className="flex flex-col">
             <div
-              className={`px-4 py-2.5 rounded-2xl transition-all ${
+              className={`px-4 py-2.5 rounded-2xl transition-all relative overflow-hidden ${
                 isOwn
                   ? 'bg-imperial-gold/8 border border-imperial-gold/15 rounded-br-md'
-                  : 'bg-void-light/60 border border-bone/8 rounded-bl-md'
+                  : 'bg-warp/[0.07] border border-warp-light/10 rounded-bl-md'
               } ${isSending ? 'opacity-60' : ''} ${
                 isError ? 'border-red-500/30 bg-red-500/5' : ''
               }`}
             >
+              {/* Subtle warp glow inside received messages */}
+              {!isOwn && !isError && (
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,rgba(139,42,123,0.06)_0%,transparent_70%)] pointer-events-none" />
+              )}
               <p
                 className={`text-sm font-body whitespace-pre-wrap leading-relaxed ${
                   isOwn ? 'text-bone/90' : 'text-bone/75'
