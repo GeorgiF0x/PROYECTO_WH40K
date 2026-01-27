@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Package, Plus } from 'lucide-react'
+import { Compass, Plus } from 'lucide-react'
 import Link from 'next/link'
 
 export default function MarketplaceCTA() {
@@ -14,13 +14,19 @@ export default function MarketplaceCTA() {
           viewport={{ once: true }}
           className="relative overflow-hidden rounded-2xl"
         >
-          {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-imperial-gold/20 via-void-light to-blood/20" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.5)_100%)]" />
+          {/* Warm golden vignette background — Rogue Trader */}
+          <div className="absolute inset-0 bg-gradient-to-br from-imperial-gold/15 via-void-light to-imperial-gold/10" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
 
-          {/* Corner decorations */}
-          <div className="absolute top-0 left-0 w-20 h-20 border-l-2 border-t-2 border-imperial-gold/40" />
-          <div className="absolute bottom-0 right-0 w-20 h-20 border-r-2 border-b-2 border-imperial-gold/40" />
+          {/* Traveling golden shimmer along top */}
+          <motion.div
+            className="absolute top-0 left-0 w-32 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold/40 to-transparent pointer-events-none"
+            animate={{ left: ['-15%', '115%'] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1 }}
+          />
+
+          {/* Subtle inner frame */}
+          <div className="absolute inset-3 rounded-xl border border-imperial-gold/10 pointer-events-none" />
 
           <div className="relative z-10 p-8 md:p-12 text-center">
             <motion.div
@@ -28,9 +34,14 @@ export default function MarketplaceCTA() {
               whileInView={{ scale: 1 }}
               viewport={{ once: true }}
               transition={{ type: 'spring', delay: 0.2 }}
-              className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-imperial-gold/20 border border-imperial-gold/40 mb-6"
+              className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-imperial-gold/15 border border-imperial-gold/30 mb-6"
             >
-              <Package className="w-8 h-8 text-imperial-gold" />
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+              >
+                <Compass className="w-8 h-8 text-imperial-gold" />
+              </motion.div>
             </motion.div>
 
             <h2 className="text-2xl md:text-3xl font-display font-bold text-bone mb-4">

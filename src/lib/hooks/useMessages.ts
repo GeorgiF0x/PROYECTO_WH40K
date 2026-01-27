@@ -25,6 +25,8 @@ interface SenderProfile {
   avatar_url: string | null
 }
 
+const POLL_INTERVAL_MS = 8000
+
 export function useMessages(
   conversationId: string | undefined,
   currentUserId: string | undefined,
@@ -38,6 +40,9 @@ export function useMessages(
   const profileRef = useRef(currentUserProfile)
   profileRef.current = currentUserProfile
 
+  // Track whether Realtime is connected
+  const realtimeConnectedRef = useRef(false)
+
   const fetchMessages = useCallback(async () => {
     if (!conversationId) return
     setIsLoading(true)
@@ -48,6 +53,16 @@ export function useMessages(
     }
     setIsLoading(false)
   }, [conversationId])
+
+  // Merge server messages with optimistic ones (preserves pending/failed msgs)
+  const mergeServerMessages = useCallback((serverData: MessageWithSender[]) => {
+    setMessages((prev) => {
+      const optimistic = prev.filter((m) => m._tempId)
+      const serverIds = new Set(serverData.map((d) => d.id))
+      const remainingOptimistic = optimistic.filter((m) => !serverIds.has(m.id))
+      return [...serverData, ...remainingOptimistic]
+    })
+  }, [])
 
   // Fetch initial messages and subscribe to realtime
   useEffect(() => {
@@ -62,7 +77,7 @@ export function useMessages(
     // Mark as read
     markConversationRead(conversationId, currentUserId)
 
-    // Subscribe to new messages
+    // Subscribe to new messages via Realtime
     const channel = supabase
       .channel(`messages:${conversationId}`)
       .on(
@@ -123,12 +138,46 @@ export function useMessages(
           }
         }
       )
-      .subscribe()
+      .subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') {
+          realtimeConnectedRef.current = true
+          console.log('[Realtime] Connected to messages channel')
+        } else if (status === 'TIMED_OUT' || status === 'CHANNEL_ERROR') {
+          realtimeConnectedRef.current = false
+          console.warn('[Realtime] Subscription failed:', status, err)
+        } else if (status === 'CLOSED') {
+          realtimeConnectedRef.current = false
+        }
+      })
+
+    // Polling fallback: refetch messages periodically
+    // Ensures messages appear even if Realtime is unavailable or disconnected
+    const pollInterval = setInterval(async () => {
+      if (!conversationId) return
+      const { data } = await getMessages(conversationId)
+      if (data) {
+        mergeServerMessages(data)
+      }
+    }, POLL_INTERVAL_MS)
+
+    // Refetch on tab visibility change
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible' && conversationId) {
+        getMessages(conversationId).then(({ data }) => {
+          if (data) mergeServerMessages(data)
+        })
+        markConversationRead(conversationId, currentUserId)
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
 
     return () => {
       supabase.removeChannel(channel)
+      clearInterval(pollInterval)
+      document.removeEventListener('visibilitychange', handleVisibility)
+      realtimeConnectedRef.current = false
     }
-  }, [conversationId, currentUserId, supabase, fetchMessages])
+  }, [conversationId, currentUserId, supabase, fetchMessages, mergeServerMessages])
 
   // ── Optimistic send ──────────────────────────────────────────
   const send = useCallback(
@@ -268,14 +317,30 @@ export function useUnreadMessages(userId: string | undefined) {
           table: 'messages',
         },
         () => {
-          // Refetch count on any new message
           fetchCount()
         }
       )
-      .subscribe()
+      .subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('[Realtime] Connected to unread messages channel')
+        } else if (status === 'TIMED_OUT' || status === 'CHANNEL_ERROR') {
+          console.warn('[Realtime] Unread subscription failed:', status, err)
+        }
+      })
+
+    // Polling fallback for unread count
+    const pollInterval = setInterval(fetchCount, POLL_INTERVAL_MS)
+
+    // Refetch on tab visibility
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') fetchCount()
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
 
     return () => {
       supabase.removeChannel(channel)
+      clearInterval(pollInterval)
+      document.removeEventListener('visibilitychange', handleVisibility)
     }
   }, [userId, supabase, fetchCount])
 

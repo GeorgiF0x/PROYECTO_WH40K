@@ -24,6 +24,7 @@ import { Avatar } from '@/components/ui'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/hooks/useAuth'
 import type { Listing, Profile } from '@/lib/types/database.types'
+import { FACTION_ICONS } from '@/components/user/FactionSelector'
 
 export type ListingWithSeller = Listing & {
   profiles?: {
@@ -31,6 +32,12 @@ export type ListingWithSeller = Listing & {
     username: string
     display_name: string | null
     avatar_url: string | null
+  } | null
+  faction?: {
+    id: string
+    name: string
+    slug: string
+    primary_color: string | null
   } | null
   is_favorited?: boolean
 }
@@ -79,6 +86,10 @@ export default function ListingCard({ listing, index = 0 }: ListingCardProps) {
     e.preventDefault()
     e.stopPropagation()
     if (!user) return
+
+    // Ensure we have a fresh session before the request
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return
 
     const newFavorited = !isFavorited
     setIsFavorited(newFavorited) // Optimistic update
@@ -200,17 +211,43 @@ export default function ListingCard({ listing, index = 0 }: ListingCardProps) {
                 {listing.title}
               </h3>
 
-              {/* Category badge */}
-              {listing.category && listing.category !== 'miniatures' && (() => {
-                const cat = categoryConfig[listing.category] || categoryConfig.other
-                const CatIcon = cat.icon
-                return (
-                  <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-xs font-body text-imperial-gold/70 bg-imperial-gold/10 border border-imperial-gold/20 rounded-md w-fit">
-                    <CatIcon className="w-3 h-3" />
-                    {cat.label}
-                  </span>
-                )
-              })()}
+              {/* Category & Faction badges */}
+              <div className="flex flex-wrap gap-1.5 mt-1.5">
+                {listing.category && listing.category !== 'miniatures' && (() => {
+                  const cat = categoryConfig[listing.category] || categoryConfig.other
+                  const CatIcon = cat.icon
+                  return (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-body text-imperial-gold/70 bg-imperial-gold/10 border border-imperial-gold/20 rounded-md">
+                      <CatIcon className="w-3 h-3" />
+                      {cat.label}
+                    </span>
+                  )
+                })()}
+                {listing.faction && (() => {
+                  const iconPath = FACTION_ICONS[listing.faction.slug]
+                  return (
+                    <span
+                      className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-body rounded-md border"
+                      style={{
+                        color: listing.faction.primary_color || '#C9A227',
+                        borderColor: `${listing.faction.primary_color || '#C9A227'}40`,
+                        backgroundColor: `${listing.faction.primary_color || '#C9A227'}15`,
+                      }}
+                    >
+                      {iconPath && (
+                        <Image
+                          src={iconPath}
+                          alt={listing.faction.name}
+                          width={12}
+                          height={12}
+                          className="invert opacity-70"
+                        />
+                      )}
+                      {listing.faction.name}
+                    </span>
+                  )
+                })()}
+              </div>
 
               {/* Description preview */}
               <p className="mt-1 text-sm text-bone/50 line-clamp-2 font-body">

@@ -12,9 +12,11 @@ interface SearchParams {
   condition?: string
   type?: string
   category?: string
+  faction?: string
   location?: string
   q?: string
   cursor?: string
+  favorites?: string
 }
 
 async function getListings(searchParams: SearchParams): Promise<{
@@ -23,7 +25,23 @@ async function getListings(searchParams: SearchParams): Promise<{
 }> {
   const supabase = await createClient()
 
-  const { sort = 'recent', condition, type, category, location, q, cursor } = searchParams
+  const { sort = 'recent', condition, type, category, faction, location, q, cursor, favorites } = searchParams
+
+  // If favorites filter is active, get the user's favorite listing IDs first
+  let favoriteListingIds: string[] | null = null
+  if (favorites === 'true') {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: favs } = await supabase
+        .from('listing_favorites')
+        .select('listing_id')
+        .eq('user_id', user.id)
+      favoriteListingIds = favs?.map((f) => f.listing_id) || []
+    } else {
+      // Not logged in — return empty
+      return { listings: [], nextCursor: null }
+    }
+  }
 
   let query = supabase
     .from('listings')
@@ -34,9 +52,23 @@ async function getListings(searchParams: SearchParams): Promise<{
         username,
         display_name,
         avatar_url
+      ),
+      faction:faction_id (
+        id,
+        name,
+        slug,
+        primary_color
       )
     `)
     .eq('status', 'active')
+
+  // Filter to only favorited listings
+  if (favoriteListingIds !== null) {
+    if (favoriteListingIds.length === 0) {
+      return { listings: [], nextCursor: null }
+    }
+    query = query.in('id', favoriteListingIds)
+  }
 
   // Apply filters (type assertions needed for Supabase enum types)
   if (condition && condition !== 'all') {
@@ -47,6 +79,9 @@ async function getListings(searchParams: SearchParams): Promise<{
   }
   if (category && category !== 'all') {
     query = query.eq('category', category as ListingCategory)
+  }
+  if (faction) {
+    query = query.eq('faction_id', faction)
   }
   if (location) {
     query = query.ilike('location', `%${location}%`)
@@ -150,8 +185,10 @@ export default async function MarketplacePage({
               initialCondition={params.condition}
               initialType={params.type}
               initialCategory={params.category}
+              initialFaction={params.faction}
               initialLocation={params.location}
               initialSearch={params.q}
+              initialFavorites={params.favorites}
             />
           </Suspense>
         </div>

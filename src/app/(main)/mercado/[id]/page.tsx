@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import ListingDetail from '@/components/marketplace/ListingDetail'
-import { ArrowLeft, Package } from 'lucide-react'
+import { ArrowLeft, Compass } from 'lucide-react'
 import type { ListingWithSeller } from '@/components/marketplace'
 import type { Metadata } from 'next'
 
@@ -28,6 +28,12 @@ async function getListingAndIncrementViews(id: string): Promise<ListingWithSelle
           avatar_url,
           location,
           created_at
+        ),
+        faction:faction_id (
+          id,
+          name,
+          slug,
+          primary_color
         )
       `)
       .eq('id', id)
@@ -74,22 +80,43 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ListingDetailPage({ params }: PageProps) {
   const { id } = await params
-  const listing = await getListingAndIncrementViews(id)
+  const supabase = await createClient()
+
+  // Fetch listing and check favorite status in parallel
+  const [listing, userResult] = await Promise.all([
+    getListingAndIncrementViews(id),
+    supabase.auth.getUser(),
+  ])
 
   if (!listing) {
     notFound()
   }
 
+  // Check if the current user has favorited this listing
+  const user = userResult.data?.user
+  if (user) {
+    const { data: fav } = await supabase
+      .from('listing_favorites')
+      .select('id')
+      .eq('listing_id', id)
+      .eq('user_id', user.id)
+      .maybeSingle()
+    listing.is_favorited = !!fav
+  }
+
   return (
-    <div className="min-h-screen pt-24 pb-16">
-      <div className="max-w-6xl mx-auto px-6">
+    <div className="min-h-screen pt-24 pb-16 relative">
+      {/* Background grid pattern */}
+      <div className="fixed inset-0 grid-pattern opacity-30 pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto px-6 relative">
         {/* Back button */}
-        <div className="mb-8">
+        <div className="mb-6">
           <Link
             href="/mercado"
-            className="inline-flex items-center gap-2 text-bone/60 hover:text-imperial-gold transition-colors font-body"
+            className="inline-flex items-center gap-2 text-bone/40 hover:text-imperial-gold transition-colors font-mono text-sm uppercase tracking-wider group"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
             Volver al mercado
           </Link>
         </div>
@@ -103,18 +130,27 @@ export default async function ListingDetailPage({ params }: PageProps) {
 // Custom not-found component for this route
 export function NotFound() {
   return (
-    <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
-      <div className="text-center">
-        <Package className="w-16 h-16 text-bone/30 mx-auto mb-4" />
+    <div className="min-h-screen pt-24 pb-16 flex items-center justify-center relative">
+      <div className="fixed inset-0 grid-pattern opacity-30 pointer-events-none" />
+      <div className="text-center relative">
+        <div className="relative inline-block mb-6">
+          <div className="absolute -inset-4 bg-imperial-gold/5 rounded-full blur-xl" />
+          <div className="relative p-4 bg-void-light/50 rounded-full border border-bone/10">
+            <Compass className="w-12 h-12 text-bone/20" />
+          </div>
+        </div>
         <h2 className="text-2xl font-display font-bold text-bone mb-2">
-          Anuncio no encontrado
+          Manifiesto no encontrado
         </h2>
-        <p className="text-bone/60 mb-6">
-          Este anuncio puede haber sido eliminado o no existe.
+        <p className="text-bone/50 mb-2 font-body">
+          Este articulo puede haber sido retirado del comercio.
+        </p>
+        <p className="text-xs font-mono text-bone/25 mb-8 uppercase tracking-wider">
+          Registro no disponible en los archivos del Rogue Trader
         </p>
         <Link
           href="/mercado"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-imperial-gold text-void font-display font-bold rounded-lg"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-imperial-gold text-void font-display font-bold rounded-lg hover:bg-yellow-500 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver al mercado

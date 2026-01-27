@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/lib/hooks/useAuth'
 import { compressImage } from '@/lib/utils/compressImage'
 import {
   ArrowLeft,
@@ -18,6 +19,7 @@ import {
   ImagePlus,
   AlertCircle,
   Check,
+  Loader2,
   Swords,
   BookOpen,
   BookMarked,
@@ -27,7 +29,7 @@ import {
   Dice5,
 } from 'lucide-react'
 import ListingFactionPicker from '@/components/marketplace/ListingFactionPicker'
-import type { ListingCategory } from '@/lib/types/database.types'
+import type { ListingCategory, Listing } from '@/lib/types/database.types'
 
 type ListingCondition = 'nib' | 'nos' | 'assembled' | 'painted' | 'pro_painted'
 type ListingType = 'sale' | 'trade' | 'both'
@@ -57,12 +59,15 @@ const categoryOptions: { value: ListingCategory; label: string; icon: typeof Swo
   { value: 'other', label: 'Otros', icon: Package },
 ]
 
-export default function NewListingPage() {
+export default function EditListingPage() {
   const router = useRouter()
+  const params = useParams()
+  const listingId = params.id as string
+  const { user, isLoading: authLoading } = useAuth()
   const supabase = createClient()
 
+  const [isLoadingListing, setIsLoadingListing] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
@@ -75,46 +80,72 @@ export default function NewListingPage() {
   const [category, setCategory] = useState<ListingCategory>('miniatures')
   const [location, setLocation] = useState('')
   const [factionId, setFactionId] = useState<string | null>(null)
-  const [images, setImages] = useState<File[]>([])
-  const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([])
+
+  // Images: existing URLs + new files
+  const [existingImages, setExistingImages] = useState<string[]>([])
+  const [newImages, setNewImages] = useState<File[]>([])
+  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([])
+
+  // Load existing listing
+  useEffect(() => {
+    if (!user || !listingId) return
+
+    const loadListing = async () => {
+      const { data, error: fetchError } = await supabase
+        .from('listings')
+        .select('*')
+        .eq('id', listingId)
+        .eq('seller_id', user.id)
+        .single()
+
+      if (fetchError || !data) {
+        setError('No se encontro el anuncio o no tienes permiso para editarlo.')
+        setIsLoadingListing(false)
+        return
+      }
+
+      setTitle(data.title)
+      setDescription(data.description || '')
+      setPrice(String(data.price))
+      setCondition(data.condition as ListingCondition)
+      setListingType(data.listing_type as ListingType)
+      setCategory((data.category as ListingCategory) || 'miniatures')
+      setLocation(data.location || '')
+      setFactionId(data.faction_id || null)
+      setExistingImages(data.images || [])
+      setIsLoadingListing(false)
+    }
+
+    loadListing()
+  }, [user, listingId, supabase])
 
   useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      router.push('/login?redirect=/mercado/nuevo')
-    } else {
-      setIsAuthenticated(true)
+    if (!authLoading && !user) {
+      router.push('/login?redirect=/mercado/mis-anuncios')
     }
-  }
+  }, [user, authLoading, router])
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNewImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
-    if (files.length + images.length > 6) {
-      setError('Máximo 6 imágenes permitidas')
+    const totalImages = existingImages.length + newImages.length + files.length
+    if (totalImages > 6) {
+      setError('Maximo 6 imagenes permitidas')
       return
     }
 
-    const newImages = [...images, ...files]
-    setImages(newImages)
-
-    // Create preview URLs
-    const newPreviews = files.map((file) => URL.createObjectURL(file))
-    setImagePreviewUrls([...imagePreviewUrls, ...newPreviews])
+    setNewImages((prev) => [...prev, ...files])
+    const previews = files.map((f) => URL.createObjectURL(f))
+    setNewImagePreviews((prev) => [...prev, ...previews])
   }
 
-  const removeImage = (index: number) => {
-    const newImages = [...images]
-    newImages.splice(index, 1)
-    setImages(newImages)
+  const removeExistingImage = (index: number) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index))
+  }
 
-    const newPreviews = [...imagePreviewUrls]
-    URL.revokeObjectURL(newPreviews[index])
-    newPreviews.splice(index, 1)
-    setImagePreviewUrls(newPreviews)
+  const removeNewImage = (index: number) => {
+    URL.revokeObjectURL(newImagePreviews[index])
+    setNewImages((prev) => prev.filter((_, i) => i !== index))
+    setNewImagePreviews((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -123,21 +154,21 @@ export default function NewListingPage() {
     setIsSubmitting(true)
 
     try {
-      // Validate
-      if (!title.trim()) throw new Error('El título es obligatorio')
-      if (!description.trim()) throw new Error('La descripción es obligatoria')
-      if (!price || parseFloat(price) < 0) throw new Error('El precio debe ser válido')
-      if (images.length === 0) throw new Error('Añade al menos una imagen')
+      if (!title.trim()) throw new Error('El titulo es obligatorio')
+      if (!description.trim()) throw new Error('La descripcion es obligatoria')
+      if (!price || parseFloat(price) < 0) throw new Error('El precio debe ser valido')
 
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Debes iniciar sesión')
+      const totalImages = existingImages.length + newImages.length
+      if (totalImages === 0) throw new Error('Anade al menos una imagen')
 
-      // Compress & upload images
+      if (!user) throw new Error('Debes iniciar sesion')
+
+      // Upload new images
       const uploadedUrls: string[] = []
-      for (const image of images) {
+      for (const image of newImages) {
         const compressed = await compressImage(image)
         const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.webp`
-        const { error: uploadError, data } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from('listings')
           .upload(fileName, compressed, { contentType: compressed.type })
 
@@ -150,11 +181,12 @@ export default function NewListingPage() {
         uploadedUrls.push(publicUrl)
       }
 
-      // Create listing
-      const { error: insertError, data: listing } = await supabase
+      const allImages = [...existingImages, ...uploadedUrls]
+
+      // Update listing — seller_id is NOT included so it can't be overwritten
+      const { error: updateError } = await supabase
         .from('listings')
-        .insert({
-          seller_id: user.id,
+        .update({
           title: title.trim(),
           description: description.trim(),
           price: parseFloat(price),
@@ -163,30 +195,28 @@ export default function NewListingPage() {
           category,
           location: location.trim() || null,
           faction_id: factionId,
-          images: uploadedUrls,
-          status: 'active',
+          images: allImages,
         })
-        .select()
-        .single()
+        .eq('id', listingId)
+        .eq('seller_id', user.id)
 
-      if (insertError) throw insertError
+      if (updateError) throw updateError
 
       setSuccess(true)
       setTimeout(() => {
-        router.push(`/mercado/${listing.id}`)
+        router.push('/mercado/mis-anuncios')
       }, 1500)
-
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al crear el anuncio')
+      setError(err instanceof Error ? err.message : 'Error al actualizar el anuncio')
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  if (!isAuthenticated) {
+  if (authLoading || isLoadingListing) {
     return (
       <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
-        <div className="animate-pulse text-bone/60">Verificando sesión...</div>
+        <Loader2 className="w-8 h-8 text-imperial-gold animate-spin" />
       </div>
     )
   }
@@ -201,22 +231,19 @@ export default function NewListingPage() {
           className="mb-8"
         >
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push('/mercado/mis-anuncios')}
             className="inline-flex items-center gap-2 text-bone/60 hover:text-imperial-gold transition-colors font-body mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
-            Volver
+            Volver a mis anuncios
           </button>
 
           <h1 className="text-3xl md:text-4xl font-display font-bold text-bone">
-            Publicar Anuncio
+            Editar Anuncio
           </h1>
-          <p className="text-bone/60 font-body mt-2">
-            Completa los datos de tu anuncio para publicarlo en el mercado.
-          </p>
         </motion.div>
 
-        {/* Success message */}
+        {/* Success */}
         <AnimatePresence>
           {success && (
             <motion.div
@@ -226,14 +253,12 @@ export default function NewListingPage() {
               className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center gap-3"
             >
               <Check className="w-5 h-5 text-green-400" />
-              <span className="text-green-400 font-body">
-                ¡Anuncio publicado! Redirigiendo...
-              </span>
+              <span className="text-green-400 font-body">Anuncio actualizado. Redirigiendo...</span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Error message */}
+        {/* Error */}
         <AnimatePresence>
           {error && (
             <motion.div
@@ -244,10 +269,7 @@ export default function NewListingPage() {
             >
               <AlertCircle className="w-5 h-5 text-red-400" />
               <span className="text-red-400 font-body">{error}</span>
-              <button
-                onClick={() => setError(null)}
-                className="ml-auto text-red-400 hover:text-red-300"
-              >
+              <button onClick={() => setError(null)} className="ml-auto text-red-400 hover:text-red-300">
                 <X className="w-4 h-4" />
               </button>
             </motion.div>
@@ -266,28 +288,25 @@ export default function NewListingPage() {
           <div className="p-6 bg-void-light rounded-2xl border border-bone/10">
             <h2 className="text-lg font-display font-semibold text-bone mb-4 flex items-center gap-2">
               <ImagePlus className="w-5 h-5 text-imperial-gold" />
-              Imágenes
+              Imagenes
             </h2>
             <p className="text-sm text-bone/50 font-body mb-4">
-              Añade hasta 6 fotos. La primera será la imagen principal.
+              Maximo 6 fotos. La primera sera la imagen principal.
             </p>
 
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-              {/* Image previews */}
-              {imagePreviewUrls.map((url, index) => (
-                <div
-                  key={index}
-                  className="relative aspect-square rounded-xl overflow-hidden bg-void border border-bone/10"
-                >
-                  <Image src={url} alt={`Preview ${index + 1}`} fill className="object-cover" />
+              {/* Existing images */}
+              {existingImages.map((url, index) => (
+                <div key={`existing-${index}`} className="relative aspect-square rounded-xl overflow-hidden bg-void border border-bone/10">
+                  <Image src={url} alt={`Imagen ${index + 1}`} fill className="object-cover" />
                   <button
                     type="button"
-                    onClick={() => removeImage(index)}
+                    onClick={() => removeExistingImage(index)}
                     className="absolute top-1 right-1 p-1 bg-red-500 rounded-full text-white"
                   >
                     <X className="w-3 h-3" />
                   </button>
-                  {index === 0 && (
+                  {index === 0 && !newImages.length && (
                     <span className="absolute bottom-1 left-1 px-2 py-0.5 bg-imperial-gold text-void text-xs font-bold rounded">
                       Principal
                     </span>
@@ -295,16 +314,33 @@ export default function NewListingPage() {
                 </div>
               ))}
 
+              {/* New image previews */}
+              {newImagePreviews.map((url, index) => (
+                <div key={`new-${index}`} className="relative aspect-square rounded-xl overflow-hidden bg-void border border-imperial-gold/30">
+                  <Image src={url} alt={`Nueva ${index + 1}`} fill className="object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeNewImage(index)}
+                    className="absolute top-1 right-1 p-1 bg-red-500 rounded-full text-white"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                  <span className="absolute bottom-1 left-1 px-2 py-0.5 bg-green-500/80 text-white text-xs font-bold rounded">
+                    Nueva
+                  </span>
+                </div>
+              ))}
+
               {/* Add button */}
-              {images.length < 6 && (
+              {existingImages.length + newImages.length < 6 && (
                 <label className="aspect-square rounded-xl border-2 border-dashed border-bone/20 hover:border-imperial-gold/50 cursor-pointer flex flex-col items-center justify-center gap-2 transition-colors">
                   <Upload className="w-6 h-6 text-bone/40" />
-                  <span className="text-xs text-bone/40 font-body">Añadir</span>
+                  <span className="text-xs text-bone/40 font-body">Anadir</span>
                   <input
                     type="file"
                     accept="image/*"
                     multiple
-                    onChange={handleImageChange}
+                    onChange={handleNewImageChange}
                     className="hidden"
                   />
                 </label>
@@ -316,44 +352,35 @@ export default function NewListingPage() {
           <div className="p-6 bg-void-light rounded-2xl border border-bone/10 space-y-6">
             <h2 className="text-lg font-display font-semibold text-bone flex items-center gap-2">
               <Package className="w-5 h-5 text-imperial-gold" />
-              Información básica
+              Informacion basica
             </h2>
 
-            {/* Title */}
             <div>
-              <label className="block text-sm text-bone/60 mb-2 font-body">
-                Título *
-              </label>
+              <label className="block text-sm text-bone/60 mb-2 font-body">Titulo *</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ej: Ejército Necrones 2000pts pintado"
+                placeholder="Ej: Ejercito Necrones 2000pts pintado"
                 maxLength={200}
                 className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors"
               />
               <span className="text-xs text-bone/40 mt-1 block">{title.length}/200</span>
             </div>
 
-            {/* Description */}
             <div>
-              <label className="block text-sm text-bone/60 mb-2 font-body">
-                Descripción *
-              </label>
+              <label className="block text-sm text-bone/60 mb-2 font-body">Descripcion *</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe el contenido, estado, qué incluye..."
+                placeholder="Describe el contenido, estado, que incluye..."
                 rows={5}
                 className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors resize-none"
               />
             </div>
 
-            {/* Price */}
             <div>
-              <label className="block text-sm text-bone/60 mb-2 font-body">
-                Precio (EUR) *
-              </label>
+              <label className="block text-sm text-bone/60 mb-2 font-body">Precio (EUR) *</label>
               <div className="relative">
                 <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-bone/40" />
                 <input
@@ -366,9 +393,6 @@ export default function NewListingPage() {
                   className="w-full pl-12 pr-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors"
                 />
               </div>
-              <span className="text-xs text-bone/40 mt-1 block">
-                Pon 0 si solo aceptas intercambio
-              </span>
             </div>
           </div>
 
@@ -394,12 +418,8 @@ export default function NewListingPage() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <CatIcon className={`w-6 h-6 ${
-                      category === option.value ? 'text-imperial-gold' : 'text-bone/60'
-                    }`} />
-                    <span className={`text-sm font-body ${
-                      category === option.value ? 'text-imperial-gold font-semibold' : 'text-bone/70'
-                    }`}>
+                    <CatIcon className={`w-6 h-6 ${category === option.value ? 'text-imperial-gold' : 'text-bone/60'}`} />
+                    <span className={`text-sm font-body ${category === option.value ? 'text-imperial-gold font-semibold' : 'text-bone/70'}`}>
                       {option.label}
                     </span>
                   </motion.button>
@@ -443,14 +463,10 @@ export default function NewListingPage() {
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                 >
-                  <p className={`font-display font-semibold ${
-                    condition === option.value ? 'text-imperial-gold' : 'text-bone'
-                  }`}>
+                  <p className={`font-display font-semibold ${condition === option.value ? 'text-imperial-gold' : 'text-bone'}`}>
                     {option.label}
                   </p>
-                  <p className="text-sm text-bone/50 font-body mt-1">
-                    {option.description}
-                  </p>
+                  <p className="text-sm text-bone/50 font-body mt-1">{option.description}</p>
                 </motion.button>
               ))}
             </div>
@@ -490,7 +506,7 @@ export default function NewListingPage() {
           <div className="p-6 bg-void-light rounded-2xl border border-bone/10">
             <h2 className="text-lg font-display font-semibold text-bone mb-4 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-imperial-gold" />
-              Ubicación
+              Ubicacion
             </h2>
             <input
               type="text"
@@ -499,12 +515,9 @@ export default function NewListingPage() {
               placeholder="Ciudad o provincia (opcional)"
               className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors"
             />
-            <span className="text-xs text-bone/40 mt-1 block">
-              Ayuda a otros usuarios a saber si están cerca para envíos o entregas en mano
-            </span>
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <motion.button
             type="submit"
             disabled={isSubmitting || success}
@@ -514,15 +527,11 @@ export default function NewListingPage() {
           >
             {isSubmitting ? (
               <span className="flex items-center justify-center gap-2">
-                <motion.div
-                  className="w-5 h-5 border-2 border-void/30 border-t-void rounded-full"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                />
-                Publicando...
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Guardando...
               </span>
             ) : (
-              'Publicar Anuncio'
+              'Guardar cambios'
             )}
           </motion.button>
         </motion.form>
