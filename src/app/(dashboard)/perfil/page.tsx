@@ -27,7 +27,12 @@ import {
   CircleDot,
   ExternalLink,
   Cpu,
+  Sparkles,
+  ArrowRight,
+  Clock,
 } from 'lucide-react'
+import { CreatorBadge, CreatorEligibility } from '@/components/creator'
+import type { CreatorType, CreatorStatus } from '@/lib/types/database.types'
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -813,9 +818,117 @@ export default function EditProfilePage() {
                 maxSelections={3}
               />
             </AccordionSection>
+
+            {/* Creator Section */}
+            <AccordionSection
+              id="creator"
+              title="Programa de Creadores"
+              icon={Sparkles}
+              isExpanded={expandedSection === 'creator'}
+              onToggle={() => toggleSection('creator')}
+              status={profile?.creator_status === 'approved' ? 'complete' : 'incomplete'}
+              badge={profile?.creator_status === 'approved' ? 'Verificado' : undefined}
+            >
+              <CreatorSection
+                userId={user?.id || ''}
+                username={formData.username}
+                creatorStatus={(profile?.creator_status || 'none') as CreatorStatus}
+                creatorType={profile?.creator_type as CreatorType | null}
+              />
+            </AccordionSection>
           </motion.div>
         </div>
       </div>
+    </div>
+  )
+}
+
+// Creator Section Component
+function CreatorSection({
+  userId,
+  username,
+  creatorStatus,
+  creatorType
+}: {
+  userId: string
+  username: string
+  creatorStatus: CreatorStatus
+  creatorType: CreatorType | null
+}) {
+  if (creatorStatus === 'approved' && creatorType) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-lg">
+          <CreatorBadge type={creatorType} size="md" />
+          <div>
+            <p className="text-bone font-medium">Eres un creador verificado</p>
+            <p className="text-sm text-bone/50">Tu badge aparece en tu perfil publico</p>
+          </div>
+        </div>
+        <Link
+          href={`/usuarios/${username}`}
+          className="flex items-center gap-2 text-sm text-imperial-gold hover:text-imperial-gold/80 transition-colors"
+        >
+          Ver mi perfil publico
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
+    )
+  }
+
+  if (creatorStatus === 'pending') {
+    return (
+      <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+        <div className="flex items-center gap-3">
+          <Clock className="w-5 h-5 text-amber-400" />
+          <div>
+            <p className="text-bone font-medium">Solicitud en revision</p>
+            <p className="text-sm text-bone/50">
+              Te notificaremos cuando sea revisada por nuestro equipo.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (creatorStatus === 'rejected') {
+    return (
+      <div className="space-y-4">
+        <div className="p-4 bg-blood-red/10 border border-blood-red/20 rounded-lg">
+          <p className="text-bone/70 text-sm">
+            Tu solicitud anterior fue rechazada. Puedes volver a intentarlo
+            cuando cumplas todos los requisitos.
+          </p>
+        </div>
+        <CreatorEligibility userId={userId} />
+        <Link
+          href="/comunidad/creadores/solicitar"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 text-purple-400 rounded-lg hover:bg-purple-500/30 transition-colors"
+        >
+          <Sparkles className="w-4 h-4" />
+          Volver a solicitar
+        </Link>
+      </div>
+    )
+  }
+
+  // Default: none status
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-bone/50">
+        Conviertete en creador verificado para obtener mayor visibilidad,
+        un badge especial y mostrar tus servicios en tu perfil.
+      </p>
+      <CreatorEligibility userId={userId} />
+      <Link
+        href="/comunidad/creadores/solicitar"
+        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 text-purple-400 rounded-lg hover:bg-purple-500/30 hover:border-purple-500/50 transition-all"
+      >
+        <Sparkles className="w-4 h-4" />
+        Solicitar ser creador
+        <ArrowRight className="w-4 h-4" />
+      </Link>
     </div>
   )
 }

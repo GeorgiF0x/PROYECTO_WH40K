@@ -24,6 +24,21 @@ export interface Database {
           favorite_factions: string[] | null
           created_at: string
           updated_at: string
+          // Role fields
+          role: UserRole
+          is_store_owner: boolean
+          // Creator fields
+          creator_status: CreatorStatus
+          creator_type: CreatorType | null
+          creator_verified_at: string | null
+          creator_bio: string | null
+          creator_services: string[] | null
+          accepts_commissions: boolean
+          commission_info: string | null
+          portfolio_url: string | null
+          pinned_miniatures: string[] | null
+          creator_application_date: string | null
+          creator_rejection_reason: string | null
         }
         Insert: {
           id: string
@@ -39,6 +54,21 @@ export interface Database {
           favorite_factions?: string[] | null
           created_at?: string
           updated_at?: string
+          // Role fields
+          role?: UserRole
+          is_store_owner?: boolean
+          // Creator fields
+          creator_status?: CreatorStatus
+          creator_type?: CreatorType | null
+          creator_verified_at?: string | null
+          creator_bio?: string | null
+          creator_services?: string[] | null
+          accepts_commissions?: boolean
+          commission_info?: string | null
+          portfolio_url?: string | null
+          pinned_miniatures?: string[] | null
+          creator_application_date?: string | null
+          creator_rejection_reason?: string | null
         }
         Update: {
           id?: string
@@ -54,6 +84,21 @@ export interface Database {
           favorite_factions?: string[] | null
           created_at?: string
           updated_at?: string
+          // Role fields
+          role?: UserRole
+          is_store_owner?: boolean
+          // Creator fields
+          creator_status?: CreatorStatus
+          creator_type?: CreatorType | null
+          creator_verified_at?: string | null
+          creator_bio?: string | null
+          creator_services?: string[] | null
+          accepts_commissions?: boolean
+          commission_info?: string | null
+          portfolio_url?: string | null
+          pinned_miniatures?: string[] | null
+          creator_application_date?: string | null
+          creator_rejection_reason?: string | null
         }
         Relationships: [
           {
@@ -870,6 +915,64 @@ export interface Database {
           }
         ]
       }
+      creator_applications: {
+        Row: {
+          id: string
+          user_id: string
+          creator_type: CreatorType
+          motivation: string
+          portfolio_links: string[] | null
+          social_links: Json | null
+          status: CreatorStatus
+          reviewed_by: string | null
+          reviewed_at: string | null
+          rejection_reason: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          creator_type: CreatorType
+          motivation: string
+          portfolio_links?: string[] | null
+          social_links?: Json | null
+          status?: CreatorStatus
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          rejection_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          creator_type?: CreatorType
+          motivation?: string
+          portfolio_links?: string[] | null
+          social_links?: Json | null
+          status?: CreatorStatus
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          rejection_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'creator_applications_user_id_fkey'
+            columns: ['user_id']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'creator_applications_reviewed_by_fkey'
+            columns: ['reviewed_by']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
       reports: {
         Row: {
           id: string
@@ -931,6 +1034,133 @@ export interface Database {
           }
         ]
       }
+      events: {
+        Row: {
+          id: string
+          organizer_id: string
+          store_id: string | null
+          name: string
+          slug: string
+          description: string | null
+          event_type: 'tournament' | 'painting_workshop' | 'casual_play' | 'campaign' | 'release_event' | 'meetup' | 'other'
+          status: 'draft' | 'upcoming' | 'ongoing' | 'completed' | 'cancelled'
+          start_date: string
+          end_date: string | null
+          registration_deadline: string | null
+          venue_name: string | null
+          address: string
+          city: string
+          province: string | null
+          postal_code: string | null
+          country: string
+          latitude: number
+          longitude: number
+          game_system: string | null
+          format: string | null
+          max_participants: number | null
+          current_participants: number
+          entry_fee: number | null
+          prizes: string | null
+          cover_image: string | null
+          images: string[]
+          contact_email: string | null
+          contact_phone: string | null
+          external_url: string | null
+          is_featured: boolean
+          is_official: boolean
+          tags: string[]
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organizer_id: string
+          store_id?: string | null
+          name: string
+          slug: string
+          description?: string | null
+          event_type: 'tournament' | 'painting_workshop' | 'casual_play' | 'campaign' | 'release_event' | 'meetup' | 'other'
+          status?: 'draft' | 'upcoming' | 'ongoing' | 'completed' | 'cancelled'
+          start_date: string
+          end_date?: string | null
+          registration_deadline?: string | null
+          venue_name?: string | null
+          address: string
+          city: string
+          province?: string | null
+          postal_code?: string | null
+          country?: string
+          latitude: number
+          longitude: number
+          game_system?: string | null
+          format?: string | null
+          max_participants?: number | null
+          current_participants?: number
+          entry_fee?: number | null
+          prizes?: string | null
+          cover_image?: string | null
+          images?: string[]
+          contact_email?: string | null
+          contact_phone?: string | null
+          external_url?: string | null
+          is_featured?: boolean
+          is_official?: boolean
+          tags?: string[]
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          organizer_id?: string
+          store_id?: string | null
+          name?: string
+          slug?: string
+          description?: string | null
+          event_type?: 'tournament' | 'painting_workshop' | 'casual_play' | 'campaign' | 'release_event' | 'meetup' | 'other'
+          status?: 'draft' | 'upcoming' | 'ongoing' | 'completed' | 'cancelled'
+          start_date?: string
+          end_date?: string | null
+          registration_deadline?: string | null
+          venue_name?: string | null
+          address?: string
+          city?: string
+          province?: string | null
+          postal_code?: string | null
+          country?: string
+          latitude?: number
+          longitude?: number
+          game_system?: string | null
+          format?: string | null
+          max_participants?: number | null
+          current_participants?: number
+          entry_fee?: number | null
+          prizes?: string | null
+          cover_image?: string | null
+          images?: string[]
+          contact_email?: string | null
+          contact_phone?: string | null
+          external_url?: string | null
+          is_featured?: boolean
+          is_official?: boolean
+          tags?: string[]
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'events_organizer_id_fkey'
+            columns: ['organizer_id']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'events_store_id_fkey'
+            columns: ['store_id']
+            referencedRelation: 'stores'
+            referencedColumns: ['id']
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -983,6 +1213,31 @@ export interface Database {
         }
         Returns: boolean
       }
+      check_creator_eligibility: {
+        Args: {
+          user_uuid: string
+        }
+        Returns: Json
+      }
+      apply_for_creator: {
+        Args: {
+          user_uuid: string
+          p_creator_type: CreatorType
+          p_motivation: string
+          p_portfolio_links?: string[] | null
+          p_social_links?: Json | null
+        }
+        Returns: Json
+      }
+      review_creator_application: {
+        Args: {
+          application_uuid: string
+          reviewer_uuid: string
+          p_approved: boolean
+          p_rejection_reason?: string | null
+        }
+        Returns: Json
+      }
     }
     Enums: {
       article_category: 'warhammer_40k' | 'age_of_sigmar' | 'painting' | 'tournaments' | 'news'
@@ -995,6 +1250,9 @@ export interface Database {
       store_type: StoreType
       store_status: StoreStatus
       tag_category: 'faction' | 'technique' | 'game_system' | 'other'
+      creator_type: CreatorType
+      creator_status: CreatorStatus
+      user_role: UserRole
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1011,6 +1269,17 @@ export type Updatable<T extends keyof Database['public']['Tables']> = Database['
 export type StoreType = 'specialist' | 'comics_games' | 'general_hobby' | 'online_only'
 export type StoreStatus = 'pending' | 'approved' | 'rejected' | 'closed'
 
+// Creator enums
+export type CreatorType = 'painter' | 'youtuber' | 'artist' | 'blogger' | 'instructor'
+export type CreatorStatus = 'none' | 'pending' | 'approved' | 'rejected'
+
+// User role enum (hierarchical: admin > moderator > user)
+export type UserRole = 'user' | 'moderator' | 'admin'
+
+// Event enums
+export type EventType = 'tournament' | 'painting_workshop' | 'casual_play' | 'campaign' | 'release_event' | 'meetup' | 'other'
+export type EventStatus = 'draft' | 'upcoming' | 'ongoing' | 'completed' | 'cancelled'
+
 // Listing category enum
 export type ListingCategory =
   | 'miniatures'
@@ -1022,6 +1291,70 @@ export type ListingCategory =
   | 'accessories'
   | 'other'
 
+// Event type
+export interface Event {
+  id: string
+  organizer_id: string
+  store_id: string | null
+  name: string
+  slug: string
+  description: string | null
+  event_type: EventType
+  status: EventStatus
+  start_date: string
+  end_date: string | null
+  registration_deadline: string | null
+  venue_name: string | null
+  address: string
+  city: string
+  province: string | null
+  postal_code: string | null
+  country: string
+  latitude: number
+  longitude: number
+  game_system: string | null
+  format: string | null
+  max_participants: number | null
+  current_participants: number
+  entry_fee: number | null
+  prizes: string | null
+  cover_image: string | null
+  images: string[]
+  contact_email: string | null
+  contact_phone: string | null
+  external_url: string | null
+  is_featured: boolean
+  is_official: boolean
+  tags: string[]
+  created_at: string
+  updated_at: string
+}
+
+// Event with organizer profile info
+export interface EventWithOrganizer extends Event {
+  organizer: {
+    id: string
+    username: string
+    display_name: string | null
+    avatar_url: string | null
+    creator_status: string | null
+  } | null
+  store: {
+    id: string
+    name: string
+    slug: string
+  } | null
+}
+
+export interface EventRegistration {
+  id: string
+  event_id: string
+  user_id: string
+  status: 'registered' | 'waitlist' | 'cancelled' | 'attended'
+  notes: string | null
+  registered_at: string
+}
+
 // Commonly used types
 export type Profile = Tables<'profiles'>
 export type Miniature = Tables<'miniatures'>
@@ -1031,3 +1364,27 @@ export type Message = Tables<'messages'>
 export type Notification = Tables<'notifications'>
 export type Store = Tables<'stores'>
 export type StoreReview = Tables<'store_reviews'>
+export type CreatorApplication = Tables<'creator_applications'>
+
+// Creator profile type (for public view)
+export interface PublicCreator {
+  id: string
+  username: string
+  display_name: string | null
+  avatar_url: string | null
+  bio: string | null
+  creator_type: CreatorType
+  creator_bio: string | null
+  creator_services: string[] | null
+  accepts_commissions: boolean
+  portfolio_url: string | null
+  pinned_miniatures: string[] | null
+  creator_verified_at: string | null
+  favorite_factions: string[] | null
+  miniatures_count: number
+  followers_count: number
+  instagram: string | null
+  twitter: string | null
+  youtube: string | null
+  website: string | null
+}

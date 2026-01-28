@@ -26,7 +26,9 @@ import {
   Shield,
   MessageCircle,
   MapPin,
+  LayoutDashboard,
 } from 'lucide-react'
+import { usePermissions } from '@/hooks/usePermissions'
 
 // Dynamic import for Lottie to avoid SSR issues
 const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
@@ -146,6 +148,7 @@ export default function Navigation() {
   const { user, profile, isLoading, isAuthenticated, signOut } = useAuth()
   const { unreadCount } = useNotifications(user?.id)
   const { unreadCount: unreadMessages } = useUnreadMessages(user?.id)
+  const { hasDashboardAccess, displayRole } = usePermissions()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -372,7 +375,29 @@ export default function Navigation() {
                           <p className="text-xs text-bone/50 truncate">
                             @{profile?.username}
                           </p>
+                          {displayRole && displayRole.type !== 'role' && (
+                            <p className="text-xs text-imperial-gold mt-1 font-medium">
+                              {displayRole.name}
+                            </p>
+                          )}
                         </div>
+
+                        {/* Dashboard Link - Only for users with access */}
+                        {hasDashboardAccess && (
+                          <div className="py-2 border-b border-bone/10">
+                            <Link
+                              href="/dashboard"
+                              onClick={() => setUserMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-imperial-gold hover:text-yellow-400 hover:bg-imperial-gold/10 transition-colors group"
+                            >
+                              <LayoutDashboard className="w-4 h-4" />
+                              <span className="flex-1 font-medium">Panel de Control</span>
+                              <span className="px-2 py-0.5 text-[10px] font-bold bg-imperial-gold/20 text-imperial-gold rounded border border-imperial-gold/30">
+                                STAFF
+                              </span>
+                            </Link>
+                          </div>
+                        )}
 
                         <div className="py-2">
                           {[
@@ -568,8 +593,28 @@ export default function Navigation() {
                             {profile?.display_name || profile?.username}
                           </p>
                           <p className="text-sm text-bone/50">@{profile?.username}</p>
+                          {displayRole && displayRole.type !== 'role' && (
+                            <p className="text-xs text-imperial-gold font-medium">
+                              {displayRole.name}
+                            </p>
+                          )}
                         </div>
                       </div>
+
+                      {/* Dashboard Link - Mobile */}
+                      {hasDashboardAccess && (
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center gap-3 py-3 px-4 rounded-lg text-imperial-gold hover:bg-imperial-gold/10 transition-all border border-imperial-gold/20 mx-4 mb-2"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <LayoutDashboard className="w-5 h-5" />
+                          <span className="flex-1 font-medium">Panel de Control</span>
+                          <span className="px-2 py-0.5 text-[10px] font-bold bg-imperial-gold/20 rounded">
+                            STAFF
+                          </span>
+                        </Link>
+                      )}
 
                       {[
                         { href: `/usuarios/${profile?.username}`, icon: User, label: 'Mi Perfil' },
