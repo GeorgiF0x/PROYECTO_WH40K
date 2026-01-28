@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Providers } from '@/components/Providers'
+import { CookieConsent } from '@/components/legal'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -16,10 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning>
         <div className="noise-overlay" />
         <Providers>
           {children}
+          <CookieConsent />
         </Providers>
         <Analytics />
         <SpeedInsights />
