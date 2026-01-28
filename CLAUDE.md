@@ -90,6 +90,10 @@ https://github.com/GeorgiF0x/PROYECTO_WH40K.git
 ## Próxima Sesión
 1. **Dashboard Admin** - Completar panel funcional para gestión real (tiendas, creadores, eventos, reportes)
 2. **Facciones Wiki** - Expandir /facciones con lore, unidades, galerías
-3. **Supabase Auth Emails** - Configurar plantillas de registro y contraseña olvidada
-4. **Cloudflare Turnstile** - Añadir captcha en login/registro/formularios
-5. **Fix Discord OAuth** - Investigar y arreglar login con Discord (no funciona)
+3. **Editor de Contenido (Tiptap)** - Editor headless con UI grimdark "Terminal Lexicanum"
+   - Bloques custom: LoreBlock, UnitCard, QuoteBlock, ImageGallery, WarningBlock, DataTable
+   - Sistema de contribución con aprobación de moderadores
+   - Preview en tiempo real con estética imperial
+4. **Supabase Auth Emails** - Configurar plantillas de registro y contraseña olvidada
+5. **Cloudflare Turnstile** - Añadir captcha en login/registro/formularios
+6. **Fix Discord OAuth** - Investigar y arreglar login con Discord (no funciona)
