@@ -88,6 +88,8 @@ https://github.com/GeorgiF0x/PROYECTO_WH40K.git
 - Para npm install: usar PowerShell si bash falla
 
 ## Próxima Sesión
-1. Facciones Wiki (expandir con lore, unidades, galerías)
-2. PWA
-3. Panel de administración
+1. **Dashboard Admin** - Completar panel funcional para gestión real (tiendas, creadores, eventos, reportes)
+2. **Facciones Wiki** - Expandir /facciones con lore, unidades, galerías
+3. **Supabase Auth Emails** - Configurar plantillas de registro y contraseña olvidada
+4. **Cloudflare Turnstile** - Añadir captcha en login/registro/formularios
+5. **Fix Discord OAuth** - Investigar y arreglar login con Discord (no funciona)
