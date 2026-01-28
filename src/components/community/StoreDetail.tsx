@@ -147,21 +147,48 @@ export default function StoreDetail({ store, userId }: StoreDetailProps) {
               </div>
             )}
 
-            {/* Location */}
-            <div className="flex items-start gap-2 text-bone/60 mb-4">
-              <MapPin className="w-5 h-5 text-imperial-gold flex-shrink-0 mt-0.5" />
-              <div className="font-body">
-                <p>{store.address}</p>
-                <p className="text-sm text-bone/40">
-                  {store.city}
-                  {store.province ? `, ${store.province}` : ''}
-                  {store.postal_code ? ` - ${store.postal_code}` : ''}
-                </p>
+            {/* Location Card */}
+            <div className="p-4 bg-void/50 rounded-xl border border-imperial-gold/20">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-imperial-gold/20 rounded-lg">
+                  <MapPin className="w-5 h-5 text-imperial-gold" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-display font-semibold text-bone text-sm mb-1">Ubicación</h4>
+                  <p className="text-bone/80 font-body">{store.address}</p>
+                  <p className="text-bone/60 font-body text-sm">
+                    {store.postal_code && `${store.postal_code} - `}
+                    {store.city}
+                    {store.province && store.province !== store.city ? `, ${store.province}` : ''}
+                  </p>
+                  {store.country && store.country !== 'ES' && (
+                    <p className="text-bone/40 font-body text-sm">{store.country}</p>
+                  )}
+
+                  {/* Google Maps link */}
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${store.name}, ${store.address}, ${store.city}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 bg-imperial-gold/10 hover:bg-imperial-gold/20 border border-imperial-gold/30 rounded-lg text-imperial-gold text-sm font-mono transition-colors"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    Cómo llegar
+                  </a>
+                </div>
+              </div>
+
+              {/* Coordinates (for the curious) */}
+              <div className="mt-3 pt-3 border-t border-bone/10 flex items-center justify-between">
+                <span className="text-[10px] font-mono text-bone/30 tracking-wider">COORDENADAS</span>
+                <span className="text-[10px] font-mono text-bone/40">
+                  {store.latitude.toFixed(4)}°N, {Math.abs(store.longitude).toFixed(4)}°{store.longitude < 0 ? 'W' : 'E'}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Mini map */}
+          {/* Mini map - non expandable */}
           <div className="rounded-2xl overflow-hidden border border-bone/10">
             <CommunityMap
               stores={[{
@@ -176,9 +203,10 @@ export default function StoreDetail({ store, userId }: StoreDetailProps) {
                 review_count: store.review_count,
               }]}
               center={[store.longitude, store.latitude]}
-              zoom={14}
-              interactive={false}
-              className="h-[250px]"
+              zoom={15}
+              interactive={true}
+              showExpandButton={false}
+              className="h-[300px]"
             />
           </div>
 

@@ -16,7 +16,7 @@ const STAR_POINTS = Array.from({ length: 12 }, (_, i) => ({
 
 export default function CommunityHero() {
   return (
-    <section className="relative px-6 py-16 overflow-hidden">
+    <section className="relative px-6 py-20 sm:py-24 lg:py-28 overflow-hidden">
       {/* Cartographic grid background */}
       <div
         className="absolute inset-0 pointer-events-none"

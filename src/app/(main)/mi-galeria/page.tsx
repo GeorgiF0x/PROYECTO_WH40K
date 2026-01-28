@@ -84,7 +84,13 @@ export default function MyGalleryPage() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('Error fetching miniatures:', error)
+      console.error('Error fetching miniatures:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+        full: JSON.stringify(error)
+      })
     } else if (data) {
       // Transform the aggregated counts into simple numbers
       const withStats = data.map((m) => {

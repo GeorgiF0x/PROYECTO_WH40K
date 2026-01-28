@@ -1,36 +1,39 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { MapPin, Store, Plus, ArrowRight, Compass } from 'lucide-react'
+import { MapPin, Users, Compass, Plus, ArrowRight } from 'lucide-react'
 import CommunityHero from '@/components/community/CommunityHero'
 import CommunityMapWrapper from '@/components/community/CommunityMapWrapper'
-import StoreGrid from '@/components/community/StoreGrid'
-import type { StoreWithSubmitter } from '@/components/community/StoreCard'
+import { CommunityNavCard } from '@/components/community'
 
 export const metadata = {
   title: 'Comunidad — Cartographia Imperialis | Forge of War',
-  description: 'Encuentra tiendas de Warhammer cercanas, descubre donde jugar y conecta con la comunidad local.',
+  description: 'Explora el hub de la comunidad: encuentra tiendas locales, descubre creadores y conecta con otros jugadores.',
 }
 
-async function getApprovedStores() {
+async function getCounts() {
   const supabase = await createClient()
 
-  const { data, error } = await supabase
-    .from('stores')
-    .select(`
-      *,
-      profiles:submitted_by(id, username, display_name, avatar_url)
-    `)
-    .eq('status', 'approved')
-    .order('avg_rating', { ascending: false })
-    .limit(6)
+  const [storesResult, creatorsResult, eventsResult] = await Promise.all([
+    supabase
+      .from('stores')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'approved'),
+    supabase
+      .from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('creator_status', 'approved'),
+    supabase
+      .from('events')
+      .select('id', { count: 'exact', head: true })
+      .in('status', ['upcoming', 'ongoing'])
+  ])
 
-  if (error) {
-    console.error('Error fetching stores:', error)
-    return []
+  return {
+    storesCount: storesResult.count || 0,
+    creatorsCount: creatorsResult.count || 0,
+    eventsCount: eventsResult.count || 0
   }
-
-  return (data as unknown as StoreWithSubmitter[]) || []
 }
 
 async function getAllStoreCoords() {
@@ -50,8 +53,8 @@ async function getAllStoreCoords() {
 }
 
 export default async function ComunidadPage() {
-  const [stores, storeCoords] = await Promise.all([
-    getApprovedStores(),
+  const [counts, storeCoords] = await Promise.all([
+    getCounts(),
     getAllStoreCoords(),
   ])
 
@@ -60,48 +63,86 @@ export default async function ComunidadPage() {
       {/* Hero */}
       <CommunityHero />
 
-      {/* Map section */}
+      {/* Navigation Cards Section */}
+      <section className="max-w-7xl mx-auto px-6 mb-16">
+        <div className="mb-8">
+          <h2 className="text-xs font-mono text-imperial-gold/60 tracking-widest mb-2">
+            DIRECTORIO IMPERIAL
+          </h2>
+          <p className="text-2xl font-heading font-bold text-bone-100">
+            Explora la Comunidad
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Tiendas Card */}
+          <CommunityNavCard
+            href="/comunidad/tiendas"
+            title="Tiendas Locales"
+            subtitle="CARTOGRAPHIA IMPERIALIS"
+            description="Descubre tiendas de hobby cercanas, clubs de juego y puntos de encuentro para la comunidad local."
+            icon="MapPin"
+            count={counts.storesCount}
+            countLabel="tiendas registradas"
+            color="gold"
+          />
+
+          {/* Creadores Card */}
+          <CommunityNavCard
+            href="/comunidad/creadores"
+            title="Creadores"
+            subtitle="VOX POPULI"
+            description="Conoce a los artistas, pintores, YouTubers y creadores de contenido que dan vida a la comunidad."
+            icon="Users"
+            count={counts.creatorsCount}
+            countLabel="creadores verificados"
+            color="purple"
+          />
+
+          {/* Eventos Card */}
+          <CommunityNavCard
+            href="/comunidad/eventos"
+            title="Eventos"
+            subtitle="CHRONUS EVENTUS"
+            description="Torneos, quedadas de pintura, partidas amistosas y eventos especiales cerca de ti."
+            icon="Calendar"
+            count={counts.eventsCount}
+            countLabel="eventos próximos"
+            color="amber"
+          />
+        </div>
+      </section>
+
+      {/* Map Preview Section */}
       <section className="max-w-7xl mx-auto px-6 mb-16">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-display font-bold text-bone flex items-center gap-2">
-            <MapPin className="w-6 h-6 text-imperial-gold" />
-            Mapa de tiendas
-          </h2>
+          <div>
+            <h2 className="text-xs font-mono text-imperial-gold/60 tracking-widest mb-1">
+              MAPA IMPERIAL
+            </h2>
+            <p className="text-xl font-heading font-bold text-bone-100 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-imperial-gold" />
+              Vista General de Tiendas
+            </p>
+          </div>
           <Link
             href="/comunidad/tiendas"
-            className="flex items-center gap-1 text-sm font-body text-imperial-gold hover:text-yellow-400 transition-colors"
+            className="flex items-center gap-1.5 text-sm font-mono text-imperial-gold hover:text-yellow-400 transition-colors"
           >
-            Ver todas
+            Ver directorio completo
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
+
         <Suspense fallback={<MapSkeleton />}>
           <CommunityMapWrapper
             stores={storeCoords}
-            className="h-[500px]"
+            className="h-[400px] rounded-2xl border border-imperial-gold/20"
           />
         </Suspense>
       </section>
 
-      {/* Featured stores */}
-      <section className="max-w-7xl mx-auto px-6 mb-16">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-display font-bold text-bone flex items-center gap-2">
-            <Store className="w-6 h-6 text-imperial-gold" />
-            Tiendas destacadas
-          </h2>
-          <Link
-            href="/comunidad/tiendas"
-            className="flex items-center gap-1 text-sm font-body text-imperial-gold hover:text-yellow-400 transition-colors"
-          >
-            Ver todas
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-        <StoreGrid stores={stores} emptyMessage="Aun no hay tiendas registradas. Se el primero en registrar una." />
-      </section>
-
-      {/* CTA */}
+      {/* CTA Section */}
       <section className="max-w-7xl mx-auto px-6">
         <div className="relative p-8 md:p-12 rounded-2xl overflow-hidden bg-void-light border border-bone/10">
           {/* Grid bg */}
@@ -112,24 +153,43 @@ export default async function ComunidadPage() {
               backgroundSize: '40px 40px',
             }}
           />
+
+          {/* Corner brackets */}
+          <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-imperial-gold/30" />
+          <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-imperial-gold/30" />
+          <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-imperial-gold/30" />
+          <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-imperial-gold/30" />
+
           <div className="relative z-10 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-imperial-gold/10 border border-imperial-gold/20 mb-6">
               <Compass className="w-8 h-8 text-imperial-gold" />
             </div>
-            <h3 className="text-2xl md:text-3xl font-display font-bold text-bone mb-3">
-              Conoces una tienda que no esta en el mapa?
+
+            <h3 className="text-2xl md:text-3xl font-heading font-bold text-bone mb-3">
+              Contribuye a la Comunidad
             </h3>
-            <p className="text-bone/60 font-body max-w-lg mx-auto mb-6">
-              Registra tu tienda de hobby favorita para que otros jugadores puedan encontrarla.
-              Un administrador la revisara antes de publicarla.
+            <p className="text-bone/60 font-body max-w-lg mx-auto mb-8">
+              Conoces una tienda que no está en el mapa? Eres un creador de contenido?
+              Ayuda a expandir el directorio imperial.
             </p>
-            <Link
-              href="/comunidad/tiendas/nueva"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-imperial-gold to-yellow-500 text-void font-display font-bold rounded-xl hover:opacity-90 transition-opacity"
-            >
-              <Plus className="w-5 h-5" />
-              Registrar tienda
-            </Link>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/comunidad/tiendas/nueva"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-imperial-gold to-yellow-500 text-void font-heading font-bold rounded-xl hover:opacity-90 transition-opacity"
+              >
+                <Plus className="w-5 h-5" />
+                Registrar tienda
+              </Link>
+
+              <Link
+                href="/comunidad/creadores/solicitar"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-purple-500/20 border border-purple-500/30 text-purple-400 font-heading font-bold rounded-xl hover:bg-purple-500/30 transition-colors"
+              >
+                <Users className="w-5 h-5" />
+                Ser creador
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -139,7 +199,7 @@ export default async function ComunidadPage() {
 
 function MapSkeleton() {
   return (
-    <div className="w-full h-[500px] bg-void-light rounded-xl animate-pulse border border-bone/10 flex items-center justify-center">
+    <div className="w-full h-[400px] bg-void-light rounded-2xl animate-pulse border border-imperial-gold/20 flex items-center justify-center">
       <MapPin className="w-12 h-12 text-bone/20" />
     </div>
   )

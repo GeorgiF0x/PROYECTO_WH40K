@@ -222,9 +222,6 @@ export default function StoreSubmitForm() {
       if (insertError) throw insertError
 
       setSuccess(true)
-      setTimeout(() => {
-        router.push('/comunidad/tiendas')
-      }, 2000)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al enviar la tienda')
     } finally {
@@ -237,6 +234,130 @@ export default function StoreSubmitForm() {
       <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
         <div className="animate-pulse text-bone/60">Verificando sesion...</div>
       </div>
+    )
+  }
+
+  // Success page
+  if (success) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="max-w-2xl mx-auto text-center py-12"
+      >
+        {/* Success card */}
+        <div className="relative p-8 sm:p-12 rounded-2xl bg-gradient-to-b from-void-light/90 to-void/80 border border-emerald-500/30 overflow-hidden">
+          {/* Corner decorations */}
+          <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-emerald-500/40" />
+          <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-emerald-500/40" />
+          <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-emerald-500/40" />
+          <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-emerald-500/40" />
+
+          {/* Grid bg */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-[0.03]"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(16, 185, 129, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.5) 1px, transparent 1px)
+              `,
+              backgroundSize: '40px 40px',
+            }}
+          />
+
+          {/* Glow */}
+          <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent pointer-events-none" />
+
+          <div className="relative">
+            {/* Success icon */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+              className="w-24 h-24 mx-auto mb-6 rounded-full bg-emerald-500/10 border-2 border-emerald-500/40 flex items-center justify-center"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.4, type: 'spring', stiffness: 300 }}
+              >
+                <Check className="w-12 h-12 text-emerald-400" />
+              </motion.div>
+            </motion.div>
+
+            {/* Title */}
+            <motion.h1
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-2xl sm:text-3xl font-display font-bold text-bone mb-3"
+            >
+              Solicitud Enviada
+            </motion.h1>
+
+            {/* Description */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-bone/60 font-body mb-6 max-w-md mx-auto"
+            >
+              Tu puesto comercial ha sido registrado en los archivos del Administratum.
+              Un escriba revisará tu solicitud y te notificará cuando sea aprobada.
+            </motion.p>
+
+            {/* Status badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-mono mb-8"
+            >
+              <Clock className="w-4 h-4" />
+              ESTADO: PENDIENTE DE REVISION
+            </motion.div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
+              <MapPin className="w-4 h-4 text-emerald-500/40" />
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
+            </div>
+
+            {/* Actions */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            >
+              <button
+                onClick={() => router.push('/comunidad/tiendas')}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-imperial-gold text-void font-display font-bold rounded-xl hover:bg-imperial-gold/90 transition-colors"
+              >
+                <Store className="w-5 h-5" />
+                Ver Directorio
+              </button>
+              <button
+                onClick={() => router.push('/comunidad')}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-void-light border border-bone/20 text-bone font-display rounded-xl hover:border-bone/40 transition-colors"
+              >
+                Volver a Comunidad
+              </button>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Footer note */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          className="text-xs text-bone/30 font-mono mt-6 tracking-wider"
+        >
+          REGISTRO IMPERIAL • COMMERCIA IMPERIALIS • SECTOR HISPANIA
+        </motion.p>
+      </motion.div>
     )
   }
 
@@ -263,23 +384,6 @@ export default function StoreSubmitForm() {
           Envia los datos de tu tienda para revision. Una vez aprobada, aparecera en el mapa.
         </p>
       </motion.div>
-
-      {/* Success */}
-      <AnimatePresence>
-        {success && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center gap-3"
-          >
-            <Check className="w-5 h-5 text-green-400" />
-            <span className="text-green-400 font-body">
-              Tienda enviada para revision. Te notificaremos cuando sea aprobada.
-            </span>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Error */}
       <AnimatePresence>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -13,6 +13,7 @@ import {
   Globe,
   MapPin,
   Loader2,
+  ChevronDown,
 } from 'lucide-react'
 import type { StoreType } from '@/lib/types/database.types'
 
@@ -23,6 +24,29 @@ const storeTypeOptions: { value: StoreType | 'all'; label: string; icon: typeof 
   { value: 'general_hobby', label: 'Hobby general', icon: Palette },
   { value: 'online_only', label: 'Solo online', icon: Globe },
 ]
+
+// Comunidades Autónomas con sus provincias
+const CCAA_PROVINCES: Record<string, string[]> = {
+  'Andalucía': ['Almería', 'Cádiz', 'Córdoba', 'Granada', 'Huelva', 'Jaén', 'Málaga', 'Sevilla'],
+  'Aragón': ['Huesca', 'Teruel', 'Zaragoza'],
+  'Asturias': ['Asturias'],
+  'Baleares': ['Baleares'],
+  'Canarias': ['Las Palmas', 'Santa Cruz de Tenerife'],
+  'Cantabria': ['Cantabria'],
+  'Castilla-La Mancha': ['Albacete', 'Ciudad Real', 'Cuenca', 'Guadalajara', 'Toledo'],
+  'Castilla y León': ['Ávila', 'Burgos', 'León', 'Palencia', 'Salamanca', 'Segovia', 'Soria', 'Valladolid', 'Zamora'],
+  'Cataluña': ['Barcelona', 'Girona', 'Lleida', 'Tarragona'],
+  'Ceuta': ['Ceuta'],
+  'Comunidad Valenciana': ['Alicante', 'Castellón', 'Valencia'],
+  'Extremadura': ['Badajoz', 'Cáceres'],
+  'Galicia': ['A Coruña', 'Lugo', 'Ourense', 'Pontevedra'],
+  'La Rioja': ['La Rioja'],
+  'Madrid': ['Madrid'],
+  'Melilla': ['Melilla'],
+  'Murcia': ['Murcia'],
+  'Navarra': ['Navarra'],
+  'País Vasco': ['Álava', 'Gipuzkoa', 'Vizcaya'],
+}
 
 interface CommunityFiltersProps {
   totalCount?: number
@@ -35,8 +59,16 @@ export default function CommunityFilters({ totalCount }: CommunityFiltersProps) 
   const [showFilters, setShowFilters] = useState(false)
 
   const currentType = (searchParams.get('type') || 'all') as StoreType | 'all'
+  const currentCcaa = searchParams.get('ccaa') || ''
+  const currentProvince = searchParams.get('province') || ''
   const currentCity = searchParams.get('city') || ''
   const currentSearch = searchParams.get('q') || ''
+
+  // Get provinces for selected CCAA
+  const availableProvinces = useMemo(() => {
+    if (!currentCcaa) return []
+    return CCAA_PROVINCES[currentCcaa] || []
+  }, [currentCcaa])
 
   const updateParams = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -44,6 +76,10 @@ export default function CommunityFilters({ totalCount }: CommunityFiltersProps) 
       params.set(key, value)
     } else {
       params.delete(key)
+    }
+    // If changing CCAA, reset province
+    if (key === 'ccaa') {
+      params.delete('province')
     }
     startTransition(() => {
       router.push(`?${params.toString()}`, { scroll: false })
@@ -56,7 +92,7 @@ export default function CommunityFilters({ totalCount }: CommunityFiltersProps) 
     })
   }
 
-  const hasActiveFilters = currentType !== 'all' || currentCity || currentSearch
+  const hasActiveFilters = currentType !== 'all' || currentCcaa || currentProvince || currentCity || currentSearch
 
   return (
     <div className="space-y-4">
@@ -137,19 +173,63 @@ export default function CommunityFilters({ totalCount }: CommunityFiltersProps) 
                 </div>
               </div>
 
-              {/* City filter */}
-              <div>
-                <label className="block text-xs text-bone/50 font-body mb-2 uppercase tracking-wider">
-                  Ciudad
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/40" />
+              {/* Location filters row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* CCAA filter */}
+                <div>
+                  <label className="block text-xs text-bone/50 font-body mb-2 uppercase tracking-wider">
+                    Comunidad Autónoma
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/40" />
+                    <select
+                      value={currentCcaa}
+                      onChange={(e) => updateParams('ccaa', e.target.value)}
+                      className="w-full pl-10 pr-10 py-2.5 bg-void border border-bone/10 rounded-lg font-body text-bone text-sm focus:outline-none focus:border-imperial-gold/50 transition-colors appearance-none cursor-pointer"
+                    >
+                      <option value="">Todas las CCAA</option>
+                      {Object.keys(CCAA_PROVINCES).map((ccaa) => (
+                        <option key={ccaa} value={ccaa}>{ccaa}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/40 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Province filter */}
+                <div>
+                  <label className="block text-xs text-bone/50 font-body mb-2 uppercase tracking-wider">
+                    Provincia
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={currentProvince}
+                      onChange={(e) => updateParams('province', e.target.value)}
+                      disabled={!currentCcaa}
+                      className={`w-full pl-4 pr-10 py-2.5 bg-void border border-bone/10 rounded-lg font-body text-sm focus:outline-none focus:border-imperial-gold/50 transition-colors appearance-none ${
+                        currentCcaa ? 'text-bone cursor-pointer' : 'text-bone/30 cursor-not-allowed'
+                      }`}
+                    >
+                      <option value="">{currentCcaa ? 'Todas las provincias' : 'Selecciona CCAA'}</option>
+                      {availableProvinces.map((province) => (
+                        <option key={province} value={province}>{province}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/40 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* City filter */}
+                <div>
+                  <label className="block text-xs text-bone/50 font-body mb-2 uppercase tracking-wider">
+                    Ciudad
+                  </label>
                   <input
                     type="text"
                     defaultValue={currentCity}
                     onChange={(e) => updateParams('city', e.target.value)}
                     placeholder="Filtrar por ciudad..."
-                    className="w-full pl-10 pr-4 py-2.5 bg-void border border-bone/10 rounded-lg font-body text-bone text-sm placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors"
+                    className="w-full px-4 py-2.5 bg-void border border-bone/10 rounded-lg font-body text-bone text-sm placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors"
                   />
                 </div>
               </div>
