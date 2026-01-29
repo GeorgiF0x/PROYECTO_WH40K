@@ -24,7 +24,13 @@ import {
   Image as ImageIcon,
   MessageSquare,
   MoreHorizontal,
+  Edit,
+  Trash2,
+  Save,
+  X,
+  AlertTriangle,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui'
 import type { Profile, UserRole, CreatorStatus } from '@/lib/types/database.types'
@@ -56,6 +62,19 @@ export default function UsersManagementPage() {
   const [expandedUser, setExpandedUser] = useState<string | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [showRoleModal, setShowRoleModal] = useState<{ userId: string; currentRole: UserRole } | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null)
+  const [editingUser, setEditingUser] = useState<UserWithStats | null>(null)
+  const [editForm, setEditForm] = useState({
+    display_name: '',
+    bio: '',
+    location: '',
+    website: '',
+    instagram: '',
+    twitter: '',
+    youtube: '',
+    creator_status: 'none' as CreatorStatus,
+    is_store_owner: false,
+  })
   const [totalCount, setTotalCount] = useState(0)
   const [page, setPage] = useState(0)
   const pageSize = 20
@@ -124,7 +143,7 @@ export default function UsersManagementPage() {
 
     if (error) {
       console.error('Error changing role:', error)
-      alert('Error al cambiar el rol')
+      toast.error('Error al cambiar el rol')
     } else {
       setShowRoleModal(null)
       fetchUsers()
@@ -134,6 +153,71 @@ export default function UsersManagementPage() {
 
   const toggleExpanded = (userId: string) => {
     setExpandedUser(expandedUser === userId ? null : userId)
+  }
+
+  const handleEdit = (user: UserWithStats) => {
+    setEditForm({
+      display_name: user.display_name || '',
+      bio: user.bio || '',
+      location: user.location || '',
+      website: user.website || '',
+      instagram: user.instagram || '',
+      twitter: user.twitter || '',
+      youtube: user.youtube || '',
+      creator_status: user.creator_status,
+      is_store_owner: user.is_store_owner,
+    })
+    setEditingUser(user)
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editingUser) return
+    setActionLoading(editingUser.id)
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        display_name: editForm.display_name || null,
+        bio: editForm.bio || null,
+        location: editForm.location || null,
+        website: editForm.website || null,
+        instagram: editForm.instagram || null,
+        twitter: editForm.twitter || null,
+        youtube: editForm.youtube || null,
+        creator_status: editForm.creator_status,
+        is_store_owner: editForm.is_store_owner,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', editingUser.id)
+
+    if (error) {
+      console.error('Error updating user:', error)
+      toast.error('Error al actualizar el usuario')
+    } else {
+      setEditingUser(null)
+      fetchUsers()
+    }
+    setActionLoading(null)
+  }
+
+  const handleDelete = async (userId: string) => {
+    setActionLoading(userId)
+
+    // Note: This deletes the profile but the auth user remains
+    // In production, you'd also call a server action to delete the auth user
+    const { error } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', userId)
+
+    if (error) {
+      console.error('Error deleting user:', error)
+      toast.error('Error al eliminar el usuario. Puede que haya datos relacionados.')
+    } else {
+      setShowDeleteModal(null)
+      fetchUsers()
+    }
+    setActionLoading(null)
   }
 
   const totalPages = Math.ceil(totalCount / pageSize)
@@ -291,6 +375,17 @@ export default function UsersManagementPage() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
+                            handleEdit(user)
+                          }}
+                          disabled={actionLoading === user.id}
+                          className="p-2 bg-bone/5 border border-bone/10 rounded-lg text-bone/50 hover:text-blue-400 hover:border-blue-400/20 transition-colors disabled:opacity-50"
+                          title="Editar usuario"
+                        >
+                          <Edit className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
                             setShowRoleModal({ userId: user.id, currentRole: user.role })
                           }}
                           className="p-2 bg-gold/10 border border-gold/20 rounded-lg text-gold hover:bg-gold/20 transition-colors"
@@ -413,17 +508,19 @@ export default function UsersManagementPage() {
                           {/* Admin Actions */}
                           <div className="flex justify-end gap-2 pt-2 border-t border-bone/10">
                             <button
-                              className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded text-sm text-red-400 hover:bg-red-500/20 transition-colors"
-                              title="Función próximamente"
+                              onClick={() => handleEdit(user)}
+                              disabled={actionLoading === user.id}
+                              className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded text-sm text-blue-400 hover:bg-blue-500/20 transition-colors disabled:opacity-50"
                             >
-                              <Ban className="w-4 h-4" />
-                              Banear
+                              <Edit className="w-4 h-4" />
+                              Editar
                             </button>
                             <button
-                              className="flex items-center gap-2 px-3 py-1.5 bg-bone/5 border border-bone/10 rounded text-sm text-bone/70 hover:bg-bone/10 transition-colors"
-                              title="Función próximamente"
+                              onClick={() => setShowDeleteModal(user.id)}
+                              disabled={actionLoading === user.id}
+                              className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded text-sm text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
                             >
-                              <UserX className="w-4 h-4" />
+                              <Trash2 className="w-4 h-4" />
                               Eliminar
                             </button>
                           </div>
@@ -517,6 +614,217 @@ export default function UsersManagementPage() {
               >
                 Cancelar
               </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowDeleteModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-void-light border border-bone/10 rounded-lg p-6 max-w-md mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-red-500/10 rounded-lg">
+                  <AlertTriangle className="w-6 h-6 text-red-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-bone">Eliminar Usuario</h3>
+              </div>
+              <p className="text-sm text-bone/70 mb-6">
+                ¿Estás seguro de que deseas eliminar este usuario? Se borrarán todos sus datos de perfil. Esta acción no se puede deshacer.
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowDeleteModal(null)}
+                  className="px-4 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone/70 hover:bg-bone/10 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => handleDelete(showDeleteModal)}
+                  disabled={actionLoading === showDeleteModal}
+                  className="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                >
+                  {actionLoading === showDeleteModal ? 'Eliminando...' : 'Eliminar'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit User Modal */}
+      <AnimatePresence>
+        {editingUser && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={() => setEditingUser(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-void-light border border-bone/10 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-bone flex items-center gap-2">
+                  <Edit className="w-5 h-5 text-blue-400" />
+                  Editar Usuario: @{editingUser.username}
+                </h3>
+                <button
+                  onClick={() => setEditingUser(null)}
+                  className="p-1.5 bg-bone/5 rounded-lg hover:bg-bone/10 transition-colors"
+                >
+                  <X className="w-5 h-5 text-bone/50" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Display Name */}
+                <div>
+                  <label className="block text-sm text-bone/70 mb-1">Nombre para mostrar</label>
+                  <input
+                    type="text"
+                    value={editForm.display_name}
+                    onChange={(e) => setEditForm({ ...editForm, display_name: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                    placeholder="Nombre para mostrar"
+                  />
+                </div>
+
+                {/* Bio */}
+                <div>
+                  <label className="block text-sm text-bone/70 mb-1">Biografía</label>
+                  <textarea
+                    value={editForm.bio}
+                    onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                    rows={3}
+                    className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30 resize-none"
+                    placeholder="Biografía del usuario"
+                  />
+                </div>
+
+                {/* Location */}
+                <div>
+                  <label className="block text-sm text-bone/70 mb-1">Ubicación</label>
+                  <input
+                    type="text"
+                    value={editForm.location}
+                    onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                    placeholder="Ciudad, País"
+                  />
+                </div>
+
+                {/* Social Links */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Sitio Web</label>
+                    <input
+                      type="url"
+                      value={editForm.website}
+                      onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Instagram</label>
+                    <input
+                      type="text"
+                      value={editForm.instagram}
+                      onChange={(e) => setEditForm({ ...editForm, instagram: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                      placeholder="usuario"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Twitter/X</label>
+                    <input
+                      type="text"
+                      value={editForm.twitter}
+                      onChange={(e) => setEditForm({ ...editForm, twitter: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                      placeholder="usuario"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">YouTube</label>
+                    <input
+                      type="text"
+                      value={editForm.youtube}
+                      onChange={(e) => setEditForm({ ...editForm, youtube: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                      placeholder="canal"
+                    />
+                  </div>
+                </div>
+
+                {/* Status Controls */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Estado Creador</label>
+                    <select
+                      value={editForm.creator_status}
+                      onChange={(e) => setEditForm({ ...editForm, creator_status: e.target.value as CreatorStatus })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone focus:outline-none focus:border-gold/30"
+                    >
+                      {Object.entries(CREATOR_STATUS_LABELS).map(([key, { label }]) => (
+                        <option key={key} value={key}>{label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Propietario de Tienda</label>
+                    <button
+                      type="button"
+                      onClick={() => setEditForm({ ...editForm, is_store_owner: !editForm.is_store_owner })}
+                      className={cn(
+                        'w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                        editForm.is_store_owner
+                          ? 'bg-gold/10 border border-gold/20 text-gold'
+                          : 'bg-bone/5 border border-bone/10 text-bone/70'
+                      )}
+                    >
+                      {editForm.is_store_owner ? 'Sí - Es propietario' : 'No'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-bone/10">
+                <button
+                  onClick={() => setEditingUser(null)}
+                  className="px-4 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone/70 hover:bg-bone/10 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={actionLoading === editingUser.id}
+                  className="px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-blue-400 hover:bg-blue-500/20 transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  {actionLoading === editingUser.id ? 'Guardando...' : 'Guardar cambios'}
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

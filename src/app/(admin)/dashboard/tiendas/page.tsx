@@ -24,8 +24,21 @@ import {
   Building2,
   AlertTriangle,
   RefreshCw,
+  Edit,
+  Trash2,
+  Save,
+  MoreHorizontal,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu'
 import type { Store as StoreType, StoreStatus } from '@/lib/types/database.types'
 
 type StoreWithSubmitter = StoreType & {
@@ -59,6 +72,19 @@ export default function StoresManagementPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [rejectionReason, setRejectionReason] = useState('')
   const [showRejectModal, setShowRejectModal] = useState<string | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null)
+  const [editingStore, setEditingStore] = useState<StoreWithSubmitter | null>(null)
+  const [editForm, setEditForm] = useState({
+    name: '',
+    description: '',
+    phone: '',
+    email: '',
+    website: '',
+    instagram: '',
+    address: '',
+    city: '',
+    store_type: 'specialist' as string,
+  })
 
   const supabase = createClient()
 
@@ -113,8 +139,9 @@ export default function StoresManagementPage() {
 
     if (error) {
       console.error('Error approving store:', error)
-      alert('Error al aprobar la tienda')
+      toast.error('Error al aprobar la tienda')
     } else {
+      toast.success('Tienda aprobada correctamente')
       fetchStores()
     }
     setActionLoading(null)
@@ -122,7 +149,7 @@ export default function StoresManagementPage() {
 
   const handleReject = async (storeId: string) => {
     if (!rejectionReason.trim()) {
-      alert('Por favor, indica el motivo del rechazo')
+      toast.warning('Por favor, indica el motivo del rechazo')
       return
     }
 
@@ -141,8 +168,9 @@ export default function StoresManagementPage() {
 
     if (error) {
       console.error('Error rejecting store:', error)
-      alert('Error al rechazar la tienda')
+      toast.error('Error al rechazar la tienda')
     } else {
+      toast.success('Tienda rechazada')
       setShowRejectModal(null)
       setRejectionReason('')
       fetchStores()
@@ -152,6 +180,71 @@ export default function StoresManagementPage() {
 
   const toggleExpanded = (storeId: string) => {
     setExpandedStore(expandedStore === storeId ? null : storeId)
+  }
+
+  const handleEdit = (store: StoreWithSubmitter) => {
+    setEditingStore(store)
+    setEditForm({
+      name: store.name,
+      description: store.description || '',
+      phone: store.phone || '',
+      email: store.email || '',
+      website: store.website || '',
+      instagram: store.instagram || '',
+      address: store.address,
+      city: store.city,
+      store_type: store.store_type,
+    })
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editingStore) return
+    setActionLoading(editingStore.id)
+
+    const { error } = await supabase
+      .from('stores')
+      .update({
+        name: editForm.name,
+        description: editForm.description || null,
+        phone: editForm.phone || null,
+        email: editForm.email || null,
+        website: editForm.website || null,
+        instagram: editForm.instagram || null,
+        address: editForm.address,
+        city: editForm.city,
+        store_type: editForm.store_type,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', editingStore.id)
+
+    if (error) {
+      console.error('Error updating store:', error)
+      toast.error('Error al actualizar la tienda')
+    } else {
+      toast.success('Tienda actualizada correctamente')
+      setEditingStore(null)
+      fetchStores()
+    }
+    setActionLoading(null)
+  }
+
+  const handleDelete = async (storeId: string) => {
+    setActionLoading(storeId)
+
+    const { error } = await supabase
+      .from('stores')
+      .delete()
+      .eq('id', storeId)
+
+    if (error) {
+      console.error('Error deleting store:', error)
+      toast.error('Error al eliminar la tienda')
+    } else {
+      toast.success('Tienda eliminada correctamente')
+      setShowDeleteModal(null)
+      fetchStores()
+    }
+    setActionLoading(null)
   }
 
   const pendingCount = stores.filter(s => s.status === 'pending').length
@@ -322,14 +415,49 @@ export default function StoresManagementPage() {
                             </button>
                           </>
                         )}
-                        <Link
-                          href={`/comunidad/tiendas/${store.slug}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="p-2 bg-bone/5 border border-bone/10 rounded-lg text-bone/50 hover:text-bone hover:bg-bone/10 transition-colors"
-                          title="Ver tienda"
-                        >
-                          <Eye className="w-5 h-5" />
-                        </Link>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              onClick={(e) => e.stopPropagation()}
+                              className="p-2 bg-bone/5 border border-bone/10 rounded-lg text-bone/50 hover:text-bone hover:bg-bone/10 transition-colors"
+                            >
+                              <MoreHorizontal className="w-5 h-5" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                window.open(`/comunidad/tiendas/${store.slug}`, '_blank')
+                              }}
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              Ver tienda
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleEdit(store)
+                              }}
+                            >
+                              <Edit className="w-4 h-4 mr-2" />
+                              Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setShowDeleteModal(store.id)
+                              }}
+                              className="text-red-400 focus:text-red-400"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Eliminar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                         {isExpanded ? (
                           <ChevronUp className="w-5 h-5 text-bone/30" />
                         ) : (
@@ -492,6 +620,213 @@ export default function StoresManagementPage() {
                   className="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-500 hover:bg-red-500/20 transition-colors disabled:opacity-50"
                 >
                   {actionLoading === showRejectModal ? 'Rechazando...' : 'Confirmar Rechazo'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowDeleteModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-void-light border border-bone/20 rounded-lg p-6 w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-red-500/10 rounded-full">
+                  <Trash2 className="w-6 h-6 text-red-500" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-bone">Eliminar Tienda</h3>
+                  <p className="text-sm text-bone/50">Esta acción no se puede deshacer</p>
+                </div>
+              </div>
+              <p className="text-sm text-bone/70 mb-6">
+                ¿Estás seguro de que quieres eliminar esta tienda? Se perderán todos los datos asociados, incluyendo reseñas y estadísticas.
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowDeleteModal(null)}
+                  className="px-4 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone/70 hover:text-bone hover:bg-bone/10 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => handleDelete(showDeleteModal)}
+                  disabled={actionLoading === showDeleteModal}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors disabled:opacity-50"
+                >
+                  {actionLoading === showDeleteModal ? 'Eliminando...' : 'Eliminar'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Modal */}
+      <AnimatePresence>
+        {editingStore && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setEditingStore(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-void-light border border-bone/20 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-bold text-bone flex items-center gap-2">
+                  <Edit className="w-5 h-5 text-blue-400" />
+                  Editar Tienda
+                </h3>
+                <button
+                  onClick={() => setEditingStore(null)}
+                  className="p-2 hover:bg-bone/10 rounded-lg transition-colors"
+                >
+                  <XCircle className="w-5 h-5 text-bone/50" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Name */}
+                <div>
+                  <label className="block text-sm font-medium text-bone/70 mb-1">Nombre</label>
+                  <input
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    className="w-full px-3 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone focus:outline-none focus:border-blue-500/30"
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-medium text-bone/70 mb-1">Descripción</label>
+                  <textarea
+                    value={editForm.description}
+                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                    rows={3}
+                    className="w-full px-3 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone focus:outline-none focus:border-blue-500/30 resize-none"
+                  />
+                </div>
+
+                {/* Store Type */}
+                <div>
+                  <label className="block text-sm font-medium text-bone/70 mb-1">Tipo de Tienda</label>
+                  <select
+                    value={editForm.store_type}
+                    onChange={(e) => setEditForm({ ...editForm, store_type: e.target.value })}
+                    className="w-full px-3 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone focus:outline-none focus:border-blue-500/30"
+                  >
+                    <option value="specialist">Tienda Especializada</option>
+                    <option value="comics_games">Comics y Juegos</option>
+                    <option value="general_hobby">Hobby General</option>
+                    <option value="online_only">Solo Online</option>
+                  </select>
+                </div>
+
+                {/* Address & City */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-bone/70 mb-1">Dirección</label>
+                    <input
+                      type="text"
+                      value={editForm.address}
+                      onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                      className="w-full px-3 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone focus:outline-none focus:border-blue-500/30"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-bone/70 mb-1">Ciudad</label>
+                    <input
+                      type="text"
+                      value={editForm.city}
+                      onChange={(e) => setEditForm({ ...editForm, city: e.target.value })}
+                      className="w-full px-3 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone focus:outline-none focus:border-blue-500/30"
+                    />
+                  </div>
+                </div>
+
+                {/* Contact */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-bone/70 mb-1">Teléfono</label>
+                    <input
+                      type="text"
+                      value={editForm.phone}
+                      onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                      className="w-full px-3 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone focus:outline-none focus:border-blue-500/30"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-bone/70 mb-1">Email</label>
+                    <input
+                      type="email"
+                      value={editForm.email}
+                      onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                      className="w-full px-3 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone focus:outline-none focus:border-blue-500/30"
+                    />
+                  </div>
+                </div>
+
+                {/* Social */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-bone/70 mb-1">Sitio Web</label>
+                    <input
+                      type="url"
+                      value={editForm.website}
+                      onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+                      placeholder="https://..."
+                      className="w-full px-3 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-blue-500/30"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-bone/70 mb-1">Instagram</label>
+                    <input
+                      type="text"
+                      value={editForm.instagram}
+                      onChange={(e) => setEditForm({ ...editForm, instagram: e.target.value })}
+                      placeholder="username"
+                      className="w-full px-3 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-blue-500/30"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-bone/10">
+                <button
+                  onClick={() => setEditingStore(null)}
+                  className="px-4 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone/70 hover:text-bone hover:bg-bone/10 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={actionLoading === editingStore.id || !editForm.name.trim()}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  {actionLoading === editingStore.id ? 'Guardando...' : 'Guardar Cambios'}
                 </button>
               </div>
             </motion.div>

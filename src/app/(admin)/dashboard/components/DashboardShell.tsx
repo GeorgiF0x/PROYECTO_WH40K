@@ -31,6 +31,8 @@ import {
   type UserPermissions,
 } from '@/lib/permissions'
 import type { UserRole, CreatorStatus, CreatorType } from '@/lib/types/database.types'
+import { CommandPalette } from './CommandPalette'
+import { Toaster } from './ui/sonner'
 
 interface DashboardShellProps {
   profile: {
@@ -65,6 +67,7 @@ export default function DashboardShell({ profile, permissions, children }: Dashb
   const roleDisplay = ROLE_DISPLAY_NAMES[permissions.role] || ROLE_DISPLAY_NAMES.user
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [commandOpen, setCommandOpen] = useState(false)
 
   // Group sections by type
   const mainSections = accessibleSections.filter(s =>
@@ -261,14 +264,16 @@ export default function DashboardShell({ profile, permissions, children }: Dashb
         {/* Top Bar */}
         <header className="hidden lg:flex sticky top-0 h-14 bg-void/80 backdrop-blur-sm border-b border-bone/10 z-20 items-center justify-between px-6">
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/40" />
-              <input
-                type="text"
-                placeholder="Buscar..."
-                className="w-64 pl-9 pr-4 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
-              />
-            </div>
+            <button
+              onClick={() => setCommandOpen(true)}
+              className="flex items-center gap-3 w-64 px-3 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone/40 hover:text-bone/60 hover:border-bone/20 transition-colors"
+            >
+              <Search className="w-4 h-4" />
+              <span className="flex-1 text-left">Buscar...</span>
+              <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border border-bone/10 bg-bone/5 px-1.5 font-mono text-[10px] font-medium text-bone/40 sm:flex">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </button>
           </div>
           <div className="flex items-center gap-3">
             <button className="p-2 rounded-lg hover:bg-bone/5 text-bone/50 hover:text-bone relative">
@@ -290,6 +295,12 @@ export default function DashboardShell({ profile, permissions, children }: Dashb
           {children}
         </div>
       </main>
+
+      {/* Command Palette */}
+      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+
+      {/* Toast Notifications */}
+      <Toaster />
     </div>
   )
 }

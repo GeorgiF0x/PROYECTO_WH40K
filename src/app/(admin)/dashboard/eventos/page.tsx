@@ -29,7 +29,12 @@ import {
   HelpCircle,
   ExternalLink,
   DollarSign,
+  Edit,
+  Trash2,
+  Save,
+  X,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui'
 import type { Event, EventStatus, EventType, Profile } from '@/lib/types/database.types'
@@ -63,6 +68,23 @@ export default function EventsManagementPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedEvent, setExpandedEvent] = useState<string | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+
+  // Edit & Delete state
+  const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null)
+  const [editingEvent, setEditingEvent] = useState<EventWithOrganizer | null>(null)
+  const [editForm, setEditForm] = useState({
+    name: '',
+    description: '',
+    event_type: 'tournament' as EventType,
+    start_date: '',
+    end_date: '',
+    venue_name: '',
+    address: '',
+    city: '',
+    max_participants: '',
+    entry_fee: '',
+    game_system: '',
+  })
 
   const supabase = createClient()
 
@@ -113,7 +135,7 @@ export default function EventsManagementPage() {
 
     if (error) {
       console.error('Error updating featured status:', error)
-      alert('Error al actualizar el estado destacado')
+      toast.error('Error al actualizar el estado destacado')
     } else {
       fetchEvents()
     }
@@ -130,7 +152,7 @@ export default function EventsManagementPage() {
 
     if (error) {
       console.error('Error updating status:', error)
-      alert('Error al cambiar el estado')
+      toast.error('Error al cambiar el estado')
     } else {
       fetchEvents()
     }
@@ -139,6 +161,73 @@ export default function EventsManagementPage() {
 
   const toggleExpanded = (eventId: string) => {
     setExpandedEvent(expandedEvent === eventId ? null : eventId)
+  }
+
+  const handleEdit = (event: EventWithOrganizer) => {
+    setEditForm({
+      name: event.name,
+      description: event.description || '',
+      event_type: event.event_type,
+      start_date: event.start_date ? new Date(event.start_date).toISOString().slice(0, 16) : '',
+      end_date: event.end_date ? new Date(event.end_date).toISOString().slice(0, 16) : '',
+      venue_name: event.venue_name || '',
+      address: event.address || '',
+      city: event.city || '',
+      max_participants: event.max_participants?.toString() || '',
+      entry_fee: event.entry_fee?.toString() || '',
+      game_system: event.game_system || '',
+    })
+    setEditingEvent(event)
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editingEvent) return
+    setActionLoading(editingEvent.id)
+
+    const { error } = await supabase
+      .from('events')
+      .update({
+        name: editForm.name,
+        description: editForm.description || null,
+        event_type: editForm.event_type,
+        start_date: editForm.start_date || null,
+        end_date: editForm.end_date || null,
+        venue_name: editForm.venue_name || null,
+        address: editForm.address || null,
+        city: editForm.city || null,
+        max_participants: editForm.max_participants ? parseInt(editForm.max_participants) : null,
+        entry_fee: editForm.entry_fee ? parseFloat(editForm.entry_fee) : null,
+        game_system: editForm.game_system || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', editingEvent.id)
+
+    if (error) {
+      console.error('Error updating event:', error)
+      toast.error('Error al actualizar el evento')
+    } else {
+      setEditingEvent(null)
+      fetchEvents()
+    }
+    setActionLoading(null)
+  }
+
+  const handleDelete = async (eventId: string) => {
+    setActionLoading(eventId)
+
+    const { error } = await supabase
+      .from('events')
+      .delete()
+      .eq('id', eventId)
+
+    if (error) {
+      console.error('Error deleting event:', error)
+      toast.error('Error al eliminar el evento')
+    } else {
+      setShowDeleteModal(null)
+      fetchEvents()
+    }
+    setActionLoading(null)
   }
 
   const upcomingCount = events.filter(e => e.status === 'upcoming').length
@@ -329,6 +418,28 @@ export default function EventsManagementPage() {
                         >
                           {event.is_featured ? <Star className="w-5 h-5 fill-gold" /> : <StarOff className="w-5 h-5" />}
                         </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleEdit(event)
+                          }}
+                          disabled={actionLoading === event.id}
+                          className="p-2 bg-bone/5 border border-bone/10 rounded-lg text-bone/50 hover:text-blue-400 hover:border-blue-400/20 transition-colors disabled:opacity-50"
+                          title="Editar evento"
+                        >
+                          <Edit className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setShowDeleteModal(event.id)
+                          }}
+                          disabled={actionLoading === event.id}
+                          className="p-2 bg-bone/5 border border-bone/10 rounded-lg text-bone/50 hover:text-red-400 hover:border-red-400/20 transition-colors disabled:opacity-50"
+                          title="Eliminar evento"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
                         <Link
                           href={`/comunidad/eventos/${event.slug}`}
                           onClick={(e) => e.stopPropagation()}
@@ -447,6 +558,237 @@ export default function EventsManagementPage() {
           </AnimatePresence>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowDeleteModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-void-light border border-bone/10 rounded-lg p-6 max-w-md mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-red-500/10 rounded-lg">
+                  <AlertTriangle className="w-6 h-6 text-red-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-bone">Eliminar Evento</h3>
+              </div>
+              <p className="text-sm text-bone/70 mb-6">
+                ¿Estás seguro de que deseas eliminar este evento? Esta acción no se puede deshacer.
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowDeleteModal(null)}
+                  className="px-4 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone/70 hover:bg-bone/10 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => handleDelete(showDeleteModal)}
+                  disabled={actionLoading === showDeleteModal}
+                  className="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                >
+                  {actionLoading === showDeleteModal ? 'Eliminando...' : 'Eliminar'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Modal */}
+      <AnimatePresence>
+        {editingEvent && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={() => setEditingEvent(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-void-light border border-bone/10 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-bone flex items-center gap-2">
+                  <Edit className="w-5 h-5 text-blue-400" />
+                  Editar Evento
+                </h3>
+                <button
+                  onClick={() => setEditingEvent(null)}
+                  className="p-1.5 bg-bone/5 rounded-lg hover:bg-bone/10 transition-colors"
+                >
+                  <X className="w-5 h-5 text-bone/50" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Name */}
+                <div>
+                  <label className="block text-sm text-bone/70 mb-1">Nombre del evento *</label>
+                  <input
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                    placeholder="Nombre del evento"
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-sm text-bone/70 mb-1">Descripción</label>
+                  <textarea
+                    value={editForm.description}
+                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                    rows={3}
+                    className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30 resize-none"
+                    placeholder="Descripción del evento"
+                  />
+                </div>
+
+                {/* Event Type */}
+                <div>
+                  <label className="block text-sm text-bone/70 mb-1">Tipo de evento</label>
+                  <select
+                    value={editForm.event_type}
+                    onChange={(e) => setEditForm({ ...editForm, event_type: e.target.value as EventType })}
+                    className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone focus:outline-none focus:border-gold/30"
+                  >
+                    {Object.entries(EVENT_TYPE_LABELS).map(([key, { label }]) => (
+                      <option key={key} value={key}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Dates */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Fecha inicio</label>
+                    <input
+                      type="datetime-local"
+                      value={editForm.start_date}
+                      onChange={(e) => setEditForm({ ...editForm, start_date: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone focus:outline-none focus:border-gold/30"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Fecha fin</label>
+                    <input
+                      type="datetime-local"
+                      value={editForm.end_date}
+                      onChange={(e) => setEditForm({ ...editForm, end_date: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone focus:outline-none focus:border-gold/30"
+                    />
+                  </div>
+                </div>
+
+                {/* Venue & Address */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Nombre del lugar</label>
+                    <input
+                      type="text"
+                      value={editForm.venue_name}
+                      onChange={(e) => setEditForm({ ...editForm, venue_name: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                      placeholder="Ej: Games Workshop Madrid"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Ciudad</label>
+                    <input
+                      type="text"
+                      value={editForm.city}
+                      onChange={(e) => setEditForm({ ...editForm, city: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                      placeholder="Ciudad"
+                    />
+                  </div>
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label className="block text-sm text-bone/70 mb-1">Dirección</label>
+                  <input
+                    type="text"
+                    value={editForm.address}
+                    onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                    placeholder="Dirección completa"
+                  />
+                </div>
+
+                {/* Participants & Fee */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Máx. participantes</label>
+                    <input
+                      type="number"
+                      value={editForm.max_participants}
+                      onChange={(e) => setEditForm({ ...editForm, max_participants: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                      placeholder="0 = ilimitado"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Precio entrada (€)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editForm.entry_fee}
+                      onChange={(e) => setEditForm({ ...editForm, entry_fee: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                      placeholder="0 = gratis"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-bone/70 mb-1">Sistema de juego</label>
+                    <input
+                      type="text"
+                      value={editForm.game_system}
+                      onChange={(e) => setEditForm({ ...editForm, game_system: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/40 focus:outline-none focus:border-gold/30"
+                      placeholder="Ej: Warhammer 40K 10th"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-bone/10">
+                <button
+                  onClick={() => setEditingEvent(null)}
+                  className="px-4 py-2 bg-bone/5 border border-bone/10 rounded-lg text-sm text-bone/70 hover:bg-bone/10 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={actionLoading === editingEvent.id || !editForm.name}
+                  className="px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-blue-400 hover:bg-blue-500/20 transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  {actionLoading === editingEvent.id ? 'Guardando...' : 'Guardar cambios'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
