@@ -59,6 +59,7 @@ interface NavItem {
 const mainNavItems: NavItem[] = [
   { title: 'Inicio', href: '/dashboard', icon: Home },
   { title: 'Tiendas', href: '/dashboard/tiendas', icon: Store, color: 'text-amber-500' },
+  { title: 'Mercado', href: '/dashboard/mercado', icon: ShoppingBag, color: 'text-orange-500' },
   { title: 'Creadores', href: '/dashboard/creadores', icon: Palette, color: 'text-purple-500' },
   { title: 'Usuarios', href: '/dashboard/usuarios', icon: Users, color: 'text-blue-500' },
   { title: 'Eventos', href: '/dashboard/eventos', icon: Calendar, color: 'text-emerald-500' },

@@ -403,23 +403,41 @@ export default function AnaliticasPage() {
           />
         </BentoCard>
 
-        {/* Devices - Donut */}
+        {/* Devices - Custom visualization */}
         <BentoCard
           title="Dispositivos"
           subtitle="Distribucion por tipo"
           icon={<Smartphone className="w-4 h-4 text-purple-500" />}
         >
-          <div className="flex items-center justify-center">
-            <DonutChart data={deviceData} height={200} showLegend={false} />
-          </div>
-          <div className="flex justify-center gap-6 mt-2">
+          <div className="space-y-4 mt-2">
             {deviceData.map((item) => (
-              <div key={item.name} className="flex items-center gap-2 text-xs">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.fill }} />
-                <span className="text-zinc-400">{item.name}</span>
-                <span className="text-white font-medium">{item.value}%</span>
+              <div key={item.name} className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    {item.name === 'Desktop' && <Monitor className="w-4 h-4 text-zinc-400" />}
+                    {item.name === 'Mobile' && <Smartphone className="w-4 h-4 text-zinc-400" />}
+                    {item.name === 'Tablet' && <Smartphone className="w-4 h-4 text-zinc-400 rotate-90" />}
+                    <span className="text-zinc-300">{item.name}</span>
+                  </div>
+                  <span className="text-white font-semibold">{item.value}%</span>
+                </div>
+                <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ backgroundColor: item.fill }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${item.value}%` }}
+                    transition={{ duration: 0.8, ease: 'easeOut' }}
+                  />
+                </div>
               </div>
             ))}
+          </div>
+          <div className="mt-4 pt-4 border-t border-white/5">
+            <div className="flex items-center justify-between text-xs text-zinc-500">
+              <span>Total de sesiones</span>
+              <span className="text-white font-medium">24,856</span>
+            </div>
           </div>
         </BentoCard>
       </div>

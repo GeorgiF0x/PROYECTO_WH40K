@@ -26,6 +26,7 @@ import './dashboard.css'
 const pageTitles: Record<string, { title: string; description: string }> = {
   '/dashboard': { title: 'Dashboard', description: 'Resumen general de la plataforma' },
   '/dashboard/tiendas': { title: 'Tiendas', description: 'Gestiona las tiendas de la comunidad' },
+  '/dashboard/mercado': { title: 'Mercado', description: 'Gestiona los anuncios del mercado P2P' },
   '/dashboard/creadores': { title: 'Creadores', description: 'Solicitudes y perfiles de creadores' },
   '/dashboard/usuarios': { title: 'Usuarios', description: 'Administra los usuarios registrados' },
   '/dashboard/eventos': { title: 'Eventos', description: 'Gestiona eventos de la comunidad' },
