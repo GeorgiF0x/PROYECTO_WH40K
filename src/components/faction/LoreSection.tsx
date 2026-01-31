@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { Quote, Shield, Users, Skull, Award } from 'lucide-react'
+import { Quote, BookOpen, Users, Clock, ExternalLink } from 'lucide-react'
 import { getFactionTheme } from '@/lib/faction-themes'
 import type { Faction } from '@/lib/data'
 
@@ -13,223 +13,245 @@ interface LoreSectionProps {
 export function LoreSection({ faction }: LoreSectionProps) {
   const theme = getFactionTheme(faction.id)
 
+  // Solo mostramos las primeras 2 secciones de lore como "gancho"
+  const featuredLore = faction.loreSections.slice(0, 2)
+  const firstQuote = featuredLore.find(s => s.quote)?.quote
+
   return (
     <section className="py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-6">
-        {/* Long Description intro */}
+        {/* Hero Lore Introduction */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-4xl mx-auto mb-20"
+          className="max-w-4xl mx-auto text-center mb-20"
         >
-          <div className="prose prose-invert prose-lg">
-            {faction.longDescription.split('\n\n').map((paragraph, i) => (
-              <p
-                key={i}
-                className="font-body text-lg leading-relaxed text-bone/70 mb-6 first-letter:text-5xl first-letter:font-display first-letter:font-bold first-letter:float-left first-letter:mr-3 first-letter:mt-1"
-                style={{
-                  '--tw-prose-first-letter': faction.color,
-                } as React.CSSProperties}
+          <span
+            className="font-body text-sm font-semibold tracking-widest uppercase mb-4 block"
+            style={{ color: faction.color }}
+          >
+            Trasfondo
+          </span>
+          <h2 className="font-display text-3xl md:text-5xl font-black text-white mb-8">
+            La Historia de {faction.shortName}
+          </h2>
+
+          {/* Intro paragraph with drop cap */}
+          <div className="text-left">
+            <p className="font-body text-xl leading-relaxed text-bone/80">
+              <span
+                className="float-left font-display text-6xl font-black mr-4 mt-1 leading-none"
+                style={{ color: faction.color }}
               >
-                <span style={{ color: i === 0 ? faction.color : undefined }}>
-                  {i === 0 ? paragraph.charAt(0) : ''}
-                </span>
-                {i === 0 ? paragraph.slice(1) : paragraph}
-              </p>
-            ))}
+                {faction.longDescription.charAt(0)}
+              </span>
+              {faction.longDescription.split('\n\n')[0].slice(1)}
+            </p>
           </div>
         </motion.div>
 
-        {/* Lore Sections */}
-        <div className="space-y-24">
-          {faction.loreSections.map((section, index) => (
+        {/* Featured Quote */}
+        {firstQuote && (
+          <motion.blockquote
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="relative max-w-3xl mx-auto mb-20 p-8 rounded-2xl text-center"
+            style={{
+              background: `linear-gradient(135deg, ${faction.color}15 0%, transparent 100%)`,
+              border: `1px solid ${faction.color}30`,
+            }}
+          >
+            <Quote
+              className="absolute top-4 left-4 w-8 h-8 opacity-30"
+              style={{ color: faction.color }}
+            />
+            <Quote
+              className="absolute bottom-4 right-4 w-8 h-8 opacity-30 rotate-180"
+              style={{ color: faction.color }}
+            />
+            <p className="font-body text-2xl italic text-bone/90 mb-4">
+              "{firstQuote.text}"
+            </p>
+            <footer className="font-body">
+              <span className="font-semibold" style={{ color: faction.color }}>
+                {firstQuote.author}
+              </span>
+              {firstQuote.source && (
+                <span className="text-bone/50"> — {firstQuote.source}</span>
+              )}
+            </footer>
+          </motion.blockquote>
+        )}
+
+        {/* Lore Cards - Solo 2 secciones principales */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
+          {featuredLore.map((section, index) => (
             <motion.article
               key={section.title}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${
-                index % 2 === 1 ? 'lg:grid-flow-dense' : ''
-              }`}
+              className="group relative rounded-2xl overflow-hidden"
+              style={{
+                background: theme?.cssVars['--faction-bg'] || '#030308',
+                border: `1px solid ${faction.color}20`,
+              }}
             >
-              {/* Image */}
-              <motion.div
-                className={`relative h-[400px] rounded-2xl overflow-hidden ${
-                  index % 2 === 1 ? 'lg:col-start-2' : ''
-                }`}
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-              >
+              {/* Image Header */}
+              <div className="relative h-48 overflow-hidden">
                 <Image
-                  src={faction.galleryImages[index % faction.galleryImages.length]}
+                  src={faction.galleryImages[index] || faction.image}
                   alt={section.title}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-void via-void/80 to-transparent" />
                 <div
                   className="absolute inset-0"
                   style={{
                     background: `linear-gradient(135deg, ${faction.color}30 0%, transparent 100%)`,
                   }}
                 />
-                {/* Corner accents */}
+
+                {/* Chapter number */}
                 <div
-                  className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2"
-                  style={{ borderColor: faction.color }}
-                />
-                <div
-                  className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2"
-                  style={{ borderColor: faction.color }}
-                />
-              </motion.div>
+                  className="absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center font-display font-bold"
+                  style={{ background: faction.color, color: '#000' }}
+                >
+                  {index + 1}
+                </div>
+              </div>
 
               {/* Content */}
-              <div className={index % 2 === 1 ? 'lg:col-start-1' : ''}>
-                <motion.div
-                  initial={{ opacity: 0, x: index % 2 === 0 ? 30 : -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
+              <div className="p-6">
+                <h3 className="font-display text-xl font-bold text-white mb-4">
+                  {section.title}
+                </h3>
+                <p className="font-body text-bone/70 leading-relaxed line-clamp-4">
+                  {section.content.split('\n\n')[0]}
+                </p>
+
+                {/* Read more hint */}
+                <div
+                  className="mt-4 flex items-center gap-2 font-body text-sm opacity-60 group-hover:opacity-100 transition-opacity"
+                  style={{ color: faction.color }}
                 >
-                  <span
-                    className="inline-block px-3 py-1 text-xs font-body font-semibold tracking-wider uppercase rounded mb-4"
-                    style={{
-                      background: `${faction.color}20`,
-                      color: faction.color,
-                    }}
-                  >
-                    Capitulo {index + 1}
-                  </span>
-
-                  <h2 className="font-display text-3xl md:text-4xl font-black text-white mb-6">
-                    {section.title}
-                  </h2>
-
-                  <div className="font-body text-bone/70 leading-relaxed space-y-4">
-                    {section.content.split('\n\n').map((paragraph, i) => (
-                      <p key={i}>{paragraph}</p>
-                    ))}
-                  </div>
-
-                  {/* Quote if exists */}
-                  {section.quote && (
-                    <motion.blockquote
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.3 }}
-                      className="mt-8 relative pl-6 border-l-2"
-                      style={{ borderColor: faction.color }}
-                    >
-                      <Quote
-                        className="absolute -left-3 -top-2 w-6 h-6"
-                        style={{ color: faction.color }}
-                      />
-                      <p className="font-body italic text-lg text-bone/80 mb-2">
-                        "{section.quote.text}"
-                      </p>
-                      <footer className="font-body text-sm">
-                        <span style={{ color: faction.color }}>{section.quote.author}</span>
-                        {section.quote.source && (
-                          <span className="text-bone/50"> — {section.quote.source}</span>
-                        )}
-                      </footer>
-                    </motion.blockquote>
-                  )}
-                </motion.div>
+                  <BookOpen className="w-4 h-4" />
+                  <span>Mas en la Wiki (proximamente)</span>
+                </div>
               </div>
             </motion.article>
           ))}
         </div>
 
-        {/* Strengths & Weaknesses + Notable Characters */}
-        <div className="mt-24 grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Strengths */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="p-6 rounded-xl border"
-            style={{
-              background: `${theme?.cssVars['--faction-bg'] || '#030308'}`,
-              borderColor: `${faction.color}30`,
-            }}
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <Shield className="w-6 h-6" style={{ color: faction.color }} />
-              <h3 className="font-display text-xl font-bold text-white">Fortalezas</h3>
-            </div>
-            <ul className="space-y-3">
-              {faction.strengths.map((strength, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span
-                    className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0"
-                    style={{ background: faction.color }}
-                  />
-                  <span className="font-body text-sm text-bone/70">{strength}</span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
+        {/* Notable Characters Preview */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-20"
+        >
+          <div className="flex items-center gap-3 mb-8">
+            <Users className="w-6 h-6" style={{ color: faction.color }} />
+            <h3 className="font-display text-2xl font-bold text-white">
+              Personajes Legendarios
+            </h3>
+          </div>
 
-          {/* Weaknesses */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="p-6 rounded-xl border"
-            style={{
-              background: `${theme?.cssVars['--faction-bg'] || '#030308'}`,
-              borderColor: `${faction.color}30`,
-            }}
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <Skull className="w-6 h-6" style={{ color: faction.color }} />
-              <h3 className="font-display text-xl font-bold text-white">Debilidades</h3>
-            </div>
-            <ul className="space-y-3">
-              {faction.weaknesses.map((weakness, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span
-                    className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0"
-                    style={{ background: '#8B0000' }}
-                  />
-                  <span className="font-body text-sm text-bone/70">{weakness}</span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Notable Characters */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="p-6 rounded-xl border"
-            style={{
-              background: `${theme?.cssVars['--faction-bg'] || '#030308'}`,
-              borderColor: `${faction.color}30`,
-            }}
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <Award className="w-6 h-6" style={{ color: faction.color }} />
-              <h3 className="font-display text-xl font-bold text-white">Personajes Notables</h3>
-            </div>
-            <ul className="space-y-3">
-              {faction.notableCharacters.map((character, i) => (
-                <li key={i} className="font-body text-sm text-bone/70">
-                  <span style={{ color: faction.color }}>{character.split(' - ')[0]}</span>
-                  {character.includes(' - ') && (
-                    <span className="text-bone/50"> — {character.split(' - ')[1]}</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {faction.notableCharacters.map((character, i) => {
+              const [name, title] = character.split(' - ')
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="p-4 rounded-xl border transition-all hover:border-opacity-50"
+                  style={{
+                    background: `${faction.color}05`,
+                    borderColor: `${faction.color}20`,
+                  }}
+                >
+                  <h4
+                    className="font-display text-sm font-bold mb-1"
+                    style={{ color: faction.color }}
+                  >
+                    {name}
+                  </h4>
+                  {title && (
+                    <p className="font-body text-xs text-bone/50">
+                      {title}
+                    </p>
                   )}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </motion.div>
+
+        {/* Timeline Teaser */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative p-8 rounded-2xl overflow-hidden"
+          style={{
+            background: `linear-gradient(135deg, ${theme?.cssVars['--faction-bg'] || '#030308'} 0%, ${faction.color}10 100%)`,
+            border: `1px solid ${faction.color}30`,
+          }}
+        >
+          {/* Background pattern */}
+          <div
+            className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: `repeating-linear-gradient(90deg, ${faction.color} 0px, ${faction.color} 1px, transparent 1px, transparent 50px)`,
+            }}
+          />
+
+          <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center"
+                style={{ background: `${faction.color}20` }}
+              >
+                <Clock className="w-8 h-8" style={{ color: faction.color }} />
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-bold text-white mb-1">
+                  Linea Temporal Completa
+                </h3>
+                <p className="font-body text-bone/60">
+                  Miles de años de historia, batallas y leyendas
+                </p>
+              </div>
+            </div>
+
+            <button
+              disabled
+              className="flex items-center gap-2 px-6 py-3 rounded-lg font-body font-semibold opacity-50 cursor-not-allowed"
+              style={{
+                background: `${faction.color}20`,
+                color: faction.color,
+                border: `1px solid ${faction.color}40`,
+              }}
+            >
+              <span>Explorar Wiki</span>
+              <ExternalLink className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Coming soon badge */}
+          <div className="absolute top-4 right-4">
+            <span className="px-3 py-1 rounded-full text-xs font-body font-semibold bg-void-light text-bone/50">
+              Proximamente
+            </span>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

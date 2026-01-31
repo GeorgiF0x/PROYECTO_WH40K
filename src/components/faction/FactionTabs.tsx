@@ -1,10 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { BookOpen, Swords, Images } from 'lucide-react'
+import { BookOpen, Gamepad2, Images } from 'lucide-react'
 import { getFactionTheme } from '@/lib/faction-themes'
 
-export type FactionTab = 'lore' | 'units' | 'gallery'
+export type FactionTab = 'lore' | 'juego' | 'gallery'
 
 interface FactionTabsProps {
   factionId: string
@@ -13,8 +13,8 @@ interface FactionTabsProps {
 }
 
 const tabs: { id: FactionTab; label: string; icon: React.ReactNode }[] = [
-  { id: 'lore', label: 'Historia', icon: <BookOpen className="w-5 h-5" /> },
-  { id: 'units', label: 'Unidades', icon: <Swords className="w-5 h-5" /> },
+  { id: 'lore', label: 'Trasfondo', icon: <BookOpen className="w-5 h-5" /> },
+  { id: 'juego', label: 'Juego', icon: <Gamepad2 className="w-5 h-5" /> },
   { id: 'gallery', label: 'Galeria', icon: <Images className="w-5 h-5" /> },
 ]
 

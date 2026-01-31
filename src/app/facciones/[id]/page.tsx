@@ -15,7 +15,7 @@ import {
   FactionEffects,
   FactionSymbol,
   LoreSection,
-  UnitsGrid,
+  GameSection,
   FactionGallery,
   type FactionTab,
 } from '@/components/faction'
@@ -87,7 +87,7 @@ export default function FactionPage() {
           transition={{ duration: 0.3 }}
         >
           {activeTab === 'lore' && <LoreSection faction={faction} />}
-          {activeTab === 'units' && <UnitsGrid faction={faction} />}
+          {activeTab === 'juego' && <GameSection faction={faction} />}
           {activeTab === 'gallery' && <FactionGallery faction={faction} />}
         </motion.div>
       </AnimatePresence>
