@@ -1,109 +1,264 @@
-/* Dashboard Theme - Clean shadcn aesthetics */
-/* Overrides the grimdark theme for admin panel */
+/* Dashboard Theme - Modern Professional Dark Theme */
 
 .dashboard-root {
-  /* Light mode */
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
-  --primary: 240 5.9% 10%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 240 5.9% 10%;
-  --radius: 0.5rem;
+  /* Modern dark palette */
+  --background: 224 71% 4%;
+  --foreground: 213 31% 91%;
+  --card: 224 71% 4%;
+  --card-foreground: 213 31% 91%;
+  --popover: 224 71% 6%;
+  --popover-foreground: 213 31% 91%;
+  --primary: 210 100% 52%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 215 20% 11%;
+  --secondary-foreground: 213 31% 91%;
+  --muted: 215 20% 11%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 215 20% 14%;
+  --accent-foreground: 213 31% 91%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 215 20% 14%;
+  --input: 215 20% 14%;
+  --ring: 210 100% 52%;
+  --radius: 0.75rem;
 
   /* Sidebar */
-  --sidebar-background: 0 0% 98%;
-  --sidebar-foreground: 240 5.3% 26.1%;
-  --sidebar-primary: 240 5.9% 10%;
-  --sidebar-primary-foreground: 0 0% 98%;
-  --sidebar-accent: 240 4.8% 95.9%;
-  --sidebar-accent-foreground: 240 5.9% 10%;
-  --sidebar-border: 220 13% 91%;
-  --sidebar-ring: 217.2 91.2% 59.8%;
+  --sidebar-background: 224 71% 3%;
+  --sidebar-foreground: 213 31% 91%;
+  --sidebar-primary: 210 100% 52%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 215 20% 11%;
+  --sidebar-accent-foreground: 213 31% 91%;
+  --sidebar-border: 215 20% 10%;
+  --sidebar-ring: 210 100% 52%;
 
   /* Chart colors */
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
+  --chart-1: 210 100% 52%;
+  --chart-2: 160 84% 39%;
+  --chart-3: 30 100% 50%;
+  --chart-4: 280 100% 70%;
+  --chart-5: 340 82% 52%;
+
+  /* Gold accent */
+  --gold: 45 93% 47%;
+  --gold-foreground: 0 0% 0%;
 }
 
-.dashboard-root.dark {
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 5.9% 10%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 240 4.9% 83.9%;
-
-  /* Sidebar dark */
-  --sidebar-background: 240 5.9% 10%;
-  --sidebar-foreground: 240 4.8% 95.9%;
-  --sidebar-primary: 224.3 76.3% 48%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 240 3.7% 15.9%;
-  --sidebar-accent-foreground: 240 4.8% 95.9%;
-  --sidebar-border: 240 3.7% 15.9%;
-  --sidebar-ring: 217.2 91.2% 59.8%;
-
-  /* Chart colors dark */
-  --chart-1: 220 70% 50%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
-}
-
-/* Base styles for dashboard */
+/* Base styles */
 .dashboard-root {
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-  background-color: hsl(var(--background));
+  background: linear-gradient(135deg, hsl(224 71% 4%) 0%, hsl(224 71% 6%) 100%);
   color: hsl(var(--foreground));
   min-height: 100vh;
 }
 
-/* Sidebar styles */
+/* Background grid pattern */
+.dashboard-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Sidebar glass effect */
 .dashboard-sidebar {
-  background-color: hsl(var(--sidebar-background));
+  background: linear-gradient(180deg,
+    hsl(224 71% 4% / 0.95) 0%,
+    hsl(224 71% 3% / 0.98) 100%
+  );
+  backdrop-filter: blur(20px);
   border-right: 1px solid hsl(var(--sidebar-border));
 }
 
-/* Card hover effects */
+/* Card styles */
 .dashboard-card {
-  transition: box-shadow 0.2s ease-in-out;
+  background: linear-gradient(135deg,
+    hsl(215 20% 8% / 0.8) 0%,
+    hsl(215 20% 6% / 0.9) 100%
+  );
+  border: 1px solid hsl(215 20% 14%);
+  border-radius: var(--radius);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 .dashboard-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: hsl(215 20% 20%);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.3),
+    0 0 0 1px hsl(215 20% 16%);
 }
 
-.dark .dashboard-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+/* Stat card glow on hover */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-color, hsl(210 100% 52%)), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+/* Nav item hover glow */
+.nav-item {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: hsl(var(--primary));
+  border-radius: 0 2px 2px 0;
+  transition: height 0.2s ease;
+}
+
+.nav-item:hover::before,
+.nav-item.active::before {
+  height: 60%;
+}
+
+.nav-item.active {
+  background: hsl(var(--accent));
+}
+
+/* Quick action buttons */
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+}
+
+.quick-action:hover {
+  background: hsl(var(--accent));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.quick-action-primary {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(210 100% 45%) 100%);
+  border: none;
+  color: white;
+}
+
+.quick-action-primary:hover {
+  background: linear-gradient(135deg, hsl(210 100% 55%) 0%, hsl(210 100% 50%) 100%);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(210 100% 52% / 0.3);
+}
+
+/* Header bar */
+.dashboard-header {
+  background: linear-gradient(180deg,
+    hsl(224 71% 5% / 0.95) 0%,
+    hsl(224 71% 4% / 0.9) 100%
+  );
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+/* Scrollbar styling */
+.dashboard-root ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dashboard-root ::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+.dashboard-root ::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+.dashboard-root ::-webkit-scrollbar-thumb:hover {
+  background: hsl(215 20% 25%);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease forwards;
+}
+
+/* Pulse dot for notifications */
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.pulse-dot {
+  position: relative;
+}
+
+.pulse-dot::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+/* Status indicators */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.success { background: hsl(160 84% 39%); }
+.status-dot.warning { background: hsl(30 100% 50%); }
+.status-dot.danger { background: hsl(0 84% 60%); }
+.status-dot.info { background: hsl(210 100% 52%); }
+
+/* Dropdown menu improvements */
+[data-radix-popper-content-wrapper] {
+  z-index: 100 !important;
 }
