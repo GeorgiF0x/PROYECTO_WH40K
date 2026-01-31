@@ -4,7 +4,10 @@ import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { Sidebar } from './components/Sidebar'
+import { StarfieldBackground, NebulaOverlay } from './components/StarfieldBackground'
+import { ScanLines, CogitatorLoading } from './components/ImperialEffects'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { cn } from '@/lib/utils'
 import {
@@ -13,6 +16,7 @@ import {
   ExternalLink,
   ChevronRight,
   Home,
+  Cpu,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -78,13 +82,9 @@ export default function DashboardLayout({
   if (isLoading) {
     return (
       <div className="dashboard-root flex h-screen items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative">
-            <div className="h-12 w-12 rounded-full border-2 border-blue-500/20" />
-            <div className="absolute inset-0 h-12 w-12 animate-spin rounded-full border-2 border-transparent border-t-blue-500" />
-          </div>
-          <p className="text-sm text-zinc-500">Cargando panel...</p>
-        </div>
+        <StarfieldBackground />
+        <NebulaOverlay />
+        <CogitatorLoading size="lg" text="INICIALIZANDO STRATEGIUM..." />
       </div>
     )
   }
@@ -96,31 +96,48 @@ export default function DashboardLayout({
 
   return (
     <div className="dashboard-root flex h-screen overflow-hidden">
+      {/* Background effects */}
+      <StarfieldBackground />
+      <NebulaOverlay />
+      <ScanLines />
+
       <Sidebar
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
-      <div className="relative flex flex-1 flex-col overflow-hidden">
+      <motion.div
+        className="relative flex flex-1 flex-col overflow-hidden"
+        style={{ zIndex: 10 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
         {/* Header */}
         <header className="dashboard-header sticky top-0 z-40 flex h-16 items-center justify-between gap-4 px-6">
-          {/* Breadcrumbs */}
+          {/* Breadcrumbs with imperial styling */}
           <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-2 mr-2">
+              <Cpu className="h-4 w-4 text-imperial-gold/60" />
+              <span className="text-[10px] font-mono text-imperial-gold/60 tracking-widest hidden md:inline">
+                STRATEGIUM
+              </span>
+            </div>
             <Link
               href="/dashboard"
-              className="text-zinc-500 hover:text-white transition-colors"
+              className="text-bone/50 hover:text-imperial-gold transition-colors"
             >
               <Home className="h-4 w-4" />
             </Link>
             {breadcrumbs.slice(1).map((crumb, index) => (
               <React.Fragment key={crumb.href}>
-                <ChevronRight className="h-3.5 w-3.5 text-zinc-700" />
+                <ChevronRight className="h-3.5 w-3.5 text-bone/20" />
                 {index === breadcrumbs.length - 2 ? (
-                  <span className="text-white font-medium">{crumb.title}</span>
+                  <span className="text-bone font-medium">{crumb.title}</span>
                 ) : (
                   <Link
                     href={crumb.href}
-                    className="text-zinc-500 hover:text-white transition-colors"
+                    className="text-bone/50 hover:text-imperial-gold transition-colors"
                   >
                     {crumb.title}
                   </Link>
@@ -132,19 +149,23 @@ export default function DashboardLayout({
           {/* Right side actions */}
           <div className="flex items-center gap-3">
             {/* Search */}
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-zinc-400 text-sm hover:bg-white/10 hover:text-white transition-colors">
+            <motion.button
+              className="quick-action"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
               <Search className="h-4 w-4" />
               <span className="hidden sm:inline">Buscar...</span>
-              <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 font-mono text-[10px] text-zinc-500">
+              <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-imperial-gold/20 bg-void-light px-1.5 font-mono text-[10px] text-bone/40">
                 ⌘K
               </kbd>
-            </button>
+            </motion.button>
 
             {/* View site */}
             <Link
               href="/"
               target="_blank"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-zinc-400 text-sm hover:bg-white/5 hover:text-white transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-bone/50 text-sm hover:bg-imperial-gold/5 hover:text-imperial-gold transition-colors"
             >
               <ExternalLink className="h-4 w-4" />
               <span className="hidden sm:inline">Ver sitio</span>
@@ -153,18 +174,32 @@ export default function DashboardLayout({
             {/* Notifications */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="relative p-2 rounded-lg text-zinc-400 hover:bg-white/5 hover:text-white transition-colors">
+                <motion.button
+                  className="relative p-2 rounded-lg text-bone/50 hover:bg-imperial-gold/5 hover:text-imperial-gold transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <Bell className="h-5 w-5" />
-                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
-                </button>
+                  <motion.span
+                    className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blood-red"
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.7, 1, 0.7],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </motion.button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 bg-zinc-900 border-zinc-800">
-                <div className="px-4 py-3 border-b border-zinc-800">
-                  <h4 className="text-sm font-medium text-white">Notificaciones</h4>
+              <DropdownMenuContent align="end" className="w-80 bg-void-light/95 backdrop-blur-xl border-imperial-gold/20">
+                <div className="px-4 py-3 border-b border-imperial-gold/10">
+                  <div className="flex items-center gap-2">
+                    <Cpu className="h-3 w-3 text-imperial-gold/60" />
+                    <h4 className="text-xs font-mono text-imperial-gold/60 tracking-widest">TRANSMISIONES</h4>
+                  </div>
                 </div>
                 <div className="py-6 text-center">
-                  <Bell className="h-8 w-8 mx-auto text-zinc-700 mb-2" />
-                  <p className="text-sm text-zinc-500">No hay notificaciones</p>
+                  <Bell className="h-8 w-8 mx-auto text-bone/20 mb-2" />
+                  <p className="text-sm text-bone/40">Sin transmisiones pendientes</p>
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -173,11 +208,16 @@ export default function DashboardLayout({
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="container mx-auto max-w-7xl p-6">
+          <motion.div
+            className="container mx-auto max-w-7xl p-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
             {children}
-          </div>
+          </motion.div>
         </main>
-      </div>
+      </motion.div>
     </div>
   )
 }

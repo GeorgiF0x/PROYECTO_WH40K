@@ -1,128 +1,220 @@
-/* Dashboard Theme - Modern Professional Dark Theme */
+/* ══════════════════════════════════════════════════════════════════════════════
+   STRATEGIUM IMPERIAL - Centro de Comando Estelar
+   Dashboard Theme: Cogitator/Holographic Terminal Aesthetic
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CSS VARIABLES - Imperial Color Palette
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
 .dashboard-root {
-  /* Modern dark palette */
-  --background: 224 71% 4%;
-  --foreground: 213 31% 91%;
-  --card: 224 71% 4%;
-  --card-foreground: 213 31% 91%;
-  --popover: 224 71% 6%;
-  --popover-foreground: 213 31% 91%;
-  --primary: 210 100% 52%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 215 20% 11%;
-  --secondary-foreground: 213 31% 91%;
-  --muted: 215 20% 11%;
-  --muted-foreground: 215 20% 65%;
-  --accent: 215 20% 14%;
-  --accent-foreground: 213 31% 91%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 215 20% 14%;
-  --input: 215 20% 14%;
-  --ring: 210 100% 52%;
-  --radius: 0.75rem;
+  /* Core Colors */
+  --void-dark: #030308;
+  --void-light: #0a0a12;
+  --imperial-gold: #C9A227;
+  --imperial-gold-dim: rgba(201, 162, 39, 0.3);
+  --necron-teal: #0D9B8A;
+  --necron-teal-dim: rgba(13, 155, 138, 0.3);
+  --blood-red: #8B0000;
+  --blood-red-dim: rgba(139, 0, 0, 0.3);
+  --bone: #E8E8F0;
+  --bone-dim: rgba(232, 232, 240, 0.6);
+  --warp-purple: #6B1C5F;
+  --steel: #2A2A35;
+
+  /* Functional Colors */
+  --background: var(--void-dark);
+  --foreground: var(--bone);
+  --card: rgba(10, 10, 18, 0.8);
+  --card-border: rgba(201, 162, 39, 0.15);
+  --card-border-hover: rgba(201, 162, 39, 0.4);
+  --primary: var(--imperial-gold);
+  --secondary: var(--necron-teal);
+  --danger: var(--blood-red);
+  --muted: rgba(232, 232, 240, 0.4);
+  --grid-color: rgba(201, 162, 39, 0.05);
+  --scanline-color: rgba(13, 155, 138, 0.03);
 
   /* Sidebar */
-  --sidebar-background: 224 71% 3%;
-  --sidebar-foreground: 213 31% 91%;
-  --sidebar-primary: 210 100% 52%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 215 20% 11%;
-  --sidebar-accent-foreground: 213 31% 91%;
-  --sidebar-border: 215 20% 10%;
-  --sidebar-ring: 210 100% 52%;
+  --sidebar-background: linear-gradient(180deg, rgba(3, 3, 8, 0.98) 0%, rgba(10, 10, 18, 0.95) 100%);
+  --sidebar-border: rgba(201, 162, 39, 0.1);
+  --sidebar-item-active: rgba(201, 162, 39, 0.1);
+  --sidebar-item-hover: rgba(201, 162, 39, 0.05);
 
-  /* Chart colors */
-  --chart-1: 210 100% 52%;
-  --chart-2: 160 84% 39%;
-  --chart-3: 30 100% 50%;
-  --chart-4: 280 100% 70%;
-  --chart-5: 340 82% 52%;
+  /* Chart colors - Imperial Theme */
+  --chart-1: var(--imperial-gold);
+  --chart-2: var(--necron-teal);
+  --chart-3: var(--warp-purple);
+  --chart-4: #22c55e;
+  --chart-5: var(--blood-red);
 
-  /* Gold accent */
-  --gold: 45 93% 47%;
-  --gold-foreground: 0 0% 0%;
+  /* Radius */
+  --radius: 0.75rem;
 }
 
-/* Base styles */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 .dashboard-root {
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-  background: linear-gradient(135deg, hsl(224 71% 4%) 0%, hsl(224 71% 6%) 100%);
-  color: hsl(var(--foreground));
+  background: var(--void-dark);
+  color: var(--bone);
   min-height: 100vh;
-}
-
-/* Background grid pattern */
-.dashboard-root::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Sidebar glass effect */
-.dashboard-sidebar {
-  background: linear-gradient(180deg,
-    hsl(224 71% 4% / 0.95) 0%,
-    hsl(224 71% 3% / 0.98) 100%
-  );
-  backdrop-filter: blur(20px);
-  border-right: 1px solid hsl(var(--sidebar-border));
-}
-
-/* Card styles */
-.dashboard-card {
-  background: linear-gradient(135deg,
-    hsl(215 20% 8% / 0.8) 0%,
-    hsl(215 20% 6% / 0.9) 100%
-  );
-  border: 1px solid hsl(215 20% 14%);
-  border-radius: var(--radius);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-.dashboard-card:hover {
-  border-color: hsl(215 20% 20%);
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.3),
-    0 0 0 1px hsl(215 20% 16%);
-}
-
-/* Stat card glow on hover */
-.stat-card {
   position: relative;
   overflow: hidden;
 }
 
-.stat-card::before {
+/* ═══════════════════════════════════════════════════════════════════════════════
+   STARFIELD BACKGROUND (CSS-only fallback)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.dashboard-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    /* Stars layer 1 - small */
+    radial-gradient(1px 1px at 20px 30px, rgba(232, 232, 240, 0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 40px 70px, rgba(232, 232, 240, 0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50px 160px, rgba(232, 232, 240, 0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90px 40px, rgba(201, 162, 39, 0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 130px 80px, rgba(232, 232, 240, 0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 160px 120px, rgba(232, 232, 240, 0.7) 0%, transparent 100%),
+    /* Stars layer 2 - medium */
+    radial-gradient(1.5px 1.5px at 200px 50px, rgba(201, 162, 39, 0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 250px 150px, rgba(232, 232, 240, 0.8) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 300px 100px, rgba(13, 155, 138, 0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 350px 200px, rgba(232, 232, 240, 0.6) 0%, transparent 100%),
+    /* Subtle nebula */
+    radial-gradient(ellipse 600px 400px at 70% 30%, rgba(107, 28, 95, 0.03) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 600px at 20% 80%, rgba(13, 155, 138, 0.02) 0%, transparent 70%);
+  background-repeat: repeat;
+  background-size: 400px 300px;
+  pointer-events: none;
+  z-index: 0;
+  animation: starfield-drift 120s linear infinite;
+}
+
+@keyframes starfield-drift {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-400px, -300px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TACTICAL GRID OVERLAY
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.dashboard-root::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+  z-index: 1;
+  animation: grid-pulse 8s ease-in-out infinite;
+}
+
+@keyframes grid-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SCANLINES EFFECT
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.scanlines-overlay {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--scanline-color) 2px,
+    var(--scanline-color) 4px
+  );
+  pointer-events: none;
+  z-index: 100;
+  animation: scanline-flicker 0.1s infinite;
+}
+
+@keyframes scanline-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.98; }
+}
+
+/* Horizontal scan sweep */
+.scan-sweep {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(13, 155, 138, 0.03) 50%,
+    transparent 100%
+  );
+  height: 100px;
+  pointer-events: none;
+  z-index: 99;
+  animation: scan-sweep 8s ease-in-out infinite;
+}
+
+@keyframes scan-sweep {
+  0% { transform: translateY(-100px); }
+  100% { transform: translateY(calc(100vh + 100px)); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SIDEBAR STYLES - Imperial Command Panel
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.dashboard-sidebar {
+  background: var(--sidebar-background);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--sidebar-border);
+  position: relative;
+  z-index: 50;
+}
+
+/* Sidebar glow accent */
+.dashboard-sidebar::before {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent-color, hsl(210 100% 52%)), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--imperial-gold-dim) 20%,
+    var(--imperial-gold) 50%,
+    var(--imperial-gold-dim) 80%,
+    transparent 100%
+  );
+  opacity: 0.5;
+  animation: sidebar-glow 4s ease-in-out infinite;
 }
 
-.stat-card:hover::before {
-  opacity: 1;
+@keyframes sidebar-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
 }
 
-/* Nav item hover glow */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NAVIGATION ITEMS - Target Lock Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 .nav-item {
   position: relative;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Left indicator bar - Target Lock */
 .nav-item::before {
   content: '';
   position: absolute;
@@ -131,21 +223,186 @@
   transform: translateY(-50%);
   width: 3px;
   height: 0;
-  background: hsl(var(--primary));
+  background: linear-gradient(180deg, transparent, var(--imperial-gold), transparent);
   border-radius: 0 2px 2px 0;
-  transition: height 0.2s ease;
+  transition: height 0.3s ease, box-shadow 0.3s ease;
 }
 
 .nav-item:hover::before,
 .nav-item.active::before {
   height: 60%;
+  box-shadow: 0 0 10px var(--imperial-gold-dim);
 }
 
 .nav-item.active {
-  background: hsl(var(--accent));
+  background: var(--sidebar-item-active);
 }
 
-/* Quick action buttons */
+.nav-item:hover {
+  background: var(--sidebar-item-hover);
+}
+
+/* Icon glow on hover */
+.nav-item:hover svg,
+.nav-item.active svg {
+  filter: drop-shadow(0 0 4px var(--imperial-gold-dim));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   STAT CARDS - Data Slate Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.stat-card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Corner brackets - tactical frame */
+.stat-card::before,
+.stat-card::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--imperial-gold-dim);
+  border-style: solid;
+  transition: all 0.3s ease;
+}
+
+.stat-card::before {
+  top: 4px;
+  left: 4px;
+  border-width: 2px 0 0 2px;
+}
+
+.stat-card::after {
+  bottom: 4px;
+  right: 4px;
+  border-width: 0 2px 2px 0;
+}
+
+.stat-card:hover::before,
+.stat-card:hover::after {
+  border-color: var(--imperial-gold);
+  width: 16px;
+  height: 16px;
+}
+
+/* Top glow line */
+.stat-card .glow-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-color, var(--imperial-gold)), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card:hover .glow-line {
+  opacity: 1;
+}
+
+.stat-card:hover {
+  border-color: var(--card-border-hover);
+  box-shadow:
+    0 0 30px rgba(201, 162, 39, 0.1),
+    inset 0 1px 0 rgba(201, 162, 39, 0.1);
+  transform: translateY(-2px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DASHBOARD CARDS - Holographic Panels
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.dashboard-card {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 10, 18, 0.9) 0%,
+    rgba(3, 3, 8, 0.95) 100%
+  );
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-card:hover {
+  border-color: var(--card-border-hover);
+  box-shadow:
+    0 4px 40px rgba(201, 162, 39, 0.1),
+    0 0 0 1px rgba(201, 162, 39, 0.1);
+}
+
+/* Holographic shimmer effect on hover */
+.dashboard-card::before {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(201, 162, 39, 0.03) 50%,
+    transparent 70%
+  );
+  transform: rotate(45deg);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+.dashboard-card:hover::before {
+  transform: rotate(45deg) translateX(50%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   HEADER BAR - Cogitator Terminal
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.dashboard-header {
+  background: linear-gradient(
+    180deg,
+    rgba(3, 3, 8, 0.98) 0%,
+    rgba(3, 3, 8, 0.9) 100%
+  );
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--sidebar-border);
+  position: relative;
+}
+
+/* Header underline glow */
+.dashboard-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--imperial-gold-dim) 20%,
+    var(--imperial-gold) 50%,
+    var(--imperial-gold-dim) 80%,
+    transparent 100%
+  );
+  opacity: 0.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   QUICK ACTION BUTTONS - Tactical Options
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 .quick-action {
   display: flex;
   align-items: center;
@@ -154,61 +411,160 @@
   border-radius: var(--radius);
   font-size: 0.875rem;
   font-weight: 500;
-  transition: all 0.2s ease;
-  background: hsl(var(--secondary));
-  border: 1px solid hsl(var(--border));
-  color: hsl(var(--muted-foreground));
+  transition: all 0.3s ease;
+  background: rgba(10, 10, 18, 0.8);
+  border: 1px solid var(--card-border);
+  color: var(--bone-dim);
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-action::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(201, 162, 39, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .quick-action:hover {
-  background: hsl(var(--accent));
-  border-color: hsl(var(--border));
-  color: hsl(var(--foreground));
+  border-color: var(--card-border-hover);
+  color: var(--bone);
+  box-shadow: 0 0 15px rgba(201, 162, 39, 0.1);
+}
+
+.quick-action:hover::before {
+  opacity: 1;
 }
 
 .quick-action-primary {
-  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(210 100% 45%) 100%);
+  background: linear-gradient(135deg, var(--imperial-gold) 0%, #a68520 100%);
   border: none;
-  color: white;
+  color: var(--void-dark);
 }
 
 .quick-action-primary:hover {
-  background: linear-gradient(135deg, hsl(210 100% 55%) 0%, hsl(210 100% 50%) 100%);
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px hsl(210 100% 52% / 0.3);
+  background: linear-gradient(135deg, #ddb52e 0%, var(--imperial-gold) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(201, 162, 39, 0.4);
 }
 
-/* Header bar */
-.dashboard-header {
-  background: linear-gradient(180deg,
-    hsl(224 71% 5% / 0.95) 0%,
-    hsl(224 71% 4% / 0.9) 100%
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RADAR PULSE EFFECT
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.radar-pulse {
+  position: relative;
+}
+
+.radar-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--necron-teal);
+  opacity: 0;
+  animation: radar-ping 3s ease-out infinite;
+}
+
+@keyframes radar-ping {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ORBITAL INDICATOR - Stat Animation
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.orbital-indicator {
+  position: relative;
+}
+
+.orbital-indicator::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px dashed var(--imperial-gold-dim);
+  animation: orbit-rotate 20s linear infinite;
+}
+
+@keyframes orbit-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ENERGY LINE SEPARATORS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.energy-separator {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--imperial-gold-dim) 20%,
+    var(--imperial-gold) 50%,
+    var(--imperial-gold-dim) 80%,
+    transparent 100%
   );
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid hsl(var(--border));
+  position: relative;
 }
 
-/* Scrollbar styling */
+.energy-separator::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: var(--imperial-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--imperial-gold);
+  animation: energy-pulse 2s ease-in-out infinite;
+}
+
+@keyframes energy-pulse {
+  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SCROLLBAR - Cogitator Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 .dashboard-root ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 .dashboard-root ::-webkit-scrollbar-track {
-  background: hsl(var(--background));
+  background: var(--void-dark);
+  border-left: 1px solid var(--card-border);
 }
 
 .dashboard-root ::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
+  background: linear-gradient(180deg, var(--imperial-gold-dim) 0%, var(--steel) 100%);
   border-radius: 4px;
+  border: 1px solid var(--card-border);
 }
 
 .dashboard-root ::-webkit-scrollbar-thumb:hover {
-  background: hsl(215 20% 25%);
+  background: linear-gradient(180deg, var(--imperial-gold) 0%, var(--steel) 100%);
 }
 
-/* Animations */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -219,15 +575,38 @@
   to { opacity: 1; transform: translateX(0); }
 }
 
+@keyframes holoFlicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  95% { opacity: 0.9; }
+  96% { opacity: 1; }
+}
+
+@keyframes dataStream {
+  0% { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.3s ease forwards;
+  animation: fadeIn 0.4s ease forwards;
 }
 
 .animate-slide-in {
-  animation: slideIn 0.3s ease forwards;
+  animation: slideIn 0.4s ease forwards;
 }
 
-/* Pulse dot for notifications */
+.animate-holo-flicker {
+  animation: holoFlicker 4s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PULSE DOT - Notification Indicator
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 @keyframes pulse-ring {
   0% { transform: scale(0.8); opacity: 1; }
   100% { transform: scale(2); opacity: 0; }
@@ -240,25 +619,143 @@
 .pulse-dot::before {
   content: '';
   position: absolute;
-  inset: -2px;
+  inset: -4px;
   border-radius: 50%;
-  background: currentColor;
-  animation: pulse-ring 1.5s ease-out infinite;
+  border: 2px solid currentColor;
+  animation: pulse-ring 2s ease-out infinite;
 }
 
-/* Status indicators */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   STATUS INDICATORS - Imperial Classification
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 .status-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
 }
 
-.status-dot.success { background: hsl(160 84% 39%); }
-.status-dot.warning { background: hsl(30 100% 50%); }
-.status-dot.danger { background: hsl(0 84% 60%); }
-.status-dot.info { background: hsl(210 100% 52%); }
+.status-dot.success {
+  background: #22c55e;
+  color: #22c55e;
+}
+.status-dot.warning {
+  background: #f59e0b;
+  color: #f59e0b;
+}
+.status-dot.danger {
+  background: var(--blood-red);
+  color: var(--blood-red);
+}
+.status-dot.info {
+  background: var(--necron-teal);
+  color: var(--necron-teal);
+}
 
-/* Dropdown menu improvements */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   HOLO GLOW TEXT
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.holo-text {
+  color: var(--imperial-gold);
+  text-shadow:
+    0 0 5px var(--imperial-gold-dim),
+    0 0 10px var(--imperial-gold-dim),
+    0 0 20px var(--imperial-gold-dim);
+}
+
+.holo-text-teal {
+  color: var(--necron-teal);
+  text-shadow:
+    0 0 5px var(--necron-teal-dim),
+    0 0 10px var(--necron-teal-dim);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DROPDOWN MENU IMPROVEMENTS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 [data-radix-popper-content-wrapper] {
   z-index: 100 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SECTION HEADERS - Strategium Display
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.strategium-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.strategium-header::before {
+  content: '';
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(180deg, var(--imperial-gold) 0%, transparent 100%);
+  border-radius: 2px;
+}
+
+.strategium-header h2 {
+  font-family: var(--font-display), 'Orbitron', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+
+.strategium-header .subtitle {
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: var(--imperial-gold);
+  letter-spacing: 0.2em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DATA TABLE ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.data-table-row {
+  transition: all 0.2s ease;
+  border-left: 2px solid transparent;
+}
+
+.data-table-row:hover {
+  background: rgba(201, 162, 39, 0.05);
+  border-left-color: var(--imperial-gold);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LOADING STATES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.cogitator-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cogitator-spinner {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--card-border);
+  border-top-color: var(--imperial-gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.cogitator-text {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--imperial-gold);
+  letter-spacing: 0.15em;
+  animation: holoFlicker 4s ease-in-out infinite;
 }

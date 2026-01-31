@@ -21,28 +21,29 @@ import {
 import { motion } from 'framer-motion'
 
 // ══════════════════════════════════════════════════════════════
-// THEME COLORS
+// THEME COLORS - Imperial Strategium Palette
 // ══════════════════════════════════════════════════════════════
 
 export const CHART_COLORS = {
-  primary: '#C9A227',
-  secondary: '#8B0000',
-  tertiary: '#6B46C1',
-  success: '#22c55e',
-  warning: '#f59e0b',
-  danger: '#ef4444',
-  bone: '#E8E8F0',
-  muted: '#71717a',
-  grid: 'rgba(113, 113, 122, 0.2)',
+  primary: '#C9A227',      // Imperial Gold
+  secondary: '#8B0000',    // Blood Red
+  tertiary: '#6B1C5F',     // Warp Purple
+  success: '#0D9B8A',      // Necron Teal
+  warning: '#f59e0b',      // Amber
+  danger: '#8B0000',       // Blood Red
+  bone: '#E8E8F0',         // Bone
+  muted: 'rgba(232, 232, 240, 0.4)',
+  grid: 'rgba(201, 162, 39, 0.08)',
+  void: '#030308',
 }
 
 export const CHART_PALETTE = [
-  CHART_COLORS.primary,
-  CHART_COLORS.success,
-  CHART_COLORS.tertiary,
-  CHART_COLORS.warning,
-  CHART_COLORS.secondary,
-  '#00d4aa',
+  CHART_COLORS.primary,    // Imperial Gold
+  CHART_COLORS.success,    // Necron Teal
+  CHART_COLORS.tertiary,   // Warp Purple
+  CHART_COLORS.warning,    // Amber
+  CHART_COLORS.secondary,  // Blood Red
+  '#00d4aa',               // Bright Teal
 ]
 
 // ══════════════════════════════════════════════════════════════
@@ -65,19 +66,32 @@ interface CustomTooltipProps {
 const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 shadow-lg">
-        <p className="text-xs text-zinc-400 mb-1">{label}</p>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-void-light/95 backdrop-blur-xl border border-imperial-gold/30 rounded-lg px-4 py-3 shadow-lg shadow-imperial-gold/10"
+      >
+        {/* Header */}
+        <div className="flex items-center gap-2 mb-2 pb-2 border-b border-imperial-gold/10">
+          <div className="w-1.5 h-1.5 rounded-full bg-necron-teal animate-pulse" />
+          <p className="text-[10px] font-mono text-imperial-gold/60 tracking-widest">{label}</p>
+        </div>
+        {/* Data rows */}
         {payload.map((entry, index) => (
-          <div key={index} className="flex items-center gap-2 text-sm">
-            <span
+          <div key={index} className="flex items-center gap-3 text-sm py-0.5">
+            <motion.span
               className="w-2 h-2 rounded-full"
               style={{ backgroundColor: entry.color }}
+              animate={{
+                boxShadow: [`0 0 4px ${entry.color}`, `0 0 8px ${entry.color}`, `0 0 4px ${entry.color}`],
+              }}
+              transition={{ duration: 1.5, repeat: Infinity }}
             />
-            <span className="text-zinc-300">{entry.name}:</span>
-            <span className="text-white font-medium">{entry.value.toLocaleString()}</span>
+            <span className="text-bone/60 font-mono text-xs">{entry.name}:</span>
+            <span className="text-bone font-mono font-medium">{entry.value.toLocaleString()}</span>
           </div>
         ))}
-      </div>
+      </motion.div>
     )
   }
   return null
@@ -363,27 +377,34 @@ export const StatCard: React.FC<StatCardProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`bg-zinc-900/50 border border-zinc-800 rounded-lg p-5 ${className}`}
+      className={`bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 rounded-lg p-5 hover:border-imperial-gold/30 transition-colors ${className}`}
+      whileHover={{ scale: 1.02 }}
     >
       <div className="flex items-start justify-between">
         <div className="space-y-1">
-          <p className="text-sm text-zinc-400">{title}</p>
-          <p className="text-2xl font-semibold text-white">
+          <p className="text-xs font-mono text-imperial-gold/50 tracking-wider uppercase">{title}</p>
+          <p className="text-2xl font-display font-bold text-bone">
             {typeof value === 'number' ? value.toLocaleString() : value}
           </p>
           {description && (
-            <p className="text-xs text-zinc-500">{description}</p>
+            <p className="text-xs text-bone/40">{description}</p>
           )}
           {trend && (
-            <p className={`text-xs font-medium ${trend.isPositive ? 'text-green-500' : 'text-red-500'}`}>
-              {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}% vs mes anterior
+            <p className={`text-xs font-mono ${trend.isPositive ? 'text-necron-teal' : 'text-blood-red'}`}>
+              {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}% vs ciclo anterior
             </p>
           )}
         </div>
         {icon && (
-          <div className="p-2 bg-zinc-800 rounded-lg text-zinc-400">
+          <motion.div
+            className="p-2 bg-imperial-gold/10 border border-imperial-gold/20 rounded-lg text-imperial-gold"
+            animate={{
+              boxShadow: ['0 0 5px rgba(201, 162, 39, 0.2)', '0 0 15px rgba(201, 162, 39, 0.3)', '0 0 5px rgba(201, 162, 39, 0.2)'],
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
             {icon}
-          </div>
+          </motion.div>
         )}
       </div>
     </motion.div>
@@ -414,12 +435,21 @@ export const ChartCard: React.FC<ChartCardProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`bg-zinc-900/50 border border-zinc-800 rounded-lg p-5 ${className}`}
+      className={`bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 rounded-lg p-5 hover:border-imperial-gold/30 transition-colors relative overflow-hidden ${className}`}
     >
+      {/* Corner accents */}
+      <span className="absolute top-2 left-2 w-2 h-2 border-l border-t border-imperial-gold/30" />
+      <span className="absolute top-2 right-2 w-2 h-2 border-r border-t border-imperial-gold/30" />
+      <span className="absolute bottom-2 left-2 w-2 h-2 border-l border-b border-imperial-gold/30" />
+      <span className="absolute bottom-2 right-2 w-2 h-2 border-r border-b border-imperial-gold/30" />
+
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-sm font-medium text-white">{title}</h3>
-          {description && <p className="text-xs text-zinc-500 mt-0.5">{description}</p>}
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-necron-teal animate-pulse" />
+            <h3 className="text-sm font-medium text-bone">{title}</h3>
+          </div>
+          {description && <p className="text-xs text-bone/40 font-mono">{description}</p>}
         </div>
         {action}
       </div>
@@ -497,6 +527,14 @@ export const RadialProgress: React.FC<RadialProgressProps> = ({
 
   return (
     <div className="relative inline-flex items-center justify-center">
+      {/* Outer glow ring */}
+      <motion.div
+        className="absolute inset-0 rounded-full"
+        style={{ border: `1px dashed ${color}30` }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+      />
+
       <svg width={size} height={size} className="-rotate-90">
         {/* Background circle */}
         <circle
@@ -504,9 +542,8 @@ export const RadialProgress: React.FC<RadialProgressProps> = ({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="currentColor"
+          stroke="rgba(201, 162, 39, 0.1)"
           strokeWidth={strokeWidth}
-          className="text-zinc-800"
         />
         {/* Progress circle */}
         <motion.circle
@@ -519,15 +556,23 @@ export const RadialProgress: React.FC<RadialProgressProps> = ({
           strokeLinecap="round"
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1, ease: 'easeOut' }}
+          transition={{ duration: 1.5, ease: 'easeOut' }}
           style={{
             strokeDasharray: circumference,
+            filter: `drop-shadow(0 0 6px ${color})`,
           }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold text-white">{Math.round(percentage)}%</span>
-        {label && <span className="text-[10px] text-zinc-500 uppercase tracking-wider">{label}</span>}
+        <motion.span
+          className="text-2xl font-display font-bold text-bone"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          {Math.round(percentage)}%
+        </motion.span>
+        {label && <span className="text-[10px] text-imperial-gold/60 font-mono uppercase tracking-wider">{label}</span>}
       </div>
     </div>
   )
@@ -613,20 +658,33 @@ export const ComparisonBar: React.FC<ComparisonBarProps> = ({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-sm">
-        <span className="text-zinc-400">{label}</span>
-        <span className="text-white font-medium">
+        <span className="text-bone/60 font-mono">{label}</span>
+        <span className="text-bone font-mono font-medium">
           {value.toLocaleString()}
-          {showPercentage && <span className="text-zinc-600 ml-1">({percentage.toFixed(1)}%)</span>}
+          {showPercentage && <span className="text-bone/30 ml-1">({percentage.toFixed(1)}%)</span>}
         </span>
       </div>
-      <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+      <div className="h-2 bg-void rounded-full overflow-hidden border border-imperial-gold/10">
         <motion.div
-          className="h-full rounded-full"
-          style={{ backgroundColor: color }}
+          className="h-full rounded-full relative"
+          style={{
+            backgroundColor: color,
+            boxShadow: `0 0 10px ${color}50`,
+          }}
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-        />
+          transition={{ duration: 1, ease: 'easeOut' }}
+        >
+          {/* Animated glow at the end */}
+          <motion.div
+            className="absolute right-0 top-0 bottom-0 w-2"
+            style={{
+              background: `linear-gradient(90deg, transparent, ${color})`,
+            }}
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+        </motion.div>
       </div>
     </div>
   )
