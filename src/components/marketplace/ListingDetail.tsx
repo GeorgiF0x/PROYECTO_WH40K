@@ -33,6 +33,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { createClient } from '@/lib/supabase/client'
+import { ReportModal } from '@/components/ui/ReportModal'
 import { getOrCreateConversation, sendMessage } from '@/lib/services/messages'
 import { FACTION_ICONS } from '@/components/user/FactionSelector'
 import type { ListingWithSeller } from './ListingCard'
@@ -219,6 +220,7 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
   const [contactMessage, setContactMessage] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [contactError, setContactError] = useState<string | null>(null)
+  const [showReportModal, setShowReportModal] = useState(false)
 
   const handleOpenContact = useCallback(() => {
     if (!user) {
@@ -722,7 +724,10 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
           </motion.button>
 
           {/* ── Report link ────────────────────────── */}
-          <button className="flex items-center gap-2 text-xs text-bone/30 hover:text-red-400 transition-colors mx-auto font-mono uppercase tracking-wider">
+          <button
+            onClick={() => setShowReportModal(true)}
+            className="flex items-center gap-2 text-xs text-bone/30 hover:text-red-400 transition-colors mx-auto font-mono uppercase tracking-wider"
+          >
             <Flag className="w-3.5 h-3.5" />
             Reportar anomalia
           </button>
@@ -830,6 +835,15 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ═══ REPORT MODAL ══════════════════════════════════ */}
+      <ReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        contentType="listing"
+        contentId={listing.id}
+        reportedUserId={listing.seller_id}
+      />
     </>
   )
 }

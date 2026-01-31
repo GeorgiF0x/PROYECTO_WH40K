@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/hooks/useAuth'
-import { Avatar } from '@/components/ui'
+import { Avatar, ReportModal } from '@/components/ui'
 import {
   Heart,
   MessageCircle,
@@ -212,6 +212,7 @@ export default function MiniatureDetailPage() {
   const [isSubmittingComment, setIsSubmittingComment] = useState(false)
   const [showLightbox, setShowLightbox] = useState(false)
   const [relatedMiniatures, setRelatedMiniatures] = useState<Miniature[]>([])
+  const [showReportModal, setShowReportModal] = useState(false)
 
   const supabase = createClient()
   const miniatureId = typeof params.id === 'string' ? params.id : params.id?.[0]
@@ -761,6 +762,7 @@ export default function MiniatureDetailPage() {
                   </motion.button>
 
                   <motion.button
+                    onClick={() => setShowReportModal(true)}
                     className="p-2.5 bg-void-light border border-bone/10 text-bone/50 hover:text-red-400 hover:border-red-500/30 rounded-lg transition-all"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -1029,6 +1031,17 @@ export default function MiniatureDetailPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Report Modal */}
+      {miniature && (
+        <ReportModal
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          contentType="miniature"
+          contentId={miniature.id}
+          reportedUserId={miniature.user_id}
+        />
+      )}
     </>
   )
 }
