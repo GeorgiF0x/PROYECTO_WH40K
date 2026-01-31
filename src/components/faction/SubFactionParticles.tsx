@@ -123,6 +123,8 @@ export function SubFactionParticles({
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {particles.map((particle, i) => {
         const { initial, animate } = getAnimationProps(particle.animationType, i)
+        // Encode the URL to handle spaces and special characters
+        const encodedIconUrl = encodeURI(particle.subFaction.icon)
 
         return (
           <motion.div
@@ -143,20 +145,20 @@ export function SubFactionParticles({
               ease: 'easeInOut',
             }}
           >
-            {/* SVG icon without background - use CSS mask for coloring */}
-            <div
-              className="relative w-full h-full"
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={encodedIconUrl}
+              alt=""
+              className="w-full h-full object-contain"
               style={{
-                WebkitMaskImage: `url(${particle.subFaction.icon})`,
-                WebkitMaskSize: 'contain',
-                WebkitMaskRepeat: 'no-repeat',
-                WebkitMaskPosition: 'center',
-                maskImage: `url(${particle.subFaction.icon})`,
-                maskSize: 'contain',
-                maskRepeat: 'no-repeat',
-                maskPosition: 'center',
-                backgroundColor: theme.colors.primary,
-                filter: `drop-shadow(0 0 8px ${theme.colors.glow}) drop-shadow(0 0 16px ${theme.colors.primary}40)`,
+                filter: `
+                  drop-shadow(0 0 6px ${theme.colors.glow})
+                  drop-shadow(0 0 12px ${theme.colors.primary}60)
+                  brightness(1.3)
+                  sepia(1)
+                  hue-rotate(${getHueRotation(theme.colors.primary)}deg)
+                  saturate(2)
+                `,
               }}
             />
           </motion.div>
@@ -164,6 +166,36 @@ export function SubFactionParticles({
       })}
     </div>
   )
+}
+
+// Calculate hue rotation based on target color
+function getHueRotation(hexColor: string): number {
+  // Convert hex to HSL and return the hue
+  const r = parseInt(hexColor.slice(1, 3), 16) / 255
+  const g = parseInt(hexColor.slice(3, 5), 16) / 255
+  const b = parseInt(hexColor.slice(5, 7), 16) / 255
+
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  let h = 0
+
+  if (max !== min) {
+    const d = max - min
+    switch (max) {
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6
+        break
+      case g:
+        h = ((b - r) / d + 2) / 6
+        break
+      case b:
+        h = ((r - g) / d + 4) / 6
+        break
+    }
+  }
+
+  // Sepia starts at ~30deg, so we need to rotate from there
+  return h * 360 - 30
 }
 
 export default SubFactionParticles

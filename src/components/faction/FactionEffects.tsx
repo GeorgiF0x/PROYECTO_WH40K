@@ -17,6 +17,9 @@ function FactionIconParticles({ theme, factionId, count = 15 }: FactionIconParti
   const factionIcon = getFactionIcon(factionId)
   if (!factionIcon) return null
 
+  // Encode the URL to handle spaces and special characters
+  const encodedIconUrl = encodeURI(factionIcon.iconPath)
+
   // Create deterministic positions
   const particles = useMemo(() => {
     const seededRandom = (seed: number) => {
@@ -50,7 +53,7 @@ function FactionIconParticles({ theme, factionId, count = 15 }: FactionIconParti
           }}
           animate={{
             y: [0, -80, 0],
-            opacity: [0.1, 0.25, 0.1],
+            opacity: [0.08, 0.2, 0.08],
             scale: [0.8, 1, 0.8],
           }}
           transition={{
@@ -60,25 +63,53 @@ function FactionIconParticles({ theme, factionId, count = 15 }: FactionIconParti
             ease: 'easeInOut',
           }}
         >
-          <div
-            className="w-full h-full"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={encodedIconUrl}
+            alt=""
+            className="w-full h-full object-contain"
             style={{
-              WebkitMaskImage: `url(${factionIcon.iconPath})`,
-              WebkitMaskSize: 'contain',
-              WebkitMaskRepeat: 'no-repeat',
-              WebkitMaskPosition: 'center',
-              maskImage: `url(${factionIcon.iconPath})`,
-              maskSize: 'contain',
-              maskRepeat: 'no-repeat',
-              maskPosition: 'center',
-              backgroundColor: theme.colors.glow,
-              filter: `drop-shadow(0 0 4px ${theme.colors.glow})`,
+              filter: `
+                drop-shadow(0 0 4px ${theme.colors.glow})
+                brightness(1.2)
+                sepia(1)
+                hue-rotate(${getHueRotation(theme.colors.primary)}deg)
+                saturate(1.5)
+              `,
             }}
           />
         </motion.div>
       ))}
     </div>
   )
+}
+
+// Calculate hue rotation based on target color
+function getHueRotation(hexColor: string): number {
+  const r = parseInt(hexColor.slice(1, 3), 16) / 255
+  const g = parseInt(hexColor.slice(3, 5), 16) / 255
+  const b = parseInt(hexColor.slice(5, 7), 16) / 255
+
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  let h = 0
+
+  if (max !== min) {
+    const d = max - min
+    switch (max) {
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6
+        break
+      case g:
+        h = ((b - r) / d + 2) / 6
+        break
+      case b:
+        h = ((r - g) / d + 4) / 6
+        break
+    }
+  }
+
+  return h * 360 - 30
 }
 
 interface FactionEffectsProps {
