@@ -123,7 +123,7 @@ export default function StoreDetail({ store, userId }: StoreDetailProps) {
             </h1>
 
             {/* Rating */}
-            {store.review_count > 0 && (
+            {(store.review_count ?? 0) > 0 && (
               <div className="flex items-center gap-2 mb-4">
                 <RatingStars rating={Number(store.avg_rating)} showValue />
                 <span className="text-sm text-bone/40 font-body">

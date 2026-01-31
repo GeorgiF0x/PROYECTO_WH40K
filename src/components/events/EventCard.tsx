@@ -122,7 +122,7 @@ export function EventCard({ event, index = 0, variant = 'default' }: EventCardPr
   const config = eventTypeConfig[event.event_type]
   const Icon = config.icon
   const isSoon = isEventSoon(event.start_date)
-  const isFull = event.max_participants && event.current_participants >= event.max_participants
+  const isFull = event.max_participants && (event.current_participants ?? 0) >= event.max_participants
 
   if (variant === 'compact') {
     return (

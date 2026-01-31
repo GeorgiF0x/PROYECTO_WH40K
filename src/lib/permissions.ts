@@ -69,7 +69,7 @@ export type Permission =
   | 'manage_listings'     // Mod+: Remove listings, ban sellers
   | 'manage_reports'      // Mod+: View and resolve reports
   | 'manage_content'      // Mod+: Edit/delete any miniature, comment, article
-  | 'view_analytics'      // Admin only: Access analytics dashboard
+  | 'view_analytics'      // Admin only: Access analytics
   | 'system_settings'     // Admin only: Change system settings
 
 // Permission to minimum role mapping
@@ -92,7 +92,6 @@ export interface UserPermissions {
   isModerator: boolean
   isCreator: boolean
   isStoreOwner: boolean
-  hasDashboardAccess: boolean
   creatorType: CreatorType | null
   permissions: Permission[]
 }
@@ -118,19 +117,6 @@ export function hasPermission(role: UserRole, permission: Permission): boolean {
   return hasMinimumRole(role, requiredRole)
 }
 
-// Check if user has dashboard access
-export function hasDashboardAccess(
-  role: UserRole,
-  creatorStatus: CreatorStatus,
-  isStoreOwner: boolean
-): boolean {
-  return (
-    isModeratorOrAbove(role) ||
-    creatorStatus === 'approved' ||
-    isStoreOwner
-  )
-}
-
 // Get all permissions for a role
 export function getPermissionsForRole(role: UserRole): Permission[] {
   return (Object.entries(PERMISSION_REQUIREMENTS) as [Permission, UserRole][])
@@ -151,7 +137,6 @@ export function buildUserPermissions(
     isModerator: isModeratorOrAbove(role),
     isCreator: creatorStatus === 'approved',
     isStoreOwner,
-    hasDashboardAccess: hasDashboardAccess(role, creatorStatus, isStoreOwner),
     creatorType,
     permissions: getPermissionsForRole(role),
   }
@@ -206,137 +191,4 @@ export function getUserBadges(
   }
 
   return badges
-}
-
-// Dashboard sections configuration
-export interface DashboardSection {
-  id: string
-  name: string
-  description: string
-  icon: string
-  href: string
-  requiredRole?: UserRole
-  requiredAttribute?: 'creator' | 'store_owner'
-  permissions?: Permission[]
-}
-
-export const DASHBOARD_SECTIONS: DashboardSection[] = [
-  {
-    id: 'overview',
-    name: 'Visión General',
-    description: 'Panel principal del dashboard',
-    icon: 'LayoutDashboard',
-    href: '/dashboard',
-  },
-  {
-    id: 'my-store',
-    name: 'Mi Tienda',
-    description: 'Gestiona tu tienda',
-    icon: 'Store',
-    href: '/dashboard/mi-tienda',
-    requiredAttribute: 'store_owner',
-  },
-  {
-    id: 'my-content',
-    name: 'Mi Contenido',
-    description: 'Gestiona tu contenido de creador',
-    icon: 'Palette',
-    href: '/dashboard/mi-contenido',
-    requiredAttribute: 'creator',
-  },
-  {
-    id: 'stores',
-    name: 'Tiendas',
-    description: 'Gestiona tiendas pendientes',
-    icon: 'Building2',
-    href: '/dashboard/tiendas',
-    requiredRole: 'moderator',
-    permissions: ['manage_stores'],
-  },
-  {
-    id: 'creators',
-    name: 'Creadores',
-    description: 'Gestiona solicitudes de creadores',
-    icon: 'Users',
-    href: '/dashboard/creadores',
-    requiredRole: 'moderator',
-    permissions: ['manage_creators'],
-  },
-  {
-    id: 'events',
-    name: 'Eventos',
-    description: 'Gestiona eventos',
-    icon: 'Calendar',
-    href: '/dashboard/eventos',
-    requiredRole: 'moderator',
-    permissions: ['manage_events'],
-  },
-  {
-    id: 'reports',
-    name: 'Reportes',
-    description: 'Gestiona reportes de usuarios',
-    icon: 'Flag',
-    href: '/dashboard/reportes',
-    requiredRole: 'moderator',
-    permissions: ['manage_reports'],
-  },
-  {
-    id: 'users',
-    name: 'Usuarios',
-    description: 'Administrar usuarios',
-    icon: 'UserCog',
-    href: '/dashboard/usuarios',
-    requiredRole: 'admin',
-    permissions: ['manage_users'],
-  },
-  {
-    id: 'analytics',
-    name: 'Analíticas',
-    description: 'Estadísticas del sistema',
-    icon: 'BarChart3',
-    href: '/dashboard/analiticas',
-    requiredRole: 'admin',
-    permissions: ['view_analytics'],
-  },
-  {
-    id: 'settings',
-    name: 'Configuración',
-    description: 'Configuración del sistema',
-    icon: 'Settings',
-    href: '/dashboard/configuracion',
-    requiredRole: 'admin',
-    permissions: ['system_settings'],
-  },
-]
-
-// Get accessible dashboard sections for user
-export function getAccessibleDashboardSections(
-  userPermissions: UserPermissions
-): DashboardSection[] {
-  return DASHBOARD_SECTIONS.filter(section => {
-    // Check role requirement
-    if (section.requiredRole && !hasMinimumRole(userPermissions.role, section.requiredRole)) {
-      return false
-    }
-
-    // Check attribute requirements
-    if (section.requiredAttribute === 'creator' && !userPermissions.isCreator) {
-      return false
-    }
-    if (section.requiredAttribute === 'store_owner' && !userPermissions.isStoreOwner) {
-      return false
-    }
-
-    // Check permission requirements
-    if (section.permissions) {
-      const hasAllPermissions = section.permissions.every(p =>
-        userPermissions.permissions.includes(p)
-      )
-      if (!hasAllPermissions) {
-        return false
-      }
-    }
-
-    return true
-  })
 }

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirma tu Reclutamiento - Grimdark Legion</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0a0a0c; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+  <!-- Outer Container -->
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #0a0a0c;">
+    <tr>
+      <td style="padding: 40px 20px;">
+        <!-- Inner Container -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: 0 auto; max-width: 600px;">
+
+          <!-- Header with Aquila Pattern -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #1a1a1f 0%, #0a0a0c 50%, #1a1a1f 100%); border: 2px solid #C9A227; border-bottom: none; padding: 30px; text-align: center;">
+              <!-- Decorative Top Line -->
+              <div style="height: 3px; background: linear-gradient(90deg, transparent 0%, #C9A227 20%, #C9A227 80%, transparent 100%); margin-bottom: 25px;"></div>
+
+              <!-- Imperial Aquila Symbol (Text-based) -->
+              <div style="font-size: 32px; color: #C9A227; letter-spacing: 8px; margin-bottom: 10px;">+ + +</div>
+
+              <!-- Title -->
+              <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 6px; color: #E8E8F0; text-transform: uppercase;">
+                ADMINISTRATUM
+              </h1>
+              <p style="margin: 8px 0 0 0; font-size: 12px; letter-spacing: 4px; color: #C9A227; text-transform: uppercase;">
+                Divisio Recruitment Protocol
+              </p>
+            </td>
+          </tr>
+
+          <!-- Parchment-style Main Content -->
+          <tr>
+            <td style="background: linear-gradient(180deg, #1c1915 0%, #15120f 100%); border-left: 2px solid #C9A227; border-right: 2px solid #C9A227; padding: 0;">
+              <!-- Wax Seal Area -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td style="padding: 40px 40px 20px 40px; text-align: center;">
+                    <!-- Wax Seal Circle -->
+                    <div style="display: inline-block; width: 80px; height: 80px; background: radial-gradient(circle at 30% 30%, #a81c1c 0%, #8B0000 50%, #5a0000 100%); border-radius: 50%; border: 3px solid #C9A227; line-height: 74px; font-size: 28px; color: #C9A227; font-weight: bold;">
+                      I
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Document Content -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td style="padding: 0 40px;">
+                    <!-- Document Header -->
+                    <p style="margin: 0 0 5px 0; font-size: 10px; letter-spacing: 3px; color: #C9A227; text-transform: uppercase; text-align: center;">
+                      Documento Oficial del Imperium
+                    </p>
+                    <p style="margin: 0 0 25px 0; font-size: 10px; letter-spacing: 2px; color: #666; text-align: center;">
+                      Ref: ADM-{{ .Token }}-REC
+                    </p>
+
+                    <!-- Horizontal Line -->
+                    <div style="height: 1px; background: linear-gradient(90deg, transparent 0%, #C9A227 50%, transparent 100%); margin-bottom: 25px;"></div>
+
+                    <!-- Greeting -->
+                    <p style="margin: 0 0 20px 0; font-size: 16px; color: #E8E8F0; line-height: 1.6;">
+                      <span style="color: #C9A227; font-weight: bold;">CIUDADANO,</span>
+                    </p>
+
+                    <!-- Main Text -->
+                    <p style="margin: 0 0 20px 0; font-size: 15px; color: #b8b8c0; line-height: 1.8;">
+                      Tu solicitud de alistamiento en las filas de <span style="color: #C9A227; font-weight: 600;">GRIMDARK LEGION</span> ha sido recibida por el Administratum. Para completar tu reclutamiento y servir al Trono Dorado, debes verificar tu identidad.
+                    </p>
+
+                    <p style="margin: 0 0 30px 0; font-size: 15px; color: #b8b8c0; line-height: 1.8;">
+                      El Emperador protege a aquellos que sirven con fe. Confirma tu lealtad:
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td style="padding: 0 40px 30px 40px; text-align: center;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
+                      <tr>
+                        <td style="background-color: #C9A227; border-radius: 4px;">
+                          <a href="{{ .ConfirmationURL }}" target="_blank" style="display: inline-block; padding: 18px 50px; background-color: #C9A227; color: #000000; text-decoration: none; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; border-radius: 4px; font-family: Arial, sans-serif;">
+                            CONFIRMAR RECLUTAMIENTO
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Alternative Link -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td style="padding: 0 40px 30px 40px;">
+                    <p style="margin: 0 0 10px 0; font-size: 12px; color: #666; text-align: center;">
+                      Si el botón no funciona, copia este enlace en tu navegador:
+                    </p>
+                    <p style="margin: 0; font-size: 11px; color: #C9A227; word-break: break-all; text-align: center; background: #0a0a0c; padding: 12px; border-radius: 4px; border: 1px solid #333;">
+                      {{ .ConfirmationURL }}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Warning Box -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td style="padding: 0 40px 40px 40px;">
+                    <div style="background: rgba(139, 0, 0, 0.15); border: 1px solid rgba(139, 0, 0, 0.3); border-left: 3px solid #8B0000; padding: 15px 20px; border-radius: 0 4px 4px 0;">
+                      <p style="margin: 0; font-size: 12px; color: #cc6666; line-height: 1.6;">
+                        <strong style="color: #ff6666;">ADVERTENCIA:</strong> Si no solicitaste este registro, ignora este mensaje. El enlace expira en 24 horas terrestres estándar.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background: linear-gradient(180deg, #0f0f12 0%, #0a0a0c 100%); border: 2px solid #C9A227; border-top: none; padding: 30px; text-align: center;">
+              <!-- Decorative Elements -->
+              <div style="font-size: 18px; color: #C9A227; letter-spacing: 4px; margin-bottom: 15px;">- - -</div>
+
+              <p style="margin: 0 0 8px 0; font-size: 11px; letter-spacing: 2px; color: #666; text-transform: uppercase;">
+                Por mandato del Trono Dorado
+              </p>
+              <p style="margin: 0 0 20px 0; font-size: 13px; letter-spacing: 3px; color: #C9A227; font-weight: 600;">
+                GRIMDARK LEGION
+              </p>
+
+              <p style="margin: 0; font-size: 10px; color: #444; line-height: 1.6;">
+                grimdarklegion.com<br>
+                El Emperador Protege
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

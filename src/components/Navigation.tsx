@@ -593,28 +593,8 @@ export default function Navigation() {
                             {profile?.display_name || profile?.username}
                           </p>
                           <p className="text-sm text-bone/50">@{profile?.username}</p>
-                          {displayRole && displayRole.type !== 'role' && (
-                            <p className="text-xs text-imperial-gold font-medium">
-                              {displayRole.name}
-                            </p>
-                          )}
                         </div>
                       </div>
-
-                      {/* Dashboard Link - Mobile */}
-                      {hasDashboardAccess && (
-                        <Link
-                          href="/dashboard"
-                          className="flex items-center gap-3 py-3 px-4 rounded-lg text-imperial-gold hover:bg-imperial-gold/10 transition-all border border-imperial-gold/20 mx-4 mb-2"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          <LayoutDashboard className="w-5 h-5" />
-                          <span className="flex-1 font-medium">Panel de Control</span>
-                          <span className="px-2 py-0.5 text-[10px] font-bold bg-imperial-gold/20 rounded">
-                            STAFF
-                          </span>
-                        </Link>
-                      )}
 
                       {[
                         { href: `/usuarios/${profile?.username}`, icon: User, label: 'Mi Perfil' },

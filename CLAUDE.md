@@ -29,7 +29,7 @@
 - [ ] Feed social
 - [ ] Blog/Tutoriales
 - [ ] Chat en tiempo real
-- [ ] Panel de administración (incluye monitoreo Mapbox)
+- [ ] Panel de administración (servicio externo con conexión a Supabase)
 
 ## Arquitectura de Rutas
 ```
@@ -42,7 +42,7 @@ src/app/
 │   │       └── solicitar/     # Formulario de solicitud
 │   ├── mercado/               # Marketplace P2P
 │   └── usuarios/[username]/   # Perfiles de usuario
-├── (dashboard)/               # Perfil/Configuración
+├── (dashboard)/               # Perfil/Configuración de usuario
 ├── facciones/                 # Páginas de facciones
 └── api/                       # Embeddings, Search
 ```
@@ -88,12 +88,14 @@ https://github.com/GeorgiF0x/PROYECTO_WH40K.git
 - Para npm install: usar PowerShell si bash falla
 
 ## Próxima Sesión
-1. **Dashboard Admin** - Completar panel funcional para gestión real (tiendas, creadores, eventos, reportes)
-2. **Facciones Wiki** - Expandir /facciones con lore, unidades, galerías
-3. **Editor de Contenido (Tiptap)** - Editor headless con UI grimdark "Terminal Lexicanum"
+1. **Facciones Wiki** - Expandir /facciones con lore, unidades, galerías
+2. **Editor de Contenido (Tiptap)** - Editor headless con UI grimdark "Terminal Lexicanum"
    - Bloques custom: LoreBlock, UnitCard, QuoteBlock, ImageGallery, WarningBlock, DataTable
    - Sistema de contribución con aprobación de moderadores
    - Preview en tiempo real con estética imperial
-4. **Supabase Auth Emails** - Configurar plantillas de registro y contraseña olvidada
-5. **Cloudflare Turnstile** - Añadir captcha en login/registro/formularios
-6. **Fix Discord OAuth** - Investigar y arreglar login con Discord (no funciona)
+3. **Supabase Auth Emails** - Configurar plantillas de registro y contraseña olvidada
+4. **Cloudflare Turnstile** - Añadir captcha en login/registro/formularios
+5. **Fix Discord OAuth** - Investigar y arreglar login con Discord (no funciona)
+
+## Notas
+- El panel de administración se implementará como servicio externo conectado a Supabase

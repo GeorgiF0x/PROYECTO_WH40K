@@ -49,5 +49,13 @@ CREATE TRIGGER on_new_message_notify
   FOR EACH ROW
   EXECUTE FUNCTION notify_on_message();
 
--- Enable realtime for messages table
-ALTER PUBLICATION supabase_realtime ADD TABLE messages;
+-- Enable realtime for messages table (idempotent)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables
+    WHERE pubname = 'supabase_realtime' AND tablename = 'messages'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE messages;
+  END IF;
+END $$;

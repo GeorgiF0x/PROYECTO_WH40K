@@ -10,7 +10,14 @@ import type { Miniature, Profile } from '@/lib/types/database.types'
 
 type Tab = 'miniatures' | 'likes' | 'badges'
 
-interface MiniatureWithStats extends Miniature {
+interface MiniatureWithStats {
+  id: string
+  title: string
+  description: string | null
+  images: string[]
+  thumbnail_url: string | null
+  user_id: string
+  created_at: string
   profiles?: Pick<Profile, 'id' | 'username' | 'display_name' | 'avatar_url'> | null
   likes_count?: number
   comments_count?: number

@@ -2,99 +2,66 @@
 
 import { useMemo } from 'react'
 import { useAuth } from '@/lib/hooks/useAuth'
-import {
-  buildUserPermissions,
-  hasPermission,
-  hasDashboardAccess,
-  getAccessibleDashboardSections,
-  getDisplayRole,
-  getUserBadges,
-  type UserPermissions,
-  type Permission,
-} from '@/lib/permissions'
-import type { UserRole, CreatorStatus, CreatorType } from '@/lib/types/database.types'
+import type { UserRole, CreatorStatus } from '@/lib/types/database.types'
 
 interface UsePermissionsReturn {
-  // Full permissions object
-  permissions: UserPermissions | null
-
-  // Quick access helpers
   isAdmin: boolean
   isModerator: boolean
   isCreator: boolean
   isStoreOwner: boolean
   hasDashboardAccess: boolean
-
-  // Permission checks
-  can: (permission: Permission) => boolean
-  canAccessDashboard: boolean
-
-  // Display helpers
-  displayRole: ReturnType<typeof getDisplayRole> | null
-  badges: ReturnType<typeof getUserBadges>
-
-  // Dashboard sections
-  accessibleSections: ReturnType<typeof getAccessibleDashboardSections>
-
-  // Loading state
+  displayRole: { name: string; type: 'role' | 'creator' | 'store' } | null
   isLoading: boolean
 }
 
 export function usePermissions(): UsePermissionsReturn {
-  const { user, profile, isLoading } = useAuth()
+  const { profile, isLoading } = useAuth()
 
   const permissions = useMemo(() => {
-    if (!user || !profile) return null
+    if (!profile) {
+      return {
+        isAdmin: false,
+        isModerator: false,
+        isCreator: false,
+        isStoreOwner: false,
+        hasDashboardAccess: false,
+        displayRole: null,
+      }
+    }
 
-    // Default values for backwards compatibility
-    const role: UserRole = (profile.role as UserRole) || 'user'
-    const creatorStatus: CreatorStatus = (profile.creator_status as CreatorStatus) || 'none'
-    const creatorType: CreatorType | null = profile.creator_type as CreatorType | null
-    const isStoreOwner: boolean = profile.is_store_owner || false
+    const role = (profile.role as UserRole) || 'user'
+    const creatorStatus = (profile.creator_status as CreatorStatus) || 'none'
+    const isStoreOwner = profile.is_store_owner || false
 
-    return buildUserPermissions(role, creatorStatus, creatorType, isStoreOwner)
-  }, [user, profile])
+    const isAdmin = role === 'admin'
+    const isModerator = role === 'moderator' || role === 'admin'
+    const isCreator = creatorStatus === 'approved'
+    const hasDashboardAccess = isAdmin || isModerator
 
-  const displayRole = useMemo(() => {
-    if (!permissions || !profile) return null
-    return getDisplayRole(
-      permissions.role,
-      (profile.creator_status as CreatorStatus) || 'none',
-      profile.is_store_owner || false
-    )
-  }, [permissions, profile])
+    // Determine display role
+    let displayRole: { name: string; type: 'role' | 'creator' | 'store' } | null = null
+    if (isAdmin) {
+      displayRole = { name: 'Lord Inquisidor', type: 'role' }
+    } else if (role === 'moderator') {
+      displayRole = { name: 'Comisario', type: 'role' }
+    } else if (isCreator) {
+      displayRole = { name: 'Rememorizador', type: 'creator' }
+    } else if (isStoreOwner) {
+      displayRole = { name: 'Rogue Trader', type: 'store' }
+    }
 
-  const badges = useMemo(() => {
-    if (!permissions || !profile) return []
-    return getUserBadges(
-      permissions.role,
-      (profile.creator_status as CreatorStatus) || 'none',
-      profile.is_store_owner || false
-    )
-  }, [permissions, profile])
-
-  const accessibleSections = useMemo(() => {
-    if (!permissions) return []
-    return getAccessibleDashboardSections(permissions)
-  }, [permissions])
-
-  const can = (permission: Permission): boolean => {
-    if (!permissions) return false
-    return hasPermission(permissions.role, permission)
-  }
+    return {
+      isAdmin,
+      isModerator,
+      isCreator,
+      isStoreOwner,
+      hasDashboardAccess,
+      displayRole,
+    }
+  }, [profile])
 
   return {
-    permissions,
-    isAdmin: permissions?.isAdmin || false,
-    isModerator: permissions?.isModerator || false,
-    isCreator: permissions?.isCreator || false,
-    isStoreOwner: permissions?.isStoreOwner || false,
-    hasDashboardAccess: permissions?.hasDashboardAccess || false,
-    can,
-    canAccessDashboard: permissions?.hasDashboardAccess || false,
-    displayRole,
-    badges,
-    accessibleSections,
+    ...permissions,
     isLoading,
   }
 }

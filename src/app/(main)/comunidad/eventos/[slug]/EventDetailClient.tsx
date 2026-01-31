@@ -159,7 +159,7 @@ export default function EventDetailClient({ event }: EventDetailClientProps) {
   const config = eventTypeConfig[event.event_type]
   const Icon = config.icon
   const status = getEventStatus(event)
-  const isFull = event.max_participants && event.current_participants >= event.max_participants
+  const isFull = event.max_participants && (event.current_participants ?? 0) >= event.max_participants
 
   const handleShare = async () => {
     const url = window.location.href

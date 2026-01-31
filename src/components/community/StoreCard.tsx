@@ -97,7 +97,7 @@ export default function StoreCard({ store, index = 0 }: StoreCardProps) {
               </div>
 
               {/* Rating badge */}
-              {store.review_count > 0 && (
+              {(store.review_count ?? 0) > 0 && (
                 <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 bg-void/80 backdrop-blur-sm rounded-lg">
                   <Star className="w-3.5 h-3.5 text-imperial-gold fill-imperial-gold" />
                   <span className="text-sm font-bold text-imperial-gold">

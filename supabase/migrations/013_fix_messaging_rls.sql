@@ -28,6 +28,7 @@ CREATE POLICY "Users can view conversation participants" ON conversation_partici
 --    Allow users to add others when creating a conversation (via RPC below)
 --    or add themselves
 DROP POLICY IF EXISTS "Users can join conversations" ON conversation_participants;
+DROP POLICY IF EXISTS "Users can add conversation participants" ON conversation_participants;
 CREATE POLICY "Users can add conversation participants" ON conversation_participants
     FOR INSERT WITH CHECK (
         auth.uid() = user_id OR is_conversation_participant(conversation_id)

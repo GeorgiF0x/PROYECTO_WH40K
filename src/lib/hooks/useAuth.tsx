@@ -96,7 +96,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .single()
 
           if (insertError) {
-            console.error('[Auth] Error creating profile:', insertError)
+            console.error('[Auth] Error creating profile:', {
+              code: insertError.code,
+              message: insertError.message,
+              details: insertError.details,
+              hint: insertError.hint,
+              raw: JSON.stringify(insertError),
+            })
             return null
           }
           return newProfile

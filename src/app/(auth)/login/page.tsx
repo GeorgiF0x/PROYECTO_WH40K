@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Lock, AlertTriangle, Loader2 } from 'lucide-react'
 import { useAuth } from '@/lib/hooks/useAuth'
 import BootSequence from '@/components/auth/BootSequence'
+import Turnstile from '@/components/auth/Turnstile'
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -48,6 +49,7 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const [showBoot, setShowBoot] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 
   const {
     register,
@@ -60,6 +62,27 @@ function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     setError(null)
+
+    // Verify Turnstile if token exists
+    if (turnstileToken) {
+      try {
+        const verifyRes = await fetch('/api/verify-turnstile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: turnstileToken }),
+        })
+        const verifyData = await verifyRes.json()
+        if (!verifyData.success) {
+          setError('Verificación de seguridad fallida. Inténtalo de nuevo.')
+          setIsLoading(false)
+          return
+        }
+      } catch {
+        setError('Error al verificar. Inténtalo de nuevo.')
+        setIsLoading(false)
+        return
+      }
+    }
 
     const { error } = await signInWithEmail(data.email, data.password)
 
@@ -241,6 +264,16 @@ function LoginForm() {
               >
                 ¿Olvidaste tu contraseña?
               </Link>
+            </motion.div>
+
+            {/* Turnstile Captcha */}
+            <motion.div variants={itemVariants}>
+              <Turnstile
+                onVerify={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken(null)}
+                theme="dark"
+                className="my-2"
+              />
             </motion.div>
 
             {/* Submit Button */}

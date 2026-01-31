@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useAuth } from '@/lib/hooks/useAuth'
+import Turnstile from '@/components/auth/Turnstile'
 import { Mail, ArrowLeft, Send, CheckCircle, AlertCircle, Shield, Sparkles } from 'lucide-react'
 
 const forgotPasswordSchema = z.object({
@@ -114,6 +115,7 @@ export default function ForgotPasswordPage() {
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [focusedField, setFocusedField] = useState<string | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 
   const {
     register,
@@ -129,6 +131,27 @@ export default function ForgotPasswordPage() {
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true)
     setError(null)
+
+    // Verify Turnstile if token exists
+    if (turnstileToken) {
+      try {
+        const verifyRes = await fetch('/api/verify-turnstile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: turnstileToken }),
+        })
+        const verifyData = await verifyRes.json()
+        if (!verifyData.success) {
+          setError('Verificación de seguridad fallida. Inténtalo de nuevo.')
+          setIsLoading(false)
+          return
+        }
+      } catch {
+        setError('Error al verificar. Inténtalo de nuevo.')
+        setIsLoading(false)
+        return
+      }
+    }
 
     const { error } = await resetPassword(data.email)
 
@@ -323,6 +346,16 @@ export default function ForgotPasswordPage() {
                       </motion.p>
                     )}
                   </AnimatePresence>
+                </motion.div>
+
+                {/* Turnstile Captcha */}
+                <motion.div variants={itemVariants}>
+                  <Turnstile
+                    onVerify={(token) => setTurnstileToken(token)}
+                    onExpire={() => setTurnstileToken(null)}
+                    theme="dark"
+                    className="my-2"
+                  />
                 </motion.div>
 
                 {/* Submit Button */}
