@@ -3,10 +3,12 @@
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
 import { getFactionTheme, type FactionTheme } from '@/lib/faction-themes'
+import { SubFactionParticles } from './SubFactionParticles'
 
 interface FactionEffectsProps {
   factionId: string
   className?: string
+  showSubFactionIcons?: boolean
 }
 
 // Imperium - Golden sparks and light rays
@@ -529,7 +531,11 @@ const effectComponents: Record<string, React.FC<{ theme: FactionTheme }>> = {
   tyranids: TyranidsEffects,
 }
 
-export function FactionEffects({ factionId, className = '' }: FactionEffectsProps) {
+export function FactionEffects({
+  factionId,
+  className = '',
+  showSubFactionIcons = true
+}: FactionEffectsProps) {
   const theme = useMemo(() => getFactionTheme(factionId), [factionId])
 
   if (!theme) return null
@@ -546,6 +552,15 @@ export function FactionEffects({ factionId, className = '' }: FactionEffectsProp
       }}
     >
       <EffectComponent theme={theme} />
+
+      {/* Sub-faction icons floating as particles */}
+      {showSubFactionIcons && (
+        <SubFactionParticles
+          factionId={factionId}
+          theme={theme}
+          count={10}
+        />
+      )}
     </div>
   )
 }
