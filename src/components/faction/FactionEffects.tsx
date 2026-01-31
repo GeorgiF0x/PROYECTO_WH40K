@@ -13,14 +13,12 @@ interface FactionIconParticlesProps {
   count?: number
 }
 
-function FactionIconParticles({ theme, factionId, count = 15 }: FactionIconParticlesProps) {
+function FactionIconParticles({ theme, factionId, count = 20 }: FactionIconParticlesProps) {
   const factionIcon = getFactionIcon(factionId)
   if (!factionIcon) return null
 
-  // Encode the URL to handle spaces and special characters
   const encodedIconUrl = encodeURI(factionIcon.iconPath)
 
-  // Create deterministic positions
   const particles = useMemo(() => {
     const seededRandom = (seed: number) => {
       const x = Math.sin(seed * 9999) * 10000
@@ -30,57 +28,82 @@ function FactionIconParticles({ theme, factionId, count = 15 }: FactionIconParti
     return Array.from({ length: count }, (_, i) => {
       const seed = i * 1337 + factionId.charCodeAt(0)
       return {
-        x: seededRandom(seed) * 100,
-        y: seededRandom(seed + 1) * 100,
-        size: 16 + seededRandom(seed + 2) * 24, // 16-40px
-        duration: 3 + seededRandom(seed + 3) * 3, // 3-6 seconds
-        delay: seededRandom(seed + 4) * 4, // 0-4 seconds
+        x: seededRandom(seed) * 95 + 2.5,
+        y: seededRandom(seed + 1) * 90 + 5,
+        size: 24 + seededRandom(seed + 2) * 36, // 24-60px (bigger)
+        duration: 4 + seededRandom(seed + 3) * 4, // 4-8 seconds
+        delay: seededRandom(seed + 4) * 6,
+        animType: Math.floor(seededRandom(seed + 5) * 3),
       }
     })
   }, [factionId, count])
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((particle, i) => (
-        <motion.div
-          key={`icon-particle-${i}`}
-          className="absolute"
-          style={{
-            left: `${particle.x}%`,
-            top: `${particle.y}%`,
-            width: particle.size,
-            height: particle.size,
-          }}
-          animate={{
-            y: [0, -80, 0],
-            opacity: [0.15, 0.4, 0.15],
-            scale: [0.8, 1, 0.8],
-          }}
-          transition={{
-            duration: particle.duration,
-            repeat: Infinity,
-            delay: particle.delay,
-            ease: 'easeInOut',
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={encodedIconUrl}
-            alt=""
-            className="w-full h-full object-contain"
+      {particles.map((particle, i) => {
+        // Different animation types for variety
+        const animations = [
+          { // Gentle pulse
+            y: [0, -60, 0],
+            opacity: [0.2, 0.5, 0.2],
+            scale: [0.9, 1.1, 0.9],
+          },
+          { // Rise and fade
+            y: [0, -100, -150],
+            opacity: [0, 0.6, 0],
+            scale: [0.7, 1, 0.7],
+          },
+          { // Slow breathe
+            y: [0, -40, 0],
+            opacity: [0.15, 0.45, 0.15],
+            scale: [0.85, 1.05, 0.85],
+          },
+        ]
+
+        return (
+          <motion.div
+            key={`icon-particle-${i}`}
+            className="absolute"
             style={{
-              filter: `
-                drop-shadow(0 0 6px ${theme.colors.glow})
-                drop-shadow(0 0 12px ${theme.colors.primary})
-                brightness(1.5)
-                sepia(1)
-                hue-rotate(${getHueRotation(theme.colors.primary)}deg)
-                saturate(2)
-              `,
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: particle.size,
+              height: particle.size,
             }}
-          />
-        </motion.div>
-      ))}
+            animate={animations[particle.animType]}
+            transition={{
+              duration: particle.duration,
+              repeat: Infinity,
+              delay: particle.delay,
+              ease: 'easeInOut',
+            }}
+          >
+            {/* Soft glow behind */}
+            <div
+              className="absolute inset-[-50%] blur-lg"
+              style={{
+                background: `radial-gradient(circle, ${theme.colors.glow}40 0%, transparent 60%)`,
+              }}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={encodedIconUrl}
+              alt=""
+              className="relative w-full h-full object-contain"
+              style={{
+                filter: `
+                  drop-shadow(0 0 8px ${theme.colors.glow})
+                  drop-shadow(0 0 16px ${theme.colors.primary})
+                  brightness(1.4)
+                  sepia(1)
+                  hue-rotate(${getHueRotation(theme.colors.primary)}deg)
+                  saturate(2.5)
+                `,
+              }}
+            />
+          </motion.div>
+        )
+      })}
     </div>
   )
 }

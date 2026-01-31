@@ -11,8 +11,6 @@ interface SubFactionParticlesProps {
   count?: number
 }
 
-type AnimationType = 'float' | 'drift' | 'spiral' | 'pulse' | 'gentle'
-
 interface ParticleConfig {
   subFaction: SubFactionIcon
   x: number
@@ -20,80 +18,19 @@ interface ParticleConfig {
   size: number
   duration: number
   delay: number
-  animationType: AnimationType
+  animationType: number
 }
-
-// Get animation props based on type
-function getAnimationProps(type: AnimationType, index: number) {
-  switch (type) {
-    case 'float':
-      return {
-        initial: { opacity: 0, y: 100, scale: 0.3, rotate: -20 },
-        animate: {
-          opacity: [0, 0.7, 1, 0.7, 0],
-          y: [100, -50, -150, -250, -350],
-          scale: [0.3, 0.6, 0.8, 0.6, 0.3],
-          rotate: [-20, 0, 10, 0, -10],
-        },
-      }
-    case 'drift':
-      return {
-        initial: { opacity: 0, x: -100, scale: 0.2 },
-        animate: {
-          opacity: [0, 0.8, 1, 0.8, 0],
-          x: [-100, 0, 100, 200, 300],
-          y: [0, -30, -60, -90, -120],
-          scale: [0.2, 0.5, 0.7, 0.5, 0.2],
-          rotate: [0, 15, 0, -15, 0],
-        },
-      }
-    case 'spiral':
-      return {
-        initial: { opacity: 0, scale: 0.1 },
-        animate: {
-          opacity: [0, 0.8, 1, 0.8, 0],
-          scale: [0.1, 0.4, 0.7, 0.4, 0.1],
-          rotate: [0, 90, 180, 270, 360],
-          y: [50, 0, -50, -100, -150],
-        },
-      }
-    case 'pulse':
-      return {
-        initial: { opacity: 0, scale: 0.4, y: 50 },
-        animate: {
-          opacity: [0, 0.7, 1, 0.7, 0],
-          scale: [0.4, 0.7, 0.9, 0.7, 0.4],
-          y: [50, -20, -100, -180, -260],
-        },
-      }
-    case 'gentle':
-    default:
-      return {
-        initial: { opacity: 0, y: 80 },
-        animate: {
-          opacity: [0, 0.6, 0.8, 0.6, 0],
-          y: [80, 40, 0, -40, -80],
-          x: [0, 20 * (index % 2 === 0 ? 1 : -1), 0, -20 * (index % 2 === 0 ? 1 : -1), 0],
-          scale: [0.5, 0.7, 0.8, 0.7, 0.5],
-        },
-      }
-  }
-}
-
-const animationTypes: AnimationType[] = ['float', 'drift', 'spiral', 'pulse', 'gentle']
 
 export function SubFactionParticles({
   factionId,
   theme,
-  count = 12
+  count = 10
 }: SubFactionParticlesProps) {
   const subFactions = useMemo(() => getSubFactionIcons(factionId), [factionId])
 
-  // Generate random but deterministic particle configurations
   const particles = useMemo<ParticleConfig[]>(() => {
     if (subFactions.length === 0) return []
 
-    // Create seeded random for consistent positions
     const seededRandom = (seed: number) => {
       const x = Math.sin(seed * 9999) * 10000
       return x - Math.floor(x)
@@ -105,14 +42,15 @@ export function SubFactionParticles({
 
       return {
         subFaction,
-        x: seededRandom(seed) * 90 + 5, // 5-95% from left
-        y: seededRandom(seed + 1) * 70 + 15, // 15-85% from top (start position)
+        x: seededRandom(seed) * 85 + 5,
+        y: seededRandom(seed + 1) * 60 + 20,
+        // Bigger icons - featured ones are huge
         size: subFaction.featured
-          ? 40 + seededRandom(seed + 2) * 24 // 40-64px for featured
-          : 28 + seededRandom(seed + 2) * 20, // 28-48px for regular
-        duration: 12 + seededRandom(seed + 3) * 10, // 12-22 seconds
-        delay: seededRandom(seed + 4) * 8, // 0-8 second delay
-        animationType: animationTypes[Math.floor(seededRandom(seed + 5) * animationTypes.length)],
+          ? 60 + seededRandom(seed + 2) * 40 // 60-100px
+          : 40 + seededRandom(seed + 2) * 30, // 40-70px
+        duration: 15 + seededRandom(seed + 3) * 15, // 15-30 seconds (slower)
+        delay: seededRandom(seed + 4) * 10,
+        animationType: Math.floor(seededRandom(seed + 5) * 4),
       }
     })
   }, [subFactions, count, factionId])
@@ -122,13 +60,55 @@ export function SubFactionParticles({
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {particles.map((particle, i) => {
-        const { initial, animate } = getAnimationProps(particle.animationType, i)
-        // Encode the URL to handle spaces and special characters
         const encodedIconUrl = encodeURI(particle.subFaction.icon)
+
+        // Different animation styles
+        const animations = [
+          // Slow majestic rise
+          {
+            initial: { opacity: 0, y: 50, scale: 0.5 },
+            animate: {
+              opacity: [0, 0.9, 1, 0.9, 0],
+              y: [50, 0, -100, -200, -300],
+              scale: [0.5, 0.8, 1, 0.8, 0.5],
+              rotate: [0, 5, 0, -5, 0],
+            },
+          },
+          // Gentle float with pulse
+          {
+            initial: { opacity: 0, scale: 0.6 },
+            animate: {
+              opacity: [0, 1, 0.8, 1, 0],
+              y: [0, -50, -100, -150, -200],
+              scale: [0.6, 1, 1.1, 1, 0.6],
+            },
+          },
+          // Drift sideways
+          {
+            initial: { opacity: 0, x: -50 },
+            animate: {
+              opacity: [0, 0.9, 1, 0.9, 0],
+              x: [-50, 0, 50, 100, 150],
+              y: [0, -30, -80, -130, -180],
+              rotate: [0, 10, 0, -10, 0],
+            },
+          },
+          // Dramatic pulse in place
+          {
+            initial: { opacity: 0, scale: 0.3 },
+            animate: {
+              opacity: [0, 1, 0.7, 1, 0],
+              scale: [0.3, 1.2, 0.9, 1.1, 0.3],
+              y: [20, 0, -40, -80, -120],
+            },
+          },
+        ]
+
+        const anim = animations[particle.animationType]
 
         return (
           <motion.div
-            key={`${factionId}-particle-${i}`}
+            key={`${factionId}-subfaction-${i}`}
             className="absolute"
             style={{
               left: `${particle.x}%`,
@@ -136,8 +116,8 @@ export function SubFactionParticles({
               width: particle.size,
               height: particle.size,
             }}
-            initial={initial}
-            animate={animate}
+            initial={anim.initial}
+            animate={anim.animate}
             transition={{
               duration: particle.duration,
               delay: particle.delay,
@@ -145,19 +125,28 @@ export function SubFactionParticles({
               ease: 'easeInOut',
             }}
           >
+            {/* Glow layer behind */}
+            <div
+              className="absolute inset-0 blur-md"
+              style={{
+                background: `radial-gradient(circle, ${theme.colors.glow}80 0%, transparent 70%)`,
+              }}
+            />
+            {/* Icon */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={encodedIconUrl}
               alt=""
-              className="w-full h-full object-contain"
+              className="relative w-full h-full object-contain"
               style={{
                 filter: `
-                  drop-shadow(0 0 8px ${theme.colors.glow})
-                  drop-shadow(0 0 16px ${theme.colors.primary})
-                  brightness(1.5)
+                  drop-shadow(0 0 10px ${theme.colors.glow})
+                  drop-shadow(0 0 20px ${theme.colors.primary})
+                  drop-shadow(0 0 30px ${theme.colors.primary}80)
+                  brightness(1.4)
                   sepia(1)
                   hue-rotate(${getHueRotation(theme.colors.primary)}deg)
-                  saturate(2.5)
+                  saturate(3)
                 `,
               }}
             />
@@ -168,9 +157,7 @@ export function SubFactionParticles({
   )
 }
 
-// Calculate hue rotation based on target color
 function getHueRotation(hexColor: string): number {
-  // Convert hex to HSL and return the hue
   const r = parseInt(hexColor.slice(1, 3), 16) / 255
   const g = parseInt(hexColor.slice(3, 5), 16) / 255
   const b = parseInt(hexColor.slice(5, 7), 16) / 255
@@ -194,7 +181,6 @@ function getHueRotation(hexColor: string): number {
     }
   }
 
-  // Sepia starts at ~30deg, so we need to rotate from there
   return h * 360 - 30
 }
 
