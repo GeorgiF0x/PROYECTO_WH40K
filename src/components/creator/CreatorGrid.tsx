@@ -74,10 +74,10 @@ export function CreatorGrid({
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {creators.map((creator, index) => (
         <CreatorCard
-          key={creator.id}
+          key={creator.id || index}
           creator={creator}
           index={index}
-          featured={featuredIds.includes(creator.id)}
+          featured={creator.id ? featuredIds.includes(creator.id) : false}
         />
       ))}
     </div>

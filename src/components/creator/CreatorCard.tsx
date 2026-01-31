@@ -146,7 +146,7 @@ export function CreatorCard({ creator, index = 0, featured = false }: CreatorCar
                 {creator.avatar_url ? (
                   <Image
                     src={creator.avatar_url}
-                    alt={creator.display_name || creator.username}
+                    alt={creator.display_name || creator.username || 'Creator'}
                     fill
                     sizes="(max-width: 640px) 80px, 96px"
                     className="object-cover"
@@ -154,7 +154,7 @@ export function CreatorCard({ creator, index = 0, featured = false }: CreatorCar
                 ) : (
                   <div className="w-full h-full bg-void-light flex items-center justify-center">
                     <span className="text-2xl font-display font-bold text-imperial-gold/60">
-                      {(creator.display_name || creator.username).charAt(0).toUpperCase()}
+                      {(creator.display_name || creator.username || 'C').charAt(0).toUpperCase()}
                     </span>
                   </div>
                 )}

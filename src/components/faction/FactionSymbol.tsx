@@ -75,13 +75,13 @@ export function FactionSymbol({
         />
       )}
 
-      {/* SVG Icon with color filter */}
+      {/* SVG Icon - white with faction glow */}
       <div
         className="relative w-full h-full"
         style={{
           filter: variant === 'glow'
-            ? `drop-shadow(0 0 10px ${theme.colors.glow})`
-            : `drop-shadow(0 0 4px ${theme.colors.glow}40)`,
+            ? `drop-shadow(0 0 12px ${theme.colors.glow}) drop-shadow(0 0 6px ${theme.colors.primary})`
+            : `drop-shadow(0 0 6px ${theme.colors.glow}80) drop-shadow(0 0 2px ${theme.colors.primary}60)`,
         }}
       >
         <Image
@@ -90,18 +90,7 @@ export function FactionSymbol({
           fill
           className="object-contain"
           style={{
-            // Aplicar color de la facción usando CSS filter
-            // Esto funciona bien con SVGs monocromáticos
             filter: 'brightness(0) invert(1)',
-          }}
-        />
-        {/* Overlay de color */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: theme.colors.primary,
-            mixBlendMode: 'multiply',
-            opacity: 0.9,
           }}
         />
       </div>

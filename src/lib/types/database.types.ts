@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       article_comments: {
@@ -477,6 +502,82 @@ export type Database = {
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      faction_wiki_pages: {
+        Row: {
+          author_id: string | null
+          category_id: string | null
+          content: Json
+          created_at: string | null
+          excerpt: string | null
+          faction_id: string
+          gallery_images: string[] | null
+          hero_image: string | null
+          id: string
+          published_at: string | null
+          slug: string
+          status: string | null
+          title: string
+          updated_at: string | null
+          views_count: number | null
+        }
+        Insert: {
+          author_id?: string | null
+          category_id?: string | null
+          content: Json
+          created_at?: string | null
+          excerpt?: string | null
+          faction_id: string
+          gallery_images?: string[] | null
+          hero_image?: string | null
+          id?: string
+          published_at?: string | null
+          slug: string
+          status?: string | null
+          title: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          author_id?: string | null
+          category_id?: string | null
+          content?: Json
+          created_at?: string | null
+          excerpt?: string | null
+          faction_id?: string
+          gallery_images?: string[] | null
+          hero_image?: string | null
+          id?: string
+          published_at?: string | null
+          slug?: string
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faction_wiki_pages_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "faction_wiki_pages_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "public_creators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "faction_wiki_pages_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_categories"
             referencedColumns: ["id"]
           },
         ]
@@ -1445,6 +1546,163 @@ export type Database = {
           },
         ]
       }
+      wiki_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      wiki_contributions: {
+        Row: {
+          content: Json
+          contributor_id: string
+          created_at: string | null
+          faction_id: string | null
+          id: string
+          page_id: string | null
+          reviewed_at: string | null
+          reviewer_id: string | null
+          reviewer_notes: string | null
+          status: string | null
+          suggested_title: string | null
+        }
+        Insert: {
+          content: Json
+          contributor_id: string
+          created_at?: string | null
+          faction_id?: string | null
+          id?: string
+          page_id?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_notes?: string | null
+          status?: string | null
+          suggested_title?: string | null
+        }
+        Update: {
+          content?: Json
+          contributor_id?: string
+          created_at?: string | null
+          faction_id?: string | null
+          id?: string
+          page_id?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_notes?: string | null
+          status?: string | null
+          suggested_title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_contributions_contributor_id_fkey"
+            columns: ["contributor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_contributions_contributor_id_fkey"
+            columns: ["contributor_id"]
+            isOneToOne: false
+            referencedRelation: "public_creators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_contributions_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "faction_wiki_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_contributions_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_contributions_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "public_creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wiki_revisions: {
+        Row: {
+          author_id: string | null
+          change_summary: string | null
+          content: Json
+          created_at: string | null
+          id: string
+          page_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          change_summary?: string | null
+          content: Json
+          created_at?: string | null
+          id?: string
+          page_id: string
+        }
+        Update: {
+          author_id?: string | null
+          change_summary?: string | null
+          content?: Json
+          created_at?: string | null
+          id?: string
+          page_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_revisions_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_revisions_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "public_creators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_revisions_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "faction_wiki_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       public_creators: {
@@ -1549,6 +1807,10 @@ export type Database = {
       }
       increment_view_count: {
         Args: { p_miniature_id: string }
+        Returns: undefined
+      }
+      increment_wiki_page_views: {
+        Args: { page_uuid: string }
         Returns: undefined
       }
       is_admin: { Args: { user_uuid: string }; Returns: boolean }
@@ -1755,6 +2017,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       article_category: [
@@ -1812,75 +2077,28 @@ export const Constants = {
   },
 } as const
 
-// ══════════════════════════════════════════════════════════════════════
+// =============================================================================
 // CUSTOM TYPE ALIASES
-// ══════════════════════════════════════════════════════════════════════
+// =============================================================================
 
-// Table Row Types
-export type Profile = Database["public"]["Tables"]["profiles"]["Row"]
-export type Miniature = Database["public"]["Tables"]["miniatures"]["Row"]
-export type Listing = Database["public"]["Tables"]["listings"]["Row"]
-export type Notification = Database["public"]["Tables"]["notifications"]["Row"]
-export type Store = Database["public"]["Tables"]["stores"]["Row"]
-export type Event = Database["public"]["Tables"]["events"]["Row"]
+export type Profile = Database['public']['Tables']['profiles']['Row']
+export type Miniature = Database['public']['Tables']['miniatures']['Row']
+export type Listing = Database['public']['Tables']['listings']['Row']
+export type ListingCategory = Database['public']['Enums']['listing_category']
+export type Notification = Database['public']['Tables']['notifications']['Row']
+export type UserRole = Database['public']['Enums']['user_role']
+export type CreatorStatus = Database['public']['Enums']['creator_status']
+export type CreatorType = Database['public']['Enums']['creator_type']
+export type EventType = Database['public']['Enums']['event_type']
+export type StoreType = Database['public']['Enums']['store_type']
+export type Store = Database['public']['Tables']['stores']['Row']
 
-// Enum Types
-export type UserRole = Database["public"]["Enums"]["user_role"]
-export type CreatorStatus = Database["public"]["Enums"]["creator_status"]
-export type CreatorType = Database["public"]["Enums"]["creator_type"]
-export type StoreType = Database["public"]["Enums"]["store_type"]
-export type StoreStatus = Database["public"]["Enums"]["store_status"]
-export type EventType = Database["public"]["Enums"]["event_type"]
-export type EventStatus = Database["public"]["Enums"]["event_status"]
-export type ListingCategory = Database["public"]["Enums"]["listing_category"]
-export type ListingCondition = Database["public"]["Enums"]["listing_condition"]
-export type ListingStatus = Database["public"]["Enums"]["listing_status"]
-
-// Custom Composite Types
-export interface EventWithOrganizer extends Event {
-  organizer: Pick<Profile, "id" | "username" | "display_name" | "avatar_url"> | null
-  store?: Pick<Store, "id" | "name" | "slug"> | null
-  is_official?: boolean | null
+// Event with organizer info and store relation
+export type EventWithOrganizer = Database['public']['Tables']['events']['Row'] & {
+  organizer?: Pick<Profile, 'username' | 'display_name' | 'avatar_url'> | null
+  store?: Pick<Store, 'id' | 'name' | 'slug'> | null
+  is_official?: boolean // Derived from store_id presence or explicit field
 }
 
-export interface PublicCreator {
-  id: string
-  username: string
-  display_name: string | null
-  avatar_url: string | null
-  bio: string | null
-  creator_type: CreatorType | null
-  creator_bio: string | null
-  creator_services: string[] | null
-  accepts_commissions: boolean | null
-  portfolio_url: string | null
-  pinned_miniatures: string[] | null
-  creator_verified_at: string | null
-  favorite_factions: string[] | null
-  miniatures_count: number
-  followers_count: number
-  instagram: string | null
-  twitter: string | null
-  youtube: string | null
-  website: string | null
-}
-
-export interface MiniatureWithStats {
-  id: string
-  title: string
-  description: string | null
-  images: string[]
-  thumbnail_url: string | null
-  user_id: string
-  faction_id: string | null
-  embedding: string | null
-  view_count: number | null
-  likes_count: number
-  comments_count: number
-  created_at: string
-  updated_at: string
-  like_count?: number
-  comment_count?: number
-  user?: Pick<Profile, "id" | "username" | "display_name" | "avatar_url">
-  tags?: Array<{ id: string; name: string; slug: string }>
-}
+// Public creator view
+export type PublicCreator = Database['public']['Views']['public_creators']['Row']

@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { Quote, BookOpen, Users, Clock, ExternalLink } from 'lucide-react'
+import Link from 'next/link'
+import { Quote, BookOpen, Users, Clock, ArrowRight } from 'lucide-react'
 import { getFactionTheme } from '@/lib/faction-themes'
 import type { Faction } from '@/lib/data'
 
@@ -135,13 +136,15 @@ export function LoreSection({ faction }: LoreSectionProps) {
                 </p>
 
                 {/* Read more hint */}
-                <div
+                <Link
+                  href={`/facciones/${faction.id}/wiki`}
                   className="mt-4 flex items-center gap-2 font-body text-sm opacity-60 group-hover:opacity-100 transition-opacity"
                   style={{ color: faction.color }}
                 >
                   <BookOpen className="w-4 h-4" />
-                  <span>Mas en la Wiki (proximamente)</span>
-                </div>
+                  <span>Explorar en la Wiki</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
               </div>
             </motion.article>
           ))}
@@ -194,7 +197,7 @@ export function LoreSection({ faction }: LoreSectionProps) {
           </div>
         </motion.div>
 
-        {/* Timeline Teaser */}
+        {/* Wiki CTA */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -219,21 +222,21 @@ export function LoreSection({ faction }: LoreSectionProps) {
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{ background: `${faction.color}20` }}
               >
-                <Clock className="w-8 h-8" style={{ color: faction.color }} />
+                <BookOpen className="w-8 h-8" style={{ color: faction.color }} />
               </div>
               <div>
                 <h3 className="font-display text-xl font-bold text-white mb-1">
-                  Linea Temporal Completa
+                  Lexicanum Imperial
                 </h3>
                 <p className="font-body text-bone/60">
-                  Miles de años de historia, batallas y leyendas
+                  Explora la historia completa, batallas y leyendas
                 </p>
               </div>
             </div>
 
-            <button
-              disabled
-              className="flex items-center gap-2 px-6 py-3 rounded-lg font-body font-semibold opacity-50 cursor-not-allowed"
+            <Link
+              href={`/facciones/${faction.id}/wiki`}
+              className="flex items-center gap-2 px-6 py-3 rounded-lg font-body font-semibold transition-all hover:scale-105"
               style={{
                 background: `${faction.color}20`,
                 color: faction.color,
@@ -241,15 +244,8 @@ export function LoreSection({ faction }: LoreSectionProps) {
               }}
             >
               <span>Explorar Wiki</span>
-              <ExternalLink className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Coming soon badge */}
-          <div className="absolute top-4 right-4">
-            <span className="px-3 py-1 rounded-full text-xs font-body font-semibold bg-void-light text-bone/50">
-              Proximamente
-            </span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </motion.div>
       </div>
