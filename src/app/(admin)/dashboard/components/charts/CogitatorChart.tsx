@@ -427,3 +427,207 @@ export const ChartCard: React.FC<ChartCardProps> = ({
     </motion.div>
   )
 }
+
+// ══════════════════════════════════════════════════════════════
+// SPARKLINE CHART
+// ══════════════════════════════════════════════════════════════
+
+interface SparklineProps {
+  data: number[]
+  color?: string
+  height?: number
+  showArea?: boolean
+}
+
+export const Sparkline: React.FC<SparklineProps> = ({
+  data,
+  color = CHART_COLORS.primary,
+  height = 40,
+  showArea = true,
+}) => {
+  const chartData = data.map((value, index) => ({ index, value }))
+
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <AreaChart data={chartData} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
+        <defs>
+          <linearGradient id={`sparkline-gradient-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <Area
+          type="monotone"
+          dataKey="value"
+          stroke={color}
+          strokeWidth={1.5}
+          fill={showArea ? `url(#sparkline-gradient-${color.replace('#', '')})` : 'transparent'}
+          animationDuration={500}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
+  )
+}
+
+// ══════════════════════════════════════════════════════════════
+// RADIAL PROGRESS
+// ══════════════════════════════════════════════════════════════
+
+interface RadialProgressProps {
+  value: number
+  max?: number
+  color?: string
+  size?: number
+  strokeWidth?: number
+  label?: string
+}
+
+export const RadialProgress: React.FC<RadialProgressProps> = ({
+  value,
+  max = 100,
+  color = CHART_COLORS.primary,
+  size = 120,
+  strokeWidth = 8,
+  label,
+}) => {
+  const percentage = Math.min((value / max) * 100, 100)
+  const radius = (size - strokeWidth) / 2
+  const circumference = radius * 2 * Math.PI
+  const offset = circumference - (percentage / 100) * circumference
+
+  return (
+    <div className="relative inline-flex items-center justify-center">
+      <svg width={size} height={size} className="-rotate-90">
+        {/* Background circle */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={strokeWidth}
+          className="text-zinc-800"
+        />
+        {/* Progress circle */}
+        <motion.circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 1, ease: 'easeOut' }}
+          style={{
+            strokeDasharray: circumference,
+          }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-2xl font-bold text-white">{Math.round(percentage)}%</span>
+        {label && <span className="text-[10px] text-zinc-500 uppercase tracking-wider">{label}</span>}
+      </div>
+    </div>
+  )
+}
+
+// ══════════════════════════════════════════════════════════════
+// STACKED BAR CHART
+// ══════════════════════════════════════════════════════════════
+
+interface StackedBarChartProps {
+  data: Array<Record<string, string | number>>
+  bars: Array<{ dataKey: string; color: string; name?: string }>
+  xAxisKey?: string
+  height?: number
+}
+
+export const StackedBarChart: React.FC<StackedBarChartProps> = ({
+  data,
+  bars,
+  xAxisKey = 'name',
+  height = 250,
+}) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <ResponsiveContainer width="100%" height={height}>
+        <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} vertical={false} />
+          <XAxis
+            dataKey={xAxisKey}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: CHART_COLORS.muted, fontSize: 11 }}
+          />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: CHART_COLORS.muted, fontSize: 11 }}
+          />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, paddingTop: 10 }} />
+          {bars.map((bar) => (
+            <Bar
+              key={bar.dataKey}
+              dataKey={bar.dataKey}
+              name={bar.name || bar.dataKey}
+              stackId="stack"
+              fill={bar.color}
+              radius={[0, 0, 0, 0]}
+              animationDuration={800}
+            />
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
+    </motion.div>
+  )
+}
+
+// ══════════════════════════════════════════════════════════════
+// COMPARISON BAR
+// ══════════════════════════════════════════════════════════════
+
+interface ComparisonBarProps {
+  label: string
+  value: number
+  maxValue: number
+  color?: string
+  showPercentage?: boolean
+}
+
+export const ComparisonBar: React.FC<ComparisonBarProps> = ({
+  label,
+  value,
+  maxValue,
+  color = CHART_COLORS.primary,
+  showPercentage = true,
+}) => {
+  const percentage = (value / maxValue) * 100
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-zinc-400">{label}</span>
+        <span className="text-white font-medium">
+          {value.toLocaleString()}
+          {showPercentage && <span className="text-zinc-600 ml-1">({percentage.toFixed(1)}%)</span>}
+        </span>
+      </div>
+      <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+        <motion.div
+          className="h-full rounded-full"
+          style={{ backgroundColor: color }}
+          initial={{ width: 0 }}
+          animate={{ width: `${percentage}%` }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        />
+      </div>
+    </div>
+  )
+}
