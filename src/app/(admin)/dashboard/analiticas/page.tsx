@@ -19,22 +19,22 @@ import {
   Zap,
   Target,
   BarChart3,
-  PieChart as PieChartIcon,
   Map,
   Layers,
+  Cpu,
+  Radio,
+  Crosshair,
 } from 'lucide-react'
 import {
   SimpleAreaChart,
   MultiLineChart,
   SimpleBarChart,
-  DonutChart,
-  Sparkline,
-  RadialProgress,
   StackedBarChart,
   ComparisonBar,
+  Sparkline,
   CHART_COLORS,
-  CHART_PALETTE,
 } from '../components/charts'
+import { WebVitalsMonitor } from '../components/WebVitalsMonitor'
 import { createClient } from '@/lib/supabase/client'
 
 // ══════════════════════════════════════════════════════════════
@@ -144,22 +144,31 @@ function BentoCard({ children, className = '', title, subtitle, icon, action }: 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className={`relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900/90 to-zinc-900/50 border border-white/5 p-5 ${className}`}
+      className={`relative overflow-hidden rounded-xl bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 p-5 hover:border-imperial-gold/30 transition-colors ${className}`}
     >
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
+      {/* Corner brackets */}
+      <span className="absolute top-2 left-2 w-2 h-2 border-l border-t border-imperial-gold/30" />
+      <span className="absolute top-2 right-2 w-2 h-2 border-r border-t border-imperial-gold/30" />
+      <span className="absolute bottom-2 left-2 w-2 h-2 border-l border-b border-imperial-gold/30" />
+      <span className="absolute bottom-2 right-2 w-2 h-2 border-r border-b border-imperial-gold/30" />
 
       {(title || icon) && (
         <div className="relative flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             {icon && (
-              <div className="p-2 rounded-xl bg-white/5">
+              <motion.div
+                className="p-2 rounded-lg bg-imperial-gold/10 border border-imperial-gold/20"
+                animate={{
+                  boxShadow: ['0 0 5px rgba(201, 162, 39, 0.2)', '0 0 15px rgba(201, 162, 39, 0.3)', '0 0 5px rgba(201, 162, 39, 0.2)'],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
                 {icon}
-              </div>
+              </motion.div>
             )}
             <div>
-              {title && <h3 className="text-sm font-semibold text-white">{title}</h3>}
-              {subtitle && <p className="text-xs text-zinc-500">{subtitle}</p>}
+              {title && <h3 className="text-sm font-semibold text-bone">{title}</h3>}
+              {subtitle && <p className="text-xs text-bone/40 font-mono">{subtitle}</p>}
             </div>
           </div>
           {action}
@@ -192,23 +201,28 @@ function MetricCard({ label, value, change, changeLabel, icon, sparklineData, co
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <div className="text-zinc-400">{icon}</div>
-            <span className="text-xs text-zinc-500 uppercase tracking-wider">{label}</span>
+            <div className="text-imperial-gold/60">{icon}</div>
+            <span className="text-[10px] text-imperial-gold/50 uppercase tracking-widest font-mono">{label}</span>
           </div>
-          <p className="text-3xl font-bold text-white tracking-tight">
+          <motion.p
+            className="text-3xl font-display font-bold text-bone tracking-tight"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring', delay: 0.1 }}
+          >
             {typeof value === 'number' ? value.toLocaleString() : value}
-          </p>
+          </motion.p>
           {change !== undefined && (
             <div className="flex items-center gap-1.5 mt-2">
               {isPositive ? (
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
+                <TrendingUp className="w-3.5 h-3.5 text-necron-teal" />
               ) : (
-                <TrendingDown className="w-3.5 h-3.5 text-red-500" />
+                <TrendingDown className="w-3.5 h-3.5 text-blood-red" />
               )}
-              <span className={`text-xs font-medium ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+              <span className={`text-xs font-mono ${isPositive ? 'text-necron-teal' : 'text-blood-red'}`}>
                 {isPositive ? '+' : ''}{change}%
               </span>
-              {changeLabel && <span className="text-xs text-zinc-600">{changeLabel}</span>}
+              {changeLabel && <span className="text-xs text-bone/30 font-mono">{changeLabel}</span>}
             </div>
           )}
         </div>
@@ -274,57 +288,90 @@ export default function AnaliticasPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-fade-in">
-        <div className="h-8 w-48 bg-zinc-800/50 rounded-lg animate-pulse" />
+      <div className="space-y-6">
+        <div className="h-8 w-48 bg-imperial-gold/10 rounded-lg animate-pulse" />
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 bg-zinc-900/50 rounded-2xl animate-pulse" />
+            <motion.div
+              key={i}
+              className="h-32 bg-void-light/50 border border-imperial-gold/10 rounded-xl"
+              animate={{ opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
+            />
           ))}
         </div>
         <div className="grid gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2 h-80 bg-zinc-900/50 rounded-2xl animate-pulse" />
-          <div className="h-80 bg-zinc-900/50 rounded-2xl animate-pulse" />
+          <motion.div
+            className="lg:col-span-2 h-80 bg-void-light/50 border border-imperial-gold/10 rounded-xl"
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+          <motion.div
+            className="h-80 bg-void-light/50 border border-imperial-gold/10 rounded-xl"
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+          />
         </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header */}
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      {/* Header - Strategium Style */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Analiticas</h1>
-          <p className="text-zinc-500 mt-1">Metricas y rendimiento de la plataforma</p>
+          <div className="flex items-center gap-2 mb-2">
+            <Crosshair className="h-4 w-4 text-necron-teal/60" />
+            <span className="text-[10px] font-mono text-necron-teal/60 tracking-[0.3em]">
+              MODULO AUSPEX // TELEMETRIA
+            </span>
+          </div>
+          <h1 className="text-2xl font-display font-bold text-bone tracking-wide">Analiticas</h1>
+          <p className="text-bone/40 mt-1 font-mono text-sm">Metricas y rendimiento de la plataforma</p>
         </div>
 
         {/* Time Range Selector */}
-        <div className="flex items-center gap-1 p-1 bg-zinc-900 rounded-lg border border-white/5">
+        <div className="flex items-center gap-1 p-1 bg-void rounded-lg border border-imperial-gold/20">
           {(['24h', '7d', '30d', '90d'] as const).map((range) => (
-            <button
+            <motion.button
               key={range}
               onClick={() => setTimeRange(range)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              className={`px-3 py-1.5 text-xs font-mono rounded-md transition-all ${
                 timeRange === range
-                  ? 'bg-white/10 text-white'
-                  : 'text-zinc-500 hover:text-zinc-300'
+                  ? 'bg-imperial-gold/20 text-imperial-gold border border-imperial-gold/30'
+                  : 'text-bone/40 hover:text-bone/70'
               }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               {range}
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
 
       {/* Real-time indicator */}
-      <div className="flex items-center gap-2 text-sm">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-        </span>
-        <span className="text-zinc-400">
-          <span className="text-emerald-500 font-medium">127</span> usuarios activos ahora
-        </span>
+      <div className="flex items-center gap-3 p-3 rounded-lg bg-necron-teal/5 border border-necron-teal/20">
+        <motion.span
+          className="relative flex h-3 w-3"
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-necron-teal opacity-75" />
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-necron-teal" />
+        </motion.span>
+        <div className="flex items-center gap-2">
+          <Radio className="w-4 h-4 text-necron-teal/60" />
+          <span className="text-sm font-mono text-bone/60">
+            <span className="text-necron-teal font-bold">127</span> CONEXIONES ACTIVAS
+          </span>
+        </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
@@ -407,36 +454,42 @@ export default function AnaliticasPage() {
         <BentoCard
           title="Dispositivos"
           subtitle="Distribucion por tipo"
-          icon={<Smartphone className="w-4 h-4 text-purple-500" />}
+          icon={<Smartphone className="w-4 h-4 text-warp-purple" />}
         >
           <div className="space-y-4 mt-2">
-            {deviceData.map((item) => (
-              <div key={item.name} className="space-y-2">
+            {deviceData.map((item, index) => (
+              <motion.div
+                key={item.name}
+                className="space-y-2"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
-                    {item.name === 'Desktop' && <Monitor className="w-4 h-4 text-zinc-400" />}
-                    {item.name === 'Mobile' && <Smartphone className="w-4 h-4 text-zinc-400" />}
-                    {item.name === 'Tablet' && <Smartphone className="w-4 h-4 text-zinc-400 rotate-90" />}
-                    <span className="text-zinc-300">{item.name}</span>
+                    {item.name === 'Desktop' && <Monitor className="w-4 h-4 text-imperial-gold/60" />}
+                    {item.name === 'Mobile' && <Smartphone className="w-4 h-4 text-imperial-gold/60" />}
+                    {item.name === 'Tablet' && <Smartphone className="w-4 h-4 text-imperial-gold/60 rotate-90" />}
+                    <span className="text-bone/70 font-mono">{item.name}</span>
                   </div>
-                  <span className="text-white font-semibold">{item.value}%</span>
+                  <span className="text-bone font-mono font-bold">{item.value}%</span>
                 </div>
-                <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-2 bg-void rounded-full overflow-hidden border border-imperial-gold/10">
                   <motion.div
                     className="h-full rounded-full"
-                    style={{ backgroundColor: item.fill }}
+                    style={{ backgroundColor: item.fill, boxShadow: `0 0 10px ${item.fill}50` }}
                     initial={{ width: 0 }}
                     animate={{ width: `${item.value}%` }}
-                    transition={{ duration: 0.8, ease: 'easeOut' }}
+                    transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 + index * 0.1 }}
                   />
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-          <div className="mt-4 pt-4 border-t border-white/5">
-            <div className="flex items-center justify-between text-xs text-zinc-500">
-              <span>Total de sesiones</span>
-              <span className="text-white font-medium">24,856</span>
+          <div className="mt-4 pt-4 border-t border-imperial-gold/10">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-bone/40 font-mono">TOTAL SESIONES</span>
+              <span className="text-bone font-mono font-bold">24,856</span>
             </div>
           </div>
         </BentoCard>
@@ -459,30 +512,8 @@ export default function AnaliticasPage() {
           />
         </BentoCard>
 
-        {/* Performance Score */}
-        <BentoCard
-          title="Core Web Vitals"
-          subtitle="Rendimiento del sitio"
-          icon={<Zap className="w-4 h-4 text-amber-500" />}
-        >
-          <div className="flex flex-col items-center justify-center py-4">
-            <RadialProgress value={92} color={CHART_COLORS.success} size={140} label="Score" />
-          </div>
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            <div className="text-center">
-              <p className="text-lg font-bold text-emerald-500">1.2s</p>
-              <p className="text-[10px] text-zinc-500 uppercase">LCP</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-emerald-500">45ms</p>
-              <p className="text-[10px] text-zinc-500 uppercase">FID</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-amber-500">0.12</p>
-              <p className="text-[10px] text-zinc-500 uppercase">CLS</p>
-            </div>
-          </div>
-        </BentoCard>
+        {/* Growth Metrics continuation - empty space for grid alignment */}
+        <div className="hidden lg:block" />
 
         {/* Browsers */}
         <BentoCard
@@ -632,30 +663,39 @@ export default function AnaliticasPage() {
         </BentoCard>
       </div>
 
+      {/* Web Vitals Monitor - Real-time Performance */}
+      <WebVitalsMonitor className="mt-8" />
+
       {/* Vercel Analytics Note */}
-      <div className="rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 p-4">
+      <div className="rounded-xl bg-gradient-to-r from-necron-teal/10 to-imperial-gold/10 border border-necron-teal/20 p-4">
         <div className="flex items-start gap-3">
-          <div className="p-2 rounded-lg bg-blue-500/20">
-            <Zap className="w-4 h-4 text-blue-500" />
-          </div>
+          <motion.div
+            className="p-2 rounded-lg bg-necron-teal/20 border border-necron-teal/30"
+            animate={{
+              boxShadow: ['0 0 5px rgba(13, 155, 138, 0.3)', '0 0 15px rgba(13, 155, 138, 0.5)', '0 0 5px rgba(13, 155, 138, 0.3)'],
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            <Zap className="w-4 h-4 text-necron-teal" />
+          </motion.div>
           <div>
-            <h4 className="text-sm font-medium text-white">Powered by Vercel Analytics</h4>
-            <p className="text-xs text-zinc-400 mt-1">
-              Las metricas de trafico y rendimiento se obtienen de Vercel Analytics.
-              Para datos en tiempo real, visita el{' '}
+            <h4 className="text-sm font-medium text-bone">Sistema de Telemetria Vercel</h4>
+            <p className="text-xs text-bone/40 mt-1 font-mono">
+              Datos de trafico y rendimiento via Vercel Analytics + Speed Insights.
+              Accede al{' '}
               <a
-                href="https://vercel.com/dashboard"
+                href="https://vercel.com/ge0rgid3v-4766s-projects/proyecto-wh-40-k/speed-insights"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 inline-flex items-center gap-1"
+                className="text-necron-teal hover:text-necron-teal/80 inline-flex items-center gap-1"
               >
-                dashboard de Vercel
+                modulo de telemetria completo
                 <ArrowUpRight className="w-3 h-3" />
               </a>
             </p>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
