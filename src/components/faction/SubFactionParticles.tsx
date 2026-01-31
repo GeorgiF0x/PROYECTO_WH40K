@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
-import Image from 'next/image'
 import { getSubFactionIcons, type SubFactionIcon } from '@/lib/subfaction-icons'
 import { type FactionTheme } from '@/lib/faction-themes'
 
@@ -134,7 +133,6 @@ export function SubFactionParticles({
               top: `${particle.y}%`,
               width: particle.size,
               height: particle.size,
-              filter: `drop-shadow(0 0 8px ${theme.colors.glow}) drop-shadow(0 0 16px ${theme.colors.primary}40)`,
             }}
             initial={initial}
             animate={animate}
@@ -145,31 +143,22 @@ export function SubFactionParticles({
               ease: 'easeInOut',
             }}
           >
+            {/* SVG icon without background - use CSS mask for coloring */}
             <div
               className="relative w-full h-full"
               style={{
-                filter: 'brightness(1.2) saturate(0.8)',
+                WebkitMaskImage: `url(${particle.subFaction.icon})`,
+                WebkitMaskSize: 'contain',
+                WebkitMaskRepeat: 'no-repeat',
+                WebkitMaskPosition: 'center',
+                maskImage: `url(${particle.subFaction.icon})`,
+                maskSize: 'contain',
+                maskRepeat: 'no-repeat',
+                maskPosition: 'center',
+                backgroundColor: theme.colors.primary,
+                filter: `drop-shadow(0 0 8px ${theme.colors.glow}) drop-shadow(0 0 16px ${theme.colors.primary}40)`,
               }}
-            >
-              <Image
-                src={particle.subFaction.icon}
-                alt={particle.subFaction.name}
-                fill
-                className="object-contain"
-                style={{
-                  filter: `drop-shadow(0 0 4px ${theme.colors.glow})`,
-                  opacity: 0.9,
-                }}
-              />
-              {/* Color overlay tint */}
-              <div
-                className="absolute inset-0 mix-blend-overlay"
-                style={{
-                  backgroundColor: theme.colors.primary,
-                  opacity: 0.3,
-                }}
-              />
-            </div>
+            />
           </motion.div>
         )
       })}
