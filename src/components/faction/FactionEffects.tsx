@@ -53,7 +53,7 @@ function FactionIconParticles({ theme, factionId, count = 15 }: FactionIconParti
           }}
           animate={{
             y: [0, -80, 0],
-            opacity: [0.08, 0.2, 0.08],
+            opacity: [0.15, 0.4, 0.15],
             scale: [0.8, 1, 0.8],
           }}
           transition={{
@@ -70,11 +70,12 @@ function FactionIconParticles({ theme, factionId, count = 15 }: FactionIconParti
             className="w-full h-full object-contain"
             style={{
               filter: `
-                drop-shadow(0 0 4px ${theme.colors.glow})
-                brightness(1.2)
+                drop-shadow(0 0 6px ${theme.colors.glow})
+                drop-shadow(0 0 12px ${theme.colors.primary})
+                brightness(1.5)
                 sepia(1)
                 hue-rotate(${getHueRotation(theme.colors.primary)}deg)
-                saturate(1.5)
+                saturate(2)
               `,
             }}
           />

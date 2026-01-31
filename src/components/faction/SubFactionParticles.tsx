@@ -30,7 +30,7 @@ function getAnimationProps(type: AnimationType, index: number) {
       return {
         initial: { opacity: 0, y: 100, scale: 0.3, rotate: -20 },
         animate: {
-          opacity: [0, 0.4, 0.6, 0.4, 0],
+          opacity: [0, 0.7, 1, 0.7, 0],
           y: [100, -50, -150, -250, -350],
           scale: [0.3, 0.6, 0.8, 0.6, 0.3],
           rotate: [-20, 0, 10, 0, -10],
@@ -40,7 +40,7 @@ function getAnimationProps(type: AnimationType, index: number) {
       return {
         initial: { opacity: 0, x: -100, scale: 0.2 },
         animate: {
-          opacity: [0, 0.5, 0.7, 0.5, 0],
+          opacity: [0, 0.8, 1, 0.8, 0],
           x: [-100, 0, 100, 200, 300],
           y: [0, -30, -60, -90, -120],
           scale: [0.2, 0.5, 0.7, 0.5, 0.2],
@@ -51,7 +51,7 @@ function getAnimationProps(type: AnimationType, index: number) {
       return {
         initial: { opacity: 0, scale: 0.1 },
         animate: {
-          opacity: [0, 0.6, 0.8, 0.6, 0],
+          opacity: [0, 0.8, 1, 0.8, 0],
           scale: [0.1, 0.4, 0.7, 0.4, 0.1],
           rotate: [0, 90, 180, 270, 360],
           y: [50, 0, -50, -100, -150],
@@ -61,7 +61,7 @@ function getAnimationProps(type: AnimationType, index: number) {
       return {
         initial: { opacity: 0, scale: 0.4, y: 50 },
         animate: {
-          opacity: [0, 0.5, 0.8, 0.5, 0],
+          opacity: [0, 0.7, 1, 0.7, 0],
           scale: [0.4, 0.7, 0.9, 0.7, 0.4],
           y: [50, -20, -100, -180, -260],
         },
@@ -71,7 +71,7 @@ function getAnimationProps(type: AnimationType, index: number) {
       return {
         initial: { opacity: 0, y: 80 },
         animate: {
-          opacity: [0, 0.3, 0.5, 0.3, 0],
+          opacity: [0, 0.6, 0.8, 0.6, 0],
           y: [80, 40, 0, -40, -80],
           x: [0, 20 * (index % 2 === 0 ? 1 : -1), 0, -20 * (index % 2 === 0 ? 1 : -1), 0],
           scale: [0.5, 0.7, 0.8, 0.7, 0.5],
@@ -152,12 +152,12 @@ export function SubFactionParticles({
               className="w-full h-full object-contain"
               style={{
                 filter: `
-                  drop-shadow(0 0 6px ${theme.colors.glow})
-                  drop-shadow(0 0 12px ${theme.colors.primary}60)
-                  brightness(1.3)
+                  drop-shadow(0 0 8px ${theme.colors.glow})
+                  drop-shadow(0 0 16px ${theme.colors.primary})
+                  brightness(1.5)
                   sepia(1)
                   hue-rotate(${getHueRotation(theme.colors.primary)}deg)
-                  saturate(2)
+                  saturate(2.5)
                 `,
               }}
             />
