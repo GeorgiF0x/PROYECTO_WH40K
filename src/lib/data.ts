@@ -201,7 +201,7 @@ Khorne, Tzeentch, Nurgle y Slaanesh otorgan terribles dones a sus seguidores. Mu
 
     color: '#DC143C',
     accentColor: '#1a0a0a',
-    image: 'https://images.unsplash.com/photo-1633477189729-9290b3261d0a?w=800&q=80',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/Waves_of_the_Warp.webp',
     // Volcanic lava and fire - hellish inferno for the forces of Chaos
     heroImage: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=1920&q=80',
     galleryImages: [
@@ -325,7 +325,7 @@ Ahora despiertan. Sus falanges de guerreros inmortales, sus constructos arcanos 
 
     color: '#00FF87',
     accentColor: '#0a1a0a',
-    image: 'https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=800&q=80',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/necrons.jpg',
     // Green glowing tech/matrix code - ancient technology awakening
     heroImage: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1920&q=80',
     galleryImages: [
@@ -449,7 +449,7 @@ Los supervivientes se dividieron: los Asuryani viven en colosales naves espacial
 
     color: '#4169E1',
     accentColor: '#050510',
-    image: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=80',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/eldar.jpg',
     // Vibrant purple and blue cosmic nebula - mystical and ethereal like the Aeldari
     heroImage: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&q=80',
     galleryImages: [
@@ -574,7 +574,7 @@ Su unica motivacion es la guerra. Los Orks creen que el rojo hace las cosas mas 
 
     color: '#228B22',
     accentColor: '#080A05',
-    image: 'https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=800&q=80',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/orks.webp',
     // Industrial scrap metal and rust - brutal junkyard warfare of the WAAAGH!
     heroImage: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=1920&q=80',
     galleryImages: [
@@ -699,7 +699,7 @@ Su filosofia del Tau'va, el Bien Mayor, predica la cooperacion entre especies. M
 
     color: '#00CED1',
     accentColor: '#030810',
-    image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=800&q=80',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/tau.jpg',
     // Futuristic blue city skyline - advanced tech civilization of the T'au Empire
     heroImage: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1920&q=80',
     galleryImages: [
@@ -824,7 +824,7 @@ Cada mundo que cae ante los Tiranidos es despojado de toda biomasa, desde la atm
 
     color: '#8B008B',
     accentColor: '#080308',
-    image: 'https://images.unsplash.com/photo-1604076913837-52ab5629fba9?w=800&q=80',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/Tyranids.jpg',
     // Dark alien organic texture - the horrific biomass of the Great Devourer
     heroImage: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=1920&q=80',
     galleryImages: [
