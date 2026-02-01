@@ -1,13 +1,13 @@
 'use client'
 
 import { motion, useScroll, useTransform } from 'framer-motion'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useRef } from 'react'
 import { getFactionTheme } from '@/lib/faction-themes'
 import type { Faction } from '@/lib/data'
 import FactionSymbol from './FactionSymbol'
 import FactionEffects from './FactionEffects'
+import FactionHeroBackground from './FactionHeroBackground'
 
 interface FactionHeroProps {
   faction: Faction
@@ -28,32 +28,19 @@ export function FactionHero({ faction }: FactionHeroProps) {
 
   return (
     <section ref={ref} className="relative min-h-[90vh] flex items-end overflow-hidden">
-      {/* Parallax Background Image */}
+      {/* Dynamic Animated Background */}
       <motion.div className="absolute inset-0" style={{ y, scale }}>
-        <Image
-          src={faction.heroImage}
-          alt={faction.name}
-          fill
-          className="object-cover"
-          priority
-          quality={90}
-        />
+        <FactionHeroBackground factionId={faction.id} />
       </motion.div>
 
       {/* Faction-specific effects */}
       <FactionEffects factionId={faction.id} />
 
-      {/* Gradient overlays */}
+      {/* Bottom gradient for content readability */}
       <div
         className="absolute inset-0"
         style={{
-          background: `linear-gradient(to top, ${theme?.cssVars['--faction-bg'] || '#030308'} 0%, transparent 50%, ${theme?.cssVars['--faction-bg'] || '#030308'}90 100%)`,
-        }}
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `radial-gradient(ellipse at bottom, ${faction.color}25 0%, transparent 70%)`,
+          background: `linear-gradient(to top, ${theme?.cssVars['--faction-bg'] || '#030308'} 0%, transparent 40%)`,
         }}
       />
 
