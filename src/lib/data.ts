@@ -77,7 +77,7 @@ Los Space Marines, los guerreros geneticamente modificados conocidos como los Ad
 
     color: '#C9A227',
     accentColor: '#1a1a2e',
-    image: 'https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=800&q=80',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/impeirum.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9pbXBlaXJ1bS5qcGciLCJpYXQiOjE3Njk5MTExMTQsImV4cCI6MTgwMTQ0NzExNH0.RcZlHMgh91pwr-an9Ilx7-E_9FhcGCK8SVlOTKLqr8A',
     // Gothic cathedral with dramatic golden light - the religious grandeur of the Imperium
     heroImage: 'https://images.unsplash.com/photo-1490730141103-6cac27abb37f?w=1920&q=80',
     galleryImages: [
