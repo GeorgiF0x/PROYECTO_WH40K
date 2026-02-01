@@ -201,7 +201,7 @@ Khorne, Tzeentch, Nurgle y Slaanesh otorgan terribles dones a sus seguidores. Mu
 
     color: '#DC143C',
     accentColor: '#1a0a0a',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/Waves_of_the_Warp.webp',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/Waves_of_the_Warp.webp?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9XYXZlc19vZl90aGVfV2FycC53ZWJwIiwiaWF0IjoxNzY5OTEwMjY2LCJleHAiOjE4MDE0NDYyNjZ9.awMbPkWyDtYI_eLmNavwA_okXFmStYY9cU_SWhtLqAs',
     // Volcanic lava and fire - hellish inferno for the forces of Chaos
     heroImage: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=1920&q=80',
     galleryImages: [
@@ -325,7 +325,7 @@ Ahora despiertan. Sus falanges de guerreros inmortales, sus constructos arcanos 
 
     color: '#00FF87',
     accentColor: '#0a1a0a',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/necrons.jpg',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/necrons.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9uZWNyb25zLmpwZyIsImlhdCI6MTc2OTkxMDE5MywiZXhwIjoxODAxNDQ2MTkzfQ.M2jgujr5auVnzNRHjFZyRi6GgOzrkDR0mG-iprVHdpQ',
     // Green glowing tech/matrix code - ancient technology awakening
     heroImage: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1920&q=80',
     galleryImages: [
@@ -449,7 +449,7 @@ Los supervivientes se dividieron: los Asuryani viven en colosales naves espacial
 
     color: '#4169E1',
     accentColor: '#050510',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/eldar.jpg',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/eldar.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9lbGRhci5qcGciLCJpYXQiOjE3Njk5MTAxMzUsImV4cCI6MzY4MDY0MDYxMzV9.3fjxMjhJeWS5VeJT_TrpxbSqIgQ6TYx2j-n1pzmhMNg',
     // Vibrant purple and blue cosmic nebula - mystical and ethereal like the Aeldari
     heroImage: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&q=80',
     galleryImages: [
@@ -574,7 +574,7 @@ Su unica motivacion es la guerra. Los Orks creen que el rojo hace las cosas mas 
 
     color: '#228B22',
     accentColor: '#080A05',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/orks.webp',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/orks.webp?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9vcmtzLndlYnAiLCJpYXQiOjE3Njk5MTAyMTgsImV4cCI6MTgwMTQ0NjIxOH0.nR26uJJ4wLdKPxVlez210SRwg5ax5T323YA_X5XBvYo',
     // Industrial scrap metal and rust - brutal junkyard warfare of the WAAAGH!
     heroImage: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=1920&q=80',
     galleryImages: [
@@ -699,7 +699,7 @@ Su filosofia del Tau'va, el Bien Mayor, predica la cooperacion entre especies. M
 
     color: '#00CED1',
     accentColor: '#030810',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/tau.jpg',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/tau.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy90YXUuanBnIiwiaWF0IjoxNzY5OTEwMjM2LCJleHAiOjE4MDE0NDYyMzZ9.PuDUPu3uSXg9EpJI5W5qm6_KX8FZBFnlj8zs9RUtn_0',
     // Futuristic blue city skyline - advanced tech civilization of the T'au Empire
     heroImage: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1920&q=80',
     galleryImages: [
@@ -824,7 +824,7 @@ Cada mundo que cae ante los Tiranidos es despojado de toda biomasa, desde la atm
 
     color: '#8B008B',
     accentColor: '#080308',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/public/factions/Tyranids.jpg',
+    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/Tyranids.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9UeXJhbmlkcy5qcGciLCJpYXQiOjE3Njk5MTAyNTUsImV4cCI6MTgwMTQ0NjI1NX0.NOPQZoItOtI7-71SlNhu7YJeS_8jS9TT25gibrPsWII',
     // Dark alien organic texture - the horrific biomass of the Great Devourer
     heroImage: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=1920&q=80',
     galleryImages: [
