@@ -78,7 +78,8 @@ Los Space Marines, los guerreros geneticamente modificados conocidos como los Ad
     color: '#C9A227',
     accentColor: '#1a1a2e',
     image: 'https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=800&q=80',
-    heroImage: 'https://images.unsplash.com/photo-1614624532983-4ce03382d63d?w=1920&q=80',
+    // Gothic cathedral with dramatic golden light - the religious grandeur of the Imperium
+    heroImage: 'https://images.unsplash.com/photo-1490730141103-6cac27abb37f?w=1920&q=80',
     galleryImages: [
       'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
       'https://images.unsplash.com/photo-1569003339405-ea396a5a8a90?w=800&q=80',
@@ -201,7 +202,8 @@ Khorne, Tzeentch, Nurgle y Slaanesh otorgan terribles dones a sus seguidores. Mu
     color: '#DC143C',
     accentColor: '#1a0a0a',
     image: 'https://images.unsplash.com/photo-1633477189729-9290b3261d0a?w=800&q=80',
-    heroImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1920&q=80',
+    // Volcanic lava and fire - hellish inferno for the forces of Chaos
+    heroImage: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=1920&q=80',
     galleryImages: [
       'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&q=80',
       'https://images.unsplash.com/photo-1563207153-f403bf289096?w=800&q=80',
@@ -324,7 +326,8 @@ Ahora despiertan. Sus falanges de guerreros inmortales, sus constructos arcanos 
     color: '#00FF87',
     accentColor: '#0a1a0a',
     image: 'https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=800&q=80',
-    heroImage: 'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=1920&q=80',
+    // Green glowing tech/matrix code - ancient technology awakening
+    heroImage: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1920&q=80',
     galleryImages: [
       'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80',
       'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=800&q=80',
@@ -447,7 +450,8 @@ Los supervivientes se dividieron: los Asuryani viven en colosales naves espacial
     color: '#4169E1',
     accentColor: '#050510',
     image: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=80',
-    heroImage: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1920&q=80',
+    // Vibrant purple and blue cosmic nebula - mystical and ethereal like the Aeldari
+    heroImage: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&q=80',
     galleryImages: [
       'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
       'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=800&q=80',
@@ -571,7 +575,8 @@ Su unica motivacion es la guerra. Los Orks creen que el rojo hace las cosas mas 
     color: '#228B22',
     accentColor: '#080A05',
     image: 'https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=800&q=80',
-    heroImage: 'https://images.unsplash.com/photo-1504890673930-48a2846f0a64?w=1920&q=80',
+    // Industrial scrap metal and rust - brutal junkyard warfare of the WAAAGH!
+    heroImage: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=1920&q=80',
     galleryImages: [
       'https://images.unsplash.com/photo-1614854262318-831574f15f1f?w=800&q=80',
       'https://images.unsplash.com/photo-1590479773265-7464e5d48118?w=800&q=80',
@@ -695,7 +700,8 @@ Su filosofia del Tau'va, el Bien Mayor, predica la cooperacion entre especies. M
     color: '#00CED1',
     accentColor: '#030810',
     image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=800&q=80',
-    heroImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80',
+    // Futuristic blue city skyline - advanced tech civilization of the T'au Empire
+    heroImage: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1920&q=80',
     galleryImages: [
       'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
       'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80',
@@ -819,7 +825,8 @@ Cada mundo que cae ante los Tiranidos es despojado de toda biomasa, desde la atm
     color: '#8B008B',
     accentColor: '#080308',
     image: 'https://images.unsplash.com/photo-1604076913837-52ab5629fba9?w=800&q=80',
-    heroImage: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1920&q=80',
+    // Dark alien organic texture - the horrific biomass of the Great Devourer
+    heroImage: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=1920&q=80',
     galleryImages: [
       'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=800&q=80',
       'https://images.unsplash.com/photo-1571757767119-68b8dbed8c97?w=800&q=80',
