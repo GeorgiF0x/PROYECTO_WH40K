@@ -2,6 +2,30 @@
 // WIKI TYPES
 // =============================================================================
 
+export type WikiRole = 'scribe' | 'lexicanum'
+
+export interface ScribeApplication {
+  id: string
+  user_id: string
+  motivation: string
+  experience: string | null
+  sample_topic: string | null
+  status: 'pending' | 'approved' | 'rejected'
+  reviewer_id: string | null
+  reviewer_notes: string | null
+  reviewed_at: string | null
+  created_at: string
+  // Joined relations
+  user?: { username: string; display_name: string | null; avatar_url: string | null }
+  reviewer?: { username: string; display_name: string | null } | null
+}
+
+export interface ScribeApplicationInput {
+  motivation: string
+  experience?: string
+  sample_topic?: string
+}
+
 export interface WikiCategory {
   id: string
   name: string
