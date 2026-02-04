@@ -16,6 +16,8 @@ import {
   ChevronLeft,
   Eye,
   Calendar,
+  Feather,
+  ArrowRight,
 } from 'lucide-react'
 import { Navigation, Footer } from '@/components'
 import { getFactionById } from '@/lib/data'
@@ -48,10 +50,28 @@ export default function FactionWikiPage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(
     searchParams.get('categoria') || null
   )
+  const [userStatus, setUserStatus] = useState<{
+    isLoggedIn: boolean
+    canContribute: boolean
+    hasPendingApplication: boolean
+  }>({ isLoggedIn: false, canContribute: false, hasPendingApplication: false })
 
   useEffect(() => {
     loadData()
+    checkUserStatus()
   }, [factionId, activeCategory])
+
+  async function checkUserStatus() {
+    try {
+      const res = await fetch('/api/wiki/user-status')
+      if (res.ok) {
+        const data = await res.json()
+        setUserStatus(data)
+      }
+    } catch (error) {
+      // User not logged in or error
+    }
+  }
 
   async function loadData() {
     setLoading(true)
@@ -150,6 +170,55 @@ export default function FactionWikiPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Scribe CTA Banner */}
+      {userStatus.isLoggedIn && !userStatus.canContribute && (
+        <section className="relative py-4 border-b" style={{ borderColor: `${faction.color}15` }}>
+          <div className="max-w-7xl mx-auto px-6">
+            <Link href="/wiki/solicitar">
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="group flex items-center justify-between p-4 rounded-xl transition-all hover:scale-[1.01]"
+                style={{
+                  background: `linear-gradient(135deg, ${faction.color}15 0%, ${faction.color}05 100%)`,
+                  border: `1px solid ${faction.color}30`,
+                }}
+              >
+                <div className="flex items-center gap-4">
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center"
+                    style={{ background: `${faction.color}20` }}
+                  >
+                    <Feather className="w-6 h-6" style={{ color: faction.color }} />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-white text-sm sm:text-base">
+                      {userStatus.hasPendingApplication
+                        ? 'Tu solicitud esta en revision'
+                        : 'Unete a la Orden de Escribas'}
+                    </h3>
+                    <p className="font-body text-bone/60 text-xs sm:text-sm">
+                      {userStatus.hasPendingApplication
+                        ? 'El Archivista Mayor revisara tu peticion pronto'
+                        : 'Contribuye al Archivo Lexicanum documentando el lore de las facciones'}
+                    </p>
+                  </div>
+                </div>
+                {!userStatus.hasPendingApplication && (
+                  <div
+                    className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg font-display text-sm font-semibold transition-all group-hover:gap-3"
+                    style={{ background: faction.color, color: '#030308' }}
+                  >
+                    Solicitar
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                )}
+              </motion.div>
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Search & Categories */}
       <section className="relative py-8 border-y" style={{ borderColor: `${faction.color}20` }}>
