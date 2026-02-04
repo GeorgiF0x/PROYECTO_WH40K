@@ -20,6 +20,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { Navigation, Footer } from '@/components'
+import { createClient } from '@/lib/supabase/client'
 import { getFactionById } from '@/lib/data'
 import { getFactionTheme } from '@/lib/faction-themes'
 import { FactionEffects, FactionSymbol } from '@/components/faction'
@@ -61,37 +62,56 @@ export default function FactionWikiPage() {
     checkUserStatus()
   }, [factionId, activeCategory])
 
-  async function checkUserStatus() {
-    try {
-      const res = await fetch('/api/wiki/user-status')
-      if (res.ok) {
-        const data = await res.json()
-        setUserStatus(data)
-      }
-    } catch (error) {
-      // User not logged in or error
-    }
-  }
-
+  // Load wiki data directly from Supabase (no API route needed for public data)
   async function loadData() {
     setLoading(true)
     try {
+      const supabase = createClient()
+
       // Load categories
-      const catRes = await fetch('/api/wiki/categories')
-      if (catRes.ok) {
-        const catData = await catRes.json()
-        setCategories(catData)
+      const { data: catData } = await supabase
+        .from('wiki_categories')
+        .select('*')
+        .order('sort_order', { ascending: true })
+
+      if (catData) {
+        setCategories(catData as WikiCategory[])
       }
 
-      // Load pages
-      let url = `/api/wiki?faction_id=${factionId}`
+      // Load published pages for this faction
+      let query = supabase
+        .from('faction_wiki_pages')
+        .select(`
+          id,
+          faction_id,
+          category_id,
+          title,
+          slug,
+          excerpt,
+          hero_image,
+          status,
+          views_count,
+          published_at,
+          created_at,
+          updated_at,
+          category:wiki_categories(id, name, slug, icon)
+        `)
+        .eq('faction_id', factionId)
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+
       if (activeCategory) {
-        url += `&category=${activeCategory}`
+        // Get category ID from slug
+        const cat = categories.find(c => c.slug === activeCategory)
+        if (cat) {
+          query = query.eq('category_id', cat.id)
+        }
       }
-      const pagesRes = await fetch(url)
-      if (pagesRes.ok) {
-        const pagesData = await pagesRes.json()
-        setPages(pagesData.pages || [])
+
+      const { data: pagesData } = await query
+
+      if (pagesData) {
+        setPages(pagesData as WikiPage[])
       }
     } catch (error) {
       console.error('Error loading wiki data:', error)
@@ -99,6 +119,50 @@ export default function FactionWikiPage() {
       setLoading(false)
     }
   }
+
+  async function checkUserStatus() {
+    try {
+      const supabase = createClient()
+
+      // Check if user is logged in
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setUserStatus({ isLoggedIn: false, canContribute: false, hasPendingApplication: false })
+        return
+      }
+
+      // Get user's wiki permissions directly from Supabase
+      // Note: wiki_role field added by migration 20260205_wiki_scribe_system.sql
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('wiki_role, is_admin, role')
+        .eq('id', user.id)
+        .single() as { data: { wiki_role: string | null; is_admin: boolean; role: string } | null; error: unknown }
+
+      const isAdmin = profile?.is_admin || profile?.role === 'admin' || profile?.role === 'moderator'
+      const isScribe = !!profile?.wiki_role
+      const canContribute = isAdmin || isScribe
+
+      // Check for pending application if user can't contribute
+      let hasPendingApplication = false
+      if (!canContribute) {
+        const { data: application } = await supabase
+          .from('scribe_applications' as 'profiles')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('status', 'pending')
+          .maybeSingle()
+
+        hasPendingApplication = !!application
+      }
+
+      setUserStatus({ isLoggedIn: true, canContribute, hasPendingApplication })
+    } catch (error) {
+      // User not logged in or error
+      setUserStatus({ isLoggedIn: false, canContribute: false, hasPendingApplication: false })
+    }
+  }
+
 
   const filteredPages = search
     ? pages.filter(p => p.title.toLowerCase().includes(search.toLowerCase()))
