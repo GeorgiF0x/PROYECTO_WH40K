@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-// Type for profile with wiki fields (added by migration 20260205_wiki_scribe_system.sql)
-type ProfileWithWiki = {
-  wiki_role: string | null
-  is_admin: boolean
-  role: string
-}
-
 // POST - Create new scribe application
 export async function POST(request: NextRequest) {
   try {
@@ -24,7 +17,7 @@ export async function POST(request: NextRequest) {
       .from('profiles')
       .select('wiki_role, is_admin, role')
       .eq('id', user.id)
-      .single() as { data: ProfileWithWiki | null; error: unknown }
+      .single()
 
     if (profile?.wiki_role || profile?.is_admin || profile?.role === 'admin' || profile?.role === 'moderator') {
       return NextResponse.json(
@@ -34,13 +27,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for pending application
-    // Note: scribe_applications table added by migration 20260205_wiki_scribe_system.sql
     const { data: existingApp } = await supabase
-      .from('scribe_applications' as 'profiles')
+      .from('scribe_applications')
       .select('id')
       .eq('user_id', user.id)
       .eq('status', 'pending')
-      .single() as { data: { id: string } | null; error: unknown }
+      .single()
 
     if (existingApp) {
       return NextResponse.json(
@@ -62,14 +54,14 @@ export async function POST(request: NextRequest) {
 
     // Create application
     const { error: insertError } = await supabase
-      .from('scribe_applications' as 'profiles')
+      .from('scribe_applications')
       .insert({
         user_id: user.id,
         motivation: motivation.trim(),
         experience: experience?.trim() || null,
         sample_topic: sample_topic?.trim() || null,
-        status: 'pending'
-      } as never)
+        status: 'pending',
+      })
 
     if (insertError) {
       console.error('Error creating scribe application:', insertError)
@@ -105,7 +97,7 @@ export async function GET(request: NextRequest) {
       .from('profiles')
       .select('is_admin, role, wiki_role')
       .eq('id', user.id)
-      .single() as { data: ProfileWithWiki | null; error: unknown }
+      .single()
 
     const isAdmin = profile?.is_admin || profile?.role === 'admin' || profile?.role === 'moderator'
     const isLexicanum = profile?.wiki_role === 'lexicanum'
@@ -123,14 +115,14 @@ export async function GET(request: NextRequest) {
 
     // Fetch applications with user info
     const { data: applications, error: fetchError } = await supabase
-      .from('scribe_applications' as 'profiles')
+      .from('scribe_applications')
       .select(`
         *,
-        user:profiles!user_id(username, display_name, avatar_url),
-        reviewer:profiles!reviewer_id(username, display_name)
+        user:profiles!scribe_applications_user_id_fkey(username, display_name, avatar_url),
+        reviewer:profiles!scribe_applications_reviewer_id_fkey(username, display_name)
       `)
       .eq('status', status)
-      .order('created_at', { ascending: false }) as { data: unknown[] | null; error: unknown }
+      .order('created_at', { ascending: false })
 
     if (fetchError) {
       console.error('Error fetching scribe applications:', fetchError)

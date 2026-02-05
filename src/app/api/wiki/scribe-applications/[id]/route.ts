@@ -1,26 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-// Type for profile with wiki fields (added by migration 20260205_wiki_scribe_system.sql)
-type ProfileWithWiki = {
-  wiki_role: string | null
-  is_admin: boolean
-  role: string
-}
-
-type ScribeApplicationRecord = {
-  id: string
-  user_id: string
-  motivation: string
-  experience: string | null
-  sample_topic: string | null
-  status: string
-  reviewer_id: string | null
-  reviewer_notes: string | null
-  reviewed_at: string | null
-  created_at: string
-}
-
 // PATCH - Approve or reject application
 export async function PATCH(
   request: NextRequest,
@@ -41,7 +21,7 @@ export async function PATCH(
       .from('profiles')
       .select('is_admin, role, wiki_role')
       .eq('id', user.id)
-      .single() as { data: ProfileWithWiki | null; error: unknown }
+      .single()
 
     const isAdmin = profile?.is_admin || profile?.role === 'admin' || profile?.role === 'moderator'
     const isLexicanum = profile?.wiki_role === 'lexicanum'
@@ -66,10 +46,10 @@ export async function PATCH(
 
     // Get application
     const { data: application, error: fetchError } = await supabase
-      .from('scribe_applications' as 'profiles')
+      .from('scribe_applications')
       .select('*')
       .eq('id', id)
-      .single() as { data: ScribeApplicationRecord | null; error: unknown }
+      .single()
 
     if (fetchError || !application) {
       return NextResponse.json(
@@ -87,13 +67,13 @@ export async function PATCH(
 
     // Update application
     const { error: updateAppError } = await supabase
-      .from('scribe_applications' as 'profiles')
+      .from('scribe_applications')
       .update({
         status: action === 'approve' ? 'approved' : 'rejected',
         reviewer_id: user.id,
         reviewer_notes: notes || null,
-        reviewed_at: new Date().toISOString()
-      } as never)
+        reviewed_at: new Date().toISOString(),
+      })
       .eq('id', id)
 
     if (updateAppError) {
@@ -108,15 +88,15 @@ export async function PATCH(
     if (action === 'approve') {
       const { error: updateProfileError } = await supabase
         .from('profiles')
-        .update({ wiki_role: 'scribe' } as never)
+        .update({ wiki_role: 'scribe' })
         .eq('id', application.user_id)
 
       if (updateProfileError) {
         console.error('Error granting scribe role:', updateProfileError)
         // Rollback application status
         await supabase
-          .from('scribe_applications' as 'profiles')
-          .update({ status: 'pending', reviewer_id: null, reviewer_notes: null, reviewed_at: null } as never)
+          .from('scribe_applications')
+          .update({ status: 'pending', reviewer_id: null, reviewer_notes: null, reviewed_at: null })
           .eq('id', id)
 
         return NextResponse.json(
@@ -129,7 +109,7 @@ export async function PATCH(
     return NextResponse.json({
       message: action === 'approve'
         ? 'Solicitud aprobada. El usuario ahora es Lexicanum Scribe.'
-        : 'Solicitud rechazada.'
+        : 'Solicitud rechazada.',
     })
   } catch (error) {
     console.error('Error in scribe application PATCH:', error)
@@ -157,14 +137,14 @@ export async function GET(
 
     // Fetch application with relations
     const { data: application, error: fetchError } = await supabase
-      .from('scribe_applications' as 'profiles')
+      .from('scribe_applications')
       .select(`
         *,
-        user:profiles!user_id(username, display_name, avatar_url),
-        reviewer:profiles!reviewer_id(username, display_name)
+        user:profiles!scribe_applications_user_id_fkey(username, display_name, avatar_url),
+        reviewer:profiles!scribe_applications_reviewer_id_fkey(username, display_name)
       `)
       .eq('id', id)
-      .single() as { data: (ScribeApplicationRecord & { user_id: string }) | null; error: unknown }
+      .single()
 
     if (fetchError || !application) {
       return NextResponse.json(
@@ -178,7 +158,7 @@ export async function GET(
       .from('profiles')
       .select('is_admin, role, wiki_role')
       .eq('id', user.id)
-      .single() as { data: ProfileWithWiki | null; error: unknown }
+      .single()
 
     const isAdmin = profile?.is_admin || profile?.role === 'admin' || profile?.role === 'moderator'
     const isLexicanum = profile?.wiki_role === 'lexicanum'

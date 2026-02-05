@@ -1549,6 +1549,60 @@ export type Database = {
           },
         ]
       }
+      scribe_applications: {
+        Row: {
+          id: string
+          user_id: string
+          motivation: string
+          experience: string | null
+          sample_topic: string | null
+          status: string
+          reviewer_id: string | null
+          reviewer_notes: string | null
+          reviewed_at: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          motivation: string
+          experience?: string | null
+          sample_topic?: string | null
+          status?: string
+          reviewer_id?: string | null
+          reviewer_notes?: string | null
+          reviewed_at?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          motivation?: string
+          experience?: string | null
+          sample_topic?: string | null
+          status?: string
+          reviewer_id?: string | null
+          reviewer_notes?: string | null
+          reviewed_at?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scribe_applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scribe_applications_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wiki_categories: {
         Row: {
           created_at: string | null
