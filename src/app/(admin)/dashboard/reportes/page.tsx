@@ -467,14 +467,16 @@ export default function ReportesPage() {
 
             {/* Reason */}
             <div>
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
+              <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5">
                 Motivo del reporte
               </p>
-              <p className="text-sm text-white font-medium">
+              <p className="text-sm text-white font-medium mb-2">
                 {reasonLabels[viewReport.reason] || viewReport.reason}
               </p>
               {viewReport.description && (
-                <p className="text-sm text-zinc-400 mt-1">{viewReport.description}</p>
+                <div className="max-h-32 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
+                  <p className="text-sm text-[#E8E8F0]/60 whitespace-pre-wrap break-words">{viewReport.description}</p>
+                </div>
               )}
             </div>
 

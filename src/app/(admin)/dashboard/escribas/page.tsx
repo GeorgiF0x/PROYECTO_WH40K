@@ -338,50 +338,58 @@ export default function EscribasPage() {
 
             {/* Motivation */}
             <div>
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+              <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                 <MessageSquare className="w-3 h-3" />
                 Motivacion
               </p>
-              <p className="text-sm text-zinc-300 whitespace-pre-wrap bg-zinc-800/50 rounded-lg p-3">
-                {viewApp.motivation}
-              </p>
+              <div className="max-h-40 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
+                <p className="text-sm text-[#E8E8F0]/70 whitespace-pre-wrap break-words">
+                  {viewApp.motivation}
+                </p>
+              </div>
             </div>
 
             {/* Experience */}
             {viewApp.experience && (
               <div>
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                   <BookOpen className="w-3 h-3" />
                   Experiencia con el lore de 40K
                 </p>
-                <p className="text-sm text-zinc-400 whitespace-pre-wrap">
-                  {viewApp.experience}
-                </p>
+                <div className="max-h-32 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
+                  <p className="text-sm text-[#E8E8F0]/60 whitespace-pre-wrap break-words">
+                    {viewApp.experience}
+                  </p>
+                </div>
               </div>
             )}
 
             {/* Sample topic */}
             {viewApp.sample_topic && (
               <div>
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                   <Feather className="w-3 h-3" />
                   Tema de interes
                 </p>
-                <p className="text-sm text-zinc-400">
-                  {viewApp.sample_topic}
-                </p>
+                <div className="rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
+                  <p className="text-sm text-[#E8E8F0]/60 break-words">
+                    {viewApp.sample_topic}
+                  </p>
+                </div>
               </div>
             )}
 
             {/* Reviewer notes (for processed) */}
             {viewApp.status !== 'pending' && viewApp.reviewer_notes && (
-              <div className="pt-3 border-t border-zinc-800">
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
+              <div className="pt-3 border-t border-[#C9A227]/10">
+                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5">
                   Notas del revisor
                 </p>
-                <p className="text-sm text-zinc-400">
-                  {viewApp.reviewer_notes}
-                </p>
+                <div className="max-h-28 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
+                  <p className="text-sm text-[#E8E8F0]/60 whitespace-pre-wrap break-words">
+                    {viewApp.reviewer_notes}
+                  </p>
+                </div>
                 {viewApp.reviewer && (
                   <p className="text-xs text-zinc-600 mt-1">
                     Revisado por @{viewApp.reviewer.username}

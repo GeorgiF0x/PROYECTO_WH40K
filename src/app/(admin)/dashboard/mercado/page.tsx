@@ -549,12 +549,14 @@ export default function MercadoPage() {
             {/* Description */}
             {viewListing.description && (
               <div>
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">
+                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5">
                   Descripcion
                 </p>
-                <p className="text-sm text-zinc-300 whitespace-pre-wrap">
-                  {viewListing.description}
-                </p>
+                <div className="max-h-36 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
+                  <p className="text-sm text-[#E8E8F0]/70 whitespace-pre-wrap break-words">
+                    {viewListing.description}
+                  </p>
+                </div>
               </div>
             )}
 

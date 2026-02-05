@@ -406,21 +406,25 @@ export default function CreadoresPage() {
             {/* Bio */}
             {viewCreator.creator_bio && (
               <div>
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
-                  Descripción como creador
+                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5">
+                  Descripcion como creador
                 </p>
-                <p className="text-sm text-zinc-300 whitespace-pre-wrap">
-                  {viewCreator.creator_bio}
-                </p>
+                <div className="max-h-36 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
+                  <p className="text-sm text-[#E8E8F0]/70 whitespace-pre-wrap break-words">
+                    {viewCreator.creator_bio}
+                  </p>
+                </div>
               </div>
             )}
 
             {viewCreator.bio && (
               <div>
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
+                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5">
                   Bio del perfil
                 </p>
-                <p className="text-sm text-zinc-400">{viewCreator.bio}</p>
+                <div className="max-h-28 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
+                  <p className="text-sm text-[#E8E8F0]/60 break-words">{viewCreator.bio}</p>
+                </div>
               </div>
             )}
 
