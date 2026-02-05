@@ -8,6 +8,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Color from '@tiptap/extension-color'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { useCallback, useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Bold,
   Italic,
@@ -26,8 +27,13 @@ import {
   Redo,
   Palette,
   X,
+  Upload,
+  Globe,
+  Loader2,
+  Crosshair,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { compressImage } from '@/lib/utils/compressImage'
 import type { TiptapContent } from '@/lib/supabase/wiki.types'
 
 interface TiptapEditorProps {
@@ -35,6 +41,7 @@ interface TiptapEditorProps {
   onChange?: (content: TiptapContent) => void
   placeholder?: string
   factionColor?: string
+  factionId?: string
   editable?: boolean
   className?: string
 }
@@ -50,6 +57,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
   onChange,
   placeholder = 'Comienza a escribir...',
   factionColor = '#C9A227',
+  factionId,
   editable = true,
   className,
 }, ref) => {
@@ -110,28 +118,29 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     }
   }, [editor, content])
 
-  const addImage = useCallback(() => {
-    const url = window.prompt('URL de la imagen:')
+  // ── Modal states ──
+  const [imageModal, setImageModal] = useState(false)
+  const [linkModal, setLinkModal] = useState(false)
+
+  const openImageModal = useCallback(() => setImageModal(true), [])
+  const openLinkModal = useCallback(() => setLinkModal(true), [])
+
+  function handleInsertImage(url: string) {
     if (url && editor) {
       editor.chain().focus().setImage({ src: url }).run()
     }
-  }, [editor])
+    setImageModal(false)
+  }
 
-  const setLink = useCallback(() => {
+  function handleInsertLink(url: string) {
     if (!editor) return
-
-    const previousUrl = editor.getAttributes('link').href
-    const url = window.prompt('URL del enlace:', previousUrl)
-
-    if (url === null) return
-
-    if (url === '') {
+    if (!url) {
       editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
+    } else {
+      editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
     }
-
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
-  }, [editor])
+    setLinkModal(false)
+  }
 
   const [showColorPicker, setShowColorPicker] = useState(false)
   const colorPickerRef = useRef<HTMLDivElement>(null)
@@ -379,7 +388,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
           {/* Media & Links */}
           <ToolbarGroup>
             <ToolbarButton
-              onClick={setLink}
+              onClick={openLinkModal}
               active={editor.isActive('link')}
               title="Enlace"
               factionColor={factionColor}
@@ -387,7 +396,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
               <LinkIcon className="w-4 h-4" />
             </ToolbarButton>
             <ToolbarButton
-              onClick={addImage}
+              onClick={openImageModal}
               title="Imagen"
               factionColor={factionColor}
             >
@@ -401,6 +410,25 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
       <EditorContent
         editor={editor}
         className="wiki-editor-content"
+      />
+
+      {/* ── Image Modal ── */}
+      <EditorMediaModal
+        isOpen={imageModal}
+        onClose={() => setImageModal(false)}
+        onConfirm={handleInsertImage}
+        factionColor={factionColor}
+        factionId={factionId}
+        type="image"
+      />
+
+      {/* ── Link Modal ── */}
+      <EditorLinkModal
+        isOpen={linkModal}
+        onClose={() => setLinkModal(false)}
+        onConfirm={handleInsertLink}
+        factionColor={factionColor}
+        initialUrl={editor.getAttributes('link').href || ''}
       />
 
       {/* Custom styles */}
@@ -519,7 +547,355 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
 
 TiptapEditor.displayName = 'TiptapEditor'
 
-// Toolbar Components
+/* ═══════════════════════════════════════════════════════════════════════════
+   EDITOR MEDIA MODAL — Image insert (upload + URL)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function EditorMediaModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  factionColor,
+  factionId,
+  type,
+}: {
+  isOpen: boolean
+  onClose: () => void
+  onConfirm: (url: string) => void
+  factionColor: string
+  factionId?: string
+  type: 'image'
+}) {
+  const [tab, setTab] = useState<'upload' | 'url'>('upload')
+  const [urlInput, setUrlInput] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [preview, setPreview] = useState<string | null>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  // Reset on open
+  useEffect(() => {
+    if (isOpen) {
+      setUrlInput('')
+      setError(null)
+      setPreview(null)
+      setUploading(false)
+    }
+  }, [isOpen])
+
+  async function handleFileUpload(file: File) {
+    setError(null)
+    setUploading(true)
+    try {
+      const compressed = await compressImage(file)
+      const formData = new FormData()
+      formData.append('file', compressed)
+      if (factionId) formData.append('faction_id', factionId)
+
+      const res = await fetch('/api/wiki/upload', { method: 'POST', body: formData })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Error al subir la imagen')
+      }
+
+      const data = await res.json()
+      setPreview(data.url)
+      onConfirm(data.url)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al subir')
+    } finally {
+      setUploading(false)
+      if (fileRef.current) fileRef.current.value = ''
+    }
+  }
+
+  function handleUrlSubmit() {
+    const url = urlInput.trim()
+    if (!url) return
+    if (!url.startsWith('http')) {
+      setError('La URL debe empezar con http:// o https://')
+      return
+    }
+    onConfirm(url)
+  }
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-void/80 backdrop-blur-sm"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.2 }}
+            className="relative w-full max-w-md bg-void-light border border-bone/15 rounded-xl shadow-2xl overflow-hidden"
+          >
+            {/* Glow line */}
+            <div
+              className="h-[2px]"
+              style={{ background: `linear-gradient(to right, transparent, ${factionColor}, transparent)` }}
+            />
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-bone/10">
+              <div className="flex items-center gap-2">
+                <Crosshair className="w-4 h-4" style={{ color: `${factionColor}80` }} />
+                <span className="text-[10px] font-mono tracking-[0.3em] uppercase" style={{ color: `${factionColor}80` }}>
+                  INSERTAR IMAGEN
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1 text-bone/40 hover:text-bone transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              {/* Tabs */}
+              <div className="flex gap-1 p-1 rounded-lg bg-void/60">
+                <button
+                  type="button"
+                  onClick={() => { setTab('upload'); setError(null) }}
+                  className={cn(
+                    'flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-all',
+                    tab === 'upload'
+                      ? 'text-void shadow-sm'
+                      : 'text-bone/50 hover:text-bone/70'
+                  )}
+                  style={tab === 'upload' ? { background: factionColor } : undefined}
+                >
+                  <Upload className="w-4 h-4" />
+                  Subir archivo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setTab('url'); setError(null) }}
+                  className={cn(
+                    'flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-all',
+                    tab === 'url'
+                      ? 'text-void shadow-sm'
+                      : 'text-bone/50 hover:text-bone/70'
+                  )}
+                  style={tab === 'url' ? { background: factionColor } : undefined}
+                >
+                  <Globe className="w-4 h-4" />
+                  URL externa
+                </button>
+              </div>
+
+              {/* Upload tab */}
+              {tab === 'upload' && (
+                <div>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleFileUpload(file)
+                    }}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileRef.current?.click()}
+                    disabled={uploading}
+                    className="w-full flex flex-col items-center justify-center gap-3 py-8 rounded-lg border-2 border-dashed transition-all hover:bg-bone/5 disabled:opacity-50"
+                    style={{ borderColor: `${factionColor}40`, color: factionColor }}
+                  >
+                    {uploading ? (
+                      <>
+                        <Loader2 className="w-8 h-8 animate-spin" />
+                        <span className="text-sm font-mono">Subiendo imagen...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-8 h-8" />
+                        <span className="text-sm font-mono">Click para seleccionar imagen</span>
+                        <span className="text-xs text-bone/40">JPG, PNG, WebP, GIF (max 5MB)</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+
+              {/* URL tab */}
+              {tab === 'url' && (
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    value={urlInput}
+                    onChange={(e) => setUrlInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleUrlSubmit()}
+                    placeholder="https://ejemplo.com/imagen.jpg"
+                    className="w-full px-4 py-3 rounded-lg bg-void border border-bone/10 text-bone text-sm font-body placeholder:text-bone/30 focus:outline-none focus:ring-2"
+                    style={{ ['--tw-ring-color' as string]: factionColor }}
+                    autoFocus
+                  />
+
+                  {/* URL preview */}
+                  {urlInput.startsWith('http') && (
+                    <div className="relative aspect-video rounded-lg overflow-hidden border border-bone/10 bg-void">
+                      <img
+                        src={urlInput}
+                        alt="Preview"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none'
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={handleUrlSubmit}
+                    disabled={!urlInput.trim()}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-30"
+                    style={{
+                      background: `linear-gradient(to right, ${factionColor}CC, ${factionColor}99)`,
+                      color: '#0a0a12',
+                    }}
+                  >
+                    <ImageIcon className="w-4 h-4" />
+                    Insertar imagen
+                  </button>
+                </div>
+              )}
+
+              {/* Error */}
+              {error && (
+                <p className="text-xs text-blood-light font-mono px-1">{error}</p>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EDITOR LINK MODAL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function EditorLinkModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  factionColor,
+  initialUrl,
+}: {
+  isOpen: boolean
+  onClose: () => void
+  onConfirm: (url: string) => void
+  factionColor: string
+  initialUrl: string
+}) {
+  const [urlInput, setUrlInput] = useState(initialUrl)
+
+  useEffect(() => {
+    if (isOpen) setUrlInput(initialUrl)
+  }, [isOpen, initialUrl])
+
+  function handleSubmit() {
+    onConfirm(urlInput.trim())
+  }
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-void/80 backdrop-blur-sm"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.2 }}
+            className="relative w-full max-w-sm bg-void-light border border-bone/15 rounded-xl shadow-2xl overflow-hidden"
+          >
+            {/* Glow line */}
+            <div
+              className="h-[2px]"
+              style={{ background: `linear-gradient(to right, transparent, ${factionColor}, transparent)` }}
+            />
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-bone/10">
+              <div className="flex items-center gap-2">
+                <LinkIcon className="w-4 h-4" style={{ color: `${factionColor}80` }} />
+                <span className="text-[10px] font-mono tracking-[0.3em] uppercase" style={{ color: `${factionColor}80` }}>
+                  INSERTAR ENLACE
+                </span>
+              </div>
+              <button type="button" onClick={onClose} className="p-1 text-bone/40 hover:text-bone transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <input
+                type="text"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                placeholder="https://..."
+                className="w-full px-4 py-3 rounded-lg bg-void border border-bone/10 text-bone text-sm font-body placeholder:text-bone/30 focus:outline-none focus:ring-2"
+                style={{ ['--tw-ring-color' as string]: factionColor }}
+                autoFocus
+              />
+
+              <div className="flex gap-2">
+                {initialUrl && (
+                  <button
+                    type="button"
+                    onClick={() => onConfirm('')}
+                    className="flex-1 py-2.5 rounded-lg text-sm font-medium border border-blood/30 text-blood/80 hover:bg-blood/10 hover:text-blood-light transition-all"
+                  >
+                    Quitar enlace
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
+                  style={{
+                    background: `linear-gradient(to right, ${factionColor}CC, ${factionColor}99)`,
+                    color: '#0a0a12',
+                  }}
+                >
+                  <LinkIcon className="w-4 h-4" />
+                  {initialUrl ? 'Actualizar' : 'Insertar'}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOOLBAR COMPONENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 function ToolbarGroup({ children }: { children: React.ReactNode }) {
   return <div className="flex items-center">{children}</div>
 }

@@ -10,6 +10,8 @@ import {
   FileText,
   Crosshair,
   Feather,
+  Upload,
+  Loader2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -17,6 +19,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { TiptapEditor, type TiptapEditorRef, WikiGallery, FactionPicker } from '@/components/wiki'
 import { factions } from '@/lib/data'
+import { compressImage } from '@/lib/utils/compressImage'
 import type { WikiCategory, TiptapContent, WikiPageCreateInput } from '@/lib/supabase/wiki.types'
 
 const containerVariants = {
@@ -93,6 +96,8 @@ export default function NewWikiArticlePage() {
   const [heroImage, setHeroImage] = useState('')
   const [content, setContent] = useState<TiptapContent | null>(null)
   const [galleryImages, setGalleryImages] = useState<string[]>([])
+  const [heroUploading, setHeroUploading] = useState(false)
+  const heroFileRef = useRef<HTMLInputElement>(null)
 
   const selectedFaction = factions.find(f => f.id === factionId)
   const currentColor = selectedFaction?.color || '#C9A227'
@@ -125,6 +130,28 @@ export default function NewWikiArticlePage() {
     setTitle(value)
     if (!slug || slug === generateSlug(title)) {
       setSlug(generateSlug(value))
+    }
+  }
+
+  async function handleHeroUpload(file: File) {
+    setHeroUploading(true)
+    try {
+      const compressed = await compressImage(file)
+      const formData = new FormData()
+      formData.append('file', compressed)
+      if (factionId) formData.append('faction_id', factionId)
+      const res = await fetch('/api/wiki/upload', { method: 'POST', body: formData })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Error al subir')
+      }
+      const data = await res.json()
+      setHeroImage(data.url)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al subir imagen')
+    } finally {
+      setHeroUploading(false)
+      if (heroFileRef.current) heroFileRef.current.value = ''
     }
   }
 
@@ -312,6 +339,7 @@ export default function NewWikiArticlePage() {
                   ref={editorRef}
                   onChange={setContent}
                   factionColor={currentColor}
+                  factionId={factionId || undefined}
                   placeholder="Escribe el contenido del articulo..."
                 />
               </Card>
@@ -386,15 +414,41 @@ export default function NewWikiArticlePage() {
                 <CardHeader>
                   <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">IMAGEN PRINCIPAL</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-3">
                   <Input
                     type="text"
                     value={heroImage}
                     onChange={(e) => setHeroImage(e.target.value)}
                     placeholder="URL de la imagen..."
                   />
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-bone/30">o</span>
+                    <input
+                      ref={heroFileRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) handleHeroUpload(file)
+                      }}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => heroFileRef.current?.click()}
+                      disabled={heroUploading}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-dashed text-xs font-mono transition-colors hover:bg-bone/5 disabled:opacity-50"
+                      style={{ borderColor: `${currentColor}30`, color: currentColor }}
+                    >
+                      {heroUploading ? (
+                        <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Subiendo...</>
+                      ) : (
+                        <><Upload className="w-3.5 h-3.5" /> Subir imagen</>
+                      )}
+                    </button>
+                  </div>
                   {heroImage && (
-                    <div className="mt-3 relative aspect-video rounded-lg overflow-hidden border border-bone/10">
+                    <div className="relative aspect-video rounded-lg overflow-hidden border border-bone/10">
                       <img
                         src={heroImage}
                         alt="Preview"
@@ -405,7 +459,7 @@ export default function NewWikiArticlePage() {
                       />
                     </div>
                   )}
-                  <p className="mt-2 text-xs text-bone/40 font-mono">
+                  <p className="text-xs text-bone/40 font-mono">
                     Recomendado: 1200x630px
                   </p>
                 </CardContent>
@@ -437,6 +491,42 @@ export default function NewWikiArticlePage() {
           )}
         </div>
       </div>
+
+      {/* ── Bottom action bar ── */}
+      <motion.div
+        variants={itemVariants}
+        className="flex items-center justify-between pt-4 border-t border-bone/10"
+      >
+        <Link href="/wiki">
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-bone/50 hover:text-bone transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Cancelar
+          </button>
+        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => handleSubmit('draft')}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/70 hover:bg-bone/5 hover:border-bone/30 hover:text-bone transition-all duration-200 active:scale-[0.97] disabled:opacity-40"
+          >
+            <FileText className="w-4 h-4" />
+            Guardar Borrador
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSubmit('published')}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200 active:scale-[0.97] disabled:opacity-40"
+          >
+            <Globe className="w-4 h-4" />
+            Publicar
+          </button>
+        </div>
+      </motion.div>
     </motion.div>
   )
 }

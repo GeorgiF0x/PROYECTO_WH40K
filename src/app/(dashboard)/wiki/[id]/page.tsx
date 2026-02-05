@@ -15,6 +15,8 @@ import {
   Eye,
   Crosshair,
   Feather,
+  Upload,
+  Loader2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -22,6 +24,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { TiptapEditor, type TiptapEditorRef, WikiGallery, FactionPicker } from '@/components/wiki'
 import { factions } from '@/lib/data'
+import { compressImage } from '@/lib/utils/compressImage'
 import type { WikiPage, WikiCategory, TiptapContent, WikiPageUpdateInput, WikiRevision } from '@/lib/supabase/wiki.types'
 
 const containerVariants = {
@@ -102,6 +105,8 @@ export default function EditWikiArticlePage() {
   const [heroImage, setHeroImage] = useState('')
   const [status, setStatus] = useState<'draft' | 'published' | 'archived'>('draft')
   const [galleryImages, setGalleryImages] = useState<string[]>([])
+  const [heroUploading, setHeroUploading] = useState(false)
+  const heroFileRef = useRef<HTMLInputElement>(null)
 
   const selectedFaction = page ? factions.find(f => f.id === page.faction_id) : null
   const currentColor = selectedFaction?.color || '#C9A227'
@@ -140,6 +145,28 @@ export default function EditWikiArticlePage() {
       setError(err instanceof Error ? err.message : 'Error al cargar el articulo')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleHeroUpload(file: File) {
+    setHeroUploading(true)
+    try {
+      const compressed = await compressImage(file)
+      const formData = new FormData()
+      formData.append('file', compressed)
+      if (page?.faction_id) formData.append('faction_id', page.faction_id)
+      const res = await fetch('/api/wiki/upload', { method: 'POST', body: formData })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Error al subir')
+      }
+      const data = await res.json()
+      setHeroImage(data.url)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al subir imagen')
+    } finally {
+      setHeroUploading(false)
+      if (heroFileRef.current) heroFileRef.current.value = ''
     }
   }
 
@@ -425,6 +452,7 @@ export default function EditWikiArticlePage() {
                   ref={editorRef}
                   content={page?.content}
                   factionColor={currentColor}
+                  factionId={page?.faction_id || undefined}
                   placeholder="Escribe el contenido del articulo..."
                 />
               </Card>
@@ -516,15 +544,41 @@ export default function EditWikiArticlePage() {
                 <CardHeader>
                   <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">IMAGEN PRINCIPAL</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-3">
                   <Input
                     type="text"
                     value={heroImage}
                     onChange={(e) => setHeroImage(e.target.value)}
                     placeholder="URL de la imagen..."
                   />
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-bone/30">o</span>
+                    <input
+                      ref={heroFileRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) handleHeroUpload(file)
+                      }}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => heroFileRef.current?.click()}
+                      disabled={heroUploading}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-dashed text-xs font-mono transition-colors hover:bg-bone/5 disabled:opacity-50"
+                      style={{ borderColor: `${currentColor}30`, color: currentColor }}
+                    >
+                      {heroUploading ? (
+                        <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Subiendo...</>
+                      ) : (
+                        <><Upload className="w-3.5 h-3.5" /> Subir imagen</>
+                      )}
+                    </button>
+                  </div>
                   {heroImage && (
-                    <div className="mt-3 relative aspect-video rounded-lg overflow-hidden border border-bone/10">
+                    <div className="relative aspect-video rounded-lg overflow-hidden border border-bone/10">
                       <img
                         src={heroImage}
                         alt="Preview"
@@ -570,6 +624,44 @@ export default function EditWikiArticlePage() {
           </motion.div>
         </div>
       </div>
+
+      {/* ── Bottom action bar ── */}
+      <motion.div
+        variants={itemVariants}
+        className="flex items-center justify-between pt-4 border-t border-bone/10"
+      >
+        <Link href="/wiki">
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-bone/50 hover:text-bone transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Volver al listado
+          </button>
+        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => handleSave()}
+            disabled={saving}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/70 hover:bg-bone/5 hover:border-bone/30 hover:text-bone transition-all duration-200 active:scale-[0.97] disabled:opacity-40"
+          >
+            <Save className="w-4 h-4" />
+            Guardar
+          </button>
+          {status !== 'published' && (
+            <button
+              type="button"
+              onClick={() => handleSave('published')}
+              disabled={saving}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200 active:scale-[0.97] disabled:opacity-40"
+            >
+              <Globe className="w-4 h-4" />
+              Publicar
+            </button>
+          )}
+        </div>
+      </motion.div>
     </motion.div>
   )
 }
