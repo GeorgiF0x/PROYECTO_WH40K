@@ -7,7 +7,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <div className="noise-overlay" />
       <Navigation />
       <main className="flex-1 relative">
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="container mx-auto px-4 pt-20 pb-8 max-w-4xl">
           {children}
         </div>
       </main>
