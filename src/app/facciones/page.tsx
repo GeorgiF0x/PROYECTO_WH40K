@@ -7,6 +7,7 @@ import { Navigation, Footer } from '@/components'
 import { factions } from '@/lib/data'
 import { FactionSymbol } from '@/components/faction'
 import { getFactionTheme } from '@/lib/faction-themes'
+import { Feather, BookOpen, Shield, Scroll, ArrowRight } from 'lucide-react'
 
 export default function FactionsPage() {
   return (
@@ -272,27 +273,135 @@ export default function FactionsPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section - Lexicanum Scribe */}
       <section className="relative py-20 px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-4xl mx-auto text-center glass rounded-2xl p-12"
+          className="max-w-4xl mx-auto relative"
         >
-          <h2 className="font-display text-3xl md:text-4xl font-black text-white mb-4">
-            No sabes por donde empezar?
-          </h2>
-          <p className="font-body text-lg text-bone/60 mb-8 max-w-xl mx-auto">
-            Nuestros expertos pueden ayudarte a elegir la faccion perfecta segun tu estilo de juego y preferencias esteticas.
-          </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="btn-modern font-body"
-          >
-            Contactar con un Experto
-          </motion.button>
+          {/* Main Card */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-void-light/90 via-void/95 to-amber-950/20 border border-amber-500/20">
+            {/* Corner filigrees */}
+            <div className="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-amber-500/30 rounded-tl-2xl" />
+            <div className="absolute top-0 right-0 w-24 h-24 border-t-2 border-r-2 border-amber-500/30 rounded-tr-2xl" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 border-b-2 border-l-2 border-amber-500/30 rounded-bl-2xl" />
+            <div className="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-amber-500/30 rounded-br-2xl" />
+
+            {/* Top accent line */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/60 to-transparent" />
+
+            {/* Ambient glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5 pointer-events-none" />
+
+            {/* Background pattern - subtle parchment lines */}
+            <div
+              className="absolute inset-0 opacity-[0.03] pointer-events-none"
+              style={{
+                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(245,158,11,0.5) 39px, rgba(245,158,11,0.5) 40px)',
+              }}
+            />
+
+            <div className="relative p-8 md:p-12">
+              <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                {/* Icon Section */}
+                <div className="flex-shrink-0">
+                  <motion.div
+                    className="relative w-28 h-28 md:w-32 md:h-32"
+                    animate={{
+                      filter: [
+                        'drop-shadow(0 0 20px rgba(245, 158, 11, 0.2))',
+                        'drop-shadow(0 0 30px rgba(245, 158, 11, 0.4))',
+                        'drop-shadow(0 0 20px rgba(245, 158, 11, 0.2))',
+                      ],
+                    }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                  >
+                    {/* Outer ring */}
+                    <div className="absolute inset-0 rounded-full border-2 border-amber-500/30" />
+                    <motion.div
+                      className="absolute inset-2 rounded-full border border-amber-500/20"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+                    />
+                    {/* Inner circle */}
+                    <div className="absolute inset-4 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-700/10 border border-amber-500/40 flex items-center justify-center">
+                      <Scroll className="w-12 h-12 md:w-14 md:h-14 text-amber-400" />
+                    </div>
+                    {/* Floating feather */}
+                    <motion.div
+                      className="absolute -top-2 -right-2"
+                      animate={{ y: [0, -5, 0], rotate: [0, 5, 0] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <Feather className="w-8 h-8 text-amber-300" />
+                    </motion.div>
+                  </motion.div>
+                </div>
+
+                {/* Content Section */}
+                <div className="flex-1 text-center lg:text-left">
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    className="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-full text-amber-400 font-mono text-xs tracking-widest mb-4"
+                  >
+                    ORDEN DEL LEXICANUM
+                  </motion.span>
+
+                  <h2 className="font-display text-3xl md:text-4xl font-black text-white mb-4">
+                    Contribuye al{' '}
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">
+                      Archivo Imperial
+                    </span>
+                  </h2>
+
+                  <p className="font-body text-lg text-bone/60 mb-6 max-w-xl">
+                    Unete a la Orden de Escribas del Lexicanum. Documenta el lore, crea articulos sobre las facciones y ayuda a preservar el conocimiento de la galaxia.
+                  </p>
+
+                  {/* Benefits Grid */}
+                  <div className="grid grid-cols-3 gap-3 mb-8">
+                    {[
+                      { icon: Feather, label: 'Crear articulos', desc: 'Escribe lore' },
+                      { icon: BookOpen, label: 'Editar wiki', desc: 'Mejora contenido' },
+                      { icon: Shield, label: 'Insignia unica', desc: 'Reconocimiento' },
+                    ].map((item, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        className="p-3 rounded-lg bg-void/50 border border-amber-500/10 hover:border-amber-500/30 transition-colors group"
+                      >
+                        <item.icon className="w-5 h-5 text-amber-400/70 mx-auto mb-1.5 group-hover:text-amber-400 transition-colors" />
+                        <p className="text-xs text-bone/70 font-medium">{item.label}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* CTA Button */}
+                  <Link href="/wiki/solicitar">
+                    <motion.button
+                      whileHover={{ scale: 1.03, boxShadow: '0 0 30px rgba(245, 158, 11, 0.3)' }}
+                      whileTap={{ scale: 0.98 }}
+                      className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-display font-bold text-lg rounded-lg transition-all group"
+                    >
+                      <Feather className="w-5 h-5" />
+                      Solicitar ser Lexicanum Scribe
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </motion.button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom accent */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
+          </div>
         </motion.div>
       </section>
 
