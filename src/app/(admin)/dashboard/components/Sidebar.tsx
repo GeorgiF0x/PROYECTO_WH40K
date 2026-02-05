@@ -84,9 +84,10 @@ const quickLinks = [
 interface SidebarProps {
   collapsed: boolean
   onToggle: () => void
+  onSearchOpen?: () => void
 }
 
-export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
   const pathname = usePathname()
   const { profile, signOut } = useAuth()
 
@@ -228,6 +229,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 className="quick-action flex-1 justify-center"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={onSearchOpen}
               >
                 <Search className="h-4 w-4" />
                 <span className="text-xs">Buscar</span>

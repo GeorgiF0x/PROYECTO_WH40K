@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
-import { TiptapEditor, type TiptapEditorRef } from '@/components/wiki'
+import { TiptapEditor, type TiptapEditorRef, WikiGallery } from '@/components/wiki'
 import { factions } from '@/lib/data'
 import type { WikiCategory, TiptapContent, WikiPageCreateInput } from '@/lib/supabase/wiki.types'
 
@@ -34,6 +34,7 @@ export default function NewWikiArticlePage() {
   const [excerpt, setExcerpt] = useState('')
   const [heroImage, setHeroImage] = useState('')
   const [content, setContent] = useState<TiptapContent | null>(null)
+  const [galleryImages, setGalleryImages] = useState<string[]>([])
 
   const selectedFaction = factions.find(f => f.id === factionId)
 
@@ -92,6 +93,7 @@ export default function NewWikiArticlePage() {
         slug,
         excerpt: excerpt || undefined,
         hero_image: heroImage || undefined,
+        gallery_images: galleryImages.length ? galleryImages : undefined,
         content: editorContent,
         status,
       }
@@ -210,6 +212,14 @@ export default function NewWikiArticlePage() {
               placeholder="Escribe el contenido del articulo..."
             />
           </Card>
+
+          {/* Gallery */}
+          <WikiGallery
+            images={galleryImages}
+            onChange={setGalleryImages}
+            factionId={factionId || undefined}
+            factionColor={selectedFaction?.color || '#C9A227'}
+          />
         </div>
 
         {/* Sidebar */}

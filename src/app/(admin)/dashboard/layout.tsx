@@ -6,9 +6,11 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Sidebar } from './components/Sidebar'
+import { CommandPalette } from './components/CommandPalette'
 import { StarfieldBackground, NebulaOverlay } from './components/StarfieldBackground'
 import { ScanLines, CogitatorLoading } from './components/ImperialEffects'
 import { useAuth } from '@/lib/hooks/useAuth'
+import { useNotifications } from '@/lib/hooks/useNotifications'
 import { cn } from '@/lib/utils'
 import {
   Bell,
@@ -17,6 +19,12 @@ import {
   ChevronRight,
   Home,
   Cpu,
+  CheckCheck,
+  MessageSquare,
+  Heart,
+  UserPlus,
+  AtSign,
+  Mail,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -54,18 +62,63 @@ function getBreadcrumbs(pathname: string) {
   return breadcrumbs
 }
 
+// Notification icon by type
+function notificationIcon(type: string) {
+  switch (type) {
+    case 'like':
+      return <Heart className="h-4 w-4 text-blood-red" />
+    case 'comment':
+      return <MessageSquare className="h-4 w-4 text-necron-teal" />
+    case 'follow':
+      return <UserPlus className="h-4 w-4 text-imperial-gold" />
+    case 'message':
+      return <Mail className="h-4 w-4 text-purple-400" />
+    case 'mention':
+      return <AtSign className="h-4 w-4 text-amber-400" />
+    default:
+      return <Bell className="h-4 w-4 text-bone/50" />
+  }
+}
+
+// Relative time helper
+function timeAgo(dateStr: string) {
+  const now = Date.now()
+  const then = new Date(dateStr).getTime()
+  const diff = Math.floor((now - then) / 1000)
+
+  if (diff < 60) return 'ahora'
+  if (diff < 3600) return `${Math.floor(diff / 60)}m`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h`
+  if (diff < 604800) return `${Math.floor(diff / 86400)}d`
+  return `${Math.floor(diff / 604800)}sem`
+}
+
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const { user, profile, isLoading, isAuthenticated } = useAuth()
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications(user?.id)
   const router = useRouter()
   const pathname = usePathname()
 
   const pageInfo = pageTitles[pathname] || { title: 'Dashboard', description: '' }
   const breadcrumbs = getBreadcrumbs(pathname)
+
+  // Global ⌘K / Ctrl+K listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setSearchOpen((prev) => !prev)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   // Check if user has admin/moderator access
   useEffect(() => {
@@ -94,6 +147,8 @@ export default function DashboardLayout({
     return null
   }
 
+  const displayedNotifications = notifications.slice(0, 5)
+
   return (
     <div className="dashboard-root flex h-screen overflow-hidden">
       {/* Background effects */}
@@ -101,9 +156,13 @@ export default function DashboardLayout({
       <NebulaOverlay />
       <ScanLines />
 
+      {/* Command Palette */}
+      <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} />
+
       <Sidebar
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onSearchOpen={() => setSearchOpen(true)}
       />
 
       <motion.div
@@ -153,6 +212,7 @@ export default function DashboardLayout({
               className="quick-action"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              onClick={() => setSearchOpen(true)}
             >
               <Search className="h-4 w-4" />
               <span className="hidden sm:inline">Buscar...</span>
@@ -180,27 +240,83 @@ export default function DashboardLayout({
                   whileTap={{ scale: 0.95 }}
                 >
                   <Bell className="h-5 w-5" />
-                  <motion.span
-                    className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blood-red"
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      opacity: [0.7, 1, 0.7],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
+                  {unreadCount > 0 && (
+                    <motion.span
+                      className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-blood-red px-1 text-[9px] font-bold text-bone"
+                      animate={{
+                        scale: [1, 1.15, 1],
+                        opacity: [0.8, 1, 0.8],
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </motion.span>
+                  )}
                 </motion.button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-80 bg-void-light/95 backdrop-blur-xl border-imperial-gold/20">
-                <div className="px-4 py-3 border-b border-imperial-gold/10">
+                <div className="px-4 py-3 border-b border-imperial-gold/10 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Cpu className="h-3 w-3 text-imperial-gold/60" />
                     <h4 className="text-xs font-mono text-imperial-gold/60 tracking-widest">TRANSMISIONES</h4>
                   </div>
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={() => markAllAsRead()}
+                      className="flex items-center gap-1 text-[10px] font-mono text-necron-teal/60 hover:text-necron-teal transition-colors"
+                    >
+                      <CheckCheck className="h-3 w-3" />
+                      Marcar todas
+                    </button>
+                  )}
                 </div>
-                <div className="py-6 text-center">
-                  <Bell className="h-8 w-8 mx-auto text-bone/20 mb-2" />
-                  <p className="text-sm text-bone/40">Sin transmisiones pendientes</p>
-                </div>
+
+                {displayedNotifications.length === 0 ? (
+                  <div className="py-6 text-center">
+                    <Bell className="h-8 w-8 mx-auto text-bone/20 mb-2" />
+                    <p className="text-sm text-bone/40">Sin transmisiones pendientes</p>
+                  </div>
+                ) : (
+                  <div className="max-h-[300px] overflow-y-auto">
+                    {displayedNotifications.map((n) => (
+                      <DropdownMenuItem
+                        key={n.id}
+                        onClick={() => markAsRead(n.id)}
+                        className={cn(
+                          'flex items-start gap-3 px-4 py-3 cursor-pointer focus:bg-imperial-gold/5',
+                          !n.read && 'bg-imperial-gold/5'
+                        )}
+                      >
+                        <div className="mt-0.5 shrink-0">{notificationIcon(n.type)}</div>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn(
+                            'text-sm truncate',
+                            n.read ? 'text-bone/50' : 'text-bone font-medium'
+                          )}>
+                            {n.title}
+                          </p>
+                          {n.body && (
+                            <p className="text-xs text-bone/30 truncate mt-0.5">{n.body}</p>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-bone/30 font-mono shrink-0 mt-0.5">
+                          {timeAgo(n.created_at)}
+                        </span>
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+                )}
+
+                {notifications.length > 0 && (
+                  <div className="border-t border-imperial-gold/10 p-2">
+                    <Link
+                      href="/notificaciones"
+                      className="block w-full rounded-lg px-3 py-2 text-center text-xs font-mono text-imperial-gold/60 hover:bg-imperial-gold/5 hover:text-imperial-gold transition-colors tracking-wider"
+                    >
+                      VER TODAS LAS TRANSMISIONES
+                    </Link>
+                  </div>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

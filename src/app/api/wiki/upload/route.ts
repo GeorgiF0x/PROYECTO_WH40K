@@ -12,15 +12,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check admin status (only admins can upload to wiki bucket)
+    // Check permissions (admins, moderators, and wiki contributors)
     const { data: profile } = await supabase
       .from('profiles')
-      .select('is_admin, role')
+      .select('is_admin, role, wiki_role')
       .eq('id', user.id)
       .single()
 
     const isAdmin = profile?.is_admin || ['admin', 'moderator'].includes(profile?.role || '')
-    if (!isAdmin) {
+    const canUpload = isAdmin || !!profile?.wiki_role
+    if (!canUpload) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

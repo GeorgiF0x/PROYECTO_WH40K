@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
-import { TiptapEditor, type TiptapEditorRef } from '@/components/wiki'
+import { TiptapEditor, type TiptapEditorRef, WikiGallery } from '@/components/wiki'
 import { factions } from '@/lib/data'
 import type { WikiPage, WikiCategory, TiptapContent, WikiPageUpdateInput, WikiRevision } from '@/lib/supabase/wiki.types'
 
@@ -42,6 +42,7 @@ export default function EditWikiArticlePage() {
   const [excerpt, setExcerpt] = useState('')
   const [heroImage, setHeroImage] = useState('')
   const [status, setStatus] = useState<'draft' | 'published' | 'archived'>('draft')
+  const [galleryImages, setGalleryImages] = useState<string[]>([])
 
   const selectedFaction = page ? factions.find(f => f.id === page.faction_id) : null
 
@@ -72,6 +73,7 @@ export default function EditWikiArticlePage() {
       setSlug(pageData.slug)
       setExcerpt(pageData.excerpt || '')
       setHeroImage(pageData.hero_image || '')
+      setGalleryImages(pageData.gallery_images || [])
       setStatus(pageData.status)
 
       // Set editor content after a brief delay to ensure editor is mounted
@@ -107,6 +109,7 @@ export default function EditWikiArticlePage() {
         slug,
         excerpt: excerpt || undefined,
         hero_image: heroImage || undefined,
+        gallery_images: galleryImages,
         content: editorContent,
         status: newStatus || status,
       }
@@ -324,6 +327,14 @@ export default function EditWikiArticlePage() {
               placeholder="Escribe el contenido del articulo..."
             />
           </Card>
+
+          {/* Gallery */}
+          <WikiGallery
+            images={galleryImages}
+            onChange={setGalleryImages}
+            factionId={page?.faction_id || undefined}
+            factionColor={selectedFaction?.color || '#C9A227'}
+          />
         </div>
 
         {/* Sidebar */}

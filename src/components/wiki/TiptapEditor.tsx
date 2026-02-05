@@ -5,7 +5,9 @@ import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
-import { useCallback, useEffect, forwardRef, useImperativeHandle } from 'react'
+import Color from '@tiptap/extension-color'
+import { TextStyle } from '@tiptap/extension-text-style'
+import { useCallback, useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react'
 import {
   Bold,
   Italic,
@@ -22,10 +24,8 @@ import {
   Image as ImageIcon,
   Undo,
   Redo,
-  AlertTriangle,
-  BookOpen,
-  Skull,
-  Info,
+  Palette,
+  X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { TiptapContent } from '@/lib/supabase/wiki.types'
@@ -74,6 +74,8 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
       Placeholder.configure({
         placeholder,
       }),
+      TextStyle,
+      Color,
     ],
     content: content || {
       type: 'doc',
@@ -130,6 +132,34 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
 
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
   }, [editor])
+
+  const [showColorPicker, setShowColorPicker] = useState(false)
+  const colorPickerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (colorPickerRef.current && !colorPickerRef.current.contains(e.target as Node)) {
+        setShowColorPicker(false)
+      }
+    }
+    if (showColorPicker) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showColorPicker])
+
+  const GRIMDARK_COLORS = [
+    { hex: '#C9A227', label: 'Imperial Gold' },
+    { hex: '#0D9B8A', label: 'Necron Teal' },
+    { hex: '#8B0000', label: 'Blood Red' },
+    { hex: '#E8E8F0', label: 'Bone' },
+    { hex: '#FFFFFF', label: 'White' },
+    { hex: '#F59E0B', label: 'Amber' },
+    { hex: '#6B1C5F', label: 'Warp Purple' },
+    { hex: '#22C55E', label: 'Warpstone Green' },
+    { hex: '#06B6D4', label: 'Cyan' },
+    { hex: '#EF4444', label: 'Red' },
+  ]
 
   if (!editor) {
     return (
@@ -213,6 +243,62 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
             >
               <Code className="w-4 h-4" />
             </ToolbarButton>
+
+            {/* Color picker */}
+            <div className="relative" ref={colorPickerRef}>
+              <ToolbarButton
+                onClick={() => setShowColorPicker(!showColorPicker)}
+                active={showColorPicker}
+                title="Color de texto"
+                factionColor={factionColor}
+              >
+                <div className="flex flex-col items-center gap-0.5">
+                  <Palette className="w-4 h-4" />
+                  <div
+                    className="w-3.5 h-0.5 rounded-full"
+                    style={{
+                      background: editor.getAttributes('textStyle').color || 'currentColor',
+                    }}
+                  />
+                </div>
+              </ToolbarButton>
+
+              {showColorPicker && (
+                <div className="absolute top-full left-0 mt-1 z-50 bg-void border border-imperial-gold/20 rounded-lg p-2 shadow-xl">
+                  <div className="grid grid-cols-5 gap-1.5">
+                    {GRIMDARK_COLORS.map((c) => (
+                      <button
+                        key={c.hex}
+                        type="button"
+                        title={c.label}
+                        onClick={() => {
+                          editor.chain().focus().setColor(c.hex).run()
+                          setShowColorPicker(false)
+                        }}
+                        className="w-6 h-6 rounded-full border-2 transition-transform hover:scale-110"
+                        style={{
+                          background: c.hex,
+                          borderColor: editor.getAttributes('textStyle').color === c.hex
+                            ? '#fff'
+                            : 'rgba(232,232,240,0.2)',
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      editor.chain().focus().unsetColor().run()
+                      setShowColorPicker(false)
+                    }}
+                    className="mt-2 w-full flex items-center justify-center gap-1.5 text-xs text-bone/60 hover:text-bone py-1 rounded transition-colors hover:bg-bone/10"
+                  >
+                    <X className="w-3 h-3" />
+                    Quitar color
+                  </button>
+                </div>
+              )}
+            </div>
           </ToolbarGroup>
 
           <ToolbarDivider />
