@@ -12,16 +12,18 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const { id } = await params
     const supabase = await createClient()
 
-    // Check if user is admin
+    // Check if user is admin or has wiki role
     const { data: { user } } = await supabase.auth.getUser()
     let isAdmin = false
+    let wikiRole: string | null = null
     if (user) {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('is_admin, role')
+        .select('is_admin, role, wiki_role')
         .eq('id', user.id)
         .single()
       isAdmin = profile?.is_admin || ['admin', 'moderator'].includes(profile?.role || '')
+      wikiRole = profile?.wiki_role || null
     }
 
     // Build query - can search by ID or by faction_id/slug combo
@@ -58,8 +60,15 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Check access for non-published pages
+    // Admins can see all, lexicanums can see all drafts, scribes can see their own drafts
     if (data.status !== 'published' && !isAdmin) {
-      return NextResponse.json({ error: 'Page not found' }, { status: 404 })
+      const isLexicanum = wikiRole === 'lexicanum'
+      const isScribe = wikiRole === 'scribe'
+      const isAuthor = data.author_id === user?.id
+
+      if (!isLexicanum && !(isScribe && isAuthor)) {
+        return NextResponse.json({ error: 'Page not found' }, { status: 404 })
+      }
     }
 
     // Increment view count (fire and forget)
@@ -86,29 +95,34 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check admin status
+    // Check admin/wiki role status
     const { data: profile } = await supabase
       .from('profiles')
-      .select('is_admin, role')
+      .select('is_admin, role, wiki_role')
       .eq('id', user.id)
       .single()
 
     const isAdmin = profile?.is_admin || ['admin', 'moderator'].includes(profile?.role || '')
-    if (!isAdmin) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const isLexicanum = profile?.wiki_role === 'lexicanum'
+    const isScribe = profile?.wiki_role === 'scribe'
 
     const body: WikiPageUpdateInput = await request.json()
 
     // Get existing page first
     const { data: existingPage, error: fetchError } = await supabase
       .from('faction_wiki_pages')
-      .select('id, content, status')
+      .select('id, content, status, author_id')
       .eq('id', id)
       .single()
 
     if (fetchError || !existingPage) {
       return NextResponse.json({ error: 'Page not found' }, { status: 404 })
+    }
+
+    // Check permissions: admins can edit all, lexicanums can edit all, scribes can edit their own
+    const isAuthor = existingPage.author_id === user.id
+    if (!isAdmin && !isLexicanum && !(isScribe && isAuthor)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     // Create a revision if content is changing

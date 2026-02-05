@@ -29,6 +29,7 @@ import {
 } from 'lucide-react'
 import type { Profile, CreatorType } from '@/lib/types/database.types'
 import { CreatorBadge, getCreatorTypeConfig, PortfolioGrid } from '@/components/creator'
+import { ScribeBadge } from '@/components/wiki'
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -227,6 +228,7 @@ interface ProfileData {
     instagram?: string | null
     twitter?: string | null
     youtube?: string | null
+    wiki_role?: 'scribe' | 'lexicanum' | null
   }
   followersCount: number
   followingCount: number
@@ -650,6 +652,13 @@ export function UserProfileClient({ data }: UserProfileClientProps) {
                       type={profile.creator_type as CreatorType}
                       variant="title-ribbon"
                     />
+                  </div>
+                )}
+
+                {/* Wiki Scribe Badge */}
+                {profile.wiki_role && (
+                  <div className="flex justify-center md:justify-start mb-2">
+                    <ScribeBadge role={profile.wiki_role} size="md" />
                   </div>
                 )}
 

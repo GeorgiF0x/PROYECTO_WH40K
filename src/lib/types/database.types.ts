@@ -1079,6 +1079,7 @@ export type Database = {
           updated_at: string
           username: string
           website: string | null
+          wiki_role: 'scribe' | 'lexicanum' | null
           youtube: string | null
         }
         Insert: {
@@ -1110,6 +1111,7 @@ export type Database = {
           updated_at?: string
           username: string
           website?: string | null
+          wiki_role?: 'scribe' | 'lexicanum' | null
           youtube?: string | null
         }
         Update: {
@@ -1141,6 +1143,7 @@ export type Database = {
           updated_at?: string
           username?: string
           website?: string | null
+          wiki_role?: 'scribe' | 'lexicanum' | null
           youtube?: string | null
         }
         Relationships: []

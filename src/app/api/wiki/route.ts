@@ -16,16 +16,18 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20')
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    // Check if user is admin
+    // Check if user is admin or has wiki role
     const { data: { user } } = await supabase.auth.getUser()
     let isAdmin = false
+    let wikiRole: string | null = null
     if (user) {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('is_admin, role')
+        .select('is_admin, role, wiki_role')
         .eq('id', user.id)
         .single()
       isAdmin = profile?.is_admin || ['admin', 'moderator'].includes(profile?.role || '')
+      wikiRole = profile?.wiki_role || null
     }
 
     // Build query
@@ -44,15 +46,36 @@ export async function GET(request: NextRequest) {
         published_at,
         created_at,
         updated_at,
+        author_id,
         author:profiles!faction_wiki_pages_author_id_fkey(username, display_name),
         category:wiki_categories(id, name, slug, icon)
       `, { count: 'exact' })
 
-    // Filter by status (public only sees published unless admin)
-    if (!isAdmin) {
+    // Filter by status
+    // - Admins/lexicanums see all drafts
+    // - Scribes see published + their own drafts
+    // - Public sees only published
+    const isLexicanum = wikiRole === 'lexicanum'
+    const isScribe = wikiRole === 'scribe'
+
+    if (isAdmin || isLexicanum) {
+      // Can see all - optionally filter by status param
+      if (status) {
+        query = query.eq('status', status)
+      }
+    } else if (isScribe && user) {
+      // Scribes see published OR their own drafts
+      if (status) {
+        query = query.eq('status', status)
+        if (status !== 'published') {
+          query = query.eq('author_id', user.id)
+        }
+      } else {
+        query = query.or(`status.eq.published,author_id.eq.${user.id}`)
+      }
+    } else {
+      // Public only sees published
       query = query.eq('status', 'published')
-    } else if (status) {
-      query = query.eq('status', status)
     }
 
     // Filter by faction
@@ -114,15 +137,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check admin status
+    // Check admin/wiki role status
     const { data: profile } = await supabase
       .from('profiles')
-      .select('is_admin, role')
+      .select('is_admin, role, wiki_role')
       .eq('id', user.id)
       .single()
 
     const isAdmin = profile?.is_admin || ['admin', 'moderator'].includes(profile?.role || '')
-    if (!isAdmin) {
+    const canCreate = isAdmin || !!profile?.wiki_role // scribes and lexicanums can create
+    if (!canCreate) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

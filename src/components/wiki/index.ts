@@ -1,4 +1,5 @@
 export { TiptapEditor } from './TiptapEditor'
 export type { TiptapEditorRef } from './TiptapEditor'
 export { WikiRenderer } from './WikiRenderer'
+export { ScribeBadge } from './ScribeBadge'
 export * from './blocks'
