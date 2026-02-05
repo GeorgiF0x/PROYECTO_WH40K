@@ -26,6 +26,7 @@ import {
   Sparkles,
   Cpu,
   Target,
+  ScrollText,
 } from 'lucide-react'
 import { Button } from './ui/button'
 import {
@@ -65,6 +66,7 @@ const mainNavItems: NavItem[] = [
   { title: 'Usuarios', href: '/dashboard/usuarios', icon: Users, color: 'text-necron-teal' },
   { title: 'Eventos', href: '/dashboard/eventos', icon: Calendar, color: 'text-emerald-400' },
   { title: 'Reportes', href: '/dashboard/reportes', icon: Flag, color: 'text-blood-red' },
+  { title: 'Escribas', href: '/dashboard/escribas', icon: ScrollText, color: 'text-amber-400' },
 ]
 
 const secondaryNavItems: NavItem[] = [

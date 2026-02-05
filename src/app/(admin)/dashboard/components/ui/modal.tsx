@@ -116,6 +116,7 @@ interface ConfirmDialogProps {
   cancelLabel?: string
   variant?: 'default' | 'danger'
   loading?: boolean
+  children?: React.ReactNode
 }
 
 export function ConfirmDialog({
@@ -128,6 +129,7 @@ export function ConfirmDialog({
   cancelLabel = 'Cancelar',
   variant = 'default',
   loading = false,
+  children,
 }: ConfirmDialogProps) {
   return (
     <Modal
@@ -151,6 +153,7 @@ export function ConfirmDialog({
       }
     >
       <p className="text-sm text-zinc-400">{description}</p>
+      {children}
     </Modal>
   )
 }
