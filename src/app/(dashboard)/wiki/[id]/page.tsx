@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import {
   ChevronLeft,
   Save,
@@ -12,14 +13,71 @@ import {
   Trash2,
   History,
   Eye,
+  Crosshair,
+  Feather,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
-import { TiptapEditor, type TiptapEditorRef, WikiGallery } from '@/components/wiki'
+import { TiptapEditor, type TiptapEditorRef, WikiGallery, FactionPicker } from '@/components/wiki'
 import { factions } from '@/lib/data'
 import type { WikiPage, WikiCategory, TiptapContent, WikiPageUpdateInput, WikiRevision } from '@/lib/supabase/wiki.types'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.97 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: 'spring', stiffness: 100 },
+  },
+}
+
+/* ── Tactical frame corners ── */
+function TacticalCorners({ color = 'rgba(201,162,39,0.25)' }: { color?: string }) {
+  return (
+    <>
+      <span className="absolute top-0 left-0 w-5 h-5 border-t border-l pointer-events-none" style={{ borderColor: color }} />
+      <span className="absolute top-0 right-0 w-5 h-5 border-t border-r pointer-events-none" style={{ borderColor: color }} />
+      <span className="absolute bottom-0 left-0 w-5 h-5 border-b border-l pointer-events-none" style={{ borderColor: color }} />
+      <span className="absolute bottom-0 right-0 w-5 h-5 border-b border-r pointer-events-none" style={{ borderColor: color }} />
+    </>
+  )
+}
+
+/* ── Card wrapper with glow ── */
+function TacticalCard({
+  children,
+  color,
+  className = '',
+}: {
+  children: React.ReactNode
+  color?: string
+  className?: string
+}) {
+  const c = color || 'rgba(201,162,39,0.25)'
+  return (
+    <div className={`relative group ${className}`}>
+      <div
+        className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background: `linear-gradient(to right, transparent, ${c}, transparent)`,
+        }}
+      />
+      <TacticalCorners color={c} />
+      {children}
+    </div>
+  )
+}
 
 export default function EditWikiArticlePage() {
   const params = useParams()
@@ -36,6 +94,7 @@ export default function EditWikiArticlePage() {
   const [showRevisions, setShowRevisions] = useState(false)
 
   // Form state
+  const [subFaction, setSubFaction] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
@@ -45,6 +104,7 @@ export default function EditWikiArticlePage() {
   const [galleryImages, setGalleryImages] = useState<string[]>([])
 
   const selectedFaction = page ? factions.find(f => f.id === page.faction_id) : null
+  const currentColor = selectedFaction?.color || '#C9A227'
 
   useEffect(() => {
     loadData()
@@ -53,13 +113,11 @@ export default function EditWikiArticlePage() {
   async function loadData() {
     setLoading(true)
     try {
-      // Load categories
       const catRes = await fetch('/api/wiki/categories')
       if (catRes.ok) {
         setCategories(await catRes.json())
       }
 
-      // Load page
       const pageRes = await fetch(`/api/wiki/${pageId}`)
       if (!pageRes.ok) {
         throw new Error('Articulo no encontrado')
@@ -67,7 +125,6 @@ export default function EditWikiArticlePage() {
       const pageData = await pageRes.json()
       setPage(pageData)
 
-      // Set form state
       setCategoryId(pageData.category_id || '')
       setTitle(pageData.title)
       setSlug(pageData.slug)
@@ -76,7 +133,6 @@ export default function EditWikiArticlePage() {
       setGalleryImages(pageData.gallery_images || [])
       setStatus(pageData.status)
 
-      // Set editor content after a brief delay to ensure editor is mounted
       setTimeout(() => {
         editorRef.current?.setContent(pageData.content)
       }, 100)
@@ -173,279 +229,347 @@ export default function EditWikiArticlePage() {
   }
 
   return (
-    <div className="space-y-8 max-w-5xl">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+    <motion.div
+      className="space-y-8 max-w-6xl"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* ── Header Lexicanum ── */}
+      <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+        <div className="flex items-start gap-4">
           <Link href="/wiki">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="mt-1">
               <ChevronLeft className="w-4 h-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="font-display text-2xl font-bold text-white">
-              Editar Articulo
-            </h1>
-            <p className="font-body text-sm text-bone/60">
+            <div className="flex items-center gap-2 mb-2">
+              <Crosshair className="h-4 w-4 text-imperial-gold/60" />
+              <span className="text-[10px] font-mono text-imperial-gold/60 tracking-[0.3em] uppercase">
+                EDITAR ARTICULO // ARCHIVO LEXICANUM
+              </span>
+            </div>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-2xl font-display font-bold text-bone tracking-wide">
+                Editar Articulo
+              </h1>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono tracking-wider border bg-imperial-gold/15 border-imperial-gold/40 text-imperial-gold shadow-[0_0_12px_rgba(201,162,39,0.2)]">
+                <Feather className="w-3 h-3" />
+                SCRIBE
+              </span>
+            </div>
+            <p className="text-bone/40 font-mono text-sm">
               {selectedFaction?.shortName} / {page?.title}
             </p>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+
+        <div className="flex flex-wrap items-center gap-2">
           {status === 'published' && (
             <Link href={`/facciones/${page?.faction_id}/wiki/${page?.slug}`} target="_blank">
-              <Button variant="ghost" size="sm" className="gap-2">
+              <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/10 text-bone/60 hover:bg-bone/5 hover:text-bone transition-all duration-200 active:scale-[0.97]">
                 <Eye className="w-4 h-4" />
                 Ver
-              </Button>
+              </button>
             </Link>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
+            type="button"
             onClick={() => setShowRevisions(!showRevisions)}
-            className="gap-2"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/10 text-bone/60 hover:bg-bone/5 hover:text-bone transition-all duration-200 active:scale-[0.97]"
           >
             <History className="w-4 h-4" />
             Historial
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
+          </button>
+          <button
+            type="button"
             onClick={handleDelete}
-            className="gap-2 text-blood hover:text-blood-light"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-blood/20 text-blood/70 hover:bg-blood/10 hover:border-blood/40 hover:text-blood-light transition-all duration-200 active:scale-[0.97]"
           >
             <Trash2 className="w-4 h-4" />
             Eliminar
-          </Button>
-          <Button
-            variant="outline"
+          </button>
+          <button
+            type="button"
             onClick={() => handleSave()}
             disabled={saving}
-            className="gap-2"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/70 hover:bg-bone/5 hover:border-bone/30 hover:text-bone transition-all duration-200 active:scale-[0.97] disabled:opacity-40"
           >
             <Save className="w-4 h-4" />
             Guardar
-          </Button>
+          </button>
           {status !== 'published' && (
-            <Button
-              variant="primary"
+            <button
+              type="button"
               onClick={() => handleSave('published')}
               disabled={saving}
-              className="gap-2"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200 active:scale-[0.97] disabled:opacity-40"
             >
               <Globe className="w-4 h-4" />
               Publicar
-            </Button>
+            </button>
           )}
           {status === 'published' && (
-            <Button
-              variant="secondary"
+            <button
+              type="button"
               onClick={() => handleSave('archived')}
               disabled={saving}
-              className="gap-2"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/60 hover:bg-bone/5 hover:text-bone transition-all duration-200 active:scale-[0.97] disabled:opacity-40"
             >
               <Archive className="w-4 h-4" />
               Archivar
-            </Button>
+            </button>
           )}
         </div>
-      </div>
+      </motion.div>
+
+      {/* ── Imperial divider ── */}
+      <div className="h-px bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent" />
 
       {/* Error */}
       {error && (
-        <div className="p-4 rounded-lg bg-blood/20 border border-blood/40 text-blood-light font-body">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 rounded-lg bg-blood/20 border border-blood/40 text-blood-light font-body"
+        >
           {error}
-        </div>
+        </motion.div>
       )}
 
       {/* Status indicator */}
-      <div className="flex items-center gap-3">
+      <motion.div variants={itemVariants} className="flex items-center gap-3">
         <span
-          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-body ${
-            status === 'draft' ? 'bg-yellow-500/20 text-yellow-400' :
-            status === 'published' ? 'bg-green-500/20 text-green-400' :
-            'bg-gray-500/20 text-gray-400'
+          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-mono tracking-wider ${
+            status === 'draft' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' :
+            status === 'published' ? 'bg-green-500/15 text-green-400 border border-green-500/30' :
+            'bg-gray-500/15 text-gray-400 border border-gray-500/30'
           }`}
         >
           {status === 'draft' ? <FileText className="w-4 h-4" /> :
            status === 'published' ? <Globe className="w-4 h-4" /> :
            <Archive className="w-4 h-4" />}
-          {status === 'draft' ? 'Borrador' :
-           status === 'published' ? 'Publicado' : 'Archivado'}
+          {status === 'draft' ? 'BORRADOR' :
+           status === 'published' ? 'PUBLICADO' : 'ARCHIVADO'}
         </span>
         {page?.published_at && (
-          <span className="text-sm text-bone/50 font-body">
+          <span className="text-sm text-bone/50 font-mono">
             Publicado el {new Date(page.published_at).toLocaleDateString('es-ES')}
           </span>
         )}
-      </div>
+      </motion.div>
 
+      {/* ── Faction Picker (read-only display for edit, showing subfaction selector) ── */}
+      {page?.faction_id && (
+        <motion.div variants={itemVariants}>
+          <FactionPicker
+            factionId={page.faction_id}
+            subFaction={subFaction}
+            onFactionChange={() => {}} // Faction is locked on edit
+            onSubFactionChange={setSubFaction}
+            factionColor={currentColor}
+          />
+        </motion.div>
+      )}
+
+      {/* ── Main grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Title & Slug */}
-          <Card>
-            <CardContent className="pt-4 space-y-4">
-              <div>
-                <label className="block font-body text-sm text-bone/70 mb-2">
-                  Titulo *
-                </label>
-                <Input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Titulo del articulo"
-                />
-              </div>
-              <div>
-                <label className="block font-body text-sm text-bone/70 mb-2">
-                  Slug (URL) *
-                </label>
-                <Input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  placeholder="slug-del-articulo"
-                />
-                <p className="mt-1 text-xs text-bone/40 font-body">
-                  URL: /facciones/{page?.faction_id}/wiki/{slug}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <motion.div variants={itemVariants}>
+            <TacticalCard color={`${currentColor}40`}>
+              <Card>
+                <CardContent className="pt-4 space-y-4">
+                  <div>
+                    <label className="block font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em] uppercase mb-2">
+                      TITULO *
+                    </label>
+                    <Input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="Titulo del articulo"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em] uppercase mb-2">
+                      SLUG (URL) *
+                    </label>
+                    <Input
+                      type="text"
+                      value={slug}
+                      onChange={(e) => setSlug(e.target.value)}
+                      placeholder="slug-del-articulo"
+                    />
+                    <p className="mt-1 text-xs text-bone/40 font-mono">
+                      /facciones/{page?.faction_id}/wiki/{slug}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </TacticalCard>
+          </motion.div>
 
           {/* Editor */}
-          <Card padding="none">
-            <CardHeader className="border-b border-bone/10 p-4">
-              <CardTitle className="text-base">Contenido</CardTitle>
-            </CardHeader>
-            <TiptapEditor
-              ref={editorRef}
-              content={page?.content}
-              factionColor={selectedFaction?.color || '#C9A227'}
-              placeholder="Escribe el contenido del articulo..."
-            />
-          </Card>
+          <motion.div variants={itemVariants}>
+            <TacticalCard color={`${currentColor}40`}>
+              <Card padding="none">
+                <CardHeader className="border-b border-bone/10 p-4">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CONTENIDO</span>
+                  </CardTitle>
+                </CardHeader>
+                <TiptapEditor
+                  ref={editorRef}
+                  content={page?.content}
+                  factionColor={currentColor}
+                  placeholder="Escribe el contenido del articulo..."
+                />
+              </Card>
+            </TacticalCard>
+          </motion.div>
 
           {/* Gallery */}
-          <WikiGallery
-            images={galleryImages}
-            onChange={setGalleryImages}
-            factionId={page?.faction_id || undefined}
-            factionColor={selectedFaction?.color || '#C9A227'}
-          />
+          <motion.div variants={itemVariants}>
+            <WikiGallery
+              images={galleryImages}
+              onChange={setGalleryImages}
+              factionId={page?.faction_id || undefined}
+              factionColor={currentColor}
+            />
+          </motion.div>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Category */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Clasificacion</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block font-body text-sm text-bone/70 mb-2">
-                  Faccion
-                </label>
-                <div
-                  className="px-4 py-2 rounded-lg border font-body"
-                  style={{
-                    background: selectedFaction ? `${selectedFaction.color}10` : undefined,
-                    borderColor: selectedFaction?.color || 'rgba(232,232,240,0.1)',
-                    color: selectedFaction?.color || 'inherit',
-                  }}
-                >
-                  {selectedFaction?.name || 'Desconocida'}
-                </div>
-              </div>
-              <div>
-                <label className="block font-body text-sm text-bone/70 mb-2">
-                  Categoria
-                </label>
-                <select
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-void-light border border-bone/10 text-bone font-body focus:outline-none focus:ring-2 focus:ring-imperial-gold"
-                >
-                  <option value="">Sin categoria</option>
-                  {categories.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
-              </div>
-            </CardContent>
-          </Card>
+          <motion.div variants={itemVariants}>
+            <TacticalCard color={`${currentColor}30`}>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CLASIFICACION</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="block font-mono text-[10px] text-bone/40 tracking-[0.15em] uppercase mb-2">
+                      FACCION
+                    </label>
+                    <div
+                      className="px-4 py-2 rounded-lg border font-body"
+                      style={{
+                        background: selectedFaction ? `${selectedFaction.color}10` : undefined,
+                        borderColor: selectedFaction?.color || 'rgba(232,232,240,0.1)',
+                        color: selectedFaction?.color || 'inherit',
+                      }}
+                    >
+                      {selectedFaction?.name || 'Desconocida'}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block font-mono text-[10px] text-bone/40 tracking-[0.15em] uppercase mb-2">
+                      CATEGORIA
+                    </label>
+                    <select
+                      value={categoryId}
+                      onChange={(e) => setCategoryId(e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg bg-void-light border border-bone/10 text-bone font-body focus:outline-none focus:ring-2 transition-all duration-200"
+                      style={{
+                        ['--tw-ring-color' as string]: currentColor,
+                      }}
+                    >
+                      <option value="">Sin categoria</option>
+                      {categories.map(c => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </CardContent>
+              </Card>
+            </TacticalCard>
+          </motion.div>
 
           {/* Excerpt */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Extracto</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                value={excerpt}
-                onChange={(e) => setExcerpt(e.target.value)}
-                placeholder="Breve descripcion para listados..."
-                rows={3}
-              />
-            </CardContent>
-          </Card>
+          <motion.div variants={itemVariants}>
+            <TacticalCard color={`${currentColor}30`}>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">EXTRACTO</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Textarea
+                    value={excerpt}
+                    onChange={(e) => setExcerpt(e.target.value)}
+                    placeholder="Breve descripcion para listados..."
+                    rows={3}
+                  />
+                </CardContent>
+              </Card>
+            </TacticalCard>
+          </motion.div>
 
           {/* Hero Image */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Imagen Principal</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Input
-                type="text"
-                value={heroImage}
-                onChange={(e) => setHeroImage(e.target.value)}
-                placeholder="URL de la imagen..."
-              />
-              {heroImage && (
-                <div className="mt-3 relative aspect-video rounded-lg overflow-hidden border border-bone/10">
-                  <img
-                    src={heroImage}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none'
-                    }}
+          <motion.div variants={itemVariants}>
+            <TacticalCard color={`${currentColor}30`}>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">IMAGEN PRINCIPAL</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Input
+                    type="text"
+                    value={heroImage}
+                    onChange={(e) => setHeroImage(e.target.value)}
+                    placeholder="URL de la imagen..."
                   />
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  {heroImage && (
+                    <div className="mt-3 relative aspect-video rounded-lg overflow-hidden border border-bone/10">
+                      <img
+                        src={heroImage}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none'
+                        }}
+                      />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TacticalCard>
+          </motion.div>
 
           {/* Meta info */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Informacion</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm font-body text-bone/60">
-              <div className="flex justify-between">
-                <span>Vistas:</span>
-                <span className="text-bone">{page?.views_count || 0}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Creado:</span>
-                <span className="text-bone">
-                  {page?.created_at && new Date(page.created_at).toLocaleDateString('es-ES')}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Actualizado:</span>
-                <span className="text-bone">
-                  {page?.updated_at && new Date(page.updated_at).toLocaleDateString('es-ES')}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+          <motion.div variants={itemVariants}>
+            <TacticalCard color={`${currentColor}30`}>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">INFORMACION</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm font-mono text-bone/60">
+                  <div className="flex justify-between">
+                    <span>Vistas:</span>
+                    <span className="text-bone">{page?.views_count || 0}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Creado:</span>
+                    <span className="text-bone">
+                      {page?.created_at && new Date(page.created_at).toLocaleDateString('es-ES')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Actualizado:</span>
+                    <span className="text-bone">
+                      {page?.updated_at && new Date(page.updated_at).toLocaleDateString('es-ES')}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </TacticalCard>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
