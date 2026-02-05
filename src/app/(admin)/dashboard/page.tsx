@@ -47,6 +47,28 @@ interface DashboardStats {
   pendingCreators: number
   approvedCreators: number
   pendingReports: number
+  // Growth percentages (current month vs previous)
+  usersGrowth: string | null
+  miniaturesGrowth: string | null
+}
+
+interface GrowthDataPoint {
+  [key: string]: string | number
+  name: string
+  usuarios: number
+  miniaturas: number
+  anuncios: number
+}
+
+interface FactionDataPoint {
+  name: string
+  value: number
+}
+
+interface ContentStatusPoint {
+  name: string
+  value: number
+  fill: string
 }
 
 interface RecentActivity {
@@ -59,31 +81,17 @@ interface RecentActivity {
 }
 
 // ══════════════════════════════════════════════════════════════
-// MOCK DATA - Replace with real Supabase queries
+// HELPERS
 // ══════════════════════════════════════════════════════════════
 
-const mockGrowthData = [
-  { name: 'Ene', usuarios: 45, miniaturas: 120, anuncios: 18 },
-  { name: 'Feb', usuarios: 52, miniaturas: 145, anuncios: 24 },
-  { name: 'Mar', usuarios: 61, miniaturas: 189, anuncios: 31 },
-  { name: 'Abr', usuarios: 78, miniaturas: 234, anuncios: 38 },
-  { name: 'May', usuarios: 95, miniaturas: 298, anuncios: 45 },
-  { name: 'Jun', usuarios: 112, miniaturas: 356, anuncios: 52 },
-]
+const MONTH_NAMES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
 
-const mockFactionData = [
-  { name: 'Space Marines', value: 245 },
-  { name: 'Chaos', value: 189 },
-  { name: 'Orks', value: 156 },
-  { name: 'Aeldari', value: 134 },
-  { name: 'Necrons', value: 98 },
-]
-
-const mockContentStatus = [
-  { name: 'Publicado', value: 856, fill: CHART_COLORS.success },
-  { name: 'Pendiente', value: 45, fill: CHART_COLORS.warning },
-  { name: 'Rechazado', value: 12, fill: CHART_COLORS.danger },
-]
+function calcGrowthPct(current: number, previous: number): string | null {
+  if (previous === 0) return current > 0 ? '+100%' : null
+  const pct = Math.round(((current - previous) / previous) * 100)
+  if (pct === 0) return null
+  return `${pct > 0 ? '+' : ''}${pct}% vs mes anterior`
+}
 
 // ══════════════════════════════════════════════════════════════
 // COMPONENTS
@@ -303,6 +311,9 @@ function DataSlateCard({
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [activities, setActivities] = useState<RecentActivity[]>([])
+  const [growthData, setGrowthData] = useState<GrowthDataPoint[]>([])
+  const [factionData, setFactionData] = useState<FactionDataPoint[]>([])
+  const [contentStatus, setContentStatus] = useState<ContentStatusPoint[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -310,6 +321,7 @@ export default function DashboardPage() {
       const supabase = createClient()
 
       try {
+        // ── KPI counts ──
         const [
           { count: usersCount },
           { count: miniaturesCount },
@@ -330,6 +342,60 @@ export default function DashboardPage() {
           supabase.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
         ])
 
+        // ── Growth data (last 6 months) ──
+        const now = new Date()
+        const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1)
+        const sinceDate = sixMonthsAgo.toISOString()
+
+        const [
+          { data: userDates },
+          { data: miniatureDates },
+          { data: listingDates },
+        ] = await Promise.all([
+          supabase.from('profiles').select('created_at').gte('created_at', sinceDate),
+          supabase.from('miniatures').select('created_at').gte('created_at', sinceDate),
+          supabase.from('listings').select('created_at').gte('created_at', sinceDate),
+        ])
+
+        // Group by month
+        const monthBuckets: Record<string, { usuarios: number; miniaturas: number; anuncios: number }> = {}
+        for (let i = 0; i < 6; i++) {
+          const d = new Date(now.getFullYear(), now.getMonth() - 5 + i, 1)
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+          monthBuckets[key] = { usuarios: 0, miniaturas: 0, anuncios: 0 }
+        }
+
+        const bucketKey = (iso: string) => {
+          const d = new Date(iso)
+          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+        }
+
+        for (const row of userDates || []) {
+          const k = bucketKey(row.created_at)
+          if (monthBuckets[k]) monthBuckets[k].usuarios++
+        }
+        for (const row of miniatureDates || []) {
+          const k = bucketKey(row.created_at)
+          if (monthBuckets[k]) monthBuckets[k].miniaturas++
+        }
+        for (const row of listingDates || []) {
+          const k = bucketKey(row.created_at)
+          if (monthBuckets[k]) monthBuckets[k].anuncios++
+        }
+
+        const sortedMonths = Object.keys(monthBuckets).sort()
+        const growth: GrowthDataPoint[] = sortedMonths.map((key) => ({
+          name: MONTH_NAMES[parseInt(key.split('-')[1]) - 1],
+          ...monthBuckets[key],
+        }))
+        setGrowthData(growth)
+
+        // Calculate growth percentage (current month vs previous)
+        const currentMonth = sortedMonths[sortedMonths.length - 1]
+        const prevMonth = sortedMonths[sortedMonths.length - 2]
+        const usersGrowth = prevMonth ? calcGrowthPct(monthBuckets[currentMonth].usuarios, monthBuckets[prevMonth].usuarios) : null
+        const miniaturesGrowth = prevMonth ? calcGrowthPct(monthBuckets[currentMonth].miniaturas, monthBuckets[prevMonth].miniaturas) : null
+
         setStats({
           totalUsers: usersCount || 0,
           totalMiniatures: miniaturesCount || 0,
@@ -339,9 +405,48 @@ export default function DashboardPage() {
           pendingCreators: pendingCreatorsCount || 0,
           approvedCreators: approvedCreatorsCount || 0,
           pendingReports: pendingReportsCount || 0,
+          usersGrowth,
+          miniaturesGrowth,
         })
 
-        // Fetch recent activity
+        // ── Faction distribution (top 5 tags used in miniatures) ──
+        const { data: miniatureFactions } = await supabase
+          .from('miniatures')
+          .select('faction_id, tags!miniatures_faction_id_fkey(name)')
+          .not('faction_id', 'is', null)
+
+        const factionCounts: Record<string, { name: string; count: number }> = {}
+        for (const row of miniatureFactions || []) {
+          const fid = row.faction_id as string
+          const tag = row.tags as unknown as { name: string } | null
+          if (fid && tag?.name) {
+            if (!factionCounts[fid]) factionCounts[fid] = { name: tag.name, count: 0 }
+            factionCounts[fid].count++
+          }
+        }
+        const factions = Object.values(factionCounts)
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 5)
+          .map((f) => ({ name: f.name, value: f.count }))
+        setFactionData(factions)
+
+        // ── Content status (real counts: listings + stores + reports) ──
+        const [
+          { count: activeContent },
+          { count: pendingContent },
+          { count: rejectedContent },
+        ] = await Promise.all([
+          supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+          supabase.from('stores').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+          supabase.from('stores').select('*', { count: 'exact', head: true }).eq('status', 'rejected'),
+        ])
+        setContentStatus([
+          { name: 'Activo', value: activeContent || 0, fill: CHART_COLORS.success },
+          { name: 'Pendiente', value: (pendingContent || 0) + (pendingReportsCount || 0), fill: CHART_COLORS.warning },
+          { name: 'Rechazado', value: rejectedContent || 0, fill: CHART_COLORS.danger },
+        ])
+
+        // ── Recent activity ──
         const { data: recentUsers } = await supabase
           .from('profiles')
           .select('id, username, display_name, created_at')
@@ -485,8 +590,8 @@ export default function DashboardPage() {
           <DataSlateCard
             title="Efectivos"
             value={stats?.totalUsers || 0}
-            change="+12% ciclo actual"
-            changeType="positive"
+            change={stats?.usersGrowth || undefined}
+            changeType={stats?.usersGrowth?.startsWith('+') ? 'positive' : stats?.usersGrowth ? 'negative' : undefined}
             icon={Users}
             href="/dashboard/usuarios"
             color="#0D9B8A"
@@ -495,8 +600,8 @@ export default function DashboardPage() {
           <DataSlateCard
             title="Reliquias"
             value={stats?.totalMiniatures || 0}
-            change="+8% ciclo actual"
-            changeType="positive"
+            change={stats?.miniaturesGrowth || undefined}
+            changeType={stats?.miniaturesGrowth?.startsWith('+') ? 'positive' : stats?.miniaturesGrowth ? 'negative' : undefined}
             icon={Image}
             color="#C9A227"
             index={1}
@@ -577,7 +682,7 @@ export default function DashboardPage() {
             className="bg-void-light/50 backdrop-blur-sm border-imperial-gold/15 hover:border-imperial-gold/30 transition-colors"
           >
             <MultiLineChart
-              data={mockGrowthData}
+              data={growthData}
               lines={[
                 { dataKey: 'usuarios', color: '#0D9B8A', name: 'Efectivos' },
                 { dataKey: 'miniaturas', color: '#C9A227', name: 'Reliquias' },
@@ -593,9 +698,9 @@ export default function DashboardPage() {
             title="Estado Operacional"
             className="bg-void-light/50 backdrop-blur-sm border-imperial-gold/15 hover:border-imperial-gold/30 transition-colors"
           >
-            <DonutChart data={mockContentStatus} height={220} showLegend={false} />
+            <DonutChart data={contentStatus} height={220} showLegend={false} />
             <div className="flex justify-center gap-4 mt-4">
-              {mockContentStatus.map((item) => (
+              {contentStatus.map((item) => (
                 <div key={item.name} className="flex items-center gap-2 text-xs">
                   <motion.span
                     className="w-2.5 h-2.5 rounded-full"
@@ -621,7 +726,7 @@ export default function DashboardPage() {
             description="Distribucion por faccion"
             className="bg-void-light/50 backdrop-blur-sm border-imperial-gold/15 hover:border-imperial-gold/30 transition-colors"
           >
-            <SimpleBarChart data={mockFactionData} height={220} layout="horizontal" />
+            <SimpleBarChart data={factionData.length > 0 ? factionData : [{ name: 'Sin datos', value: 0 }]} height={220} layout="horizontal" />
           </ChartCard>
         </motion.div>
 

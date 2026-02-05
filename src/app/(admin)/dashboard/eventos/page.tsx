@@ -399,14 +399,15 @@ export default function EventosPage() {
               Cerrar
             </Button>
             {viewEvent && (
-              <Link
-                href={`/comunidad/eventos/${viewEvent.slug}`}
-                target="_blank"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg transition-colors"
-              >
-                Ver página
-                <ExternalLink className="w-3.5 h-3.5" />
-              </Link>
+              <Button asChild>
+                <Link
+                  href={`/comunidad/eventos/${viewEvent.slug}`}
+                  target="_blank"
+                >
+                  Ver página
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </Link>
+              </Button>
             )}
           </>
         }
