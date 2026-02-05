@@ -1,129 +1,126 @@
 'use client'
 
 import * as React from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
   Users,
-  Eye,
-  Clock,
-  MousePointer,
-  Globe,
-  Smartphone,
-  Monitor,
+  Image,
+  ShoppingBag,
+  Heart,
   TrendingUp,
   TrendingDown,
   ArrowUpRight,
-  Calendar,
   Activity,
   Zap,
   Target,
   BarChart3,
-  Map,
   Layers,
-  Cpu,
-  Radio,
   Crosshair,
+  Shield,
+  Palette,
+  Store,
 } from 'lucide-react'
 import {
-  SimpleAreaChart,
   MultiLineChart,
   SimpleBarChart,
   StackedBarChart,
   ComparisonBar,
   Sparkline,
   CHART_COLORS,
+  CHART_PALETTE,
 } from '../components/charts'
 import { WebVitalsMonitor } from '../components/WebVitalsMonitor'
 import { createClient } from '@/lib/supabase/client'
 
 // ══════════════════════════════════════════════════════════════
-// TYPES
+// HELPERS
 // ══════════════════════════════════════════════════════════════
 
-interface AnalyticsData {
-  totalUsers: number
-  newUsersThisMonth: number
-  totalMiniatures: number
-  totalListings: number
-  totalStores: number
-  totalViews: number
+const MONTH_NAMES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab']
+
+type TimeRange = '7d' | '30d' | '90d'
+
+function getDateRange(range: TimeRange) {
+  const now = new Date()
+  const days = range === '7d' ? 7 : range === '30d' ? 30 : 90
+  const since = new Date(now.getTime() - days * 24 * 60 * 60 * 1000)
+  const previous = new Date(since.getTime() - days * 24 * 60 * 60 * 1000)
+  return {
+    sinceISO: since.toISOString(),
+    previousISO: previous.toISOString(),
+    nowISO: now.toISOString(),
+    days,
+    label: range === '7d' ? 'vs 7d anteriores' : range === '30d' ? 'vs 30d anteriores' : 'vs 90d anteriores',
+  }
 }
 
-// ══════════════════════════════════════════════════════════════
-// MOCK DATA - In production, fetch from Vercel Analytics API
-// ══════════════════════════════════════════════════════════════
+function calcGrowthPct(current: number, previous: number): number | null {
+  if (previous === 0) return current > 0 ? 100 : null
+  const pct = Math.round(((current - previous) / previous) * 100)
+  return pct === 0 ? null : pct
+}
 
-const trafficData = [
-  { name: '00:00', visitors: 45, pageviews: 120 },
-  { name: '04:00', visitors: 23, pageviews: 65 },
-  { name: '08:00', visitors: 89, pageviews: 234 },
-  { name: '12:00', visitors: 156, pageviews: 423 },
-  { name: '16:00', visitors: 198, pageviews: 512 },
-  { name: '20:00', visitors: 167, pageviews: 398 },
-  { name: '23:59', visitors: 78, pageviews: 187 },
-]
+function groupByDay(dates: string[], numDays: number): number[] {
+  const now = new Date()
+  const buckets: number[] = new Array(numDays).fill(0)
+  for (const iso of dates) {
+    const d = new Date(iso)
+    const diffMs = now.getTime() - d.getTime()
+    const dayIndex = numDays - 1 - Math.floor(diffMs / (24 * 60 * 60 * 1000))
+    if (dayIndex >= 0 && dayIndex < numDays) buckets[dayIndex]++
+  }
+  return buckets
+}
 
-const weeklyData = [
-  { name: 'Lun', usuarios: 234, sesiones: 456, rebote: 32 },
-  { name: 'Mar', usuarios: 267, sesiones: 523, rebote: 28 },
-  { name: 'Mie', usuarios: 312, sesiones: 598, rebote: 25 },
-  { name: 'Jue', usuarios: 289, sesiones: 567, rebote: 30 },
-  { name: 'Vie', usuarios: 345, sesiones: 689, rebote: 27 },
-  { name: 'Sab', usuarios: 198, sesiones: 378, rebote: 35 },
-  { name: 'Dom', usuarios: 167, sesiones: 312, rebote: 38 },
-]
+function bucketKey(iso: string) {
+  const d = new Date(iso)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+}
 
-const monthlyGrowthData = [
-  { name: 'Ene', usuarios: 1200, miniaturas: 3400, anuncios: 450 },
-  { name: 'Feb', usuarios: 1450, miniaturas: 4200, anuncios: 520 },
-  { name: 'Mar', usuarios: 1800, miniaturas: 5100, anuncios: 610 },
-  { name: 'Abr', usuarios: 2100, miniaturas: 6200, anuncios: 720 },
-  { name: 'May', usuarios: 2500, miniaturas: 7400, anuncios: 850 },
-  { name: 'Jun', usuarios: 2900, miniaturas: 8800, anuncios: 980 },
-]
+function countByField(data: Array<Record<string, unknown>>, field: string): Record<string, number> {
+  const counts: Record<string, number> = {}
+  for (const item of data) {
+    const val = String(item[field] ?? 'unknown')
+    counts[val] = (counts[val] || 0) + 1
+  }
+  return counts
+}
 
-const deviceData = [
-  { name: 'Desktop', value: 58, fill: CHART_COLORS.primary },
-  { name: 'Mobile', value: 35, fill: CHART_COLORS.success },
-  { name: 'Tablet', value: 7, fill: CHART_COLORS.tertiary },
-]
+// Label translations
+const LISTING_CATEGORY_LABELS: Record<string, string> = {
+  miniatures: 'Miniaturas',
+  novels: 'Novelas',
+  codex: 'Codex',
+  paints: 'Pinturas',
+  tools: 'Herramientas',
+  terrain: 'Escenografia',
+  accessories: 'Accesorios',
+  other: 'Otros',
+}
 
-const browserData = [
-  { name: 'Chrome', value: 64, fill: '#4285F4' },
-  { name: 'Safari', value: 19, fill: '#000000' },
-  { name: 'Firefox', value: 10, fill: '#FF7139' },
-  { name: 'Edge', value: 5, fill: '#0078D7' },
-  { name: 'Otros', value: 2, fill: CHART_COLORS.muted },
-]
+const CREATOR_TYPE_LABELS: Record<string, string> = {
+  painter: 'Pintor',
+  youtuber: 'YouTuber',
+  artist: 'Artista',
+  blogger: 'Blogger',
+  instructor: 'Instructor',
+}
 
-const topPagesData = [
-  { name: '/galeria', value: 12453 },
-  { name: '/mercado', value: 8765 },
-  { name: '/comunidad', value: 6234 },
-  { name: '/facciones', value: 4521 },
-  { name: '/usuarios', value: 3210 },
-]
+const STORE_STATUS_LABELS: Record<string, string> = {
+  approved: 'Aprobada',
+  pending: 'Pendiente',
+  rejected: 'Rechazada',
+  closed: 'Cerrada',
+}
 
-const countryData = [
-  { name: 'Espana', value: 4521, percentage: 45 },
-  { name: 'Mexico', value: 1856, percentage: 19 },
-  { name: 'Argentina', value: 1234, percentage: 12 },
-  { name: 'Colombia', value: 987, percentage: 10 },
-  { name: 'Chile', value: 654, percentage: 7 },
-  { name: 'Otros', value: 723, percentage: 7 },
-]
-
-const contentTypeData = [
-  { name: 'Ene', miniaturas: 450, anuncios: 120, tiendas: 15 },
-  { name: 'Feb', miniaturas: 520, anuncios: 145, tiendas: 18 },
-  { name: 'Mar', miniaturas: 610, anuncios: 168, tiendas: 22 },
-  { name: 'Abr', miniaturas: 580, anuncios: 156, tiendas: 20 },
-  { name: 'May', miniaturas: 720, anuncios: 198, tiendas: 28 },
-  { name: 'Jun', miniaturas: 850, anuncios: 234, tiendas: 35 },
-]
-
-const realtimeSparkline = [45, 52, 48, 61, 55, 67, 72, 68, 75, 82, 78, 85, 91, 88, 95]
+const REPORT_STATUS_LABELS: Record<string, string> = {
+  pending: 'Pendiente',
+  reviewed: 'Revisado',
+  resolved: 'Resuelto',
+  dismissed: 'Descartado',
+}
 
 // ══════════════════════════════════════════════════════════════
 // BENTO CARD COMPONENT
@@ -186,7 +183,7 @@ function BentoCard({ children, className = '', title, subtitle, icon, action }: 
 interface MetricCardProps {
   label: string
   value: string | number
-  change?: number
+  change?: number | null
   changeLabel?: string
   icon: React.ReactNode
   sparklineData?: number[]
@@ -194,7 +191,7 @@ interface MetricCardProps {
 }
 
 function MetricCard({ label, value, change, changeLabel, icon, sparklineData, color = CHART_COLORS.primary }: MetricCardProps) {
-  const isPositive = change && change > 0
+  const isPositive = change != null && change > 0
 
   return (
     <BentoCard>
@@ -212,7 +209,7 @@ function MetricCard({ label, value, change, changeLabel, icon, sparklineData, co
           >
             {typeof value === 'number' ? value.toLocaleString() : value}
           </motion.p>
-          {change !== undefined && (
+          {change != null && (
             <div className="flex items-center gap-1.5 mt-2">
               {isPositive ? (
                 <TrendingUp className="w-3.5 h-3.5 text-necron-teal" />
@@ -240,51 +237,377 @@ function MetricCard({ label, value, change, changeLabel, icon, sparklineData, co
 // ANALYTICS PAGE
 // ══════════════════════════════════════════════════════════════
 
+interface AnalyticsState {
+  // KPI totals
+  totalUsers: number
+  totalMiniatures: number
+  totalListings: number
+  totalInteractions: number
+  // Growth percentages
+  usersGrowth: number | null
+  miniaturesGrowth: number | null
+  listingsGrowth: number | null
+  interactionsGrowth: number | null
+  // Sparklines (14 days)
+  usersSparkline: number[]
+  miniaturesSparkline: number[]
+  listingsSparkline: number[]
+  interactionsSparkline: number[]
+  // Monthly growth chart (6 months)
+  monthlyGrowth: Array<{ name: string; usuarios: number; miniaturas: number; anuncios: number }>
+  // Community breakdown
+  communityBreakdown: Array<{ label: string; value: number; max: number; color: string }>
+  // Content created (stacked bar, 6 months)
+  contentCreated: Array<Record<string, string | number>>
+  // Category distribution
+  categoryDistribution: Array<{ name: string; value: number; fill?: string }>
+  // Creator types
+  creatorTypes: Array<{ name: string; value: number; fill?: string }>
+  // Weekly activity (7 days)
+  weeklyActivity: Array<Record<string, string | number>>
+  // Platform metrics
+  avgLikesPerMini: number
+  avgCommentsPerMini: number
+  totalFollows: number
+  creatorConversionRate: number
+  // Factions (top 5)
+  factionData: Array<{ name: string; value: number }>
+  // Operational status
+  storeStatusData: Array<{ label: string; value: number; max: number; color: string }>
+  reportStatusData: Array<{ label: string; value: number; max: number; color: string }>
+}
+
 export default function AnaliticasPage() {
-  const [data, setData] = useState<AnalyticsData | null>(null)
+  const [data, setData] = useState<AnalyticsState | null>(null)
   const [loading, setLoading] = useState(true)
-  const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '90d'>('7d')
+  const [timeRange, setTimeRange] = useState<TimeRange>('30d')
+
+  const fetchData = useCallback(async (range: TimeRange) => {
+    setLoading(true)
+    const supabase = createClient()
+    const { sinceISO, previousISO } = getDateRange(range)
+
+    try {
+      const now = new Date()
+      const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1)
+      const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString()
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+
+      // ── Batch 1: Total KPI counts ──
+      const [
+        { count: usersCount },
+        { count: miniaturesCount },
+        { count: listingsCount },
+        { count: storesApproved },
+        { count: followsCount },
+        { count: likesCount },
+        { count: commentsCount },
+        { count: eventsCount },
+      ] = await Promise.all([
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('miniatures').select('*', { count: 'exact', head: true }),
+        supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+        supabase.from('stores').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
+        supabase.from('follows').select('*', { count: 'exact', head: true }),
+        supabase.from('miniature_likes').select('*', { count: 'exact', head: true }),
+        supabase.from('miniature_comments').select('*', { count: 'exact', head: true }),
+        supabase.from('events').select('*', { count: 'exact', head: true }),
+      ])
+
+      // ── Batch 2: Period growth counts (current vs previous) ──
+      const [
+        { count: usersCurrent },
+        { count: usersPrevious },
+        { count: minisCurrent },
+        { count: minisPrevious },
+        { count: listingsCurrent },
+        { count: listingsPrevious },
+        { count: likesCurrent },
+        { count: likesPrevious },
+        { count: commentsCurrent },
+        { count: commentsPrevious },
+        { count: followsCurrent },
+        { count: followsPrevious },
+      ] = await Promise.all([
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
+        supabase.from('miniatures').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
+        supabase.from('miniatures').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
+        supabase.from('listings').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
+        supabase.from('listings').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
+        supabase.from('miniature_likes').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
+        supabase.from('miniature_likes').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
+        supabase.from('miniature_comments').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
+        supabase.from('miniature_comments').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
+        supabase.from('follows').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
+        supabase.from('follows').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
+      ])
+
+      const interactionsCurrent = (likesCurrent || 0) + (commentsCurrent || 0) + (followsCurrent || 0)
+      const interactionsPrevious = (likesPrevious || 0) + (commentsPrevious || 0) + (followsPrevious || 0)
+
+      // ── Batch 3: Dates for charts (6 months) ──
+      const [
+        { data: userDates },
+        { data: miniatureDates },
+        { data: listingDates },
+        { data: likeDates },
+        { data: commentDates },
+        { data: followDates },
+        { data: storeDates },
+      ] = await Promise.all([
+        supabase.from('profiles').select('created_at').gte('created_at', sixMonthsAgo.toISOString()),
+        supabase.from('miniatures').select('created_at').gte('created_at', sixMonthsAgo.toISOString()),
+        supabase.from('listings').select('created_at').gte('created_at', sixMonthsAgo.toISOString()),
+        supabase.from('miniature_likes').select('created_at').gte('created_at', sevenDaysAgo),
+        supabase.from('miniature_comments').select('created_at').gte('created_at', sevenDaysAgo),
+        supabase.from('follows').select('created_at').gte('created_at', sevenDaysAgo),
+        supabase.from('stores').select('created_at').gte('created_at', sixMonthsAgo.toISOString()),
+      ])
+
+      // Sparklines (14 days)
+      const [
+        { data: sparkUsers },
+        { data: sparkMinis },
+        { data: sparkListings },
+        { data: sparkLikes },
+        { data: sparkComments },
+        { data: sparkFollows },
+      ] = await Promise.all([
+        supabase.from('profiles').select('created_at').gte('created_at', fourteenDaysAgo),
+        supabase.from('miniatures').select('created_at').gte('created_at', fourteenDaysAgo),
+        supabase.from('listings').select('created_at').gte('created_at', fourteenDaysAgo),
+        supabase.from('miniature_likes').select('created_at').gte('created_at', fourteenDaysAgo),
+        supabase.from('miniature_comments').select('created_at').gte('created_at', fourteenDaysAgo),
+        supabase.from('follows').select('created_at').gte('created_at', fourteenDaysAgo),
+      ])
+
+      const usersSparkline = groupByDay((sparkUsers || []).map(r => r.created_at), 14)
+      const miniaturesSparkline = groupByDay((sparkMinis || []).map(r => r.created_at), 14)
+      const listingsSparkline = groupByDay((sparkListings || []).map(r => r.created_at), 14)
+      // Interactions sparkline: sum of likes+comments+follows per day
+      const likesDaily = groupByDay((sparkLikes || []).map(r => r.created_at), 14)
+      const commentsDaily = groupByDay((sparkComments || []).map(r => r.created_at), 14)
+      const followsDaily = groupByDay((sparkFollows || []).map(r => r.created_at), 14)
+      const interactionsSparkline = likesDaily.map((v, i) => v + commentsDaily[i] + followsDaily[i])
+
+      // ── Monthly growth (6 months) ──
+      const monthBuckets: Record<string, { usuarios: number; miniaturas: number; anuncios: number }> = {}
+      for (let i = 0; i < 6; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - 5 + i, 1)
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+        monthBuckets[key] = { usuarios: 0, miniaturas: 0, anuncios: 0 }
+      }
+
+      for (const row of userDates || []) {
+        const k = bucketKey(row.created_at)
+        if (monthBuckets[k]) monthBuckets[k].usuarios++
+      }
+      for (const row of miniatureDates || []) {
+        const k = bucketKey(row.created_at)
+        if (monthBuckets[k]) monthBuckets[k].miniaturas++
+      }
+      for (const row of listingDates || []) {
+        const k = bucketKey(row.created_at)
+        if (monthBuckets[k]) monthBuckets[k].anuncios++
+      }
+
+      const sortedMonths = Object.keys(monthBuckets).sort()
+      const monthlyGrowth = sortedMonths.map((key) => ({
+        name: MONTH_NAMES[parseInt(key.split('-')[1]) - 1],
+        ...monthBuckets[key],
+      }))
+
+      // ── Content created (stacked bar: miniatures, listings, stores by month) ──
+      const contentBuckets: Record<string, { miniaturas: number; anuncios: number; tiendas: number }> = {}
+      for (const key of sortedMonths) {
+        contentBuckets[key] = { miniaturas: 0, anuncios: 0, tiendas: 0 }
+      }
+      for (const row of miniatureDates || []) {
+        const k = bucketKey(row.created_at)
+        if (contentBuckets[k]) contentBuckets[k].miniaturas++
+      }
+      for (const row of listingDates || []) {
+        const k = bucketKey(row.created_at)
+        if (contentBuckets[k]) contentBuckets[k].anuncios++
+      }
+      for (const row of storeDates || []) {
+        if (!row.created_at) continue
+        const k = bucketKey(row.created_at)
+        if (contentBuckets[k]) contentBuckets[k].tiendas++
+      }
+      const contentCreated = sortedMonths.map((key) => ({
+        name: MONTH_NAMES[parseInt(key.split('-')[1]) - 1],
+        ...contentBuckets[key],
+      }))
+
+      // ── Weekly activity (likes, comments, follows by day, last 7 days) ──
+      const weeklyActivity: Array<Record<string, string | number>> = []
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000)
+        const dayLabel = DAY_NAMES[d.getDay()]
+        weeklyActivity.push({ name: dayLabel, likes: 0, comentarios: 0, follows: 0 })
+      }
+      const assignToDay = (dates: Array<{ created_at: string }>, field: string) => {
+        for (const row of dates) {
+          const d = new Date(row.created_at)
+          const diffDays = Math.floor((now.getTime() - d.getTime()) / (24 * 60 * 60 * 1000))
+          const idx = 6 - diffDays
+          if (idx >= 0 && idx < 7) {
+            ;(weeklyActivity[idx] as Record<string, string | number>)[field] =
+              ((weeklyActivity[idx] as Record<string, string | number>)[field] as number) + 1
+          }
+        }
+      }
+      assignToDay(likeDates || [], 'likes')
+      assignToDay(commentDates || [], 'comentarios')
+      assignToDay(followDates || [], 'follows')
+
+      // ── Batch 4: Categorical breakdowns ──
+      const [
+        { data: listingCategories },
+        { data: creatorProfiles },
+        { data: allStores },
+        { data: allReports },
+        { data: miniatureFactions },
+      ] = await Promise.all([
+        supabase.from('listings').select('category'),
+        supabase.from('profiles').select('creator_type').neq('creator_status', 'none'),
+        supabase.from('stores').select('status'),
+        supabase.from('reports').select('status'),
+        supabase.from('miniatures').select('faction_id, tags!miniatures_faction_id_fkey(name)').not('faction_id', 'is', null),
+      ])
+
+      // Category distribution
+      const catCounts = countByField((listingCategories || []) as Array<Record<string, unknown>>, 'category')
+      const categoryDistribution = Object.entries(catCounts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 6)
+        .map(([key, value], i) => ({
+          name: LISTING_CATEGORY_LABELS[key] || key,
+          value,
+          fill: CHART_PALETTE[i % CHART_PALETTE.length],
+        }))
+
+      // Creator types
+      const creatorCounts = countByField(
+        ((creatorProfiles || []).filter(p => p.creator_type)) as Array<Record<string, unknown>>,
+        'creator_type',
+      )
+      const creatorTypes = Object.entries(creatorCounts)
+        .sort(([, a], [, b]) => b - a)
+        .map(([key, value], i) => ({
+          name: CREATOR_TYPE_LABELS[key] || key,
+          value,
+          fill: CHART_PALETTE[i % CHART_PALETTE.length],
+        }))
+
+      // Store status
+      const storeCounts = countByField((allStores || []) as Array<Record<string, unknown>>, 'status')
+      const maxStore = Math.max(...Object.values(storeCounts), 1)
+      const storeStatusData = Object.entries(storeCounts)
+        .sort(([, a], [, b]) => b - a)
+        .map(([key, value], i) => ({
+          label: STORE_STATUS_LABELS[key] || key,
+          value,
+          max: maxStore,
+          color: CHART_PALETTE[i % CHART_PALETTE.length],
+        }))
+
+      // Report status
+      const reportCounts = countByField((allReports || []) as Array<Record<string, unknown>>, 'status')
+      const maxReport = Math.max(...Object.values(reportCounts), 1)
+      const reportStatusData = Object.entries(reportCounts)
+        .sort(([, a], [, b]) => b - a)
+        .map(([key, value], i) => ({
+          label: REPORT_STATUS_LABELS[key] || key,
+          value,
+          max: maxReport,
+          color: CHART_PALETTE[i % CHART_PALETTE.length],
+        }))
+
+      // Faction distribution (top 5)
+      const factionCounts: Record<string, { name: string; count: number }> = {}
+      for (const row of miniatureFactions || []) {
+        const fid = row.faction_id as string
+        const tag = row.tags as unknown as { name: string } | null
+        if (fid && tag?.name) {
+          if (!factionCounts[fid]) factionCounts[fid] = { name: tag.name, count: 0 }
+          factionCounts[fid].count++
+        }
+      }
+      const factionData = Object.values(factionCounts)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5)
+        .map((f) => ({ name: f.name, value: f.count }))
+
+      // ── Batch 5: Engagement averages ──
+      const [
+        { data: miniEngagement },
+        { count: creatorApplicants },
+        { count: creatorsApproved },
+      ] = await Promise.all([
+        supabase.from('miniatures').select('likes_count, comments_count'),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).neq('creator_status', 'none'),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('creator_status', 'approved'),
+      ])
+
+      const totalMinis = (miniEngagement || []).length
+      const sumLikes = (miniEngagement || []).reduce((s, m) => s + (m.likes_count || 0), 0)
+      const sumComments = (miniEngagement || []).reduce((s, m) => s + (m.comments_count || 0), 0)
+      const avgLikesPerMini = totalMinis > 0 ? Math.round((sumLikes / totalMinis) * 10) / 10 : 0
+      const avgCommentsPerMini = totalMinis > 0 ? Math.round((sumComments / totalMinis) * 10) / 10 : 0
+      const creatorConversionRate = (creatorApplicants || 0) > 0
+        ? Math.round(((creatorsApproved || 0) / (creatorApplicants || 1)) * 100)
+        : 0
+
+      // Community breakdown
+      const communityBreakdown = [
+        { label: 'Usuarios', value: usersCount || 0, max: Math.max(usersCount || 0, 1), color: CHART_COLORS.success },
+        { label: 'Creadores', value: creatorsApproved || 0, max: Math.max(usersCount || 0, 1), color: '#8B5CF6' },
+        { label: 'Tiendas', value: storesApproved || 0, max: Math.max(usersCount || 0, 1), color: CHART_COLORS.warning },
+        { label: 'Eventos', value: eventsCount || 0, max: Math.max(usersCount || 0, 1), color: CHART_COLORS.primary },
+      ]
+
+      setData({
+        totalUsers: usersCount || 0,
+        totalMiniatures: miniaturesCount || 0,
+        totalListings: listingsCount || 0,
+        totalInteractions: (likesCount || 0) + (commentsCount || 0) + (followsCount || 0),
+        usersGrowth: calcGrowthPct(usersCurrent || 0, usersPrevious || 0),
+        miniaturesGrowth: calcGrowthPct(minisCurrent || 0, minisPrevious || 0),
+        listingsGrowth: calcGrowthPct(listingsCurrent || 0, listingsPrevious || 0),
+        interactionsGrowth: calcGrowthPct(interactionsCurrent, interactionsPrevious),
+        usersSparkline,
+        miniaturesSparkline,
+        listingsSparkline,
+        interactionsSparkline,
+        monthlyGrowth,
+        communityBreakdown,
+        contentCreated,
+        categoryDistribution,
+        creatorTypes,
+        weeklyActivity,
+        avgLikesPerMini,
+        avgCommentsPerMini,
+        totalFollows: followsCount || 0,
+        creatorConversionRate,
+        factionData,
+        storeStatusData,
+        reportStatusData,
+      })
+    } catch (error) {
+      console.error('Error fetching analytics:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    async function fetchData() {
-      const supabase = createClient()
+    fetchData(timeRange)
+  }, [timeRange, fetchData])
 
-      try {
-        // Get last month date
-        const lastMonth = new Date()
-        lastMonth.setMonth(lastMonth.getMonth() - 1)
-
-        const [
-          { count: usersCount },
-          { count: newUsersCount },
-          { count: miniaturesCount },
-          { count: listingsCount },
-          { count: storesCount },
-        ] = await Promise.all([
-          supabase.from('profiles').select('*', { count: 'exact', head: true }),
-          supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', lastMonth.toISOString()),
-          supabase.from('miniatures').select('*', { count: 'exact', head: true }),
-          supabase.from('listings').select('*', { count: 'exact', head: true }),
-          supabase.from('stores').select('*', { count: 'exact', head: true }),
-        ])
-
-        setData({
-          totalUsers: usersCount || 0,
-          newUsersThisMonth: newUsersCount || 0,
-          totalMiniatures: miniaturesCount || 0,
-          totalListings: listingsCount || 0,
-          totalStores: storesCount || 0,
-          totalViews: 45678, // Mock - would come from Vercel Analytics
-        })
-      } catch (error) {
-        console.error('Error fetching analytics:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [])
+  const rangeInfo = getDateRange(timeRange)
 
   if (loading) {
     return (
@@ -323,7 +646,9 @@ export default function AnaliticasPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
-      {/* Header - Strategium Style */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* HEADER */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -338,7 +663,7 @@ export default function AnaliticasPage() {
 
         {/* Time Range Selector */}
         <div className="flex items-center gap-1 p-1 bg-void rounded-lg border border-imperial-gold/20">
-          {(['24h', '7d', '30d', '90d'] as const).map((range) => (
+          {(['7d', '30d', '90d'] as const).map((range) => (
             <motion.button
               key={range}
               onClick={() => setTimeRange(range)}
@@ -356,314 +681,299 @@ export default function AnaliticasPage() {
         </div>
       </div>
 
-      {/* Real-time indicator */}
-      <div className="flex items-center gap-3 p-3 rounded-lg bg-necron-teal/5 border border-necron-teal/20">
-        <motion.span
-          className="relative flex h-3 w-3"
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-necron-teal opacity-75" />
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-necron-teal" />
-        </motion.span>
-        <div className="flex items-center gap-2">
-          <Radio className="w-4 h-4 text-necron-teal/60" />
-          <span className="text-sm font-mono text-bone/60">
-            <span className="text-necron-teal font-bold">127</span> CONEXIONES ACTIVAS
-          </span>
-        </div>
-      </div>
-
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* BENTO GRID */}
+      {/* ROW 1: KPI METRIC CARDS */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        {/* Metric Cards Row */}
         <MetricCard
-          label="Visitantes"
-          value={data?.totalViews || 0}
-          change={12.5}
-          changeLabel="vs semana anterior"
+          label="Usuarios"
+          value={data?.totalUsers || 0}
+          change={data?.usersGrowth}
+          changeLabel={rangeInfo.label}
           icon={<Users className="w-4 h-4" />}
-          sparklineData={realtimeSparkline}
-          color={CHART_COLORS.primary}
-        />
-        <MetricCard
-          label="Paginas vistas"
-          value="128.4K"
-          change={8.2}
-          changeLabel="vs semana anterior"
-          icon={<Eye className="w-4 h-4" />}
-          sparklineData={[65, 72, 68, 75, 82, 78, 85, 91, 88, 95, 102, 98, 105, 112, 108]}
+          sparklineData={data?.usersSparkline}
           color={CHART_COLORS.success}
         />
         <MetricCard
-          label="Tiempo medio"
-          value="4m 32s"
-          change={-3.1}
-          changeLabel="vs semana anterior"
-          icon={<Clock className="w-4 h-4" />}
-          sparklineData={[45, 42, 48, 44, 41, 45, 43, 40, 42, 38, 41, 39, 42, 40, 38]}
+          label="Miniaturas"
+          value={data?.totalMiniatures || 0}
+          change={data?.miniaturesGrowth}
+          changeLabel={rangeInfo.label}
+          icon={<Image className="w-4 h-4" />}
+          sparklineData={data?.miniaturesSparkline}
+          color={CHART_COLORS.primary}
+        />
+        <MetricCard
+          label="Anuncios activos"
+          value={data?.totalListings || 0}
+          change={data?.listingsGrowth}
+          changeLabel={rangeInfo.label}
+          icon={<ShoppingBag className="w-4 h-4" />}
+          sparklineData={data?.listingsSparkline}
           color={CHART_COLORS.warning}
         />
         <MetricCard
-          label="Tasa rebote"
-          value="32.4%"
-          change={-5.8}
-          changeLabel="vs semana anterior"
-          icon={<MousePointer className="w-4 h-4" />}
-          sparklineData={[38, 36, 34, 35, 33, 34, 32, 33, 31, 32, 30, 31, 29, 30, 28]}
+          label="Interacciones"
+          value={data?.totalInteractions || 0}
+          change={data?.interactionsGrowth}
+          changeLabel={rangeInfo.label}
+          icon={<Heart className="w-4 h-4" />}
+          sparklineData={data?.interactionsSparkline}
           color={CHART_COLORS.tertiary}
         />
       </div>
 
-      {/* Main Charts Row */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* ROW 2: MONTHLY GROWTH + COMMUNITY */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
       <div className="grid gap-4 lg:grid-cols-3">
-        {/* Traffic Overview - Large */}
         <BentoCard
           className="lg:col-span-2"
-          title="Trafico en tiempo real"
-          subtitle="Visitantes y paginas vistas por hora"
-          icon={<Activity className="w-4 h-4 text-blue-500" />}
+          title="Crecimiento mensual"
+          subtitle="Usuarios, miniaturas y anuncios (6 meses)"
+          icon={<TrendingUp className="w-4 h-4 text-emerald-500" />}
           action={
             <div className="flex items-center gap-4 text-xs">
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-500" />
-                <span className="text-zinc-400">Visitantes</span>
+                <span className="w-2 h-2 rounded-full bg-[#0D9B8A]" />
+                <span className="text-zinc-400">Usuarios</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-zinc-400">Paginas</span>
+                <span className="w-2 h-2 rounded-full bg-[#C9A227]" />
+                <span className="text-zinc-400">Miniaturas</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#6B1C5F]" />
+                <span className="text-zinc-400">Anuncios</span>
               </span>
             </div>
           }
         >
           <MultiLineChart
-            data={trafficData}
+            data={data?.monthlyGrowth || []}
             lines={[
-              { dataKey: 'visitors', color: CHART_COLORS.primary, name: 'Visitantes' },
-              { dataKey: 'pageviews', color: CHART_COLORS.success, name: 'Paginas vistas' },
+              { dataKey: 'usuarios', color: '#0D9B8A', name: 'Usuarios' },
+              { dataKey: 'miniaturas', color: '#C9A227', name: 'Miniaturas' },
+              { dataKey: 'anuncios', color: '#6B1C5F', name: 'Anuncios' },
             ]}
             height={280}
             showLegend={false}
           />
         </BentoCard>
 
-        {/* Devices - Custom visualization */}
+        {/* Community Breakdown */}
         <BentoCard
-          title="Dispositivos"
-          subtitle="Distribucion por tipo"
-          icon={<Smartphone className="w-4 h-4 text-warp-purple" />}
+          title="Comunidad"
+          subtitle="Desglose de la plataforma"
+          icon={<Users className="w-4 h-4 text-necron-teal" />}
         >
           <div className="space-y-4 mt-2">
-            {deviceData.map((item, index) => (
+            {(data?.communityBreakdown || []).map((item, index) => (
               <motion.div
-                key={item.name}
+                key={item.label}
                 className="space-y-2"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
                 <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    {item.name === 'Desktop' && <Monitor className="w-4 h-4 text-imperial-gold/60" />}
-                    {item.name === 'Mobile' && <Smartphone className="w-4 h-4 text-imperial-gold/60" />}
-                    {item.name === 'Tablet' && <Smartphone className="w-4 h-4 text-imperial-gold/60 rotate-90" />}
-                    <span className="text-bone/70 font-mono">{item.name}</span>
-                  </div>
-                  <span className="text-bone font-mono font-bold">{item.value}%</span>
+                  <span className="text-bone/70 font-mono">{item.label}</span>
+                  <span className="text-bone font-mono font-bold">{item.value.toLocaleString()}</span>
                 </div>
                 <div className="h-2 bg-void rounded-full overflow-hidden border border-imperial-gold/10">
                   <motion.div
                     className="h-full rounded-full"
-                    style={{ backgroundColor: item.fill, boxShadow: `0 0 10px ${item.fill}50` }}
+                    style={{ backgroundColor: item.color, boxShadow: `0 0 10px ${item.color}50` }}
                     initial={{ width: 0 }}
-                    animate={{ width: `${item.value}%` }}
+                    animate={{ width: `${Math.min((item.value / item.max) * 100, 100)}%` }}
                     transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 + index * 0.1 }}
                   />
                 </div>
               </motion.div>
             ))}
           </div>
-          <div className="mt-4 pt-4 border-t border-imperial-gold/10">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-bone/40 font-mono">TOTAL SESIONES</span>
-              <span className="text-bone font-mono font-bold">24,856</span>
-            </div>
-          </div>
         </BentoCard>
       </div>
 
-      {/* Second Row - Mixed Content */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* ROW 3: CONTENT + CATEGORIES + CREATORS */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
       <div className="grid gap-4 lg:grid-cols-4">
-        {/* Growth Metrics */}
         <BentoCard
           className="lg:col-span-2"
-          title="Crecimiento mensual"
-          subtitle="Usuarios, miniaturas y anuncios"
-          icon={<TrendingUp className="w-4 h-4 text-emerald-500" />}
-        >
-          <SimpleAreaChart
-            data={monthlyGrowthData}
-            dataKey="usuarios"
-            color={CHART_COLORS.primary}
-            height={200}
-          />
-        </BentoCard>
-
-        {/* Growth Metrics continuation - empty space for grid alignment */}
-        <div className="hidden lg:block" />
-
-        {/* Browsers */}
-        <BentoCard
-          title="Navegadores"
-          subtitle="Distribucion de uso"
-          icon={<Globe className="w-4 h-4 text-blue-500" />}
-        >
-          <div className="space-y-3 mt-2">
-            {browserData.slice(0, 4).map((browser) => (
-              <ComparisonBar
-                key={browser.name}
-                label={browser.name}
-                value={browser.value}
-                maxValue={100}
-                color={browser.fill}
-                showPercentage={false}
-              />
-            ))}
-          </div>
-        </BentoCard>
-      </div>
-
-      {/* Third Row */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        {/* Top Pages */}
-        <BentoCard
-          title="Paginas mas visitadas"
-          subtitle="Top 5 rutas"
-          icon={<Layers className="w-4 h-4 text-cyan-500" />}
-        >
-          <div className="space-y-3 mt-2">
-            {topPagesData.map((page, index) => (
-              <div key={page.name} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-white/5 text-xs font-medium text-zinc-400">
-                    {index + 1}
-                  </span>
-                  <span className="text-sm text-zinc-300 font-mono">{page.name}</span>
-                </div>
-                <span className="text-sm text-white font-medium">{page.value.toLocaleString()}</span>
-              </div>
-            ))}
-          </div>
-        </BentoCard>
-
-        {/* Geographic Distribution */}
-        <BentoCard
-          title="Distribucion geografica"
-          subtitle="Visitantes por pais"
-          icon={<Map className="w-4 h-4 text-rose-500" />}
-        >
-          <div className="space-y-3 mt-2">
-            {countryData.slice(0, 5).map((country) => (
-              <div key={country.name} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-zinc-300">{country.name}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-20 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-rose-500 to-rose-400 rounded-full"
-                      style={{ width: `${country.percentage}%` }}
-                    />
-                  </div>
-                  <span className="text-xs text-zinc-500 w-8 text-right">{country.percentage}%</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </BentoCard>
-
-        {/* Content Creation */}
-        <BentoCard
           title="Contenido creado"
-          subtitle="Por tipo y mes"
+          subtitle="Por tipo y mes (6 meses)"
           icon={<BarChart3 className="w-4 h-4 text-violet-500" />}
         >
           <StackedBarChart
-            data={contentTypeData}
+            data={data?.contentCreated || []}
             bars={[
               { dataKey: 'miniaturas', color: CHART_COLORS.primary, name: 'Miniaturas' },
               { dataKey: 'anuncios', color: CHART_COLORS.success, name: 'Anuncios' },
               { dataKey: 'tiendas', color: CHART_COLORS.tertiary, name: 'Tiendas' },
             ]}
-            height={180}
+            height={220}
           />
+        </BentoCard>
+
+        <BentoCard
+          title="Categorias del mercado"
+          subtitle="Distribucion de anuncios"
+          icon={<Layers className="w-4 h-4 text-cyan-500" />}
+        >
+          <div className="space-y-3 mt-2">
+            {(data?.categoryDistribution || []).map((cat) => (
+              <ComparisonBar
+                key={cat.name}
+                label={cat.name}
+                value={cat.value}
+                maxValue={Math.max(...(data?.categoryDistribution || []).map(c => c.value), 1)}
+                color={cat.fill}
+              />
+            ))}
+            {(data?.categoryDistribution || []).length === 0 && (
+              <p className="text-xs text-bone/30 font-mono text-center py-4">Sin datos</p>
+            )}
+          </div>
+        </BentoCard>
+
+        <BentoCard
+          title="Tipos de creadores"
+          subtitle="Creadores aprobados"
+          icon={<Palette className="w-4 h-4 text-purple-500" />}
+        >
+          <div className="space-y-3 mt-2">
+            {(data?.creatorTypes || []).map((ct) => (
+              <ComparisonBar
+                key={ct.name}
+                label={ct.name}
+                value={ct.value}
+                maxValue={Math.max(...(data?.creatorTypes || []).map(c => c.value), 1)}
+                color={ct.fill}
+              />
+            ))}
+            {(data?.creatorTypes || []).length === 0 && (
+              <p className="text-xs text-bone/30 font-mono text-center py-4">Sin datos</p>
+            )}
+          </div>
         </BentoCard>
       </div>
 
-      {/* Weekly Overview */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* ROW 4: WEEKLY ACTIVITY + PLATFORM METRICS */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
       <div className="grid gap-4 lg:grid-cols-2">
         <BentoCard
-          title="Resumen semanal"
-          subtitle="Usuarios y sesiones por dia"
-          icon={<Calendar className="w-4 h-4 text-indigo-500" />}
+          title="Actividad semanal"
+          subtitle="Likes, comentarios y follows (7 dias)"
+          icon={<Activity className="w-4 h-4 text-indigo-500" />}
         >
-          <MultiLineChart
-            data={weeklyData}
-            lines={[
-              { dataKey: 'usuarios', color: CHART_COLORS.primary, name: 'Usuarios' },
-              { dataKey: 'sesiones', color: CHART_COLORS.success, name: 'Sesiones' },
+          <StackedBarChart
+            data={data?.weeklyActivity || []}
+            bars={[
+              { dataKey: 'likes', color: CHART_COLORS.danger, name: 'Likes' },
+              { dataKey: 'comentarios', color: CHART_COLORS.primary, name: 'Comentarios' },
+              { dataKey: 'follows', color: CHART_COLORS.success, name: 'Follows' },
             ]}
             height={220}
           />
         </BentoCard>
 
-        {/* Engagement Metrics */}
         <BentoCard
-          title="Metricas de engagement"
-          subtitle="Interaccion de usuarios"
+          title="Metricas de la plataforma"
+          subtitle="Engagement y conversion"
           icon={<Target className="w-4 h-4 text-orange-500" />}
         >
           <div className="grid grid-cols-2 gap-4 mt-2">
             <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Paginas/Sesion</p>
-              <p className="text-2xl font-bold text-white">4.2</p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="w-3 h-3 text-emerald-500" />
-                <span className="text-xs text-emerald-500">+8.3%</span>
-              </div>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1 font-mono">Likes/miniatura</p>
+              <p className="text-2xl font-bold text-bone">{data?.avgLikesPerMini ?? 0}</p>
+              <p className="text-xs text-bone/30 mt-1 font-mono">promedio</p>
             </div>
             <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Duracion media</p>
-              <p className="text-2xl font-bold text-white">3:45</p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="w-3 h-3 text-emerald-500" />
-                <span className="text-xs text-emerald-500">+12.1%</span>
-              </div>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1 font-mono">Comentarios/mini</p>
+              <p className="text-2xl font-bold text-bone">{data?.avgCommentsPerMini ?? 0}</p>
+              <p className="text-xs text-bone/30 mt-1 font-mono">promedio</p>
             </div>
             <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Usuarios nuevos</p>
-              <p className="text-2xl font-bold text-white">67%</p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="w-3 h-3 text-emerald-500" />
-                <span className="text-xs text-emerald-500">+5.2%</span>
-              </div>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1 font-mono">Follows totales</p>
+              <p className="text-2xl font-bold text-bone">{(data?.totalFollows ?? 0).toLocaleString()}</p>
+              <p className="text-xs text-bone/30 mt-1 font-mono">conexiones</p>
             </div>
             <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Recurrentes</p>
-              <p className="text-2xl font-bold text-white">33%</p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingDown className="w-3 h-3 text-red-500" />
-                <span className="text-xs text-red-500">-2.1%</span>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1 font-mono">Conv. creadores</p>
+              <p className="text-2xl font-bold text-bone">{data?.creatorConversionRate ?? 0}%</p>
+              <p className="text-xs text-bone/30 mt-1 font-mono">aprobados/total</p>
+            </div>
+          </div>
+        </BentoCard>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* ROW 5: FACTIONS + OPERATIONAL STATUS */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <BentoCard
+          title="Facciones populares"
+          subtitle="Top 5 por miniaturas"
+          icon={<Shield className="w-4 h-4 text-rose-500" />}
+        >
+          <SimpleBarChart
+            data={(data?.factionData || []).length > 0 ? data!.factionData : [{ name: 'Sin datos', value: 0 }]}
+            height={220}
+            layout="horizontal"
+          />
+        </BentoCard>
+
+        <BentoCard
+          title="Estado operacional"
+          subtitle="Tiendas y reportes por estado"
+          icon={<Store className="w-4 h-4 text-amber-500" />}
+        >
+          <div className="space-y-5">
+            {/* Stores */}
+            <div>
+              <p className="text-xs text-bone/50 font-mono mb-3 uppercase tracking-wider">Tiendas</p>
+              <div className="space-y-2">
+                {(data?.storeStatusData || []).map((item) => (
+                  <ComparisonBar
+                    key={item.label}
+                    label={item.label}
+                    value={item.value}
+                    maxValue={item.max}
+                    color={item.color}
+                  />
+                ))}
+                {(data?.storeStatusData || []).length === 0 && (
+                  <p className="text-xs text-bone/30 font-mono">Sin datos</p>
+                )}
+              </div>
+            </div>
+            {/* Reports */}
+            <div>
+              <p className="text-xs text-bone/50 font-mono mb-3 uppercase tracking-wider">Reportes</p>
+              <div className="space-y-2">
+                {(data?.reportStatusData || []).map((item) => (
+                  <ComparisonBar
+                    key={item.label}
+                    label={item.label}
+                    value={item.value}
+                    maxValue={item.max}
+                    color={item.color}
+                  />
+                ))}
+                {(data?.reportStatusData || []).length === 0 && (
+                  <p className="text-xs text-bone/30 font-mono">Sin datos</p>
+                )}
               </div>
             </div>
           </div>
         </BentoCard>
       </div>
 
-      {/* Web Vitals Monitor - Real-time Performance */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* ROW 6: WEB VITALS */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
       <WebVitalsMonitor className="mt-8" />
 
       {/* Vercel Analytics Note */}
