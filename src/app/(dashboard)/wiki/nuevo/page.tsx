@@ -17,10 +17,10 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
-import { TiptapEditor, type TiptapEditorRef, WikiGallery, FactionPicker } from '@/components/wiki'
+import { BlockNoteEditor, type WikiEditorRef, WikiGallery, FactionPicker } from '@/components/wiki'
 import { factions } from '@/lib/data'
 import { compressImage } from '@/lib/utils/compressImage'
-import type { WikiCategory, TiptapContent, WikiPageCreateInput } from '@/lib/supabase/wiki.types'
+import type { WikiCategory, WikiContent, WikiPageCreateInput } from '@/lib/supabase/wiki.types'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -80,7 +80,7 @@ function TacticalCard({
 
 export default function NewWikiArticlePage() {
   const router = useRouter()
-  const editorRef = useRef<TiptapEditorRef>(null)
+  const editorRef = useRef<WikiEditorRef>(null)
 
   const [categories, setCategories] = useState<WikiCategory[]>([])
   const [loading, setLoading] = useState(false)
@@ -94,7 +94,7 @@ export default function NewWikiArticlePage() {
   const [slug, setSlug] = useState('')
   const [excerpt, setExcerpt] = useState('')
   const [heroImage, setHeroImage] = useState('')
-  const [content, setContent] = useState<TiptapContent | null>(null)
+  const [content, setContent] = useState<WikiContent | null>(null)
   const [galleryImages, setGalleryImages] = useState<string[]>([])
   const [heroUploading, setHeroUploading] = useState(false)
   const heroFileRef = useRef<HTMLInputElement>(null)
@@ -162,7 +162,7 @@ export default function NewWikiArticlePage() {
     }
 
     const editorContent = editorRef.current?.getContent()
-    if (!editorContent || editorContent.content.length === 0) {
+    if (!editorContent) {
       setError('El contenido no puede estar vacio')
       return
     }
@@ -335,12 +335,12 @@ export default function NewWikiArticlePage() {
                     <span className="font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CONTENIDO</span>
                   </CardTitle>
                 </CardHeader>
-                <TiptapEditor
+                <BlockNoteEditor
                   ref={editorRef}
                   onChange={setContent}
                   factionColor={currentColor}
                   factionId={factionId || undefined}
-                  placeholder="Escribe el contenido del articulo..."
+                  placeholder="Escribe / para ver comandos..."
                 />
               </Card>
             </TacticalCard>

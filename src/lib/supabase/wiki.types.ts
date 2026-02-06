@@ -43,7 +43,7 @@ export interface WikiPage {
   title: string
   slug: string
   excerpt: string | null
-  content: TiptapContent
+  content: WikiContent
   hero_image: string | null
   gallery_images: string[] | null
   author_id: string | null
@@ -60,7 +60,7 @@ export interface WikiPage {
 export interface WikiRevision {
   id: string
   page_id: string
-  content: TiptapContent
+  content: WikiContent
   author_id: string | null
   change_summary: string | null
   created_at: string
@@ -73,7 +73,7 @@ export interface WikiContribution {
   page_id: string | null
   faction_id: string | null
   suggested_title: string | null
-  content: TiptapContent
+  content: WikiContent
   contributor_id: string
   status: 'pending' | 'approved' | 'rejected'
   reviewer_id: string | null
@@ -87,10 +87,10 @@ export interface WikiContribution {
 }
 
 // =============================================================================
-// TIPTAP CONTENT TYPES
+// CONTENT TYPES
 // =============================================================================
 
-// Index signature makes these compatible with Supabase's Json type
+// Tiptap (legacy) content format
 export interface TiptapContent {
   type: 'doc'
   content: TiptapNode[]
@@ -112,6 +112,16 @@ export interface TiptapMark {
   [key: string]: unknown
 }
 
+// BlockNote content format
+export interface BlockNoteContent {
+  type: 'blocknote'
+  blocks: unknown[]
+  [key: string]: unknown
+}
+
+// Union type for both formats
+export type WikiContent = TiptapContent | BlockNoteContent
+
 // =============================================================================
 // API TYPES
 // =============================================================================
@@ -131,7 +141,7 @@ export interface WikiPageCreateInput {
   title: string
   slug: string
   excerpt?: string
-  content: TiptapContent
+  content: WikiContent
   hero_image?: string
   gallery_images?: string[]
   status?: 'draft' | 'published'
@@ -142,7 +152,7 @@ export interface WikiPageUpdateInput {
   title?: string
   slug?: string
   excerpt?: string
-  content?: TiptapContent
+  content?: WikiContent
   hero_image?: string
   gallery_images?: string[]
   status?: 'draft' | 'published' | 'archived'
@@ -152,7 +162,7 @@ export interface WikiContributionCreateInput {
   page_id?: string
   faction_id?: string
   suggested_title?: string
-  content: TiptapContent
+  content: WikiContent
 }
 
 export interface WikiContributionReviewInput {

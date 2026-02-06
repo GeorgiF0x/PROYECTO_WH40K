@@ -1,0 +1,166 @@
+/* ========================================================================
+   BlockNote Grimdark Theme - Warhammer Forge
+   ======================================================================== */
+
+/* ── Base Dark Theme Overrides ── */
+.bn-container[data-color-scheme="dark"] {
+  --bn-colors-editor-text: #E8E8F0;
+  --bn-colors-editor-background: transparent;
+  --bn-colors-menu-text: #E8E8F0;
+  --bn-colors-menu-background: #0D0D12;
+  --bn-colors-tooltip-text: #E8E8F0;
+  --bn-colors-tooltip-background: #12121A;
+  --bn-colors-hovered-text: #E8E8F0;
+  --bn-colors-hovered-background: rgba(201, 162, 39, 0.1);
+  --bn-colors-selected-text: #E8E8F0;
+  --bn-colors-selected-background: rgba(201, 162, 39, 0.15);
+  --bn-colors-disabled-text: rgba(232, 232, 240, 0.3);
+  --bn-colors-disabled-background: rgba(232, 232, 240, 0.05);
+  --bn-colors-shadow: rgba(0, 0, 0, 0.5);
+  --bn-colors-border: rgba(232, 232, 240, 0.1);
+  --bn-colors-side-menu: rgba(232, 232, 240, 0.3);
+  --bn-border-radius: 8px;
+  --bn-font-family: var(--font-body, 'Inter', system-ui, sans-serif);
+}
+
+/* ── Editor Body ── */
+.bn-editor {
+  min-height: 300px;
+  padding: 1rem;
+  font-family: var(--font-body, 'Inter', system-ui, sans-serif);
+  color: #E8E8F0;
+}
+
+/* ── Headings ── */
+.bn-editor [data-node-type="heading"] h1,
+.bn-editor [data-node-type="heading"] h2,
+.bn-editor [data-node-type="heading"] h3 {
+  font-family: var(--font-display, 'Cinzel', serif);
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+.bn-editor [data-node-type="heading"] h1 {
+  color: var(--bn-faction-color, #C9A227);
+}
+
+.bn-editor [data-node-type="heading"] h2 {
+  color: var(--bn-faction-color, #C9A227);
+}
+
+/* ── Placeholder text ── */
+.bn-editor .bn-is-empty::before {
+  color: rgba(232, 232, 240, 0.25) !important;
+  font-style: italic;
+}
+
+/* ── Slash Menu ── */
+.bn-container .bn-slash-menu {
+  background: #0D0D12 !important;
+  border: 1px solid rgba(201, 162, 39, 0.2) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(201, 162, 39, 0.05) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(12px);
+}
+
+.bn-container .bn-slash-menu .bn-menu-item:hover,
+.bn-container .bn-slash-menu .bn-menu-item.bn-is-selected {
+  background: rgba(201, 162, 39, 0.1) !important;
+}
+
+.bn-container .bn-slash-menu .bn-group-label {
+  color: rgba(201, 162, 39, 0.5) !important;
+  font-family: var(--font-display, 'Cinzel', serif);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.65rem;
+}
+
+/* ── Toolbar ── */
+.bn-container .bn-toolbar {
+  background: #0D0D12 !important;
+  border: 1px solid rgba(201, 162, 39, 0.2) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 8px !important;
+}
+
+.bn-container .bn-toolbar button:hover {
+  background: rgba(201, 162, 39, 0.1) !important;
+}
+
+/* ── Side Menu (drag handle) ── */
+.bn-container .bn-side-menu {
+  color: rgba(232, 232, 240, 0.25);
+}
+
+.bn-container .bn-side-menu:hover {
+  color: rgba(201, 162, 39, 0.6);
+}
+
+/* ── Drag handle menu ── */
+.bn-container .bn-drag-handle-menu {
+  background: #0D0D12 !important;
+  border: 1px solid rgba(201, 162, 39, 0.15) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ── Image Block ── */
+.bn-editor .bn-image-block-content-wrapper {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+/* ── Inline Content areas in custom blocks ── */
+.bn-editor .inline-content [data-inline-content="true"] {
+  outline: none;
+}
+
+/* ── Code blocks ── */
+.bn-editor pre {
+  background: #0D0D12 !important;
+  border: 1px solid rgba(232, 232, 240, 0.1);
+  border-radius: 8px;
+}
+
+/* ── Blockquote ── */
+.bn-editor blockquote {
+  border-left-color: var(--bn-faction-color, #C9A227) !important;
+}
+
+/* ── Links ── */
+.bn-editor a {
+  color: var(--bn-faction-color, #C9A227);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.bn-editor a:hover {
+  opacity: 0.8;
+}
+
+/* ── Table of contents ── */
+.bn-container .bn-table-of-contents {
+  background: #0D0D12;
+  border: 1px solid rgba(232, 232, 240, 0.1);
+}
+
+/* ── Selection Highlight ── */
+.bn-editor ::selection {
+  background: rgba(201, 162, 39, 0.25);
+}
+
+/* ── Mantine overrides (popover, dropdowns) ── */
+.mantine-Popover-dropdown {
+  background: #0D0D12 !important;
+  border: 1px solid rgba(201, 162, 39, 0.15) !important;
+}
+
+.mantine-Menu-dropdown {
+  background: #0D0D12 !important;
+  border: 1px solid rgba(201, 162, 39, 0.15) !important;
+}
+
+.mantine-Menu-item:hover {
+  background: rgba(201, 162, 39, 0.1) !important;
+}

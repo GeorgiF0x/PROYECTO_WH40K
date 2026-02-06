@@ -20,7 +20,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
 import { WikiRenderer } from '@/components/wiki'
 import { factions } from '@/lib/data'
-import type { WikiContribution, TiptapContent } from '@/lib/supabase/wiki.types'
+import type { WikiContribution, WikiContent } from '@/lib/supabase/wiki.types'
 
 export default function WikiContributionsPage() {
   const [contributions, setContributions] = useState<WikiContribution[]>([])
@@ -254,7 +254,7 @@ export default function WikiContributionsPage() {
               style={{ background: 'rgba(10, 10, 18, 0.5)', border: '1px solid rgba(232,232,240,0.1)' }}
             >
               <WikiRenderer
-                content={selectedContribution.content as TiptapContent}
+                content={selectedContribution.content as WikiContent}
                 factionColor={
                   factions.find(f =>
                     f.id === selectedContribution.page?.faction_id ||

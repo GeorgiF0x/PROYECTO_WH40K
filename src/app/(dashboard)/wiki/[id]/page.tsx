@@ -22,10 +22,10 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
-import { TiptapEditor, type TiptapEditorRef, WikiGallery, FactionPicker } from '@/components/wiki'
+import { BlockNoteEditor, type WikiEditorRef, WikiGallery, FactionPicker } from '@/components/wiki'
 import { factions } from '@/lib/data'
 import { compressImage } from '@/lib/utils/compressImage'
-import type { WikiPage, WikiCategory, TiptapContent, WikiPageUpdateInput, WikiRevision } from '@/lib/supabase/wiki.types'
+import type { WikiPage, WikiCategory, WikiPageUpdateInput, WikiRevision } from '@/lib/supabase/wiki.types'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -86,7 +86,7 @@ export default function EditWikiArticlePage() {
   const params = useParams()
   const router = useRouter()
   const pageId = params.id as string
-  const editorRef = useRef<TiptapEditorRef>(null)
+  const editorRef = useRef<WikiEditorRef>(null)
 
   const [page, setPage] = useState<WikiPage | null>(null)
   const [categories, setCategories] = useState<WikiCategory[]>([])
@@ -448,12 +448,12 @@ export default function EditWikiArticlePage() {
                     <span className="font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CONTENIDO</span>
                   </CardTitle>
                 </CardHeader>
-                <TiptapEditor
+                <BlockNoteEditor
                   ref={editorRef}
                   content={page?.content}
                   factionColor={currentColor}
                   factionId={page?.faction_id || undefined}
-                  placeholder="Escribe el contenido del articulo..."
+                  placeholder="Escribe / para ver comandos..."
                 />
               </Card>
             </TacticalCard>

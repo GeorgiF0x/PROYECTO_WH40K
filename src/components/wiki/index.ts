@@ -1,3 +1,5 @@
+export { BlockNoteEditor } from './BlockNoteEditor'
+export type { WikiEditorRef } from './BlockNoteEditor'
 export { TiptapEditor } from './TiptapEditor'
 export type { TiptapEditorRef } from './TiptapEditor'
 export { WikiRenderer } from './WikiRenderer'
