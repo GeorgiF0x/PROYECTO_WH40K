@@ -21,7 +21,7 @@ function getCustomSlashMenuItems(editor: WikiEditor) {
   return [
     {
       title: 'Bloque de Lore',
-      subtext: 'Seccion de lore con encabezado decorado',
+      subtext: 'Seccion de lore con encabezado decorado — /lore',
       group: 'Bloques Imperiales',
       onItemClick: () => {
         insertBlock(editor, {
@@ -33,7 +33,7 @@ function getCustomSlashMenuItems(editor: WikiEditor) {
     },
     {
       title: 'Bloque de Cita',
-      subtext: 'Cita con atribucion de autor',
+      subtext: 'Cita con atribucion de autor — /cita',
       group: 'Bloques Imperiales',
       onItemClick: () => {
         insertBlock(editor, {
@@ -45,7 +45,7 @@ function getCustomSlashMenuItems(editor: WikiEditor) {
     },
     {
       title: 'Alerta: Herejia',
-      subtext: 'Advertencia de contenido hereje',
+      subtext: 'Advertencia de contenido hereje — /herejia',
       group: 'Alertas',
       onItemClick: () => {
         insertBlock(editor, {
@@ -57,7 +57,7 @@ function getCustomSlashMenuItems(editor: WikiEditor) {
     },
     {
       title: 'Alerta: Peligro',
-      subtext: 'Aviso de peligro',
+      subtext: 'Aviso de peligro — /peligro',
       group: 'Alertas',
       onItemClick: () => {
         insertBlock(editor, {
@@ -69,7 +69,7 @@ function getCustomSlashMenuItems(editor: WikiEditor) {
     },
     {
       title: 'Alerta: Info',
-      subtext: 'Nota informativa',
+      subtext: 'Nota informativa — /info',
       group: 'Alertas',
       onItemClick: () => {
         insertBlock(editor, {
@@ -81,7 +81,7 @@ function getCustomSlashMenuItems(editor: WikiEditor) {
     },
     {
       title: 'Alerta: Decreto Imperial',
-      subtext: 'Decreto del Emperador',
+      subtext: 'Decreto del Emperador — /imperial',
       group: 'Alertas',
       onItemClick: () => {
         insertBlock(editor, {

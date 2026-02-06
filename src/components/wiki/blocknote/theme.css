@@ -7,13 +7,13 @@
   --bn-colors-editor-text: #E8E8F0;
   --bn-colors-editor-background: transparent;
   --bn-colors-menu-text: #E8E8F0;
-  --bn-colors-menu-background: #0D0D12;
+  --bn-colors-menu-background: #0A0A10;
   --bn-colors-tooltip-text: #E8E8F0;
   --bn-colors-tooltip-background: #12121A;
   --bn-colors-hovered-text: #E8E8F0;
-  --bn-colors-hovered-background: rgba(201, 162, 39, 0.1);
+  --bn-colors-hovered-background: rgba(201, 162, 39, 0.14);
   --bn-colors-selected-text: #E8E8F0;
-  --bn-colors-selected-background: rgba(201, 162, 39, 0.15);
+  --bn-colors-selected-background: rgba(201, 162, 39, 0.18);
   --bn-colors-disabled-text: rgba(232, 232, 240, 0.3);
   --bn-colors-disabled-background: rgba(232, 232, 240, 0.05);
   --bn-colors-shadow: rgba(0, 0, 0, 0.5);
@@ -25,10 +25,19 @@
 
 /* ── Editor Body ── */
 .bn-editor {
-  min-height: 300px;
-  padding: 1rem;
+  min-height: 550px;
+  padding: 1.25rem 1.5rem;
   font-family: var(--font-body, 'Inter', system-ui, sans-serif);
   color: #E8E8F0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1.75rem,
+      rgba(201, 162, 39, 0.03) 1.75rem,
+      rgba(201, 162, 39, 0.03) calc(1.75rem + 1px)
+    );
+  background-size: 100% calc(1.75rem + 1px);
 }
 
 /* ── Headings ── */
@@ -56,36 +65,89 @@
 
 /* ── Slash Menu ── */
 .bn-container .bn-slash-menu {
-  background: #0D0D12 !important;
-  border: 1px solid rgba(201, 162, 39, 0.2) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(201, 162, 39, 0.05) !important;
+  background: linear-gradient(180deg, #0E0E16 0%, #0A0A10 8%, #0A0A10 100%) !important;
+  border: 1px solid rgba(201, 162, 39, 0.35) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(201, 162, 39, 0.08),
+    inset 0 1px 0 rgba(201, 162, 39, 0.1) !important;
   border-radius: 12px !important;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+/* Slash menu scrollbar */
+.bn-container .bn-slash-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.bn-container .bn-slash-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bn-container .bn-slash-menu::-webkit-scrollbar-thumb {
+  background: rgba(201, 162, 39, 0.25);
+  border-radius: 3px;
+}
+
+.bn-container .bn-slash-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(201, 162, 39, 0.45);
+}
+
+/* Slash menu items */
+.bn-container .bn-slash-menu .bn-menu-item {
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+  color: #E8E8F0 !important;
 }
 
 .bn-container .bn-slash-menu .bn-menu-item:hover,
 .bn-container .bn-slash-menu .bn-menu-item.bn-is-selected {
-  background: rgba(201, 162, 39, 0.1) !important;
+  background: rgba(201, 162, 39, 0.18) !important;
+  border-left: 3px solid rgba(201, 162, 39, 0.7);
 }
 
+/* Menu item text */
+.bn-container .bn-slash-menu .bn-menu-item .bn-menu-item-title {
+  color: #E8E8F0 !important;
+}
+
+/* Menu item subtext / description */
+.bn-container .bn-slash-menu .bn-menu-item .bn-menu-item-subtitle {
+  color: rgba(232, 232, 240, 0.5) !important;
+  font-size: 0.72rem;
+}
+
+/* Group labels */
 .bn-container .bn-slash-menu .bn-group-label {
-  color: rgba(201, 162, 39, 0.5) !important;
+  color: rgba(201, 162, 39, 0.7) !important;
   font-family: var(--font-display, 'Cinzel', serif);
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.12);
+  padding-bottom: 4px;
+  margin-bottom: 4px;
 }
 
 /* ── Toolbar ── */
 .bn-container .bn-toolbar {
-  background: #0D0D12 !important;
-  border: 1px solid rgba(201, 162, 39, 0.2) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  background: #0A0A10 !important;
+  border: 1px solid rgba(201, 162, 39, 0.3) !important;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(201, 162, 39, 0.06) !important;
   border-radius: 8px !important;
 }
 
+.bn-container .bn-toolbar button {
+  transition: all 0.15s ease;
+}
+
 .bn-container .bn-toolbar button:hover {
-  background: rgba(201, 162, 39, 0.1) !important;
+  background: rgba(201, 162, 39, 0.15) !important;
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.1);
 }
 
 /* ── Side Menu (drag handle) ── */
@@ -99,9 +161,11 @@
 
 /* ── Drag handle menu ── */
 .bn-container .bn-drag-handle-menu {
-  background: #0D0D12 !important;
-  border: 1px solid rgba(201, 162, 39, 0.15) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  background: #0A0A10 !important;
+  border: 1px solid rgba(201, 162, 39, 0.25) !important;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 0 15px rgba(201, 162, 39, 0.05) !important;
 }
 
 /* ── Image Block ── */
@@ -152,15 +216,17 @@
 
 /* ── Mantine overrides (popover, dropdowns) ── */
 .mantine-Popover-dropdown {
-  background: #0D0D12 !important;
-  border: 1px solid rgba(201, 162, 39, 0.15) !important;
+  background: #0A0A10 !important;
+  border: 1px solid rgba(201, 162, 39, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px rgba(201, 162, 39, 0.06) !important;
 }
 
 .mantine-Menu-dropdown {
-  background: #0D0D12 !important;
-  border: 1px solid rgba(201, 162, 39, 0.15) !important;
+  background: #0A0A10 !important;
+  border: 1px solid rgba(201, 162, 39, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px rgba(201, 162, 39, 0.06) !important;
 }
 
 .mantine-Menu-item:hover {
-  background: rgba(201, 162, 39, 0.1) !important;
+  background: rgba(201, 162, 39, 0.15) !important;
 }

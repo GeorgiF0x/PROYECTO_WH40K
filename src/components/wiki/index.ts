@@ -14,4 +14,5 @@ export {
   ImperialDivider,
   SectionLabel,
 } from './WikiDecorations'
+export { EditorGuide } from './EditorGuide'
 export * from './blocks'

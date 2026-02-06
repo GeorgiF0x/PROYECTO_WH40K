@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -12,12 +12,14 @@ import {
   Feather,
   Upload,
   Loader2,
+  HelpCircle,
+  X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
-import { BlockNoteEditor, type WikiEditorRef, WikiGallery, FactionPicker } from '@/components/wiki'
+import { BlockNoteEditor, type WikiEditorRef, WikiGallery, FactionPicker, EditorGuide } from '@/components/wiki'
 import {
   WikiPageBackground,
   GothicCorners,
@@ -90,6 +92,8 @@ export default function NewWikiArticlePage() {
   const [content, setContent] = useState<WikiContent | null>(null)
   const [galleryImages, setGalleryImages] = useState<string[]>([])
   const [heroUploading, setHeroUploading] = useState(false)
+  const [heroDragOver, setHeroDragOver] = useState(false)
+  const [showGuide, setShowGuide] = useState(false)
   const heroFileRef = useRef<HTMLInputElement>(null)
 
   const selectedFaction = factions.find(f => f.id === factionId)
@@ -126,7 +130,7 @@ export default function NewWikiArticlePage() {
     }
   }
 
-  async function handleHeroUpload(file: File) {
+  const handleHeroUpload = useCallback(async (file: File) => {
     setHeroUploading(true)
     try {
       const compressed = await compressImage(file)
@@ -145,6 +149,15 @@ export default function NewWikiArticlePage() {
     } finally {
       setHeroUploading(false)
       if (heroFileRef.current) heroFileRef.current.value = ''
+    }
+  }, [factionId])
+
+  function handleHeroDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setHeroDragOver(false)
+    const file = e.dataTransfer.files[0]
+    if (file && file.type.startsWith('image/')) {
+      handleHeroUpload(file)
     }
   }
 
@@ -303,9 +316,9 @@ export default function NewWikiArticlePage() {
         </motion.div>
 
         {/* ── Main grid ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-3 space-y-6">
             {/* Title & Slug */}
             <motion.div variants={itemVariants}>
               <TacticalCard color={`${currentColor}40`}>
@@ -346,14 +359,31 @@ export default function NewWikiArticlePage() {
               <TacticalCard color={`${currentColor}40`}>
                 <Card padding="none">
                   <CardHeader className="border-b border-bone/10 p-4">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <div
-                        className="h-6 w-1 rounded-full"
-                        style={{ background: `linear-gradient(180deg, ${currentColor}, ${currentColor}40)` }}
-                      />
-                      <span className="font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CONTENIDO</span>
+                    <CardTitle className="text-base flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-6 w-1 rounded-full"
+                          style={{ background: `linear-gradient(180deg, ${currentColor}, ${currentColor}40)` }}
+                        />
+                        <span className="font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CONTENIDO</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowGuide(!showGuide)}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono text-bone/40 hover:text-imperial-gold/70 hover:bg-imperial-gold/5 transition-colors"
+                        title="Guia del editor"
+                      >
+                        <HelpCircle className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">AYUDA</span>
+                      </button>
                     </CardTitle>
                   </CardHeader>
+                  <EditorGuide isOpen={showGuide} onClose={() => setShowGuide(false)} />
+                  <div className="px-4 py-2 border-b border-bone/5">
+                    <span className="text-[11px] font-mono text-bone/25 italic">
+                      Escribe <span className="text-imperial-gold/40">/</span> para insertar bloques especiales
+                    </span>
+                  </div>
                   <BlockNoteEditor
                     ref={editorRef}
                     onChange={setContent}
@@ -434,40 +464,18 @@ export default function NewWikiArticlePage() {
                     <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">IMAGEN PRINCIPAL</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <Input
-                      type="text"
-                      value={heroImage}
-                      onChange={(e) => setHeroImage(e.target.value)}
-                      placeholder="URL de la imagen..."
+                    <input
+                      ref={heroFileRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) handleHeroUpload(file)
+                      }}
+                      className="hidden"
                     />
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono text-bone/30">o</span>
-                      <input
-                        ref={heroFileRef}
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp,image/gif"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0]
-                          if (file) handleHeroUpload(file)
-                        }}
-                        className="hidden"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => heroFileRef.current?.click()}
-                        disabled={heroUploading}
-                        className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-dashed text-xs font-mono transition-colors hover:bg-bone/5 disabled:opacity-50"
-                        style={{ borderColor: `${currentColor}30`, color: currentColor }}
-                      >
-                        {heroUploading ? (
-                          <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Subiendo...</>
-                        ) : (
-                          <><Upload className="w-3.5 h-3.5" /> Subir imagen</>
-                        )}
-                      </button>
-                    </div>
-                    {heroImage && (
-                      <div className="relative aspect-video rounded-lg overflow-hidden border border-bone/10">
+                    {heroImage ? (
+                      <div className="relative aspect-video rounded-lg overflow-hidden border border-bone/10 group/preview">
                         <img
                           src={heroImage}
                           alt="Preview"
@@ -476,7 +484,41 @@ export default function NewWikiArticlePage() {
                             (e.target as HTMLImageElement).style.display = 'none'
                           }}
                         />
+                        <button
+                          type="button"
+                          onClick={() => setHeroImage('')}
+                          className="absolute top-2 right-2 p-1.5 rounded-full bg-void/80 border border-bone/20 text-bone/60 hover:text-blood-light hover:border-blood/40 transition-colors opacity-0 group-hover/preview:opacity-100"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
                       </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => heroFileRef.current?.click()}
+                        onDragOver={(e) => { e.preventDefault(); setHeroDragOver(true) }}
+                        onDragLeave={() => setHeroDragOver(false)}
+                        onDrop={handleHeroDrop}
+                        disabled={heroUploading}
+                        className="w-full flex flex-col items-center justify-center gap-2 py-8 rounded-lg border-2 border-dashed text-xs font-mono transition-all duration-200 hover:bg-bone/5 disabled:opacity-50"
+                        style={{
+                          borderColor: heroDragOver ? currentColor : `${currentColor}30`,
+                          color: currentColor,
+                          background: heroDragOver ? `${currentColor}08` : undefined,
+                        }}
+                      >
+                        {heroUploading ? (
+                          <>
+                            <Loader2 className="w-6 h-6 animate-spin" />
+                            <span>Subiendo...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-6 h-6 opacity-60" />
+                            <span>Arrastra o haz clic para subir</span>
+                          </>
+                        )}
+                      </button>
                     )}
                     <p className="text-xs text-bone/40 font-mono">
                       Recomendado: 1200x630px
