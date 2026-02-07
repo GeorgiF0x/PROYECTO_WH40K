@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Shield, ChevronRight } from 'lucide-react'
+import { Shield, ChevronRight, Check } from 'lucide-react'
 import { factions } from '@/lib/data'
 import { subFactionIcons, type SubFactionIcon } from '@/lib/subfaction-icons'
 
@@ -12,6 +13,17 @@ interface FactionPickerProps {
   onFactionChange: (id: string) => void
   onSubFactionChange: (name: string) => void
   factionColor?: string
+}
+
+/** SVG icon paths for the 7 main factions */
+const FACTION_MAIN_ICONS: Record<string, string> = {
+  imperium: '/icons/Imperium/Adeptus Terra [Imperium].svg',
+  chaos: '/icons/Chaos/chaos-star-01.svg',
+  necrons: '/icons/Xenos/Necrons/Necrons [Yngir, Necrontyr].svg',
+  aeldari: '/icons/Xenos/Aeldari/Aeldari [Eldar, Eye of Asuryan, Gods].svg',
+  orks: '/icons/Xenos/Orks/Orks [Orkoids].svg',
+  tau: '/icons/Xenos/Tau/tau.svg',
+  tyranids: '/icons/Xenos/Tyranid/Tyranids [Hive Mind, Hive Fleets].svg',
 }
 
 const gridVariants = {
@@ -73,11 +85,12 @@ export function FactionPicker({
           </span>
         </div>
 
-        {/* Faction buttons */}
-        <div className="flex flex-wrap gap-2 mb-2">
+        {/* Faction grid with icons */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mb-2">
           {factions.map(f => {
             const isSelected = factionId === f.id
             const isHovered = hoveredFaction === f.id
+            const iconPath = FACTION_MAIN_ICONS[f.id]
             return (
               <motion.button
                 key={f.id}
@@ -88,25 +101,93 @@ export function FactionPicker({
                 }}
                 onMouseEnter={() => setHoveredFaction(f.id)}
                 onMouseLeave={() => setHoveredFaction(null)}
-                className="relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border"
+                className="relative flex flex-col items-center gap-2 rounded-xl border transition-all duration-300 py-3 px-2"
                 style={{
                   background: isSelected
-                    ? `${f.color}20`
+                    ? `linear-gradient(180deg, ${f.color}25 0%, ${f.color}08 100%)`
                     : isHovered
-                      ? `${f.color}10`
-                      : 'rgba(232,232,240,0.03)',
+                      ? `${f.color}08`
+                      : 'rgba(232,232,240,0.02)',
                   borderColor: isSelected
-                    ? `${f.color}80`
+                    ? `${f.color}90`
                     : isHovered
                       ? `${f.color}40`
-                      : 'rgba(232,232,240,0.08)',
-                  color: isSelected ? f.color : isHovered ? f.color : 'rgba(232,232,240,0.6)',
-                  boxShadow: isSelected ? `0 0 16px ${f.color}30` : 'none',
+                      : 'rgba(232,232,240,0.06)',
+                  boxShadow: isSelected
+                    ? `0 0 24px ${f.color}30, inset 0 0 20px ${f.color}08`
+                    : 'none',
                 }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
               >
-                {f.shortName}
+                {/* Selected check badge */}
+                {isSelected && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center z-10"
+                    style={{ background: f.color }}
+                  >
+                    <Check className="w-3 h-3 text-void" />
+                  </motion.div>
+                )}
+
+                {/* Icon container */}
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300"
+                  style={{
+                    background: isSelected
+                      ? `linear-gradient(135deg, ${f.color}, ${f.color}90)`
+                      : isHovered
+                        ? `${f.color}20`
+                        : 'rgba(232,232,240,0.05)',
+                    boxShadow: isSelected
+                      ? `0 0 16px ${f.color}50`
+                      : 'none',
+                  }}
+                >
+                  {iconPath ? (
+                    <Image
+                      src={iconPath}
+                      alt={f.shortName}
+                      width={24}
+                      height={24}
+                      className="transition-all duration-300"
+                      style={{
+                        filter: isSelected
+                          ? 'invert(1) brightness(2)'
+                          : isHovered
+                            ? `invert(1) brightness(1.5)`
+                            : 'invert(0.6) brightness(0.8)',
+                      }}
+                    />
+                  ) : (
+                    <Shield
+                      className="w-5 h-5 transition-colors duration-300"
+                      style={{ color: isSelected ? '#fff' : `${f.color}60` }}
+                    />
+                  )}
+                </div>
+
+                {/* Faction name */}
+                <span
+                  className="text-[11px] font-medium leading-tight text-center transition-colors duration-300"
+                  style={{
+                    color: isSelected ? f.color : isHovered ? f.color : 'rgba(232,232,240,0.5)',
+                  }}
+                >
+                  {f.shortName}
+                </span>
+
+                {/* Bottom glow bar on selected */}
+                {isSelected && (
+                  <motion.div
+                    layoutId="faction-indicator"
+                    className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full"
+                    style={{ background: f.color }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  />
+                )}
               </motion.button>
             )
           })}
@@ -225,12 +306,14 @@ function SubFactionButton({
       type="button"
       variants={iconVariants}
       onClick={onClick}
-      className="group relative flex items-center gap-2.5 rounded-lg border transition-all duration-200 text-left"
+      className="group relative flex items-center gap-2.5 rounded-lg border transition-all duration-200 text-left overflow-hidden"
       style={{
         padding: featured ? '10px 12px' : '8px 10px',
-        background: isSelected ? `${color}15` : 'rgba(232,232,240,0.02)',
-        borderColor: isSelected ? `${color}60` : 'rgba(232,232,240,0.06)',
-        boxShadow: isSelected ? `0 0 12px ${color}25, inset 0 0 12px ${color}08` : 'none',
+        background: isSelected
+          ? `linear-gradient(135deg, ${color}20 0%, ${color}08 100%)`
+          : 'rgba(232,232,240,0.02)',
+        borderColor: isSelected ? `${color}70` : 'rgba(232,232,240,0.06)',
+        boxShadow: isSelected ? `0 0 16px ${color}25, inset 0 0 12px ${color}08` : 'none',
       }}
       whileHover={{
         scale: 1.02,
@@ -239,12 +322,23 @@ function SubFactionButton({
       }}
       whileTap={{ scale: 0.97 }}
     >
+      {/* Selected left accent bar */}
+      {isSelected && (
+        <motion.div
+          initial={{ scaleY: 0 }}
+          animate={{ scaleY: 1 }}
+          className="absolute left-0 top-1 bottom-1 w-[3px] rounded-full"
+          style={{ background: color }}
+        />
+      )}
+
       {/* SVG icon */}
       <div
-        className="flex-shrink-0 flex items-center justify-center"
+        className="flex-shrink-0 flex items-center justify-center rounded-md transition-all duration-200"
         style={{
           width: featured ? 36 : 28,
           height: featured ? 36 : 28,
+          background: isSelected ? `${color}25` : 'transparent',
         }}
       >
         <img
@@ -253,23 +347,15 @@ function SubFactionButton({
           className="w-full h-full object-contain transition-all duration-200"
           style={{
             filter: isSelected
-              ? `brightness(0) saturate(100%) drop-shadow(0 0 4px ${color}60)`
-              : 'brightness(0) invert(0.85)',
-            ...(isSelected ? {} : {}),
-          }}
-          onLoad={(e) => {
-            // Apply color tint when selected via CSS
-            if (isSelected) {
-              (e.target as HTMLImageElement).style.filter =
-                `brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(0deg) drop-shadow(0 0 6px ${color}40)`
-            }
+              ? `brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(0deg) drop-shadow(0 0 6px ${color}40)`
+              : 'brightness(0) invert(0.6)',
           }}
         />
       </div>
 
       {/* Name */}
       <span
-        className="text-xs font-medium leading-tight truncate"
+        className="text-xs font-medium leading-tight truncate transition-colors duration-200"
         style={{
           color: isSelected ? color : 'rgba(232,232,240,0.6)',
           fontSize: featured ? '0.8125rem' : '0.75rem',
@@ -278,8 +364,20 @@ function SubFactionButton({
         {sf.name}
       </span>
 
+      {/* Selected check */}
+      {isSelected && (
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="ml-auto flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center"
+          style={{ background: color }}
+        >
+          <Check className="w-2.5 h-2.5 text-void" />
+        </motion.div>
+      )}
+
       {/* Featured star */}
-      {featured && (
+      {featured && !isSelected && (
         <span
           className="absolute top-1 right-1.5 text-[8px]"
           style={{ color: `${color}50` }}
