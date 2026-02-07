@@ -122,17 +122,9 @@ export function CreatorApplicationPageClient({
           className="text-center mb-8"
         >
           <div className="relative inline-flex items-center justify-center w-20 h-20 mb-4">
-            {/* Animated rings */}
-            <motion.div
-              className="absolute inset-0 rounded-full border-2 border-imperial-gold/30"
-              animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.2, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            />
-            <motion.div
-              className="absolute inset-2 rounded-full border border-imperial-gold/20"
-              animate={{ scale: [1.1, 1, 1.1], opacity: [0.3, 0.5, 0.3] }}
-              transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-            />
+            {/* Animated rings — CSS animation to avoid JS RAF loops */}
+            <div className="absolute inset-0 rounded-full border-2 border-imperial-gold/30 animate-[factionPulse_3s_ease-in-out_infinite]" />
+            <div className="absolute inset-2 rounded-full border border-imperial-gold/20 animate-[factionPulse_2.5s_ease-in-out_infinite]" style={{ animationDelay: '0.5s' }} />
             <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-imperial-gold/20 to-imperial-gold/5 border border-imperial-gold/50 flex items-center justify-center">
               <Scroll className="w-8 h-8 text-imperial-gold" />
             </div>
@@ -146,39 +138,44 @@ export function CreatorApplicationPageClient({
           </p>
         </motion.div>
 
-        {/* Status based content */}
-        <AnimatePresence mode="wait">
-          {creatorStatus === 'pending' ? (
-            <motion.div
-              key="pending"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <PendingStatus applicationDate={applicationDate} />
-            </motion.div>
-          ) : creatorStatus === 'rejected' ? (
-            <motion.div
-              key="rejected"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-6"
-            >
-              <RejectedStatus reason={rejectionReason} />
-              <ApplicationContent userId={userId} isEligible={isEligible} onEligible={handleEligible} />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="application"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <ApplicationContent userId={userId} isEligible={isEligible} onEligible={handleEligible} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Status based content — min-height prevents CLS during AnimatePresence transitions */}
+        <div style={{ minHeight: '400px' }}>
+          <AnimatePresence mode="wait">
+            {creatorStatus === 'pending' ? (
+              <motion.div
+                key="pending"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <PendingStatus applicationDate={applicationDate} />
+              </motion.div>
+            ) : creatorStatus === 'rejected' ? (
+              <motion.div
+                key="rejected"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-6"
+              >
+                <RejectedStatus reason={rejectionReason} />
+                <ApplicationContent userId={userId} isEligible={isEligible} onEligible={handleEligible} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="application"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ApplicationContent userId={userId} isEligible={isEligible} onEligible={handleEligible} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   )

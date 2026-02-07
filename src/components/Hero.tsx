@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Hero() {
   const ref = useRef(null)
@@ -22,38 +23,30 @@ export default function Hero() {
     >
       {/* Background Image */}
       <div className="absolute inset-0">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&q=80')`,
-          }}
+        <Image
+          src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&q=80"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
         />
         {/* Overlay gradients */}
         <div className="absolute inset-0 bg-gradient-to-b from-void via-void/80 to-void" />
         <div className="absolute inset-0 bg-gradient-to-r from-void via-transparent to-void/50" />
 
-        {/* Animated gradient orbs */}
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full"
+        {/* Animated gradient orbs — CSS animations for infinite loops */}
+        <div
+          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full animate-[heroOrbGold_8s_ease-in-out_infinite]"
           style={{
             background: 'radial-gradient(circle, rgba(201, 162, 39, 0.15) 0%, transparent 70%)',
           }}
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{ duration: 8, repeat: Infinity }}
         />
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full"
+        <div
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full animate-[heroOrbRed_10s_ease-in-out_infinite]"
           style={{
             background: 'radial-gradient(circle, rgba(220, 20, 60, 0.1) 0%, transparent 70%)',
           }}
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.2, 0.4, 0.2],
-          }}
-          transition={{ duration: 10, repeat: Infinity }}
         />
       </div>
 
@@ -150,22 +143,14 @@ export default function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
       >
-        <motion.div
-          className="flex flex-col items-center gap-2 cursor-pointer"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
+        <div className="flex flex-col items-center gap-2 cursor-pointer animate-[scrollBounce_2s_ease-in-out_infinite]">
           <span className="font-body text-xs text-bone/40 tracking-widest uppercase">
             Scroll
           </span>
           <div className="w-6 h-10 border border-bone/20 rounded-full flex justify-center pt-2">
-            <motion.div
-              className="w-1 h-2 bg-imperial-gold rounded-full"
-              animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            />
+            <div className="w-1 h-2 bg-imperial-gold rounded-full animate-[scrollDot_1.5s_ease-in-out_infinite]" />
           </div>
-        </motion.div>
+        </div>
       </motion.div>
     </section>
   )

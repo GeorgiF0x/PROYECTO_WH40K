@@ -1,21 +1,16 @@
-'use client'
+import dynamic from 'next/dynamic'
+import Navigation from '@/components/Navigation'
+import Hero from '@/components/Hero'
 
-import {
-  Navigation,
-  Hero,
-  Factions,
-  Products,
-  Features,
-  Newsletter,
-  Footer,
-} from '@/components'
+const Factions = dynamic(() => import('@/components/Factions'))
+const Products = dynamic(() => import('@/components/Products'))
+const Features = dynamic(() => import('@/components/Features'))
+const Newsletter = dynamic(() => import('@/components/Newsletter'))
+const Footer = dynamic(() => import('@/components/Footer'))
 
 export default function Home() {
   return (
     <main className="relative min-h-screen bg-void">
-      {/* Noise Overlay */}
-      <div className="noise-overlay" />
-
       {/* Navigation */}
       <Navigation />
 

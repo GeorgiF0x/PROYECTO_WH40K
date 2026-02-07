@@ -19,7 +19,8 @@ import {
   Feather,
   ArrowRight,
 } from 'lucide-react'
-import { Navigation, Footer } from '@/components'
+import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 import { createClient } from '@/lib/supabase/client'
 import { getFactionById } from '@/lib/data'
 import { getFactionTheme } from '@/lib/faction-themes'

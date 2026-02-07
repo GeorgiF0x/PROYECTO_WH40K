@@ -1,6 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { getFactionTheme, type FactionTheme } from '@/lib/faction-themes'
 
 interface FactionHeroBackgroundProps {
@@ -71,40 +70,31 @@ export function FactionHeroBackground({ factionId }: FactionHeroBackgroundProps)
 function ImperiumBackground({ theme }: { theme: FactionTheme }) {
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#050408]">
-      {/* Divine light rays from center top */}
+      {/* Divine light rays from center top — CSS animation */}
       <div className="absolute inset-0">
         {[...Array(12)].map((_, i) => (
-          <motion.div
+          <div
             key={i}
-            className="absolute top-0 left-1/2 origin-top"
+            className="absolute top-0 left-1/2 origin-top animate-[factionPulse_ease-in-out_infinite]"
             style={{
               width: '4px',
               height: '120%',
               background: `linear-gradient(180deg, ${theme.colors.glow}60 0%, ${theme.colors.primary}30 40%, transparent 80%)`,
               transform: `translateX(-50%) rotate(${-30 + i * 5}deg)`,
               filter: 'blur(8px)',
-            }}
-            animate={{
-              opacity: [0.2, 0.5, 0.2],
-            }}
-            transition={{
-              duration: 3 + i * 0.3,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: i * 0.2,
+              animationDuration: `${3 + i * 0.3}s`,
+              animationDelay: `${i * 0.2}s`,
             }}
           />
         ))}
       </div>
 
-      {/* Central glow */}
-      <motion.div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[800px]"
+      {/* Central glow — CSS animation */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[800px] animate-[factionPulse_4s_ease-in-out_infinite]"
         style={{
           background: `radial-gradient(ellipse at top, ${theme.colors.glow}30 0%, ${theme.colors.primary}15 30%, transparent 70%)`,
         }}
-        animate={{ opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 4, repeat: Infinity }}
       />
 
       {/* Gothic Cathedral Silhouette SVG */}
@@ -114,18 +104,15 @@ function ImperiumBackground({ theme }: { theme: FactionTheme }) {
         preserveAspectRatio="xMidYMax slice"
       >
         <defs>
-          {/* Gradient for cathedral */}
           <linearGradient id="cathedralGrad" x1="0%" y1="100%" x2="0%" y2="0%">
             <stop offset="0%" stopColor="#000000" />
             <stop offset="40%" stopColor="#0a0a10" />
             <stop offset="100%" stopColor="transparent" />
           </linearGradient>
-          {/* Glow gradient */}
           <linearGradient id="glowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor={theme.colors.glow} stopOpacity="0.4" />
             <stop offset="100%" stopColor={theme.colors.glow} stopOpacity="0" />
           </linearGradient>
-          {/* Window glow */}
           <radialGradient id="windowGlow">
             <stop offset="0%" stopColor={theme.colors.glow} stopOpacity="0.8" />
             <stop offset="100%" stopColor={theme.colors.primary} stopOpacity="0" />
@@ -134,12 +121,10 @@ function ImperiumBackground({ theme }: { theme: FactionTheme }) {
 
         {/* Left Cathedral Tower */}
         <g className="opacity-90">
-          {/* Main tower body */}
           <path
             d="M 0 1080 L 0 400 L 50 400 L 50 350 L 80 350 L 80 250 L 120 100 L 160 250 L 160 350 L 190 350 L 190 400 L 240 400 L 240 1080 Z"
             fill="url(#cathedralGrad)"
           />
-          {/* Spire */}
           <path
             d="M 100 250 L 120 50 L 140 250"
             fill="none"
@@ -147,14 +132,12 @@ function ImperiumBackground({ theme }: { theme: FactionTheme }) {
             strokeWidth="2"
             opacity="0.3"
           />
-          {/* Gothic windows */}
           <ellipse cx="120" cy="500" rx="25" ry="50" fill="url(#windowGlow)" opacity="0.5" />
           <ellipse cx="120" cy="650" rx="20" ry="40" fill="url(#windowGlow)" opacity="0.4" />
         </g>
 
         {/* Central Grand Cathedral */}
         <g className="opacity-95">
-          {/* Main structure */}
           <path
             d="M 600 1080
                L 600 500
@@ -164,7 +147,6 @@ function ImperiumBackground({ theme }: { theme: FactionTheme }) {
                L 1320 1080 Z"
             fill="url(#cathedralGrad)"
           />
-          {/* Central spire */}
           <path
             d="M 930 300 L 960 30 L 990 300"
             fill="#0a0a12"
@@ -172,21 +154,14 @@ function ImperiumBackground({ theme }: { theme: FactionTheme }) {
             strokeWidth="1"
             opacity="0.4"
           />
-          {/* Side spires */}
           <path d="M 750 350 L 780 180 L 810 350" fill="#0a0a12" />
           <path d="M 1110 350 L 1140 180 L 1170 350" fill="#0a0a12" />
-
-          {/* Rose window */}
           <circle cx="960" cy="450" r="80" fill="none" stroke={theme.colors.glow} strokeWidth="2" opacity="0.3" />
           <circle cx="960" cy="450" r="60" fill="url(#windowGlow)" opacity="0.4" />
-
-          {/* Gothic arched windows */}
           <path d="M 750 550 Q 780 500 810 550 L 810 700 L 750 700 Z" fill="url(#windowGlow)" opacity="0.3" />
           <path d="M 870 550 Q 900 500 930 550 L 930 700 L 870 700 Z" fill="url(#windowGlow)" opacity="0.35" />
           <path d="M 990 550 Q 1020 500 1050 550 L 1050 700 L 990 700 Z" fill="url(#windowGlow)" opacity="0.35" />
           <path d="M 1110 550 Q 1140 500 1170 550 L 1170 700 L 1110 700 Z" fill="url(#windowGlow)" opacity="0.3" />
-
-          {/* Flying buttresses */}
           <path d="M 600 600 L 500 800 L 520 800 L 620 620" fill="#080810" opacity="0.8" />
           <path d="M 1320 600 L 1420 800 L 1400 800 L 1300 620" fill="#080810" opacity="0.8" />
         </g>
@@ -213,29 +188,23 @@ function ImperiumBackground({ theme }: { theme: FactionTheme }) {
         <path d="M 1470 1080 L 1470 600 L 1520 500 L 1570 600 L 1570 1080" fill="#030308" opacity="0.7" />
       </svg>
 
-      {/* Floating dust/incense particles */}
+      {/* Floating dust/incense particles — reduced from 20 to 10, CSS animation */}
       <div className="absolute inset-0 pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
+        {[...Array(10)].map((_, i) => (
+          <div
             key={i}
-            className="absolute rounded-full"
+            className="absolute rounded-full animate-[factionFloat_ease-out_infinite]"
             style={{
-              left: `${20 + Math.random() * 60}%`,
-              bottom: `${10 + Math.random() * 40}%`,
-              width: 2 + Math.random() * 4,
-              height: 2 + Math.random() * 4,
+              left: `${20 + (i * 6.5)}%`,
+              bottom: `${10 + (i * 4)}%`,
+              width: 2 + (i % 3) * 2,
+              height: 2 + (i % 3) * 2,
               background: theme.colors.glow,
-              boxShadow: `0 0 ${6 + Math.random() * 10}px ${theme.colors.glow}`,
-            }}
-            animate={{
-              y: [0, -150 - Math.random() * 200],
-              x: [0, (Math.random() - 0.5) * 100],
-              opacity: [0, 0.8, 0],
-            }}
-            transition={{
-              duration: 8 + Math.random() * 6,
-              repeat: Infinity,
-              delay: Math.random() * 8,
+              boxShadow: `0 0 ${6 + (i % 4) * 3}px ${theme.colors.glow}`,
+              animationDuration: `${8 + i * 0.6}s`,
+              animationDelay: `${i * 0.8}s`,
+              ['--float-extra' as string]: `${i * 20}px`,
+              ['--float-x' as string]: `${(i % 2 === 0 ? 1 : -1) * (20 + i * 5)}px`,
             }}
           />
         ))}
@@ -251,13 +220,11 @@ function ChaosBackground({ theme }: { theme: FactionTheme }) {
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#0a0205]">
       {/* Hellfire glow from bottom */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 h-2/3"
+      <div
+        className="absolute bottom-0 left-0 right-0 h-2/3 animate-[factionPulse_2s_ease-in-out_infinite]"
         style={{
           background: `linear-gradient(to top, ${theme.colors.primary}80, ${theme.colors.secondary}40, transparent)`,
         }}
-        animate={{ opacity: [0.6, 0.9, 0.6] }}
-        transition={{ duration: 2, repeat: Infinity }}
       />
 
       {/* Warp storm swirls */}
@@ -269,28 +236,28 @@ function ChaosBackground({ theme }: { theme: FactionTheme }) {
           </radialGradient>
         </defs>
 
-        {/* Chaos star in background */}
+        {/* Chaos star in background — static opacity, no JS animation */}
         <g transform="translate(960, 400)" opacity="0.15">
           {[...Array(8)].map((_, i) => (
-            <motion.path
+            <path
               key={i}
               d={`M 0 0 L ${Math.cos(i * Math.PI / 4) * 300} ${Math.sin(i * Math.PI / 4) * 300}`}
               stroke={theme.colors.primary}
               strokeWidth="20"
               fill="none"
-              animate={{ opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+              className="animate-[factionPulse_2s_ease-in-out_infinite]"
+              style={{ animationDelay: `${i * 0.2}s` }}
             />
           ))}
         </g>
       </svg>
 
-      {/* Flame pillars */}
+      {/* Flame pillars — CSS animation */}
       <div className="absolute bottom-0 left-0 right-0 h-full">
         {[...Array(8)].map((_, i) => (
-          <motion.div
+          <div
             key={i}
-            className="absolute bottom-0"
+            className="absolute bottom-0 animate-[factionPulse_ease-in-out_infinite]"
             style={{
               left: `${5 + i * 13}%`,
               width: '80px',
@@ -298,16 +265,8 @@ function ChaosBackground({ theme }: { theme: FactionTheme }) {
               background: `linear-gradient(to top, ${theme.colors.primary}, ${theme.colors.secondary}80, transparent)`,
               filter: 'blur(30px)',
               borderRadius: '50% 50% 0 0',
-            }}
-            animate={{
-              height: ['50%', '70%', '50%'],
-              opacity: [0.4, 0.7, 0.4],
-            }}
-            transition={{
-              duration: 1.5 + i * 0.2,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: i * 0.15,
+              animationDuration: `${1.5 + i * 0.2}s`,
+              animationDelay: `${i * 0.15}s`,
             }}
           />
         ))}
@@ -319,7 +278,6 @@ function ChaosBackground({ theme }: { theme: FactionTheme }) {
           d="M 0 540 L 0 400 L 100 350 L 200 380 L 300 280 L 400 320 L 500 200 L 600 250 L 700 150 L 800 180 L 900 100 L 1000 130 L 1100 80 L 1200 150 L 1300 120 L 1400 200 L 1500 180 L 1600 280 L 1700 230 L 1800 350 L 1920 300 L 1920 540 Z"
           fill="#050102"
         />
-        {/* Jagged peaks */}
         <path
           d="M 500 200 L 520 100 L 540 180 M 900 100 L 920 20 L 940 90 M 1100 80 L 1115 10 L 1130 70"
           stroke="#0a0205"
@@ -328,29 +286,22 @@ function ChaosBackground({ theme }: { theme: FactionTheme }) {
         />
       </svg>
 
-      {/* Ember particles */}
-      {[...Array(30)].map((_, i) => (
-        <motion.div
+      {/* Ember particles — reduced from 30 to 12, CSS animation */}
+      {[...Array(12)].map((_, i) => (
+        <div
           key={i}
-          className="absolute rounded-full"
+          className="absolute rounded-full animate-[factionEmber_ease-out_infinite]"
           style={{
-            left: `${Math.random() * 100}%`,
+            left: `${8 + i * 8}%`,
             bottom: '10%',
-            width: 3 + Math.random() * 5,
-            height: 3 + Math.random() * 5,
+            width: 3 + (i % 3) * 2,
+            height: 3 + (i % 3) * 2,
             background: i % 3 === 0 ? '#ff6600' : theme.colors.primary,
             boxShadow: `0 0 10px ${i % 3 === 0 ? '#ff6600' : theme.colors.primary}`,
-          }}
-          animate={{
-            y: [0, -400 - Math.random() * 300],
-            x: [0, (Math.random() - 0.5) * 200],
-            opacity: [0, 1, 0],
-            scale: [1, 0.5],
-          }}
-          transition={{
-            duration: 3 + Math.random() * 3,
-            repeat: Infinity,
-            delay: Math.random() * 5,
+            animationDuration: `${3 + (i % 4) * 0.8}s`,
+            animationDelay: `${i * 0.4}s`,
+            ['--float-extra' as string]: `${(i % 5) * 60}px`,
+            ['--float-x' as string]: `${(i % 2 === 0 ? 1 : -1) * (30 + i * 8)}px`,
           }}
         />
       ))}
@@ -364,14 +315,12 @@ function ChaosBackground({ theme }: { theme: FactionTheme }) {
 function NecronsBackground({ theme }: { theme: FactionTheme }) {
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#020805]">
-      {/* Green ambient glow */}
-      <motion.div
-        className="absolute inset-0"
+      {/* Green ambient glow — CSS */}
+      <div
+        className="absolute inset-0 animate-[factionPulse_3s_ease-in-out_infinite]"
         style={{
           background: `radial-gradient(ellipse at 50% 80%, ${theme.colors.glow}25 0%, transparent 60%)`,
         }}
-        animate={{ opacity: [0.5, 0.8, 0.5] }}
-        transition={{ duration: 3, repeat: Infinity }}
       />
 
       {/* Tomb architecture SVG */}
@@ -396,20 +345,18 @@ function NecronsBackground({ theme }: { theme: FactionTheme }) {
             strokeWidth="2"
             opacity="0.8"
           />
-          {/* Pyramid lines */}
           <path d="M 960 200 L 960 900" stroke={theme.colors.glow} strokeWidth="1" opacity="0.3" />
           <path d="M 960 200 L 740 900" stroke={theme.colors.glow} strokeWidth="1" opacity="0.2" />
           <path d="M 960 200 L 1180 900" stroke={theme.colors.glow} strokeWidth="1" opacity="0.2" />
 
-          {/* Glowing eye/orb at top */}
-          <motion.circle
+          {/* Glowing eye/orb at top — CSS pulse */}
+          <circle
             cx="960"
             cy="350"
             r="30"
             fill={theme.colors.glow}
             opacity="0.6"
-            animate={{ opacity: [0.4, 0.8, 0.4], r: [28, 32, 28] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            className="animate-[factionPulse_2s_ease-in-out_infinite]"
           />
           <circle cx="960" cy="350" r="50" fill="none" stroke={theme.colors.glow} strokeWidth="2" opacity="0.3" />
         </g>
@@ -418,15 +365,14 @@ function NecronsBackground({ theme }: { theme: FactionTheme }) {
         <g>
           <path d="M 200 1080 L 200 400 L 250 300 L 300 400 L 300 1080 Z" fill="#030908" />
           <path d="M 250 300 L 250 350" stroke={theme.colors.glow} strokeWidth="3" opacity="0.5" />
-          <motion.rect
+          <rect
             x="220"
             y="500"
             width="60"
             height="100"
             fill={theme.colors.glow}
             opacity="0.2"
-            animate={{ opacity: [0.1, 0.3, 0.1] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            className="animate-[factionPulse_2s_ease-in-out_infinite]"
           />
         </g>
 
@@ -434,15 +380,15 @@ function NecronsBackground({ theme }: { theme: FactionTheme }) {
         <g>
           <path d="M 1620 1080 L 1620 400 L 1670 300 L 1720 400 L 1720 1080 Z" fill="#030908" />
           <path d="M 1670 300 L 1670 350" stroke={theme.colors.glow} strokeWidth="3" opacity="0.5" />
-          <motion.rect
+          <rect
             x="1640"
             y="500"
             width="60"
             height="100"
             fill={theme.colors.glow}
             opacity="0.2"
-            animate={{ opacity: [0.1, 0.3, 0.1] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+            className="animate-[factionPulse_2s_ease-in-out_infinite]"
+            style={{ animationDelay: '0.5s' }}
           />
         </g>
 
@@ -454,51 +400,37 @@ function NecronsBackground({ theme }: { theme: FactionTheme }) {
         <line x1="0" y1="900" x2="1920" y2="900" stroke={theme.colors.glow} strokeWidth="2" opacity="0.2" />
       </svg>
 
-      {/* Scanning green lines */}
-      {[...Array(3)].map((_, i) => (
-        <motion.div
+      {/* Scanning green lines — CSS animation, reduced from 3 to 2 */}
+      {[...Array(2)].map((_, i) => (
+        <div
           key={i}
-          className="absolute left-0 right-0 h-[2px]"
+          className="absolute left-0 right-0 h-[2px] animate-[factionScan_5s_linear_infinite]"
           style={{
             background: `linear-gradient(90deg, transparent, ${theme.colors.glow}, transparent)`,
             boxShadow: `0 0 20px ${theme.colors.glow}`,
-          }}
-          animate={{
-            top: ['0%', '100%'],
-            opacity: [0, 0.6, 0],
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            delay: i * 1.8,
-            ease: 'linear',
+            animationDelay: `${i * 2.5}s`,
           }}
         />
       ))}
 
-      {/* Floating scarab-like particles */}
-      {[...Array(15)].map((_, i) => (
-        <motion.div
+      {/* Floating scarab-like particles — reduced from 15 to 8, CSS animation */}
+      {[...Array(8)].map((_, i) => (
+        <div
           key={i}
-          className="absolute"
+          className="absolute animate-[factionSpore_ease-in-out_infinite]"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${30 + Math.random() * 50}%`,
+            left: `${12 + i * 11}%`,
+            top: `${30 + (i % 4) * 12}%`,
             width: 4,
             height: 6,
             background: theme.colors.glow,
             borderRadius: '50%',
             boxShadow: `0 0 10px ${theme.colors.glow}`,
-          }}
-          animate={{
-            y: [0, -20, 0],
-            x: [0, (Math.random() - 0.5) * 40, 0],
-            opacity: [0.3, 0.8, 0.3],
-          }}
-          transition={{
-            duration: 3 + Math.random() * 2,
-            repeat: Infinity,
-            delay: Math.random() * 3,
+            animationDuration: `${3 + (i % 3) * 0.7}s`,
+            animationDelay: `${i * 0.4}s`,
+            ['--float-extra' as string]: `${(i % 3) * 10}px`,
+            ['--spore-x1' as string]: `0px`,
+            ['--spore-x2' as string]: `${(i % 2 === 0 ? 1 : -1) * 15}px`,
           }}
         />
       ))}
@@ -512,9 +444,9 @@ function NecronsBackground({ theme }: { theme: FactionTheme }) {
 function AeldariBackground({ theme }: { theme: FactionTheme }) {
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#030510]">
-      {/* Cosmic nebula background */}
-      <motion.div
-        className="absolute inset-0"
+      {/* Cosmic nebula background — CSS */}
+      <div
+        className="absolute inset-0 animate-[factionPulse_8s_ease-in-out_infinite]"
         style={{
           background: `
             radial-gradient(ellipse at 30% 20%, ${theme.colors.secondary}30 0%, transparent 50%),
@@ -522,8 +454,6 @@ function AeldariBackground({ theme }: { theme: FactionTheme }) {
             radial-gradient(ellipse at 50% 80%, ${theme.colors.tertiary}20 0%, transparent 50%)
           `,
         }}
-        animate={{ opacity: [0.6, 0.9, 0.6] }}
-        transition={{ duration: 8, repeat: Infinity }}
       />
 
       {/* Wraithbone spires SVG */}
@@ -542,7 +472,6 @@ function AeldariBackground({ theme }: { theme: FactionTheme }) {
 
         {/* Elegant curved spires */}
         <g opacity="0.9">
-          {/* Central spire */}
           <path
             d="M 960 1080
                C 960 800, 920 600, 940 400
@@ -554,7 +483,6 @@ function AeldariBackground({ theme }: { theme: FactionTheme }) {
             strokeWidth="1"
             opacity="0.5"
           />
-          {/* Spirit stone */}
           <ellipse cx="960" cy="250" rx="15" ry="25" fill="url(#spiritStone)" />
         </g>
 
@@ -591,27 +519,19 @@ function AeldariBackground({ theme }: { theme: FactionTheme }) {
         <ellipse cx="960" cy="600" rx="180" ry="320" fill="none" stroke={theme.colors.secondary} strokeWidth="2" opacity="0.15" />
       </svg>
 
-      {/* Spirit particles */}
-      {[...Array(40)].map((_, i) => (
-        <motion.div
+      {/* Spirit particles — reduced from 40 to 15, CSS animation */}
+      {[...Array(15)].map((_, i) => (
+        <div
           key={i}
-          className="absolute rounded-full"
+          className="absolute rounded-full animate-[factionSpiritFloat_ease-in-out_infinite]"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            width: 2 + Math.random() * 3,
-            height: 2 + Math.random() * 3,
+            left: `${6 + i * 6}%`,
+            top: `${10 + (i * 5.5) % 80}%`,
+            width: 2 + (i % 3),
+            height: 2 + (i % 3),
             background: i % 3 === 0 ? theme.colors.secondary : theme.colors.primary,
-          }}
-          animate={{
-            opacity: [0, 0.8, 0],
-            scale: [0.5, 1.5, 0.5],
-            y: [0, -50, 0],
-          }}
-          transition={{
-            duration: 4 + Math.random() * 3,
-            repeat: Infinity,
-            delay: Math.random() * 5,
+            animationDuration: `${4 + (i % 4) * 0.8}s`,
+            animationDelay: `${i * 0.35}s`,
           }}
         />
       ))}
@@ -635,7 +555,6 @@ function OrksBackground({ theme }: { theme: FactionTheme }) {
 
       {/* Scrap pile silhouettes */}
       <svg className="absolute bottom-0 left-0 w-full h-full" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice">
-        {/* Junk pile - chaotic shapes */}
         <path
           d="M 0 1080 L 0 700 L 100 750 L 150 650 L 200 720 L 280 600 L 350 680 L 400 550 L 500 620 L 550 500 L 650 580 L 700 450 L 800 520 L 850 400 L 950 480 L 1000 380 L 1100 450 L 1150 350 L 1200 420 L 1300 380 L 1400 450 L 1450 380 L 1550 480 L 1600 420 L 1700 520 L 1750 450 L 1850 550 L 1920 500 L 1920 1080 Z"
           fill="#050805"
@@ -648,18 +567,17 @@ function OrksBackground({ theme }: { theme: FactionTheme }) {
           opacity="0.8"
         />
 
-        {/* Glyph eyes */}
-        <motion.circle
+        {/* Glyph eyes — CSS pulse */}
+        <circle
           cx="880" cy="380" r="15"
           fill={theme.colors.glow}
-          animate={{ opacity: [0.3, 0.8, 0.3] }}
-          transition={{ duration: 1, repeat: Infinity }}
+          className="animate-[factionPulse_1s_ease-in-out_infinite]"
         />
-        <motion.circle
+        <circle
           cx="960" cy="380" r="15"
           fill={theme.colors.glow}
-          animate={{ opacity: [0.3, 0.8, 0.3] }}
-          transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
+          className="animate-[factionPulse_1s_ease-in-out_infinite]"
+          style={{ animationDelay: '0.2s' }}
         />
 
         {/* Scrap metal pieces */}
@@ -669,66 +587,49 @@ function OrksBackground({ theme }: { theme: FactionTheme }) {
         <rect x="1600" y="550" width="50" height="12" fill="#0a0a05" transform="rotate(10 1600 550)" />
       </svg>
 
-      {/* Explosion flashes */}
-      {[...Array(4)].map((_, i) => (
-        <motion.div
+      {/* Explosion flashes — reduced from 4 to 3 */}
+      {[...Array(3)].map((_, i) => (
+        <div
           key={i}
-          className="absolute rounded-full"
+          className="absolute rounded-full animate-[factionPulse_ease-in-out_infinite]"
           style={{
-            left: `${15 + i * 25}%`,
+            left: `${15 + i * 30}%`,
             top: `${20 + (i % 2) * 30}%`,
             width: 150 + i * 30,
             height: 150 + i * 30,
             background: `radial-gradient(circle, ${theme.colors.primary}80 0%, #ff4400 30%, transparent 70%)`,
             filter: 'blur(10px)',
-          }}
-          animate={{
-            scale: [0, 1.5, 0],
-            opacity: [0, 0.9, 0],
-          }}
-          transition={{
-            duration: 0.4,
-            repeat: Infinity,
-            repeatDelay: 3 + i * 1.5,
-            delay: i * 0.8,
+            animationDuration: `${3.5 + i * 1.5}s`,
+            animationDelay: `${i * 0.8}s`,
           }}
         />
       ))}
 
-      {/* Sparks flying */}
-      {[...Array(25)].map((_, i) => (
-        <motion.div
+      {/* Sparks flying — reduced from 25 to 10, CSS animation */}
+      {[...Array(10)].map((_, i) => (
+        <div
           key={i}
-          className="absolute"
+          className="absolute rounded-full animate-[factionEmber_ease-out_infinite]"
           style={{
-            left: `${Math.random() * 100}%`,
+            left: `${10 + i * 9}%`,
             bottom: '30%',
             width: 3,
             height: 3,
             background: i % 2 === 0 ? theme.colors.glow : '#ff6600',
-            borderRadius: '50%',
-          }}
-          animate={{
-            y: [0, -200 - Math.random() * 200],
-            x: [(Math.random() - 0.5) * 100, (Math.random() - 0.5) * 200],
-            opacity: [1, 0],
-          }}
-          transition={{
-            duration: 1 + Math.random(),
-            repeat: Infinity,
-            delay: Math.random() * 3,
+            animationDuration: `${1 + (i % 4) * 0.3}s`,
+            animationDelay: `${i * 0.3}s`,
+            ['--float-extra' as string]: `${(i % 5) * 40}px`,
+            ['--float-x' as string]: `${(i % 2 === 0 ? 1 : -1) * (20 + i * 10)}px`,
           }}
         />
       ))}
 
-      {/* Green glow from below */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 h-1/3"
+      {/* Green glow from below — CSS */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-1/3 animate-[factionPulse_2s_ease-in-out_infinite]"
         style={{
           background: `linear-gradient(to top, ${theme.colors.primary}40, transparent)`,
         }}
-        animate={{ opacity: [0.4, 0.7, 0.4] }}
-        transition={{ duration: 2, repeat: Infinity }}
       />
     </div>
   )
@@ -761,23 +662,16 @@ function TauBackground({ theme }: { theme: FactionTheme }) {
           </linearGradient>
         </defs>
 
-        {/* City skyline - clean geometric shapes */}
+        {/* City skyline */}
         <g fill="url(#tauBuildingGrad)">
-          {/* Left buildings */}
           <rect x="50" y="500" width="120" height="580" />
           <rect x="200" y="400" width="100" height="680" />
           <rect x="330" y="550" width="80" height="530" />
           <polygon points="450,300 550,300 550,1080 450,1080 500,250" />
-
-          {/* Center tower */}
           <rect x="700" y="200" width="150" height="880" />
           <polygon points="700,200 775,50 850,200" fill="#0a1525" />
-
-          {/* Main dome structure */}
           <ellipse cx="960" cy="600" rx="200" ry="150" fill="#081015" />
           <rect x="860" y="600" width="200" height="480" fill="#081015" />
-
-          {/* Right buildings */}
           <rect x="1100" y="350" width="120" height="730" />
           <polygon points="1250,250 1350,250 1350,1080 1250,1080 1300,180" />
           <rect x="1400" y="450" width="100" height="630" />
@@ -785,66 +679,57 @@ function TauBackground({ theme }: { theme: FactionTheme }) {
           <rect x="1750" y="500" width="170" height="580" />
         </g>
 
-        {/* Window lights */}
-        {[...Array(30)].map((_, i) => (
-          <motion.rect
+        {/* Window lights — reduced from 30 to 15, CSS animation */}
+        {[...Array(15)].map((_, i) => (
+          <rect
             key={i}
-            x={100 + (i % 10) * 180}
-            y={400 + Math.floor(i / 10) * 150}
+            x={100 + (i % 8) * 225}
+            y={400 + Math.floor(i / 8) * 150}
             width="8"
             height="15"
             fill={theme.colors.glow}
-            animate={{ opacity: [0.2, 0.8, 0.2] }}
-            transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
+            className="animate-[factionPulse_2s_ease-in-out_infinite]"
+            style={{ animationDelay: `${i * 0.15}s` }}
           />
         ))}
 
-        {/* Glowing antenna */}
-        <motion.circle
+        {/* Glowing antenna — CSS pulse */}
+        <circle
           cx="775"
           cy="50"
           r="8"
           fill={theme.colors.glow}
-          animate={{ opacity: [0.5, 1, 0.5], r: [6, 10, 6] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          className="animate-[factionPulse_1.5s_ease-in-out_infinite]"
         />
-        <motion.circle
+        <circle
           cx="1300"
           cy="180"
           r="6"
           fill={theme.colors.glow}
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
+          className="animate-[factionPulse_1.5s_ease-in-out_infinite]"
+          style={{ animationDelay: '0.5s' }}
         />
       </svg>
 
-      {/* Scanning lines */}
+      {/* Scanning lines — CSS animation */}
       {[...Array(2)].map((_, i) => (
-        <motion.div
+        <div
           key={i}
-          className="absolute left-0 right-0 h-[1px]"
+          className="absolute left-0 right-0 h-[1px] animate-[factionScan_6s_linear_infinite]"
           style={{
             background: `linear-gradient(90deg, transparent, ${theme.colors.glow}, transparent)`,
             boxShadow: `0 0 15px ${theme.colors.glow}`,
-          }}
-          animate={{ top: ['0%', '100%'] }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            delay: i * 3,
-            ease: 'linear',
+            animationDelay: `${i * 3}s`,
           }}
         />
       ))}
 
-      {/* Ambient glow */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 h-1/2"
+      {/* Ambient glow — CSS */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-1/2 animate-[factionPulse_4s_ease-in-out_infinite]"
         style={{
           background: `linear-gradient(to top, ${theme.colors.primary}30, transparent)`,
         }}
-        animate={{ opacity: [0.4, 0.6, 0.4] }}
-        transition={{ duration: 4, repeat: Infinity }}
       />
     </div>
   )
@@ -856,14 +741,12 @@ function TauBackground({ theme }: { theme: FactionTheme }) {
 function TyranidsBackground({ theme }: { theme: FactionTheme }) {
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#080510]">
-      {/* Pulsing hive glow */}
-      <motion.div
-        className="absolute inset-0"
+      {/* Pulsing hive glow — CSS */}
+      <div
+        className="absolute inset-0 animate-[factionPulse_3s_ease-in-out_infinite]"
         style={{
           background: `radial-gradient(ellipse at 50% 70%, ${theme.colors.primary}40 0%, transparent 60%)`,
         }}
-        animate={{ opacity: [0.5, 0.8, 0.5], scale: [1, 1.05, 1] }}
-        transition={{ duration: 3, repeat: Infinity }}
       />
 
       {/* Organic structures SVG */}
@@ -877,12 +760,9 @@ function TyranidsBackground({ theme }: { theme: FactionTheme }) {
 
         {/* Organic ribcage/tunnel structure */}
         <g stroke={theme.colors.primary} strokeWidth="3" fill="none" opacity="0.3">
-          {/* Left ribs */}
           <path d="M 0 200 Q 300 250, 400 500 Q 450 700, 400 900" />
           <path d="M 0 350 Q 250 400, 350 600 Q 400 750, 350 950" />
           <path d="M 0 500 Q 200 550, 300 700 Q 350 850, 300 1000" />
-
-          {/* Right ribs */}
           <path d="M 1920 200 Q 1620 250, 1520 500 Q 1470 700, 1520 900" />
           <path d="M 1920 350 Q 1670 400, 1570 600 Q 1520 750, 1570 950" />
           <path d="M 1920 500 Q 1720 550, 1620 700 Q 1570 850, 1620 1000" />
@@ -897,73 +777,62 @@ function TyranidsBackground({ theme }: { theme: FactionTheme }) {
           opacity="0.4"
         />
 
-        {/* Tendrils from edges */}
-        {[...Array(6)].map((_, i) => (
-          <motion.path
+        {/* Tendrils from edges — CSS pulse, reduced from 6 to 4 */}
+        {[...Array(4)].map((_, i) => (
+          <path
             key={i}
-            d={`M ${i < 3 ? 0 : 1920} ${200 + i * 150}
-                Q ${i < 3 ? 150 + i * 30 : 1770 - i * 30} ${250 + i * 100},
-                  ${i < 3 ? 250 + i * 50 : 1670 - i * 50} ${400 + i * 80}`}
+            d={`M ${i < 2 ? 0 : 1920} ${200 + i * 200}
+                Q ${i < 2 ? 150 + i * 30 : 1770 - i * 30} ${250 + i * 130},
+                  ${i < 2 ? 250 + i * 50 : 1670 - i * 50} ${400 + i * 100}`}
             stroke={theme.colors.primary}
             strokeWidth="15"
             fill="none"
             opacity="0.5"
-            animate={{ opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+            className="animate-[factionPulse_2s_ease-in-out_infinite]"
+            style={{ animationDelay: `${i * 0.3}s` }}
           />
         ))}
 
-        {/* Nodes/eyes */}
-        {[...Array(8)].map((_, i) => (
-          <motion.circle
+        {/* Nodes/eyes — CSS pulse, reduced from 8 to 5 */}
+        {[...Array(5)].map((_, i) => (
+          <circle
             key={i}
-            cx={200 + (i % 4) * 450 + (i < 4 ? 0 : 100)}
-            cy={300 + Math.floor(i / 4) * 350}
+            cx={200 + (i % 3) * 650 + (i < 3 ? 0 : 100)}
+            cy={300 + Math.floor(i / 3) * 350}
             r="12"
             fill={theme.colors.secondary}
-            animate={{ opacity: [0.3, 0.9, 0.3], r: [10, 14, 10] }}
-            transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
+            className="animate-[factionPulse_1.5s_ease-in-out_infinite]"
+            style={{ animationDelay: `${i * 0.2}s` }}
           />
         ))}
       </svg>
 
-      {/* Spore particles */}
-      {[...Array(35)].map((_, i) => (
-        <motion.div
+      {/* Spore particles — reduced from 35 to 12, CSS animation */}
+      {[...Array(12)].map((_, i) => (
+        <div
           key={i}
-          className="absolute rounded-full"
+          className="absolute rounded-full animate-[factionSpore_ease-in-out_infinite]"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            width: 4 + Math.random() * 8,
-            height: 4 + Math.random() * 8,
+            left: `${8 + i * 7.5}%`,
+            top: `${15 + (i * 6.5) % 70}%`,
+            width: 4 + (i % 3) * 3,
+            height: 4 + (i % 3) * 3,
             background: `radial-gradient(circle, ${theme.colors.secondary} 0%, ${theme.colors.primary}50 50%, transparent 100%)`,
-          }}
-          animate={{
-            y: [0, -40 - Math.random() * 60],
-            x: [(Math.random() - 0.5) * 30, (Math.random() - 0.5) * 50],
-            opacity: [0, 0.7, 0],
-            scale: [0.5, 1, 0.5],
-          }}
-          transition={{
-            duration: 5 + Math.random() * 4,
-            repeat: Infinity,
-            delay: Math.random() * 6,
+            animationDuration: `${5 + (i % 4)}s`,
+            animationDelay: `${i * 0.5}s`,
+            ['--float-extra' as string]: `${(i % 4) * 15}px`,
+            ['--spore-x1' as string]: `${(i % 2 === 0 ? 1 : -1) * 10}px`,
+            ['--spore-x2' as string]: `${(i % 2 === 0 ? -1 : 1) * 20}px`,
           }}
         />
       ))}
 
-      {/* Vein pulse effect */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
+      {/* Vein pulse effect — CSS */}
+      <div
+        className="absolute inset-0 pointer-events-none animate-[factionPulse_2s_ease-in-out_infinite]"
         style={{
           background: `radial-gradient(ellipse at center, ${theme.colors.secondary}20 0%, transparent 50%)`,
         }}
-        animate={{
-          opacity: [0, 0.4, 0],
-          scale: [0.8, 1.2, 0.8],
-        }}
-        transition={{ duration: 2, repeat: Infinity }}
       />
     </div>
   )
@@ -975,13 +844,11 @@ function TyranidsBackground({ theme }: { theme: FactionTheme }) {
 function DefaultBackground({ theme }: { theme: FactionTheme }) {
   return (
     <div className="absolute inset-0 overflow-hidden bg-void">
-      <motion.div
-        className="absolute inset-0"
+      <div
+        className="absolute inset-0 animate-[factionPulse_5s_ease-in-out_infinite]"
         style={{
           background: `radial-gradient(ellipse at center, ${theme.colors.primary}20 0%, transparent 70%)`,
         }}
-        animate={{ opacity: [0.3, 0.6, 0.3] }}
-        transition={{ duration: 5, repeat: Infinity }}
       />
     </div>
   )

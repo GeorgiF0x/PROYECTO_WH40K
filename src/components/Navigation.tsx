@@ -33,100 +33,26 @@ import { usePermissions } from '@/hooks/usePermissions'
 // Dynamic import for Lottie to avoid SSR issues
 const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
 
-// Inline Lottie animation data for login icon (sword/enter effect)
-const loginAnimation = {
-  v: "5.7.4",
-  fr: 30,
-  ip: 0,
-  op: 60,
-  w: 100,
-  h: 100,
-  layers: [{
-    ty: 4,
-    nm: "arrow",
-    sr: 1,
-    ks: {
-      o: { a: 0, k: 100 },
-      r: { a: 0, k: 0 },
-      p: { a: 1, k: [
-        { t: 0, s: [30, 50], e: [50, 50], i: { x: 0.4, y: 1 }, o: { x: 0.6, y: 0 } },
-        { t: 30, s: [50, 50], e: [30, 50], i: { x: 0.4, y: 1 }, o: { x: 0.6, y: 0 } },
-        { t: 60, s: [30, 50] }
-      ]},
-      s: { a: 0, k: [100, 100] }
-    },
-    shapes: [{
-      ty: "gr",
-      it: [
-        { ty: "rc", d: 1, s: { a: 0, k: [30, 6] }, p: { a: 0, k: [0, 0] }, r: { a: 0, k: 3 } },
-        { ty: "fl", c: { a: 0, k: [1, 0.84, 0.2, 1] }, o: { a: 0, k: 100 } },
-        { ty: "tr", p: { a: 0, k: [0, 0] }, a: { a: 0, k: [0, 0] }, s: { a: 0, k: [100, 100] }, r: { a: 0, k: 0 }, o: { a: 0, k: 100 } }
-      ]
-    }, {
-      ty: "gr",
-      it: [
-        { ty: "sr", sy: 1, d: 1, pt: { a: 0, k: 3 }, p: { a: 0, k: [20, 0] }, r: { a: 0, k: 0 }, or: { a: 0, k: 8 }, os: { a: 0, k: 0 }, ix: 1 },
-        { ty: "fl", c: { a: 0, k: [1, 0.84, 0.2, 1] }, o: { a: 0, k: 100 } },
-        { ty: "tr", p: { a: 0, k: [0, 0] }, a: { a: 0, k: [0, 0] }, s: { a: 0, k: [100, 100] }, r: { a: 0, k: 90 }, o: { a: 0, k: 100 } }
-      ]
-    }]
-  }, {
-    ty: 4,
-    nm: "door",
-    sr: 1,
-    ks: {
-      o: { a: 0, k: 100 },
-      p: { a: 0, k: [65, 50] }
-    },
-    shapes: [{
-      ty: "gr",
-      it: [
-        { ty: "rc", d: 1, s: { a: 0, k: [6, 40] }, p: { a: 0, k: [0, 0] }, r: { a: 0, k: 2 } },
-        { ty: "fl", c: { a: 0, k: [0.9, 0.9, 0.95, 1] }, o: { a: 0, k: 60 } },
-        { ty: "tr", p: { a: 0, k: [0, 0] }, a: { a: 0, k: [0, 0] }, s: { a: 0, k: [100, 100] }, r: { a: 0, k: 0 }, o: { a: 0, k: 100 } }
-      ]
-    }]
-  }]
-}
+// Lottie animation data loaded lazily from public files
+let _loginAnim: object | null = null
+let _sparkleAnim: object | null = null
 
-// Sparkle burst animation
-const sparkleAnimation = {
-  v: "5.7.4",
-  fr: 60,
-  ip: 0,
-  op: 60,
-  w: 100,
-  h: 100,
-  layers: [{
-    ty: 4,
-    nm: "sparkles",
-    sr: 1,
-    ks: { o: { a: 0, k: 100 }, p: { a: 0, k: [50, 50] } },
-    shapes: [
-      ...[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => ({
-        ty: "gr",
-        it: [
-          { ty: "el", s: { a: 1, k: [
-            { t: 0, s: [0, 0], e: [6, 6], i: { x: 0.4, y: 1 }, o: { x: 0.6, y: 0 } },
-            { t: 20, s: [6, 6], e: [0, 0], i: { x: 0.4, y: 1 }, o: { x: 0.6, y: 0 } },
-            { t: 40, s: [0, 0] }
-          ]}, p: { a: 0, k: [0, 0] } },
-          { ty: "fl", c: { a: 0, k: [1, 0.84, 0.2, 1] }, o: { a: 1, k: [
-            { t: 0, s: [100], e: [100] },
-            { t: 20, s: [100], e: [0] },
-            { t: 40, s: [0] }
-          ]} },
-          { ty: "tr",
-            p: { a: 1, k: [
-              { t: 0, s: [0, 0], e: [Math.cos(angle * Math.PI / 180) * 30, Math.sin(angle * Math.PI / 180) * 30], i: { x: 0.2, y: 1 }, o: { x: 0.8, y: 0 } },
-              { t: 40, s: [Math.cos(angle * Math.PI / 180) * 30, Math.sin(angle * Math.PI / 180) * 30] }
-            ]},
-            s: { a: 0, k: [100, 100] }, r: { a: 0, k: 0 }, o: { a: 0, k: 100 }
-          }
-        ]
-      }))
-    ]
-  }]
+function useLottieData(path: string, cacheRef: 'login' | 'sparkle') {
+  const [data, setData] = useState<object | null>(
+    cacheRef === 'login' ? _loginAnim : _sparkleAnim
+  )
+  useEffect(() => {
+    if (data) return
+    fetch(path)
+      .then((r) => r.json())
+      .then((json) => {
+        if (cacheRef === 'login') _loginAnim = json
+        else _sparkleAnim = json
+        setData(json)
+      })
+      .catch(() => {})
+  }, [path, cacheRef, data])
+  return data
 }
 
 const navLinks = [
@@ -139,12 +65,89 @@ const navLinks = [
   { href: '/facciones', label: 'Facciones', icon: Shield },
 ]
 
+function LoginButton() {
+  const [isHovered, setIsHovered] = useState(false)
+  const loginAnim = useLottieData('/lottie/login.json', 'login')
+  const sparkleAnim = useLottieData('/lottie/sparkle.json', 'sparkle')
+
+  return (
+    <Link href="/login">
+      <motion.button
+        className="relative group overflow-hidden"
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        {/* Animated border */}
+        <motion.div
+          className="absolute -inset-[1px] rounded-lg"
+          style={{
+            background: 'linear-gradient(90deg, #C9A227, #FFD700, #C9A227, #FFD700)',
+            backgroundSize: '300% 100%',
+          }}
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 0%', '0% 0%'],
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+        />
+
+        {/* Button content */}
+        <div className="relative flex items-center gap-3 px-5 py-2.5 bg-void rounded-lg">
+          {/* Lottie icon */}
+          <div className="w-5 h-5 relative">
+            {loginAnim && (
+              <Lottie
+                animationData={loginAnim}
+                loop={true}
+                style={{ width: '100%', height: '100%' }}
+              />
+            )}
+          </div>
+
+          <span className="font-display font-bold tracking-wider text-sm text-imperial-gold group-hover:text-white transition-colors">
+            ENTRAR
+          </span>
+
+          {/* Sparkle effect on hover */}
+          <AnimatePresence>
+            {isHovered && sparkleAnim && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                className="absolute -right-1 -top-1 w-8 h-8"
+              >
+                <Lottie
+                  animationData={sparkleAnim}
+                  loop={false}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Glow effect */}
+        <motion.div
+          className="absolute inset-0 rounded-lg pointer-events-none"
+          animate={{
+            boxShadow: isHovered
+              ? '0 0 30px rgba(201, 162, 39, 0.6), 0 0 60px rgba(201, 162, 39, 0.3)'
+              : '0 0 15px rgba(201, 162, 39, 0.3)'
+          }}
+          transition={{ duration: 0.3 }}
+        />
+      </motion.button>
+    </Link>
+  )
+}
+
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
-  const [isButtonHovered, setIsButtonHovered] = useState(false)
   const { user, profile, isLoading, isAuthenticated, signOut } = useAuth()
   const { unreadCount } = useNotifications(user?.id)
   const { unreadCount: unreadMessages } = useUnreadMessages(user?.id)
@@ -441,73 +444,7 @@ export default function Navigation() {
               </>
             ) : (
               /* Spectacular Login Button */
-              <Link href="/login">
-                <motion.button
-                  className="relative group overflow-hidden"
-                  onHoverStart={() => setIsButtonHovered(true)}
-                  onHoverEnd={() => setIsButtonHovered(false)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {/* Animated border */}
-                  <motion.div
-                    className="absolute -inset-[1px] rounded-lg"
-                    style={{
-                      background: 'linear-gradient(90deg, #C9A227, #FFD700, #C9A227, #FFD700)',
-                      backgroundSize: '300% 100%',
-                    }}
-                    animate={{
-                      backgroundPosition: ['0% 0%', '100% 0%', '0% 0%'],
-                    }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                  />
-
-                  {/* Button content */}
-                  <div className="relative flex items-center gap-3 px-5 py-2.5 bg-void rounded-lg">
-                    {/* Lottie icon */}
-                    <div className="w-5 h-5 relative">
-                      <Lottie
-                        animationData={loginAnimation}
-                        loop={true}
-                        style={{ width: '100%', height: '100%' }}
-                      />
-                    </div>
-
-                    <span className="font-display font-bold tracking-wider text-sm text-imperial-gold group-hover:text-white transition-colors">
-                      ENTRAR
-                    </span>
-
-                    {/* Sparkle effect on hover */}
-                    <AnimatePresence>
-                      {isButtonHovered && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0 }}
-                          className="absolute -right-1 -top-1 w-8 h-8"
-                        >
-                          <Lottie
-                            animationData={sparkleAnimation}
-                            loop={false}
-                            style={{ width: '100%', height: '100%' }}
-                          />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Glow effect */}
-                  <motion.div
-                    className="absolute inset-0 rounded-lg pointer-events-none"
-                    animate={{
-                      boxShadow: isButtonHovered
-                        ? '0 0 30px rgba(201, 162, 39, 0.6), 0 0 60px rgba(201, 162, 39, 0.3)'
-                        : '0 0 15px rgba(201, 162, 39, 0.3)'
-                    }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.button>
-              </Link>
+              <LoginButton />
             )}
           </div>
         </div>

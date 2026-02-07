@@ -390,9 +390,14 @@ export default function CommunityMap({
     // Initial update
     updateMarkers()
 
-    // Update on zoom/move
-    map.current.on('zoomend', updateMarkers)
-    map.current.on('moveend', updateMarkers)
+    // Debounced update on zoom/move (300ms) to avoid excessive DOM marker churn
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null
+    const debouncedUpdate = () => {
+      if (debounceTimer) clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(updateMarkers, 300)
+    }
+    map.current.on('zoomend', debouncedUpdate)
+    map.current.on('moveend', debouncedUpdate)
 
   }, [stores, onStoreClick])
 

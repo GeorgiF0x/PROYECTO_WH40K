@@ -23,7 +23,8 @@ import {
   X,
   ChevronRight,
 } from 'lucide-react'
-import { Navigation, Footer } from '@/components'
+import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 import { getFactionById } from '@/lib/data'
 import { getFactionTheme } from '@/lib/faction-themes'
 import { FactionEffects, FactionSymbol } from '@/components/faction'
