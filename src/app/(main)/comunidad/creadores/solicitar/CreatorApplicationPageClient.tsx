@@ -117,8 +117,8 @@ export function CreatorApplicationPageClient({
 
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           className="text-center mb-8"
         >
           <div className="relative inline-flex items-center justify-center w-20 h-20 mb-4">
@@ -194,8 +194,8 @@ function ApprovedStatus({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       className="space-y-6"
     >
       {/* Main approved card */}
@@ -212,19 +212,11 @@ function ApprovedStatus({
         <div className="relative p-8 text-center">
           {/* Success icon with seal */}
           <div className="relative inline-block mb-6">
-            <motion.div
-              className="w-24 h-24 rounded-full bg-emerald-500/10 border-2 border-emerald-500/40 flex items-center justify-center"
-              animate={{
-                boxShadow: [
-                  '0 0 20px rgba(16, 185, 129, 0.2)',
-                  '0 0 40px rgba(16, 185, 129, 0.3)',
-                  '0 0 20px rgba(16, 185, 129, 0.2)',
-                ]
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
+            <div
+              className="w-24 h-24 rounded-full bg-emerald-500/10 border-2 border-emerald-500/40 flex items-center justify-center animate-[approvedGlow_3s_ease-in-out_infinite]"
             >
               <CheckCircle2 className="w-12 h-12 text-emerald-400" />
-            </motion.div>
+            </div>
 
             {/* Purity seal overlay */}
             <motion.div
@@ -352,19 +344,11 @@ function PendingStatus({ applicationDate }: { applicationDate?: string | null })
       variant="warning"
     >
       <div className="text-center py-8">
-        <motion.div
-          className="w-20 h-20 mx-auto mb-6 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center"
-          animate={{
-            boxShadow: [
-              '0 0 20px rgba(245, 158, 11, 0.2)',
-              '0 0 40px rgba(245, 158, 11, 0.3)',
-              '0 0 20px rgba(245, 158, 11, 0.2)',
-            ]
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
+        <div
+          className="w-20 h-20 mx-auto mb-6 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center animate-[pendingGlow_2s_ease-in-out_infinite]"
         >
           <Clock className="w-10 h-10 text-amber-400" />
-        </motion.div>
+        </div>
 
         <h2 className="text-xl font-display font-bold text-bone mb-3">
           Solicitud en Revision
@@ -427,8 +411,8 @@ function ApplicationContent({ userId, isEligible, onEligible }: { userId: string
           ].map((benefit, index) => (
             <motion.li
               key={index}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: index * 0.1 }}
               className="flex items-start gap-3"
             >
