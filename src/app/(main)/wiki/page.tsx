@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   BookOpen,
   Search,
@@ -12,6 +13,7 @@ import {
   Library,
   Layers,
   Crosshair,
+  Loader2,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { factions } from '@/lib/data'
@@ -28,20 +30,35 @@ import {
 import type { WikiPage, WikiCategory } from '@/lib/supabase/wiki.types'
 
 const GOLD = '#C9A227'
+const PAGE_SIZE = 12
 
 export default function WikiHubPage() {
   const [activeFaction, setActiveFaction] = useState<string | null>(null)
   const [pages, setPages] = useState<WikiPage[]>([])
   const [categories, setCategories] = useState<WikiCategory[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [totalArticles, setTotalArticles] = useState(0)
+  const [filteredCount, setFilteredCount] = useState(0)
+  const [page, setPage] = useState(0)
+  const categoriesRef = useRef<WikiCategory[]>([])
   const [userStatus, setUserStatus] = useState<{
     isLoggedIn: boolean
     canContribute: boolean
     hasPendingApplication: boolean
   }>({ isLoggedIn: false, canContribute: false, hasPendingApplication: false })
+
+  // Debounce search input (300ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search)
+      setPage(0)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [search])
 
   // Accent color based on active faction
   const accentColor = useMemo(() => {
@@ -56,12 +73,26 @@ export default function WikiHubPage() {
     return ids.size
   }, [pages, activeFaction])
 
+  const hasMore = pages.length < filteredCount
+
   const loadData = useCallback(async () => {
     setLoading(true)
     try {
       const supabase = createClient()
 
-      // Build pages query
+      // Load categories on first call
+      if (categoriesRef.current.length === 0) {
+        const { data: catData } = await supabase
+          .from('wiki_categories')
+          .select('*')
+          .order('sort_order', { ascending: true })
+        if (catData) {
+          categoriesRef.current = catData as WikiCategory[]
+          setCategories(catData as WikiCategory[])
+        }
+      }
+
+      // Build pages query (first page only)
       let pagesQuery = supabase
         .from('faction_wiki_pages')
         .select(`
@@ -81,44 +112,48 @@ export default function WikiHubPage() {
         `)
         .eq('status', 'published')
         .order('published_at', { ascending: false })
+        .range(0, PAGE_SIZE - 1)
+
+      // Build filtered count query (mirrors filters)
+      let countQuery = supabase
+        .from('faction_wiki_pages')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'published')
 
       if (activeFaction) {
         pagesQuery = pagesQuery.eq('faction_id', activeFaction)
+        countQuery = countQuery.eq('faction_id', activeFaction)
       }
 
-      // Run categories, pages, and count in parallel
-      const [catResult, pagesResult, countResult] = await Promise.all([
-        supabase
-          .from('wiki_categories')
-          .select('*')
-          .order('sort_order', { ascending: true }),
-        pagesQuery,
-        supabase
-          .from('faction_wiki_pages')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'published'),
-      ])
-
-      const catData = catResult.data as WikiCategory[] | null
-      if (catData) setCategories(catData)
-
-      // Apply category filter client-side since we need catData resolved first
-      let filteredPagesData = pagesResult.data as WikiPage[] | null
-      if (activeCategory && catData && filteredPagesData) {
-        const cat = catData.find(c => c.slug === activeCategory)
+      if (activeCategory && categoriesRef.current.length > 0) {
+        const cat = categoriesRef.current.find(c => c.slug === activeCategory)
         if (cat) {
-          filteredPagesData = filteredPagesData.filter(p => p.category_id === cat.id)
+          pagesQuery = pagesQuery.eq('category_id', cat.id)
+          countQuery = countQuery.eq('category_id', cat.id)
         }
       }
 
-      if (filteredPagesData) setPages(filteredPagesData)
-      if (countResult.count !== null) setTotalArticles(countResult.count)
+      if (debouncedSearch) {
+        pagesQuery = pagesQuery.ilike('title', `%${debouncedSearch}%`)
+        countQuery = countQuery.ilike('title', `%${debouncedSearch}%`)
+      }
+
+      // Run pages, filtered count, and total count in parallel
+      const [pagesResult, filteredResult, totalResult] = await Promise.all([
+        pagesQuery,
+        countQuery,
+        supabase.from('faction_wiki_pages').select('*', { count: 'exact', head: true }).eq('status', 'published'),
+      ])
+
+      setPages((pagesResult.data ?? []) as WikiPage[])
+      if (filteredResult.count !== null) setFilteredCount(filteredResult.count)
+      if (totalResult.count !== null) setTotalArticles(totalResult.count)
     } catch (error) {
       console.error('Error loading wiki data:', error)
     } finally {
       setLoading(false)
     }
-  }, [activeFaction, activeCategory])
+  }, [activeFaction, activeCategory, debouncedSearch])
 
   const checkUserStatus = useCallback(async () => {
     try {
@@ -156,17 +191,70 @@ export default function WikiHubPage() {
     }
   }, [])
 
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(0)
+  }, [activeFaction, activeCategory])
+
+  // Load data when filters or page change (but not on page increment — that uses loadMore)
   useEffect(() => {
     loadData()
-  }, [loadData])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeFaction, activeCategory, debouncedSearch])
 
   useEffect(() => {
     checkUserStatus()
   }, [checkUserStatus])
 
-  const filteredPages = search
-    ? pages.filter(p => p.title.toLowerCase().includes(search.toLowerCase()))
-    : pages
+  const loadMore = useCallback(async () => {
+    const nextPage = page + 1
+    setPage(nextPage)
+    setLoadingMore(true)
+    try {
+      const supabase = createClient()
+      const from = nextPage * PAGE_SIZE
+      const to = from + PAGE_SIZE - 1
+
+      let pagesQuery = supabase
+        .from('faction_wiki_pages')
+        .select(`
+          id,
+          faction_id,
+          category_id,
+          title,
+          slug,
+          excerpt,
+          hero_image,
+          status,
+          views_count,
+          published_at,
+          created_at,
+          updated_at,
+          category:wiki_categories(id, name, slug, icon)
+        `)
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .range(from, to)
+
+      if (activeFaction) {
+        pagesQuery = pagesQuery.eq('faction_id', activeFaction)
+      }
+      if (activeCategory && categoriesRef.current.length > 0) {
+        const cat = categoriesRef.current.find(c => c.slug === activeCategory)
+        if (cat) pagesQuery = pagesQuery.eq('category_id', cat.id)
+      }
+      if (debouncedSearch) {
+        pagesQuery = pagesQuery.ilike('title', `%${debouncedSearch}%`)
+      }
+
+      const { data } = await pagesQuery
+      if (data) setPages(prev => [...prev, ...(data as WikiPage[])])
+    } catch (error) {
+      console.error('Error loading more wiki pages:', error)
+    } finally {
+      setLoadingMore(false)
+    }
+  }, [page, activeFaction, activeCategory, debouncedSearch])
 
   // Helper to resolve faction data for a page
   function getFactionForPage(factionId: string) {
@@ -287,7 +375,14 @@ export default function WikiHubPage() {
                     animation: 'wikiGlowPulse 3s ease-in-out infinite',
                   }}
                 >
-                  <BookOpen className="w-10 h-10 transition-colors duration-700" style={{ color: accentColor }} />
+                  <Image
+                    src="/icons/Imperium/librarian-codicier.svg"
+                    alt=""
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 transition-opacity duration-700"
+                    style={{ filter: 'brightness(0) invert(1)', opacity: 0.85 }}
+                  />
                 </div>
               </div>
 
@@ -452,7 +547,7 @@ export default function WikiHubPage() {
 
         <div className="max-w-7xl mx-auto px-6">
           <SectionLabel icon={Scroll} className="mb-6">
-            REGISTROS ENCONTRADOS — {filteredPages.length}
+            REGISTROS ENCONTRADOS — {filteredCount}
           </SectionLabel>
 
           {loading ? (
@@ -465,7 +560,7 @@ export default function WikiHubPage() {
                 />
               ))}
             </div>
-          ) : filteredPages.length === 0 ? (
+          ) : pages.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -486,7 +581,7 @@ export default function WikiHubPage() {
                 No hay articulos disponibles
               </h2>
               <p className="font-body text-bone/60 mb-4">
-                {search
+                {debouncedSearch
                   ? 'No se encontraron resultados para tu busqueda.'
                   : 'Proximamente se agregaran articulos.'}
               </p>
@@ -494,8 +589,8 @@ export default function WikiHubPage() {
                 &ldquo;El conocimiento es poder; guardarlo bien.&rdquo;
               </p>
               <div className="flex items-center justify-center gap-4 flex-wrap">
-                {search && (
-                  <Button variant="outline" onClick={() => setSearch('')}>
+                {debouncedSearch && (
+                  <Button variant="outline" onClick={() => { setSearch(''); setDebouncedSearch('') }}>
                     Limpiar busqueda
                   </Button>
                 )}
@@ -509,22 +604,52 @@ export default function WikiHubPage() {
               </div>
             </motion.div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredPages.map((page, index) => {
-                const pf = getFactionForPage(page.faction_id)
-                return (
-                  <WikiArticleCard
-                    key={page.id}
-                    page={page}
-                    factionId={page.faction_id}
-                    factionColor={pf?.color || GOLD}
-                    index={index}
-                    showFactionBadge={!activeFaction}
-                    factionName={pf?.shortName}
-                  />
-                )
-              })}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {pages.map((pg, index) => {
+                  const pf = getFactionForPage(pg.faction_id)
+                  return (
+                    <WikiArticleCard
+                      key={pg.id}
+                      page={pg}
+                      factionId={pg.faction_id}
+                      factionColor={pf?.color || GOLD}
+                      index={index}
+                      showFactionBadge={!activeFaction}
+                      factionName={pf?.shortName}
+                    />
+                  )
+                })}
+              </div>
+
+              {/* Load More */}
+              {hasMore && (
+                <div className="flex justify-center mt-10">
+                  <button
+                    onClick={loadMore}
+                    disabled={loadingMore}
+                    className="group flex items-center gap-2 px-8 py-3 rounded-lg font-display text-sm font-semibold transition-all disabled:opacity-50"
+                    style={{
+                      background: `${accentColor}15`,
+                      color: accentColor,
+                      border: `1px solid ${accentColor}30`,
+                    }}
+                  >
+                    {loadingMore ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Cargando...
+                      </>
+                    ) : (
+                      <>
+                        Cargar mas registros
+                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
