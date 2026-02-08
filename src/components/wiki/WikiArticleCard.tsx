@@ -13,6 +13,7 @@ import {
   Eye,
   Calendar,
 } from 'lucide-react'
+import { optimizeImageUrl } from '@/lib/utils'
 import type { WikiPage } from '@/lib/supabase/wiki.types'
 
 export const categoryIcons: Record<string, typeof BookOpen> = {
@@ -53,7 +54,7 @@ export function WikiArticleCard({
     >
       <Link href={`/facciones/${factionId}/wiki/${page.slug}`}>
         <div
-          className="group relative h-72 rounded-xl overflow-hidden transition-all hover:shadow-lg"
+          className="group relative h-72 rounded-xl overflow-hidden card-hover"
           style={{
             background: `linear-gradient(135deg, ${factionColor}15 0%, transparent 100%)`,
             border: `1px solid ${factionColor}20`,
@@ -63,7 +64,7 @@ export function WikiArticleCard({
           {page.hero_image && (
             <div className="absolute inset-0">
               <Image
-                src={page.hero_image}
+                src={optimizeImageUrl(page.hero_image, 600, 75)}
                 alt={page.title}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-110"

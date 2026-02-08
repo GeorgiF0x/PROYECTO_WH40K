@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import {
@@ -11,6 +11,7 @@ import {
   Scroll,
   Library,
   Layers,
+  Crosshair,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { factions } from '@/lib/data'
@@ -21,8 +22,8 @@ import {
   WikiArticleCard,
   categoryIcons,
   GothicCorners,
-  FloatingParticles,
   ImperialDivider,
+  SectionLabel,
 } from '@/components/wiki'
 import type { WikiPage, WikiCategory } from '@/lib/supabase/wiki.types'
 
@@ -55,29 +56,13 @@ export default function WikiHubPage() {
     return ids.size
   }, [pages, activeFaction])
 
-  useEffect(() => {
-    loadData()
-  }, [activeFaction, activeCategory])
-
-  useEffect(() => {
-    checkUserStatus()
-  }, [])
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     setLoading(true)
     try {
       const supabase = createClient()
 
-      // Load categories
-      const { data: catData } = await supabase
-        .from('wiki_categories')
-        .select('*')
-        .order('sort_order', { ascending: true })
-
-      if (catData) setCategories(catData as WikiCategory[])
-
-      // Load published pages (all factions or filtered)
-      let query = supabase
+      // Build pages query
+      let pagesQuery = supabase
         .from('faction_wiki_pages')
         .select(`
           id,
@@ -98,36 +83,44 @@ export default function WikiHubPage() {
         .order('published_at', { ascending: false })
 
       if (activeFaction) {
-        query = query.eq('faction_id', activeFaction)
+        pagesQuery = pagesQuery.eq('faction_id', activeFaction)
       }
 
-      if (activeCategory && catData) {
-        const cat = (catData as WikiCategory[]).find(c => c.slug === activeCategory)
+      // Run categories, pages, and count in parallel
+      const [catResult, pagesResult, countResult] = await Promise.all([
+        supabase
+          .from('wiki_categories')
+          .select('*')
+          .order('sort_order', { ascending: true }),
+        pagesQuery,
+        supabase
+          .from('faction_wiki_pages')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'published'),
+      ])
+
+      const catData = catResult.data as WikiCategory[] | null
+      if (catData) setCategories(catData)
+
+      // Apply category filter client-side since we need catData resolved first
+      let filteredPagesData = pagesResult.data as WikiPage[] | null
+      if (activeCategory && catData && filteredPagesData) {
+        const cat = catData.find(c => c.slug === activeCategory)
         if (cat) {
-          query = query.eq('category_id', cat.id)
+          filteredPagesData = filteredPagesData.filter(p => p.category_id === cat.id)
         }
       }
 
-      const { data: pagesData } = await query
-      if (pagesData) {
-        setPages(pagesData as WikiPage[])
-      }
-
-      // Total count (no filters)
-      const { count } = await supabase
-        .from('faction_wiki_pages')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'published')
-
-      if (count !== null) setTotalArticles(count)
+      if (filteredPagesData) setPages(filteredPagesData)
+      if (countResult.count !== null) setTotalArticles(countResult.count)
     } catch (error) {
       console.error('Error loading wiki data:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [activeFaction, activeCategory])
 
-  async function checkUserStatus() {
+  const checkUserStatus = useCallback(async () => {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
@@ -161,7 +154,15 @@ export default function WikiHubPage() {
     } catch {
       setUserStatus({ isLoggedIn: false, canContribute: false, hasPendingApplication: false })
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  useEffect(() => {
+    checkUserStatus()
+  }, [checkUserStatus])
 
   const filteredPages = search
     ? pages.filter(p => p.title.toLowerCase().includes(search.toLowerCase()))
@@ -175,7 +176,6 @@ export default function WikiHubPage() {
   return (
     <div className="relative min-h-screen">
       <div className="noise-overlay" />
-      <FloatingParticles color="bg-imperial-gold/20" />
 
       {/* Background grid */}
       <div
@@ -189,6 +189,40 @@ export default function WikiHubPage() {
         }}
       />
 
+      {/* Lightweight hero particles (CSS-only) */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        {[0, 1, 2, 3, 4].map(i => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 rounded-full bg-imperial-gold/25"
+            style={{
+              left: `${15 + i * 18}%`,
+              top: `${10 + i * 12}%`,
+              animation: `wikiParticleDrift ${8 + i * 2}s ease-in-out infinite ${i * 1.2}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      <style jsx>{`
+        @keyframes wikiParticleDrift {
+          0%, 100% { opacity: 0; transform: translateY(0); }
+          50% { opacity: 0.5; transform: translateY(-20px); }
+        }
+        @keyframes wikiPulseOuter {
+          0%, 100% { transform: scale(1); opacity: 0.4; }
+          50% { transform: scale(1.25); opacity: 0.15; }
+        }
+        @keyframes wikiPulseInner {
+          0%, 100% { transform: scale(1.1); opacity: 0.25; }
+          50% { transform: scale(1); opacity: 0.45; }
+        }
+        @keyframes wikiGlowPulse {
+          0%, 100% { box-shadow: 0 0 20px rgba(201,162,39,0.15); }
+          50% { box-shadow: 0 0 40px rgba(201,162,39,0.25); }
+        }
+      `}</style>
+
       {/* ═══ HERO SECTION ═══ */}
       <section className="relative pt-32 pb-16 overflow-hidden">
         {/* Top radial glow */}
@@ -198,89 +232,116 @@ export default function WikiHubPage() {
         />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="flex flex-col items-center text-center">
-            {/* Icon with glow */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="relative mb-8"
-            >
-              <div
-                className="w-20 h-20 rounded-2xl flex items-center justify-center border transition-colors duration-700"
-                style={{
-                  background: `${accentColor}15`,
-                  borderColor: `${accentColor}30`,
-                  boxShadow: `0 0 40px ${accentColor}20`,
-                }}
-              >
-                <BookOpen className="w-10 h-10 transition-colors duration-700" style={{ color: accentColor }} />
-              </div>
-              {/* Pulsing glow ring */}
-              <motion.div
-                className="absolute inset-0 rounded-2xl"
-                animate={{
-                  boxShadow: [
-                    `0 0 20px ${accentColor}20`,
-                    `0 0 40px ${accentColor}30`,
-                    `0 0 20px ${accentColor}20`,
-                  ],
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-              />
-            </motion.div>
+          {/* Hero card container */}
+          <div
+            className="relative overflow-hidden rounded-2xl p-8 sm:p-10 md:p-12"
+            style={{
+              background: `linear-gradient(180deg, ${accentColor}14 0%, rgba(3,3,8,0.6) 100%)`,
+              border: `1px solid ${accentColor}26`,
+            }}
+          >
+            <GothicCorners className="text-imperial-gold/30" size={50} />
 
-            {/* Title */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="font-display text-5xl md:text-7xl font-black mb-4"
+            {/* Ruled manuscript lines */}
+            <div
+              className="absolute inset-0 pointer-events-none opacity-[0.03]"
               style={{
-                background: `linear-gradient(135deg, ${accentColor}, #F5F0E1, ${accentColor})`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                backgroundImage: `repeating-linear-gradient(0deg, ${accentColor}80 0px, ${accentColor}80 1px, transparent 1px, transparent 28px)`,
+                backgroundPosition: '0 20px',
               }}
-            >
-              Archivo Lexicanum
-            </motion.h1>
+            />
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="font-body text-lg text-bone/60 max-w-lg mb-10"
-            >
-              El conocimiento sagrado de la galaxia
-            </motion.p>
+            {/* Radial glow inside card */}
+            <div
+              className="absolute inset-0 pointer-events-none transition-colors duration-700"
+              style={{
+                background: `radial-gradient(ellipse at center, ${accentColor}14 0%, transparent 70%)`,
+              }}
+            />
 
-            {/* Mini KPIs */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex items-center gap-8"
-            >
-              {[
-                { icon: Scroll, label: 'Articulos', value: totalArticles },
-                { icon: Library, label: 'Facciones', value: factionCount || factions.length },
-                { icon: Layers, label: 'Categorias', value: categories.length },
-              ].map((kpi) => (
-                <div key={kpi.label} className="flex flex-col items-center gap-1">
-                  <div className="flex items-center gap-2">
-                    <kpi.icon className="w-4 h-4 transition-colors duration-700" style={{ color: accentColor }} />
-                    <span className="font-display text-2xl font-bold text-white">{kpi.value}</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-bone/40 tracking-widest uppercase">{kpi.label}</span>
+            <div className="relative flex flex-col items-center text-center">
+              {/* Concentric rings icon */}
+              <div className="relative inline-flex items-center justify-center w-24 h-24 mb-6">
+                {/* Outer pulsing ring (CSS animation) */}
+                <div
+                  className="absolute inset-0 rounded-full border-2 transition-colors duration-700"
+                  style={{
+                    borderColor: `${accentColor}4D`,
+                    animation: 'wikiPulseOuter 3s ease-in-out infinite',
+                  }}
+                />
+                {/* Inner counter-pulse ring (CSS animation) */}
+                <div
+                  className="absolute inset-2 rounded-full border transition-colors duration-700"
+                  style={{
+                    borderColor: `${accentColor}33`,
+                    animation: 'wikiPulseInner 2.5s ease-in-out infinite 0.5s',
+                  }}
+                />
+                {/* Center icon with glow pulse */}
+                <div
+                  className="relative w-20 h-20 rounded-full flex items-center justify-center border transition-colors duration-700"
+                  style={{
+                    background: `linear-gradient(135deg, ${accentColor}33 0%, ${accentColor}0D 100%)`,
+                    borderColor: `${accentColor}80`,
+                    animation: 'wikiGlowPulse 3s ease-in-out infinite',
+                  }}
+                >
+                  <BookOpen className="w-10 h-10 transition-colors duration-700" style={{ color: accentColor }} />
                 </div>
-              ))}
-            </motion.div>
+              </div>
+
+              {/* Section label */}
+              <SectionLabel icon={Crosshair} className="justify-center mb-3">
+                TRANSMISION IMPERIAL // ARCHIVO LEXICANUM
+              </SectionLabel>
+
+              {/* Static H1 — no initial/animate for LCP */}
+              <h1 className="font-display text-5xl md:text-7xl font-black mb-4 text-gradient">
+                Archivo Lexicanum
+              </h1>
+
+              <p className="font-mono text-sm text-bone/50 tracking-wider max-w-lg mb-10">
+                El conocimiento sagrado de la galaxia, custodiado por la Orden de Escribas
+              </p>
+
+              {/* Mini KPIs with dividers */}
+              <div className="flex items-center gap-6 sm:gap-8">
+                {[
+                  { icon: Scroll, label: 'Articulos', value: totalArticles },
+                  { icon: Library, label: 'Facciones', value: factionCount || factions.length },
+                  { icon: Layers, label: 'Categorias', value: categories.length },
+                ].map((kpi, idx) => (
+                  <div key={kpi.label} className="flex items-center gap-6 sm:gap-8">
+                    {idx > 0 && (
+                      <div className="w-px h-8 bg-imperial-gold/20" />
+                    )}
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="flex items-center gap-2">
+                        <kpi.icon className="w-4 h-4 transition-colors duration-700" style={{ color: accentColor }} />
+                        <span className="font-display text-2xl font-bold text-white">{kpi.value}</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-bone/40 tracking-widest uppercase">{kpi.label}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
+      <div className="max-w-7xl mx-auto px-6">
+        <ImperialDivider />
+      </div>
+
       {/* ═══ FACTION SELECTOR ═══ */}
-      <section className="relative py-4 border-y transition-colors duration-700" style={{ borderColor: `${accentColor}15` }}>
+      <section className="relative py-6">
         <div className="max-w-7xl mx-auto px-6">
+          <SectionLabel icon={Layers} className="mb-4">
+            SELECCIONAR FACCION
+          </SectionLabel>
+
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
             {/* "Todas" button */}
             <button
@@ -303,7 +364,9 @@ export default function WikiHubPage() {
                 <button
                   key={f.id}
                   onClick={() => { setActiveFaction(f.id); setActiveCategory(null) }}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-lg font-body text-sm whitespace-nowrap transition-all shrink-0"
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-body text-sm whitespace-nowrap transition-all shrink-0 ${
+                    !isActive ? 'hover:bg-bone/5' : ''
+                  }`}
                   style={
                     isActive
                       ? { background: `${f.color}20`, color: f.color, border: `1px solid ${f.color}40`, boxShadow: `0 0 12px ${f.color}15` }
@@ -320,9 +383,16 @@ export default function WikiHubPage() {
       </section>
 
       {/* ═══ SEARCH + CATEGORIES ═══ */}
-      <section className="relative py-8 border-b transition-colors duration-700" style={{ borderColor: `${accentColor}15` }}>
+      <section className="relative py-8">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="relative p-6 rounded-xl border transition-colors duration-700" style={{ borderColor: `${accentColor}15`, background: `${accentColor}05` }}>
+          <SectionLabel icon={Search} className="mb-4">
+            BUSQUEDA EN EL ARCHIVO
+          </SectionLabel>
+
+          <div
+            className="relative glass p-6 rounded-xl"
+            style={{ borderColor: `${accentColor}26` }}
+          >
             <GothicCorners className="text-imperial-gold/30" size={32} />
 
             <div className="flex flex-col md:flex-row gap-6">
@@ -376,8 +446,15 @@ export default function WikiHubPage() {
       </section>
 
       {/* ═══ ARTICLES GRID ═══ */}
-      <section className="relative py-16">
+      <section className="relative py-16" style={{ minHeight: 400 }}>
+        {/* Top gradient line */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent" />
+
         <div className="max-w-7xl mx-auto px-6">
+          <SectionLabel icon={Scroll} className="mb-6">
+            REGISTROS ENCONTRADOS — {filteredPages.length}
+          </SectionLabel>
+
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -391,9 +468,16 @@ export default function WikiHubPage() {
           ) : filteredPages.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-20"
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="relative p-10 md:p-16 rounded-2xl text-center overflow-hidden"
+              style={{
+                background: `linear-gradient(135deg, ${accentColor}0A 0%, transparent 100%)`,
+                border: `1px solid ${accentColor}1A`,
+              }}
             >
+              <GothicCorners className="text-imperial-gold/20" size={40} />
+
               <BookOpen
                 className="w-16 h-16 mx-auto mb-6 opacity-30 transition-colors duration-700"
                 style={{ color: accentColor }}
@@ -401,16 +485,28 @@ export default function WikiHubPage() {
               <h2 className="font-display text-2xl text-white mb-4">
                 No hay articulos disponibles
               </h2>
-              <p className="font-body text-bone/60 mb-8">
+              <p className="font-body text-bone/60 mb-4">
                 {search
                   ? 'No se encontraron resultados para tu busqueda.'
                   : 'Proximamente se agregaran articulos.'}
               </p>
-              {search && (
-                <Button variant="outline" onClick={() => setSearch('')}>
-                  Limpiar busqueda
-                </Button>
-              )}
+              <p className="font-mono text-sm text-bone/30 italic mb-8 max-w-md mx-auto">
+                &ldquo;El conocimiento es poder; guardarlo bien.&rdquo;
+              </p>
+              <div className="flex items-center justify-center gap-4 flex-wrap">
+                {search && (
+                  <Button variant="outline" onClick={() => setSearch('')}>
+                    Limpiar busqueda
+                  </Button>
+                )}
+                <Link
+                  href="/facciones"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-body text-sm text-bone/60 hover:text-bone border border-bone/10 hover:border-bone/20 transition-all"
+                >
+                  Explorar Facciones
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -446,18 +542,56 @@ export default function WikiHubPage() {
                 viewport={{ once: true }}
                 className="group relative p-8 md:p-12 rounded-2xl overflow-hidden transition-all hover:shadow-2xl"
                 style={{
-                  background: `linear-gradient(135deg, ${accentColor}10 0%, ${accentColor}05 50%, transparent 100%)`,
-                  border: `1px solid ${accentColor}20`,
+                  background: `linear-gradient(135deg, ${accentColor}1A 0%, ${accentColor}0D 50%, transparent 100%)`,
+                  border: `1px solid ${accentColor}33`,
                 }}
               >
                 <GothicCorners className="text-imperial-gold/20" size={48} />
 
+                {/* Ruled manuscript lines */}
+                <div
+                  className="absolute inset-0 pointer-events-none opacity-[0.03]"
+                  style={{
+                    backgroundImage: `repeating-linear-gradient(0deg, ${accentColor}80 0px, ${accentColor}80 1px, transparent 1px, transparent 28px)`,
+                    backgroundPosition: '0 20px',
+                  }}
+                />
+
+                {/* Radial glow */}
+                <div
+                  className="absolute inset-0 pointer-events-none transition-colors duration-700"
+                  style={{
+                    background: `radial-gradient(ellipse at center, ${accentColor}0D 0%, transparent 70%)`,
+                  }}
+                />
+
                 <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-                  <div
-                    className="w-16 h-16 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-700"
-                    style={{ background: `${accentColor}20` }}
-                  >
-                    <Feather className="w-8 h-8 transition-colors duration-700" style={{ color: accentColor }} />
+                  {/* Concentric rings icon for CTA */}
+                  <div className="relative inline-flex items-center justify-center w-20 h-20 shrink-0">
+                    <div
+                      className="absolute inset-0 rounded-full border-2 transition-colors duration-700"
+                      style={{
+                        borderColor: `${accentColor}4D`,
+                        animation: 'wikiPulseOuter 3s ease-in-out infinite',
+                      }}
+                    />
+                    <div
+                      className="absolute inset-2 rounded-full border transition-colors duration-700"
+                      style={{
+                        borderColor: `${accentColor}33`,
+                        animation: 'wikiPulseInner 2.5s ease-in-out infinite 0.5s',
+                      }}
+                    />
+                    <div
+                      className="relative w-16 h-16 rounded-full flex items-center justify-center border transition-colors duration-700"
+                      style={{
+                        background: `linear-gradient(135deg, ${accentColor}33 0%, ${accentColor}0D 100%)`,
+                        borderColor: `${accentColor}80`,
+                        animation: 'wikiGlowPulse 3s ease-in-out infinite',
+                      }}
+                    >
+                      <Feather className="w-8 h-8 transition-colors duration-700" style={{ color: accentColor }} />
+                    </div>
                   </div>
 
                   <div className="flex-1 text-center md:text-left">
@@ -488,7 +622,7 @@ export default function WikiHubPage() {
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
-                    background: `radial-gradient(circle at 50% 50%, ${accentColor}08 0%, transparent 70%)`,
+                    background: `radial-gradient(circle at 50% 50%, ${accentColor}14 0%, transparent 70%)`,
                   }}
                 />
               </motion.div>
