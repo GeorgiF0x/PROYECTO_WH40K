@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Notification } from '@/lib/types/database.types'
 
@@ -113,4 +113,16 @@ export function useNotifications(userId: string | undefined) {
     markAllAsRead,
     deleteNotification,
   }
+}
+
+/** Deferred wrapper — waits 2s before activating realtime subscriptions */
+export function useDeferredNotifications(userId: string | undefined) {
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    const id = setTimeout(() => setReady(true), 2000)
+    return () => clearTimeout(id)
+  }, [])
+
+  return useNotifications(ready ? userId : undefined)
 }

@@ -346,3 +346,15 @@ export function useUnreadMessages(userId: string | undefined) {
 
   return { unreadCount }
 }
+
+/** Deferred wrapper — waits 2s before activating realtime subscriptions */
+export function useDeferredUnreadMessages(userId: string | undefined) {
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    const id = setTimeout(() => setReady(true), 2000)
+    return () => clearTimeout(id)
+  }, [])
+
+  return useUnreadMessages(ready ? userId : undefined)
+}

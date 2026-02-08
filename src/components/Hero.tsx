@@ -59,22 +59,19 @@ export default function Hero() {
         className="relative z-10 text-center px-6 max-w-5xl"
       >
         {/* Main Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
+        <h1
           className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-6 leading-none tracking-tight"
         >
           <span className="text-white">EN EL GRIM</span>
           <br />
           <span className="text-gradient">DARKNESS</span>
-        </motion.h1>
+        </h1>
 
         {/* Subtitle */}
         <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
           className="font-body text-xl md:text-2xl text-bone/70 max-w-2xl mx-auto mb-10 leading-relaxed font-light"
         >
           Solo existe la guerra. Equipa tu ejército con las mejores miniaturas,
@@ -83,9 +80,9 @@ export default function Hero() {
 
         {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
           className="flex flex-col sm:flex-row gap-4 justify-center"
         >
           <Link href="/facciones">
@@ -110,7 +107,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
+          transition={{ delay: 0.7 }}
           className="mt-20 grid grid-cols-3 gap-8 max-w-xl mx-auto"
         >
           {[
@@ -122,7 +119,7 @@ export default function Hero() {
               key={stat.label}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.4 + index * 0.1 }}
+              transition={{ delay: 0.8 + index * 0.1 }}
               className="text-center"
             >
               <div className="font-display text-3xl md:text-4xl font-bold text-imperial-gold">
@@ -141,7 +138,7 @@ export default function Hero() {
         className="absolute bottom-10 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
+        transition={{ delay: 1.0 }}
       >
         <div className="flex flex-col items-center gap-2 cursor-pointer animate-[scrollBounce_2s_ease-in-out_infinite]">
           <span className="font-body text-xs text-bone/40 tracking-widest uppercase">

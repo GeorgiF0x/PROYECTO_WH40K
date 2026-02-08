@@ -6,8 +6,8 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/hooks/useAuth'
-import { useNotifications } from '@/lib/hooks/useNotifications'
-import { useUnreadMessages } from '@/lib/hooks/useMessages'
+import { useDeferredNotifications } from '@/lib/hooks/useNotifications'
+import { useDeferredUnreadMessages } from '@/lib/hooks/useMessages'
 import { Avatar } from '@/components/ui'
 import {
   User,
@@ -149,8 +149,8 @@ export default function Navigation() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const { user, profile, isLoading, isAuthenticated, signOut } = useAuth()
-  const { unreadCount } = useNotifications(user?.id)
-  const { unreadCount: unreadMessages } = useUnreadMessages(user?.id)
+  const { unreadCount } = useDeferredNotifications(user?.id)
+  const { unreadCount: unreadMessages } = useDeferredUnreadMessages(user?.id)
   const { hasDashboardAccess, displayRole } = usePermissions()
 
   useEffect(() => {
@@ -168,9 +168,9 @@ export default function Navigation() {
 
   return (
     <motion.nav
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
       className={cn(
         'fixed top-0 left-0 w-full z-50 transition-all duration-500',
         scrolled

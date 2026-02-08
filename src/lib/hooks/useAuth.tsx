@@ -7,6 +7,7 @@ import {
   useState,
   useCallback,
   useRef,
+  startTransition,
   type ReactNode,
 } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -129,23 +130,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!mountedRef.current) return
 
         if (session?.user) {
-          setSession(session)
-          setUser(session.user)
+          // Use startTransition so auth state updates don't block rendering
+          startTransition(() => {
+            setSession(session)
+            setUser(session.user)
+          })
 
           fetchProfile(session.user.id, session.user.email, session.user.user_metadata).then(
             (p) => {
-              if (mountedRef.current && p) setProfile(p)
+              if (mountedRef.current && p) startTransition(() => setProfile(p))
             }
           )
         }
       } catch (error) {
         console.error('[Auth] Init error:', error)
       } finally {
-        if (mountedRef.current) setIsLoading(false)
+        if (mountedRef.current) startTransition(() => setIsLoading(false))
       }
     }
 
-    initAuth()
+    // Defer auth init so it doesn't block first paint
+    const tid = setTimeout(initAuth, 0)
+    const cleanup = () => clearTimeout(tid)
 
     const {
       data: { subscription },
@@ -176,6 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       mountedRef.current = false
+      cleanup()
       subscription.unsubscribe()
     }
   }, [supabase, fetchProfile])
