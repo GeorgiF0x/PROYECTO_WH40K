@@ -72,7 +72,7 @@ async function getEvents(searchParams: SearchParams): Promise<EventWithOrganizer
     query = query.ilike('name', `%${searchParams.q}%`)
   }
 
-  const { data, error } = await query
+  const { data, error } = await query.limit(12)
 
   if (error) {
     console.error('Error fetching events:', error)

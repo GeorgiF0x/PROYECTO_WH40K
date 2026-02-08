@@ -34,7 +34,7 @@ const FILTER_CATEGORIES = CATEGORIES.filter((c) => c.id !== 'all')
 
 // --- Decorative components ---
 
-const GAUSS_PARTICLES = Array.from({ length: 16 }, (_, i) => ({
+const GAUSS_PARTICLES = Array.from({ length: 6 }, (_, i) => ({
   id: i,
   left: `${(i * 7 + 3) % 90 + 5}%`,
   top: `${(i * 13 + 8) % 82 + 9}%`,

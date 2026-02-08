@@ -95,7 +95,7 @@ function AdministratumCorner({ position }: { position: 'top-left' | 'top-right' 
 }
 
 // Ink motes — archive dust & ink droplets floating
-const INK_MOTES = Array.from({ length: 12 }, (_, i) => ({
+const INK_MOTES = Array.from({ length: 5 }, (_, i) => ({
   id: i,
   left: `${(i * 8.3 + 5) % 88 + 6}%`,
   top: `${(i * 11 + 7) % 78 + 11}%`,
@@ -288,7 +288,7 @@ export default function UsersPage() {
       query = query.neq('id', user.id)
     }
 
-    const { data, error } = await query.limit(50)
+    const { data, error } = await query.limit(20)
 
     if (!error && data) {
       const formatted = data.map((u) => ({

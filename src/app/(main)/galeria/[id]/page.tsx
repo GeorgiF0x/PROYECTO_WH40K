@@ -91,7 +91,7 @@ function NecronCorner({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
 }
 
 // Gauss data grid — network of nodes with faint connections (Necron tech)
-const GRID_NODES = Array.from({ length: 28 }, (_, i) => ({
+const GRID_NODES = Array.from({ length: 10 }, (_, i) => ({
   left: `${(i * 7.9 + 11.3) % 96 + 2}%`,
   top: `${(i * 12.3 + 7.1) % 96 + 2}%`,
   size: i % 6 === 0 ? 2.5 : i % 3 === 0 ? 1.5 : 1,
@@ -440,6 +440,9 @@ export default function MiniatureDetailPage() {
 
   return (
     <>
+      {/* Preload hero image so browser fetches it before Three.js requests it */}
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+      <link rel="preload" as="image" href={images[0]} />
       <div className="min-h-screen pt-24 pb-16 relative">
         {/* === Atmospheric Background — lighter than gallery listing === */}
         <div className="fixed inset-0 pointer-events-none z-0">
@@ -628,7 +631,7 @@ export default function MiniatureDetailPage() {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <Image src={img} alt="" fill className="object-cover" />
+                          <Image src={img} alt="" fill sizes="80px" className="object-cover" />
                         </motion.button>
                       ))}
                     </div>
@@ -882,6 +885,7 @@ export default function MiniatureDetailPage() {
                           src={m.thumbnail_url || m.images?.[0] || '/placeholder-miniature.jpg'}
                           alt={m.title}
                           fill
+                          sizes="(max-width: 640px) 50vw, 20vw"
                           className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-void/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
