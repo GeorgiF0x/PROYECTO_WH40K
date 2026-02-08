@@ -15,7 +15,7 @@ export default async function WikiDashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login?redirect=/wiki')
+    redirect('/login?redirect=/wiki-panel')
   }
 
   // Get user's permissions
@@ -59,6 +59,7 @@ export default async function WikiDashboardPage() {
     <WikiDashboardClient
       isAdmin={isAdmin}
       isLexicanum={profile?.wiki_role === 'lexicanum'}
+      currentUserId={user.id}
     />
   )
 }

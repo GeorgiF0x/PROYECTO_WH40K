@@ -73,7 +73,7 @@ export function ScribeApplicationsClient() {
       {/* Header */}
       <div>
         <Link
-          href="/wiki"
+          href="/wiki-panel"
           className="inline-flex items-center gap-2 text-bone/40 hover:text-bone/70 transition-colors mb-4 font-mono text-sm"
         >
           <ArrowLeft className="w-4 h-4" />

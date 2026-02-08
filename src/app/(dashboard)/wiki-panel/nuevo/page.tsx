@@ -1,18 +1,13 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
   ChevronLeft,
-  Save,
   Globe,
   FileText,
-  Archive,
-  Trash2,
-  History,
-  Eye,
   Crosshair,
   Feather,
   Upload,
@@ -33,7 +28,7 @@ import {
 } from '@/components/wiki/WikiDecorations'
 import { factions } from '@/lib/data'
 import { compressImage } from '@/lib/utils/compressImage'
-import type { WikiPage, WikiCategory, WikiPageUpdateInput, WikiRevision } from '@/lib/supabase/wiki.types'
+import type { WikiCategory, WikiContent, WikiPageCreateInput } from '@/lib/supabase/wiki.types'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -78,71 +73,60 @@ function TacticalCard({
   )
 }
 
-export default function EditWikiArticlePage() {
-  const params = useParams()
+export default function NewWikiArticlePage() {
   const router = useRouter()
-  const pageId = params.id as string
   const editorRef = useRef<WikiEditorRef>(null)
 
-  const [page, setPage] = useState<WikiPage | null>(null)
   const [categories, setCategories] = useState<WikiCategory[]>([])
-  const [revisions, setRevisions] = useState<WikiRevision[]>([])
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [showRevisions, setShowRevisions] = useState(false)
-  const [showGuide, setShowGuide] = useState(false)
 
   // Form state
+  const [factionId, setFactionId] = useState('')
   const [subFaction, setSubFaction] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [excerpt, setExcerpt] = useState('')
   const [heroImage, setHeroImage] = useState('')
-  const [status, setStatus] = useState<'draft' | 'published' | 'archived'>('draft')
+  const [content, setContent] = useState<WikiContent | null>(null)
   const [galleryImages, setGalleryImages] = useState<string[]>([])
   const [heroUploading, setHeroUploading] = useState(false)
   const [heroDragOver, setHeroDragOver] = useState(false)
+  const [showGuide, setShowGuide] = useState(false)
   const heroFileRef = useRef<HTMLInputElement>(null)
 
-  const selectedFaction = page ? factions.find(f => f.id === page.faction_id) : null
+  const selectedFaction = factions.find(f => f.id === factionId)
   const currentColor = selectedFaction?.color || '#C9A227'
 
   useEffect(() => {
-    loadData()
-  }, [pageId])
+    loadCategories()
+  }, [])
 
-  async function loadData() {
-    setLoading(true)
+  async function loadCategories() {
     try {
-      const catRes = await fetch('/api/wiki/categories')
-      if (catRes.ok) {
-        setCategories(await catRes.json())
+      const res = await fetch('/api/wiki/categories')
+      if (res.ok) {
+        setCategories(await res.json())
       }
+    } catch (error) {
+      console.error('Error loading categories:', error)
+    }
+  }
 
-      const pageRes = await fetch(`/api/wiki/${pageId}`)
-      if (!pageRes.ok) {
-        throw new Error('Articulo no encontrado')
-      }
-      const pageData = await pageRes.json()
-      setPage(pageData)
+  function generateSlug(text: string) {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+  }
 
-      setCategoryId(pageData.category_id || '')
-      setTitle(pageData.title)
-      setSlug(pageData.slug)
-      setExcerpt(pageData.excerpt || '')
-      setHeroImage(pageData.hero_image || '')
-      setGalleryImages(pageData.gallery_images || [])
-      setStatus(pageData.status)
-
-      setTimeout(() => {
-        editorRef.current?.setContent(pageData.content)
-      }, 100)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar el articulo')
-    } finally {
-      setLoading(false)
+  function handleTitleChange(value: string) {
+    setTitle(value)
+    if (!slug || slug === generateSlug(title)) {
+      setSlug(generateSlug(value))
     }
   }
 
@@ -152,7 +136,7 @@ export default function EditWikiArticlePage() {
       const compressed = await compressImage(file)
       const formData = new FormData()
       formData.append('file', compressed)
-      if (page?.faction_id) formData.append('faction_id', page.faction_id)
+      if (factionId) formData.append('faction_id', factionId)
       const res = await fetch('/api/wiki/upload', { method: 'POST', body: formData })
       if (!res.ok) {
         const data = await res.json()
@@ -166,7 +150,7 @@ export default function EditWikiArticlePage() {
       setHeroUploading(false)
       if (heroFileRef.current) heroFileRef.current.value = ''
     }
-  }, [page?.faction_id])
+  }, [factionId])
 
   function handleHeroDrop(e: React.DragEvent) {
     e.preventDefault()
@@ -177,89 +161,52 @@ export default function EditWikiArticlePage() {
     }
   }
 
-  async function handleSave(newStatus?: 'draft' | 'published' | 'archived') {
-    if (!title || !slug) {
-      setError('Titulo y slug son requeridos')
+  async function handleSubmit(status: 'draft' | 'published') {
+    if (!factionId || !title || !slug) {
+      setError('Faccion, titulo y slug son requeridos')
       return
     }
 
     const editorContent = editorRef.current?.getContent()
     if (!editorContent) {
-      setError('Error al obtener el contenido del editor')
+      setError('El contenido no puede estar vacio')
       return
     }
 
-    setSaving(true)
+    setLoading(true)
     setError(null)
 
     try {
-      const payload: WikiPageUpdateInput = {
+      const payload: WikiPageCreateInput = {
+        faction_id: factionId,
         category_id: categoryId || undefined,
         title,
         slug,
         excerpt: excerpt || undefined,
         hero_image: heroImage || undefined,
-        gallery_images: galleryImages,
+        gallery_images: galleryImages.length ? galleryImages : undefined,
         content: editorContent,
-        status: newStatus || status,
+        status,
       }
 
-      const res = await fetch(`/api/wiki/${pageId}`, {
-        method: 'PUT',
+      const res = await fetch('/api/wiki', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
 
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.error || 'Error al guardar')
+        throw new Error(data.error || 'Error al crear el articulo')
       }
 
       const data = await res.json()
-      setPage(data)
-      setStatus(data.status)
+      router.push(`/wiki-panel/${data.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido')
     } finally {
-      setSaving(false)
+      setLoading(false)
     }
-  }
-
-  async function handleDelete() {
-    if (!confirm('Estas seguro de que quieres eliminar este articulo? Esta accion no se puede deshacer.')) {
-      return
-    }
-
-    try {
-      const res = await fetch(`/api/wiki/${pageId}`, { method: 'DELETE' })
-      if (res.ok) {
-        router.push('/wiki')
-      } else {
-        throw new Error('Error al eliminar')
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al eliminar')
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="h-10 w-64 bg-bone/10 rounded animate-pulse" />
-        <div className="h-96 bg-bone/10 rounded-lg animate-pulse" />
-      </div>
-    )
-  }
-
-  if (error && !page) {
-    return (
-      <div className="text-center py-20">
-        <h2 className="font-display text-2xl text-white mb-4">{error}</h2>
-        <Link href="/wiki">
-          <Button variant="outline">Volver al listado</Button>
-        </Link>
-      </div>
-    )
   }
 
   return (
@@ -286,22 +233,22 @@ export default function EditWikiArticlePage() {
 
           <div className="relative flex flex-col lg:flex-row lg:items-start justify-between gap-4">
             <div className="flex items-start gap-4">
-              <Link href="/wiki">
+              <Link href="/wiki-panel">
                 <Button variant="ghost" size="sm" className="mt-1">
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
               </Link>
               <div>
                 <SectionLabel icon={Crosshair} className="mb-2">
-                  EDITAR ARTICULO // ARCHIVO LEXICANUM
+                  NUEVO ARTICULO // ARCHIVO LEXICANUM
                 </SectionLabel>
                 <div className="flex items-center gap-3 mb-1">
                   <h1 className="text-2xl font-display font-bold text-bone tracking-wide">
-                    Editar Articulo
+                    Redaccion Imperial
                   </h1>
                   <div className="flex items-center gap-1.5">
                     <motion.div
-                      className="w-2 h-2 rounded-full bg-necron-teal"
+                      className="w-2 h-2 rounded-full bg-amber-500"
                       animate={{ opacity: [1, 0.4, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     />
@@ -312,81 +259,34 @@ export default function EditWikiArticlePage() {
                   </div>
                 </div>
                 <p className="text-bone/40 font-mono text-sm">
-                  {selectedFaction?.shortName} / {page?.title}
+                  Crea un nuevo registro para el Archivo Imperial
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              {status === 'published' && (
-                <Link href={`/facciones/${page?.faction_id}/wiki/${page?.slug}`} target="_blank">
-                  <motion.button
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/10 text-bone/60 hover:bg-bone/5 hover:text-bone transition-all duration-200"
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                  >
-                    <Eye className="w-4 h-4" />
-                    Ver
-                  </motion.button>
-                </Link>
-              )}
+            <div className="flex items-center gap-2 flex-wrap">
               <motion.button
                 type="button"
-                onClick={() => setShowRevisions(!showRevisions)}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/10 text-bone/60 hover:bg-bone/5 hover:text-bone transition-all duration-200"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <History className="w-4 h-4" />
-                Historial
-              </motion.button>
-              <motion.button
-                type="button"
-                onClick={handleDelete}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-blood/20 text-blood/70 hover:bg-blood/10 hover:border-blood/40 hover:text-blood-light transition-all duration-200"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <Trash2 className="w-4 h-4" />
-                Eliminar
-              </motion.button>
-              <motion.button
-                type="button"
-                onClick={() => handleSave()}
-                disabled={saving}
+                onClick={() => handleSubmit('draft')}
+                disabled={loading}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/70 hover:bg-bone/5 hover:border-bone/30 hover:text-bone transition-all duration-200 disabled:opacity-40"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <Save className="w-4 h-4" />
-                Guardar
+                <FileText className="w-4 h-4" />
+                Guardar Borrador
               </motion.button>
-              {status !== 'published' && (
-                <motion.button
-                  type="button"
-                  onClick={() => handleSave('published')}
-                  disabled={saving}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200 disabled:opacity-40"
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  <Globe className="w-4 h-4" />
-                  Publicar
-                </motion.button>
-              )}
-              {status === 'published' && (
-                <motion.button
-                  type="button"
-                  onClick={() => handleSave('archived')}
-                  disabled={saving}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/60 hover:bg-bone/5 hover:text-bone transition-all duration-200 disabled:opacity-40"
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  <Archive className="w-4 h-4" />
-                  Archivar
-                </motion.button>
-              )}
+              <motion.button
+                type="button"
+                onClick={() => handleSubmit('published')}
+                disabled={loading}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200 disabled:opacity-40"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Globe className="w-4 h-4" />
+                Publicar
+              </motion.button>
             </div>
           </div>
         </motion.div>
@@ -404,40 +304,16 @@ export default function EditWikiArticlePage() {
           </motion.div>
         )}
 
-        {/* Status indicator */}
-        <motion.div variants={itemVariants} className="flex items-center gap-3">
-          <span
-            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-mono tracking-wider ${
-              status === 'draft' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' :
-              status === 'published' ? 'bg-green-500/15 text-green-400 border border-green-500/30' :
-              'bg-gray-500/15 text-gray-400 border border-gray-500/30'
-            }`}
-          >
-            {status === 'draft' ? <FileText className="w-4 h-4" /> :
-             status === 'published' ? <Globe className="w-4 h-4" /> :
-             <Archive className="w-4 h-4" />}
-            {status === 'draft' ? 'BORRADOR' :
-             status === 'published' ? 'PUBLICADO' : 'ARCHIVADO'}
-          </span>
-          {page?.published_at && (
-            <span className="text-sm text-bone/50 font-mono">
-              Publicado el {new Date(page.published_at).toLocaleDateString('es-ES')}
-            </span>
-          )}
+        {/* ── Faction Picker (full width) ── */}
+        <motion.div variants={itemVariants}>
+          <FactionPicker
+            factionId={factionId}
+            subFaction={subFaction}
+            onFactionChange={setFactionId}
+            onSubFactionChange={setSubFaction}
+            factionColor={currentColor}
+          />
         </motion.div>
-
-        {/* ── Faction Picker ── */}
-        {page?.faction_id && (
-          <motion.div variants={itemVariants}>
-            <FactionPicker
-              factionId={page.faction_id}
-              subFaction={subFaction}
-              onFactionChange={() => {}}
-              onSubFactionChange={setSubFaction}
-              factionColor={currentColor}
-            />
-          </motion.div>
-        )}
 
         {/* ── Main grid ── */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -455,8 +331,8 @@ export default function EditWikiArticlePage() {
                       <Input
                         type="text"
                         value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Titulo del articulo"
+                        onChange={(e) => handleTitleChange(e.target.value)}
+                        placeholder="Ej: La Herejia de Horus"
                       />
                     </div>
                     <div>
@@ -467,10 +343,10 @@ export default function EditWikiArticlePage() {
                         type="text"
                         value={slug}
                         onChange={(e) => setSlug(e.target.value)}
-                        placeholder="slug-del-articulo"
+                        placeholder="la-herejia-de-horus"
                       />
                       <p className="mt-1 text-xs text-bone/40 font-mono">
-                        /facciones/{page?.faction_id}/wiki/{slug}
+                        /facciones/{factionId || '[faccion]'}/wiki/{slug || '[slug]'}
                       </p>
                     </div>
                   </CardContent>
@@ -510,9 +386,9 @@ export default function EditWikiArticlePage() {
                   </div>
                   <BlockNoteEditor
                     ref={editorRef}
-                    content={page?.content}
+                    onChange={setContent}
                     factionColor={currentColor}
-                    factionId={page?.faction_id || undefined}
+                    factionId={factionId || undefined}
                     placeholder="Escribe / para ver comandos..."
                   />
                 </Card>
@@ -524,7 +400,7 @@ export default function EditWikiArticlePage() {
               <WikiGallery
                 images={galleryImages}
                 onChange={setGalleryImages}
-                factionId={page?.faction_id || undefined}
+                factionId={factionId || undefined}
                 factionColor={currentColor}
               />
             </motion.div>
@@ -537,42 +413,22 @@ export default function EditWikiArticlePage() {
               <TacticalCard color={`${currentColor}30`}>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CLASIFICACION</CardTitle>
+                    <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CATEGORIA</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <label className="block font-mono text-[10px] text-bone/40 tracking-[0.15em] uppercase mb-2">
-                        FACCION
-                      </label>
-                      <div
-                        className="px-4 py-2 rounded-lg border font-body"
-                        style={{
-                          background: selectedFaction ? `${selectedFaction.color}10` : undefined,
-                          borderColor: selectedFaction?.color || 'rgba(232,232,240,0.1)',
-                          color: selectedFaction?.color || 'inherit',
-                        }}
-                      >
-                        {selectedFaction?.name || 'Desconocida'}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block font-mono text-[10px] text-bone/40 tracking-[0.15em] uppercase mb-2">
-                        CATEGORIA
-                      </label>
-                      <select
-                        value={categoryId}
-                        onChange={(e) => setCategoryId(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg bg-void-light border border-bone/10 text-bone font-body focus:outline-none focus:ring-2 transition-all duration-200"
-                        style={{
-                          ['--tw-ring-color' as string]: currentColor,
-                        }}
-                      >
-                        <option value="">Sin categoria</option>
-                        {categories.map(c => (
-                          <option key={c.id} value={c.id}>{c.name}</option>
-                        ))}
-                      </select>
-                    </div>
+                  <CardContent>
+                    <select
+                      value={categoryId}
+                      onChange={(e) => setCategoryId(e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg bg-void-light border border-bone/10 text-bone font-body focus:outline-none focus:ring-2 transition-all duration-200"
+                      style={{
+                        ['--tw-ring-color' as string]: currentColor,
+                      }}
+                    >
+                      <option value="">Sin categoria</option>
+                      {categories.map(c => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
                   </CardContent>
                 </Card>
               </TacticalCard>
@@ -592,6 +448,9 @@ export default function EditWikiArticlePage() {
                       placeholder="Breve descripcion para listados..."
                       rows={3}
                     />
+                    <p className="mt-2 text-xs text-bone/40 font-mono">
+                      Opcional. Se muestra en las tarjetas del listado.
+                    </p>
                   </CardContent>
                 </Card>
               </TacticalCard>
@@ -669,34 +528,28 @@ export default function EditWikiArticlePage() {
               </TacticalCard>
             </motion.div>
 
-            {/* Meta info */}
-            <motion.div variants={itemVariants}>
-              <TacticalCard color={`${currentColor}30`}>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">INFORMACION</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 text-sm font-mono text-bone/60">
-                    <div className="flex justify-between">
-                      <span>Vistas:</span>
-                      <span className="text-bone">{page?.views_count || 0}</span>
+            {/* Selected faction/subfaction summary */}
+            {factionId && (
+              <motion.div variants={itemVariants}>
+                <TacticalCard color={`${currentColor}30`}>
+                  <div className="rounded-xl bg-void-light/40 border border-bone/10 p-4">
+                    <span className="block font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em] uppercase mb-3">CLASIFICACION</span>
+                    <div className="space-y-2 text-sm font-body">
+                      <div className="flex justify-between items-center">
+                        <span className="text-bone/50">Faccion:</span>
+                        <span className="font-medium" style={{ color: currentColor }}>{selectedFaction?.name}</span>
+                      </div>
+                      {subFaction && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-bone/50">Subfaccion:</span>
+                          <span className="text-bone/80">{subFaction}</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex justify-between">
-                      <span>Creado:</span>
-                      <span className="text-bone">
-                        {page?.created_at && new Date(page.created_at).toLocaleDateString('es-ES')}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Actualizado:</span>
-                      <span className="text-bone">
-                        {page?.updated_at && new Date(page.updated_at).toLocaleDateString('es-ES')}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TacticalCard>
-            </motion.div>
+                  </div>
+                </TacticalCard>
+              </motion.div>
+            )}
           </div>
         </div>
 
@@ -707,41 +560,39 @@ export default function EditWikiArticlePage() {
           variants={itemVariants}
           className="flex items-center justify-between pt-4"
         >
-          <Link href="/wiki">
+          <Link href="/wiki-panel">
             <motion.button
               type="button"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-bone/50 hover:text-bone transition-colors"
               whileHover={{ x: -4 }}
             >
               <ChevronLeft className="w-4 h-4" />
-              Volver al listado
+              Cancelar
             </motion.button>
           </Link>
           <div className="flex items-center gap-2">
             <motion.button
               type="button"
-              onClick={() => handleSave()}
-              disabled={saving}
+              onClick={() => handleSubmit('draft')}
+              disabled={loading}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/70 hover:bg-bone/5 hover:border-bone/30 hover:text-bone transition-all duration-200 disabled:opacity-40"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Save className="w-4 h-4" />
-              Guardar
+              <FileText className="w-4 h-4" />
+              Guardar Borrador
             </motion.button>
-            {status !== 'published' && (
-              <motion.button
-                type="button"
-                onClick={() => handleSave('published')}
-                disabled={saving}
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200 disabled:opacity-40"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Globe className="w-4 h-4" />
-                Publicar
-              </motion.button>
-            )}
+            <motion.button
+              type="button"
+              onClick={() => handleSubmit('published')}
+              disabled={loading}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200 disabled:opacity-40"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Globe className="w-4 h-4" />
+              Publicar
+            </motion.button>
           </div>
         </motion.div>
       </motion.div>

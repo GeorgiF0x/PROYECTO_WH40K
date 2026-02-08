@@ -14,5 +14,6 @@ export {
   ImperialDivider,
   SectionLabel,
 } from './WikiDecorations'
+export { WikiArticleCard, categoryIcons } from './WikiArticleCard'
 export { EditorGuide } from './EditorGuide'
 export * from './blocks'

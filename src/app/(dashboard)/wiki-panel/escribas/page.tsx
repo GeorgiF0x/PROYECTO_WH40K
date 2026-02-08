@@ -14,7 +14,7 @@ export default async function ScribeApplicationsPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login?redirect=/wiki/escribas')
+    redirect('/login?redirect=/wiki-panel/escribas')
   }
 
   // Get user's permissions
@@ -29,7 +29,7 @@ export default async function ScribeApplicationsPage() {
   const isLexicanum = profile?.wiki_role === 'lexicanum'
 
   if (!isAdmin && !isLexicanum) {
-    redirect('/wiki')
+    redirect('/wiki-panel')
   }
 
   return <ScribeApplicationsClient />

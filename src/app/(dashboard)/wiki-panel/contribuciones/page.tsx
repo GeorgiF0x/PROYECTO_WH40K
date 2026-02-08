@@ -83,7 +83,7 @@ export default function WikiContributionsPage() {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href="/wiki">
+        <Link href="/wiki-panel">
           <Button variant="ghost" size="sm">
             <ChevronLeft className="w-4 h-4" />
           </Button>

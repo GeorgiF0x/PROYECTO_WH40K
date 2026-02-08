@@ -33,6 +33,7 @@ import type { WikiPage, WikiCategory } from '@/lib/supabase/wiki.types'
 interface WikiDashboardClientProps {
   isAdmin: boolean
   isLexicanum: boolean
+  currentUserId: string
 }
 
 const containerVariants = {
@@ -53,7 +54,7 @@ const itemVariants = {
   },
 }
 
-export function WikiDashboardClient({ isAdmin, isLexicanum }: WikiDashboardClientProps) {
+export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: WikiDashboardClientProps) {
   const [pages, setPages] = useState<WikiPage[]>([])
   const [categories, setCategories] = useState<WikiCategory[]>([])
   const [loading, setLoading] = useState(true)
@@ -217,7 +218,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum }: WikiDashboardClien
 
             <div className="flex items-center gap-2 flex-wrap">
               {(isAdmin || isLexicanum) && pendingScribeApps > 0 && (
-                <Link href="/wiki/escribas">
+                <Link href="/wiki-panel/escribas">
                   <motion.button
                     className="relative inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-imperial-gold/20 text-bone/80 hover:bg-imperial-gold/10 hover:border-imperial-gold/40 hover:text-bone transition-all duration-200"
                     whileHover={{ scale: 1.03 }}
@@ -233,7 +234,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum }: WikiDashboardClien
               )}
 
               {(isAdmin || isLexicanum) && pendingContributions > 0 && (
-                <Link href="/wiki/contribuciones">
+                <Link href="/wiki-panel/contribuciones">
                   <motion.button
                     className="relative inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-imperial-gold/20 text-bone/80 hover:bg-imperial-gold/10 hover:border-imperial-gold/40 hover:text-bone transition-all duration-200"
                     whileHover={{ scale: 1.03 }}
@@ -248,7 +249,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum }: WikiDashboardClien
                 </Link>
               )}
 
-              <Link href="/wiki/nuevo">
+              <Link href="/wiki-panel/nuevo">
                 <motion.button
                   className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200"
                   whileHover={{ scale: 1.03 }}
@@ -494,7 +495,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum }: WikiDashboardClien
                   : 'Las paginas del Lexicanum apareceran aqui.'}
               </p>
               {!search && (
-                <Link href="/wiki/nuevo">
+                <Link href="/wiki-panel/nuevo">
                   <motion.button
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200"
                     whileHover={{ scale: 1.03 }}
@@ -607,14 +608,16 @@ export function WikiDashboardClient({ isAdmin, isLexicanum }: WikiDashboardClien
                           </button>
                         </Link>
                       )}
-                      <Link href={`/wiki/${page.id}`}>
-                        <button
-                          className="p-2 rounded-lg text-bone/50 hover:text-bone hover:bg-imperial-gold/10 transition-all duration-200"
-                          title="Editar"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                      </Link>
+                      {(isAdmin || isLexicanum || page.author_id === currentUserId) && (
+                        <Link href={`/wiki-panel/${page.id}`}>
+                          <button
+                            className="p-2 rounded-lg text-bone/50 hover:text-bone hover:bg-imperial-gold/10 transition-all duration-200"
+                            title="Editar"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                        </Link>
+                      )}
                       {page.status === 'draft' && (isAdmin || isLexicanum) && (
                         <button
                           className="p-2 rounded-lg text-bone/50 hover:text-necron-teal hover:bg-necron-teal/10 transition-all duration-200"
@@ -633,7 +636,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum }: WikiDashboardClien
                           <Archive className="w-4 h-4" />
                         </button>
                       )}
-                      {(isAdmin || isLexicanum) && (
+                      {isAdmin && (
                         <button
                           className="p-2 rounded-lg text-bone/50 hover:text-blood hover:bg-blood/10 transition-all duration-200"
                           title="Eliminar"

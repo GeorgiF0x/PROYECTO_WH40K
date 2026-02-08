@@ -283,7 +283,7 @@ function ApprovedStatus({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <motion.div whileHover={{ scale: 1.02, y: -4 }} transition={{ type: 'spring', stiffness: 300 }}>
           <Link
-            href="/wiki"
+            href="/wiki-panel"
             className="group flex items-center gap-4 p-5 rounded-xl bg-void-light/60 border border-amber-500/20 hover:border-amber-500/50 transition-all relative overflow-hidden"
           >
             <GothicCorners className="text-amber-500/20 group-hover:text-amber-500/40 transition-colors" size={24} />
