@@ -28,6 +28,7 @@
     "@react-three/fiber": "^9.1.2",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.91.1",
+    "@tanstack/react-virtual": "^3.13.18",
     "@tiptap/extension-blockquote": "^3.18.0",
     "@tiptap/extension-bubble-menu": "^3.18.0",
     "@tiptap/extension-color": "^3.19.0",

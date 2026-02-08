@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { VirtualGrid } from '@/components/ui/VirtualGrid'
 import type { MiniatureWithStats } from './MiniatureCard'
 
 // Dynamic import to reduce initial bundle size (bundle-dynamic-imports best practice)
@@ -91,20 +92,37 @@ export default function MiniatureGrid({
     )
   }
 
+  // List mode: no virtualization needed (different layout)
+  if (viewMode === 'list') {
+    return (
+      <div className="flex flex-col gap-4">
+        {miniatures.map((miniature, index) => (
+          <MiniatureCard
+            key={miniature.id}
+            miniature={miniature}
+            index={index}
+            variant="list"
+          />
+        ))}
+      </div>
+    )
+  }
+
   return (
-    <div className={
-      viewMode === 'list'
-        ? 'flex flex-col gap-4'
-        : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-    }>
-      {miniatures.map((miniature, index) => (
+    <VirtualGrid
+      items={miniatures}
+      columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}
+      estimatedRowHeight={480}
+      gap={24}
+      keyExtractor={(m) => m.id}
+      renderItem={(miniature, index) => (
         <MiniatureCard
           key={miniature.id}
           miniature={miniature}
           index={index}
-          variant={viewMode === 'list' ? 'list' : 'card'}
+          variant="card"
         />
-      ))}
-    </div>
+      )}
+    />
   )
 }

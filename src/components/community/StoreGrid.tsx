@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { Store as StoreIcon } from 'lucide-react'
+import { VirtualGrid } from '@/components/ui/VirtualGrid'
 import type { StoreWithSubmitter } from './StoreCard'
 
 const StoreCard = dynamic(() => import('./StoreCard'), {
@@ -61,10 +62,15 @@ export default function StoreGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {stores.map((store, index) => (
+    <VirtualGrid
+      items={stores}
+      columns={{ base: 1, sm: 2, lg: 3 }}
+      estimatedRowHeight={380}
+      gap={24}
+      keyExtractor={(s) => s.id}
+      renderItem={(store, index) => (
         <StoreCard key={store.id} store={store} index={index} />
-      ))}
-    </div>
+      )}
+    />
   )
 }

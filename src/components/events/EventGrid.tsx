@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Calendar, Clock } from 'lucide-react'
 import { EventCard } from './EventCard'
+import { VirtualGrid } from '@/components/ui/VirtualGrid'
 import type { EventWithOrganizer } from '@/lib/types/database.types'
 
 interface EventGridProps {
@@ -87,15 +88,20 @@ export function EventGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {events.map((event, index) => (
+    <VirtualGrid
+      items={events}
+      columns={{ base: 1, sm: 2, lg: 3 }}
+      estimatedRowHeight={420}
+      gap={24}
+      keyExtractor={(e) => e.id}
+      renderItem={(event, index) => (
         <EventCard
           key={event.id}
           event={event}
           index={index}
         />
-      ))}
-    </div>
+      )}
+    />
   )
 }
 
