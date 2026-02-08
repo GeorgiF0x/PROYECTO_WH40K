@@ -10,30 +10,30 @@ import {
   Eye,
   Calendar,
   User,
-  Edit3,
   BookOpen,
   Share2,
   ChevronUp,
   Clock,
-  Scroll,
   Hash,
   ExternalLink,
   Copy,
   Check,
   X,
   ChevronRight,
+  List,
+  ArrowUp,
 } from 'lucide-react'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { getFactionById } from '@/lib/data'
 import { getFactionTheme } from '@/lib/faction-themes'
-import { FactionEffects, FactionSymbol } from '@/components/faction'
+import { FactionSymbol } from '@/components/faction'
 import { WikiRenderer } from '@/components/wiki'
 import { GothicCorners } from '@/components/wiki/WikiDecorations'
 import { Button } from '@/components/ui/Button'
 import type { WikiPage } from '@/lib/supabase/wiki.types'
 
-/* ── Helpers ── */
+/* ─────────────────── Helpers ─────────────────── */
 
 interface TocEntry {
   id: string
@@ -76,29 +76,7 @@ function getReadingTime(content: unknown): number {
   return Math.max(1, Math.ceil(wordCount / 200))
 }
 
-/* ── Faction Divider ── */
-
-function FactionDivider({ color }: { color: string }) {
-  return (
-    <div className="flex items-center gap-4 my-8">
-      <div
-        className="flex-1 h-px"
-        style={{ background: `linear-gradient(to right, transparent, ${color}40, transparent)` }}
-      />
-      <div className="flex items-center gap-2">
-        <div className="w-1.5 h-1.5 rotate-45" style={{ background: `${color}60` }} />
-        <div className="w-2 h-2 rotate-45" style={{ background: `${color}40`, border: `1px solid ${color}60` }} />
-        <div className="w-1.5 h-1.5 rotate-45" style={{ background: `${color}60` }} />
-      </div>
-      <div
-        className="flex-1 h-px"
-        style={{ background: `linear-gradient(to right, transparent, ${color}40, transparent)` }}
-      />
-    </div>
-  )
-}
-
-/* ── Gallery Lightbox ── */
+/* ─────────────────── Gallery Lightbox ─────────────────── */
 
 function GalleryLightbox({
   images,
@@ -179,9 +157,95 @@ function GalleryLightbox({
   )
 }
 
-/* ── Table of Contents ── */
+/* ─────────────────── Mobile TOC Drawer ─────────────────── */
 
-function TableOfContents({
+function MobileTocDrawer({
+  entries,
+  factionColor,
+  activeId,
+  isOpen,
+  onClose,
+}: {
+  entries: TocEntry[]
+  factionColor: string
+  activeId: string | null
+  isOpen: boolean
+  onClose: () => void
+}) {
+  if (!isOpen || entries.length === 0) return null
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 xl:hidden"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-void/80 backdrop-blur-sm" />
+      <motion.div
+        initial={{ x: -280 }}
+        animate={{ x: 0 }}
+        exit={{ x: -280 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        className="absolute left-0 top-0 bottom-0 w-72 p-6 pt-20 overflow-y-auto"
+        style={{
+          background: 'rgba(10,10,18,0.98)',
+          borderRight: `1px solid ${factionColor}20`,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-2 mb-6">
+          <Hash className="w-3.5 h-3.5" style={{ color: `${factionColor}80` }} />
+          <span
+            className="text-[10px] font-mono tracking-[0.3em] uppercase"
+            style={{ color: `${factionColor}60` }}
+          >
+            CONTENIDO
+          </span>
+          <button
+            onClick={onClose}
+            className="ml-auto p-1 rounded hover:bg-bone/10 transition-colors"
+          >
+            <X className="w-4 h-4 text-bone/40" />
+          </button>
+        </div>
+
+        <nav className="space-y-1">
+          {entries.map((entry) => (
+            <a
+              key={entry.id}
+              href={`#${entry.id}`}
+              onClick={onClose}
+              className="group flex items-center gap-2.5 py-2 transition-all duration-200"
+              style={{ paddingLeft: `${(entry.level - 1) * 14}px` }}
+            >
+              <div
+                className="w-[3px] h-4 rounded-full shrink-0 transition-all duration-200"
+                style={{
+                  background: activeId === entry.id ? factionColor : `${factionColor}20`,
+                  boxShadow: activeId === entry.id ? `0 0 8px ${factionColor}50` : 'none',
+                }}
+              />
+              <span
+                className="text-sm leading-tight transition-colors duration-200 line-clamp-2"
+                style={{
+                  color: activeId === entry.id ? factionColor : 'rgba(232,232,240,0.5)',
+                }}
+              >
+                {entry.text}
+              </span>
+            </a>
+          ))}
+        </nav>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+/* ─────────────────── Desktop TOC ─────────────────── */
+
+function DesktopTableOfContents({
   entries,
   factionColor,
   activeId,
@@ -193,8 +257,8 @@ function TableOfContents({
   if (entries.length === 0) return null
 
   return (
-    <nav className="space-y-1">
-      <div className="flex items-center gap-2 mb-3">
+    <nav className="space-y-0.5">
+      <div className="flex items-center gap-2 mb-4 pb-3" style={{ borderBottom: `1px solid ${factionColor}15` }}>
         <Hash className="w-3 h-3" style={{ color: `${factionColor}60` }} />
         <span
           className="text-[9px] font-mono tracking-[0.3em] uppercase"
@@ -207,20 +271,20 @@ function TableOfContents({
         <a
           key={entry.id}
           href={`#${entry.id}`}
-          className="group flex items-center gap-2 py-1 transition-all duration-200"
+          className="group flex items-center gap-2 py-1.5 transition-all duration-200"
           style={{ paddingLeft: `${(entry.level - 1) * 12}px` }}
         >
           <div
             className="w-[3px] h-4 rounded-full shrink-0 transition-all duration-200"
             style={{
-              background: activeId === entry.id ? factionColor : `${factionColor}20`,
+              background: activeId === entry.id ? factionColor : `${factionColor}15`,
               boxShadow: activeId === entry.id ? `0 0 8px ${factionColor}50` : 'none',
             }}
           />
           <span
             className="text-xs leading-tight transition-colors duration-200 line-clamp-2"
             style={{
-              color: activeId === entry.id ? factionColor : 'rgba(232,232,240,0.45)',
+              color: activeId === entry.id ? factionColor : 'rgba(232,232,240,0.4)',
             }}
           >
             {entry.text}
@@ -231,7 +295,91 @@ function TableOfContents({
   )
 }
 
-/* ── Main Page ── */
+/* ─────────────────── Floating Action Bar ─────────────────── */
+
+function FloatingActionBar({
+  factionColor,
+  onShare,
+  copiedLink,
+  showScrollTop,
+  tocCount,
+  onOpenToc,
+}: {
+  factionColor: string
+  onShare: () => void
+  copiedLink: boolean
+  showScrollTop: boolean
+  tocCount: number
+  onOpenToc: () => void
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.8 }}
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 px-2 py-2 rounded-full"
+      style={{
+        background: 'rgba(10,10,18,0.9)',
+        backdropFilter: 'blur(20px)',
+        border: `1px solid ${factionColor}20`,
+        boxShadow: `0 8px 32px rgba(0,0,0,0.5), 0 0 20px ${factionColor}08`,
+      }}
+    >
+      {/* TOC toggle — mobile only */}
+      {tocCount > 0 && (
+        <button
+          onClick={onOpenToc}
+          className="xl:hidden flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-mono transition-all hover:bg-bone/10"
+          style={{ color: `${factionColor}90` }}
+        >
+          <List className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Indice</span>
+        </button>
+      )}
+
+      {/* Share */}
+      <button
+        onClick={onShare}
+        className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-mono transition-all hover:bg-bone/10"
+        style={{ color: copiedLink ? factionColor : 'rgba(232,232,240,0.5)' }}
+      >
+        {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
+        <span className="hidden sm:inline">{copiedLink ? 'Copiado' : 'Compartir'}</span>
+      </button>
+
+      {/* Separator */}
+      <div className="w-px h-4" style={{ background: `${factionColor}20` }} />
+
+      {/* Copy link */}
+      <button
+        onClick={onShare}
+        className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-mono transition-all hover:bg-bone/10 text-bone/40"
+      >
+        <Copy className="w-3.5 h-3.5" />
+      </button>
+
+      {/* Scroll top */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 'auto', opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-mono transition-all overflow-hidden"
+            style={{ background: `${factionColor}20`, color: factionColor }}
+          >
+            <ArrowUp className="w-3.5 h-3.5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
+/* ══════════════════════════════════════════════════
+   MAIN PAGE
+   ══════════════════════════════════════════════════ */
 
 export default function WikiArticlePage() {
   const params = useParams()
@@ -247,11 +395,11 @@ export default function WikiArticlePage() {
   const [copiedLink, setCopiedLink] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [activeTocId, setActiveTocId] = useState<string | null>(null)
+  const [tocOpen, setTocOpen] = useState(false)
 
   const { scrollYProgress } = useScroll()
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1])
-  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, 80])
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.25], [1, 0])
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0])
 
   const toc = useMemo(() => (page ? extractToc(page.content) : []), [page])
 
@@ -260,8 +408,8 @@ export default function WikiArticlePage() {
   }, [factionId, slug])
 
   useEffect(() => {
-    const handleScroll = () => setShowScrollTop(window.scrollY > 500)
-    window.addEventListener('scroll', handleScroll)
+    const handleScroll = () => setShowScrollTop(window.scrollY > 600)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -302,10 +450,6 @@ export default function WikiArticlePage() {
     }
   }
 
-  function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
   async function handleShare() {
     const url = window.location.href
     if (navigator.share) {
@@ -324,6 +468,8 @@ export default function WikiArticlePage() {
   }, [lightboxIndex, page?.gallery_images])
 
   const handleLightboxClose = useCallback(() => setLightboxIndex(null), [])
+
+  /* ── Error / Not Found States ── */
 
   if (!faction) {
     return (
@@ -350,24 +496,24 @@ export default function WikiArticlePage() {
         <div className="noise-overlay" />
         <Navigation />
         <div className="pt-28 pb-16">
-          <div className="max-w-4xl mx-auto px-6">
-            {/* Skeleton with faction color shimmer */}
+          <div className="max-w-3xl mx-auto px-6">
             <div className="space-y-6">
-              <div className="h-8 w-48 rounded animate-pulse" style={{ background: `${fc}15` }} />
-              <div className="h-14 w-3/4 rounded animate-pulse" style={{ background: `${fc}10` }} />
+              <div className="h-6 w-40 rounded animate-pulse" style={{ background: `${fc}15` }} />
+              <div className="h-12 w-3/4 rounded animate-pulse" style={{ background: `${fc}10` }} />
+              <div className="h-5 w-1/2 rounded animate-pulse" style={{ background: `${fc}08` }} />
               <div
-                className="h-[40vh] rounded-2xl animate-pulse"
+                className="h-[35vh] rounded-2xl animate-pulse"
                 style={{
                   background: `linear-gradient(135deg, ${fc}08 0%, ${secondaryColor}05 50%, ${fc}08 100%)`,
                   border: `1px solid ${fc}10`,
                 }}
               />
-              <div className="space-y-3">
-                {[1, 0.85, 0.7, 0.9, 0.6].map((w, i) => (
+              <div className="space-y-3 pt-4">
+                {[1, 0.85, 0.7, 0.9, 0.6, 0.95, 0.75].map((w, i) => (
                   <div
                     key={i}
                     className="h-4 rounded animate-pulse"
-                    style={{ width: `${w * 100}%`, background: `${fc}08`, animationDelay: `${i * 0.1}s` }}
+                    style={{ width: `${w * 100}%`, background: `${fc}08`, animationDelay: `${i * 0.08}s` }}
                   />
                 ))}
               </div>
@@ -417,7 +563,7 @@ export default function WikiArticlePage() {
 
       {/* ── Reading Progress Bar ── */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-[3px] z-50 origin-left"
+        className="fixed top-0 left-0 right-0 h-[2px] z-50 origin-left"
         style={{
           scaleX,
           background: theme?.gradients.border || `linear-gradient(90deg, ${fc}, ${glowColor})`,
@@ -425,32 +571,30 @@ export default function WikiArticlePage() {
         }}
       />
 
-      {/* ── Faction Background Effects ── */}
-      <div className="fixed inset-0 pointer-events-none opacity-20">
-        <FactionEffects factionId={faction.id} />
-      </div>
-
-      {/* ── Ambient Gradient Orbs ── */}
+      {/* ── Ambient Background ── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div
-          className="absolute -top-[30%] -left-[20%] w-[70%] h-[70%] rounded-full blur-[120px] opacity-[0.04]"
+          className="absolute -top-[40%] -left-[30%] w-[80%] h-[80%] rounded-full blur-[150px] opacity-[0.03]"
           style={{ background: fc }}
         />
         <div
-          className="absolute -bottom-[30%] -right-[20%] w-[60%] h-[60%] rounded-full blur-[100px] opacity-[0.03]"
+          className="absolute -bottom-[40%] -right-[30%] w-[70%] h-[70%] rounded-full blur-[130px] opacity-[0.02]"
           style={{ background: secondaryColor }}
         />
       </div>
 
       <Navigation />
 
-      {/* ═══════════════════════════════════════════
-          HERO SECTION — Cinematic, parallax, faction-themed
-         ═══════════════════════════════════════════ */}
-      <section className="relative overflow-hidden" style={{ minHeight: page.hero_image ? '70vh' : '40vh' }}>
-        {/* Hero Image with parallax */}
+      {/* ══════════════════════════════════════════
+          HERO — Compact, cinematic, content-first
+         ══════════════════════════════════════════ */}
+      <section
+        className="relative overflow-hidden"
+        style={{ minHeight: page.hero_image ? '45vh' : '32vh', maxHeight: '50vh' }}
+      >
+        {/* Hero Image */}
         {page.hero_image && (
-          <motion.div className="absolute inset-0" style={{ y: heroY }}>
+          <div className="absolute inset-0">
             <Image
               src={page.hero_image}
               alt={page.title}
@@ -458,493 +602,344 @@ export default function WikiArticlePage() {
               priority
               className="object-cover"
             />
-            {/* Multi-layer gradient overlay */}
+            {/* Gradient overlays — push content readable zone to bottom */}
             <div
               className="absolute inset-0"
               style={{
-                background: `
-                  linear-gradient(180deg,
-                    ${bgColor}90 0%,
-                    ${bgColor}20 30%,
-                    ${bgColor}40 60%,
-                    ${bgColor} 100%
-                  )
-                `,
+                background: `linear-gradient(180deg,
+                  ${bgColor} 0%,
+                  ${bgColor}80 15%,
+                  transparent 40%,
+                  ${bgColor}60 70%,
+                  ${bgColor} 100%
+                )`,
               }}
             />
-            {/* Faction-colored tint */}
+            {/* Faction tint */}
             <div
               className="absolute inset-0"
               style={{
-                background: `linear-gradient(135deg, ${fc}15 0%, transparent 50%, ${secondaryColor}10 100%)`,
+                background: `linear-gradient(135deg, ${fc}12 0%, transparent 60%, ${secondaryColor}08 100%)`,
               }}
             />
             {/* Vignette */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(3,3,8,0.6)_100%)]" />
-          </motion.div>
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(3,3,8,0.5)_100%)]" />
+          </div>
         )}
 
-        {/* Faction Symbol Watermark — larger, animated */}
+        {/* Faction Symbol watermark */}
         <motion.div
           className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden"
           style={{ opacity: heroOpacity }}
         >
-          <motion.div
-            className="opacity-[0.06]"
-            style={{ scale: 5 }}
-            animate={{ rotate: [0, 1, -1, 0] }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-          >
+          <div className="opacity-[0.04]" style={{ transform: 'scale(4)' }}>
             <FactionSymbol factionId={faction.id} size="xl" animated={false} />
-          </motion.div>
+          </div>
         </motion.div>
 
-        {/* Hero Content */}
-        <div className="relative pt-28 pb-16 flex items-end" style={{ minHeight: page.hero_image ? '70vh' : '40vh' }}>
-          <div className="max-w-5xl mx-auto px-6 w-full">
-            <div className="relative">
-              <GothicCorners className={`text-[${fc}]/30`} size={42} />
-
-              {/* Breadcrumb */}
-              <motion.nav
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="flex items-center gap-2 font-body text-sm text-bone/50 mb-6"
-              >
-                <Link
-                  href={`/facciones/${factionId}`}
-                  className="hover:text-bone transition-colors"
-                >
-                  {faction.shortName}
-                </Link>
-                <ChevronRight className="w-3 h-3" style={{ color: `${fc}40` }} />
-                <Link
-                  href={`/facciones/${factionId}/wiki`}
-                  className="hover:text-bone transition-colors"
-                >
-                  Wiki
-                </Link>
-                {page.category && (
-                  <>
-                    <ChevronRight className="w-3 h-3" style={{ color: `${fc}40` }} />
-                    <Link
-                      href={`/facciones/${factionId}/wiki?categoria=${page.category.slug}`}
-                      className="hover:text-bone transition-colors"
-                      style={{ color: `${fc}90` }}
-                    >
-                      {page.category.name}
-                    </Link>
-                  </>
-                )}
-              </motion.nav>
-
-              {/* Category badge */}
+        {/* Hero Content — anchored to bottom */}
+        <div className="relative flex items-end" style={{ minHeight: page.hero_image ? '45vh' : '32vh', maxHeight: '50vh' }}>
+          <div className="w-full max-w-3xl mx-auto px-6 pb-10">
+            {/* Breadcrumb */}
+            <nav className="flex items-center gap-2 font-body text-xs text-bone/40 mb-4">
+              <Link href={`/facciones/${factionId}`} className="hover:text-bone/70 transition-colors">
+                {faction.shortName}
+              </Link>
+              <ChevronRight className="w-3 h-3" style={{ color: `${fc}30` }} />
+              <Link href={`/facciones/${factionId}/wiki`} className="hover:text-bone/70 transition-colors">
+                Wiki
+              </Link>
               {page.category && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.15 }}
-                >
-                  <span
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-semibold tracking-wider mb-5"
-                    style={{
-                      background: `${fc}15`,
-                      color: fc,
-                      border: `1px solid ${fc}25`,
-                      boxShadow: `0 0 20px ${fc}10`,
-                    }}
-                  >
-                    <BookOpen className="w-3 h-3" />
-                    {page.category.name}
-                  </span>
-                </motion.div>
+                <>
+                  <ChevronRight className="w-3 h-3" style={{ color: `${fc}30` }} />
+                  <span style={{ color: `${fc}70` }}>{page.category.name}</span>
+                </>
               )}
+            </nav>
 
-              {/* Title — dramatic with gradient */}
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-[0.95]"
-                style={{
-                  background: theme?.gradients.text || `linear-gradient(90deg, ${fc}, ${glowColor})`,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  filter: `drop-shadow(0 4px 30px ${fc}30)`,
-                }}
-              >
-                {page.title}
-              </motion.h1>
+            {/* Title */}
+            <h1
+              className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-[0.95]"
+              style={{
+                background: theme?.gradients.text || `linear-gradient(90deg, ${fc}, ${glowColor})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                filter: `drop-shadow(0 2px 20px ${fc}25)`,
+              }}
+            >
+              {page.title}
+            </h1>
 
-              {/* Excerpt */}
-              {page.excerpt && (
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 }}
-                  className="font-body text-lg sm:text-xl text-bone/60 leading-relaxed mb-8 max-w-3xl"
+            {/* Excerpt */}
+            {page.excerpt && (
+              <p className="font-body text-base sm:text-lg text-bone/55 leading-relaxed mb-6 max-w-2xl">
+                {page.excerpt}
+              </p>
+            )}
+
+            {/* Meta row — prominent, chip-style */}
+            <div className="flex flex-wrap items-center gap-3">
+              {page.author && (
+                <Link
+                  href={page.author.username ? `/usuarios/${page.author.username}` : '#'}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-body transition-all hover:scale-[1.03]"
+                  style={{ background: `${fc}15`, border: `1px solid ${fc}20`, color: 'rgba(232,232,240,0.8)' }}
                 >
-                  {page.excerpt}
-                </motion.p>
-              )}
-
-              {/* Meta Row */}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
-                className="flex flex-wrap items-center gap-4 text-sm font-body"
-              >
-                {page.author && (
                   <div
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-                    style={{ background: `${fc}10`, border: `1px solid ${fc}15` }}
+                    className="w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{ background: `${fc}30` }}
                   >
-                    <div
-                      className="w-6 h-6 rounded-full flex items-center justify-center"
-                      style={{ background: `${fc}25` }}
-                    >
-                      <User className="w-3 h-3" style={{ color: fc }} />
-                    </div>
-                    <span className="text-bone/70">
-                      {page.author.display_name || page.author.username}
-                    </span>
+                    <User className="w-2.5 h-2.5" style={{ color: fc }} />
                   </div>
-                )}
+                  {page.author.display_name || page.author.username}
+                </Link>
+              )}
+
+              <div className="flex items-center gap-3 text-xs text-bone/35 font-mono">
                 {page.published_at && (
-                  <div className="flex items-center gap-2 text-bone/40">
-                    <Calendar className="w-3.5 h-3.5" style={{ color: `${fc}70` }} />
-                    <span>
-                      {new Date(page.published_at).toLocaleDateString('es-ES', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    </span>
-                  </div>
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-3 h-3" style={{ color: `${fc}50` }} />
+                    {new Date(page.published_at).toLocaleDateString('es-ES', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </span>
                 )}
-                <div className="flex items-center gap-2 text-bone/40">
-                  <Eye className="w-3.5 h-3.5" style={{ color: `${fc}70` }} />
-                  <span>{page.views_count} lecturas</span>
-                </div>
-                <div className="flex items-center gap-2 text-bone/40">
-                  <Clock className="w-3.5 h-3.5" style={{ color: `${fc}70` }} />
-                  <span>{readingTime} min</span>
-                </div>
-              </motion.div>
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-3 h-3" style={{ color: `${fc}50` }} />
+                  {readingTime} min
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Eye className="w-3 h-3" style={{ color: `${fc}50` }} />
+                  {page.views_count}
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom gradient border */}
+        {/* Bottom accent line */}
         <div
           className="absolute bottom-0 left-0 right-0 h-[2px]"
           style={{
             background: theme?.gradients.border || `linear-gradient(90deg, transparent, ${fc}, transparent)`,
-            boxShadow: `0 0 20px ${fc}30`,
+            boxShadow: `0 0 15px ${fc}25`,
           }}
         />
       </section>
 
-      {/* ═══════════════════════════════════════════
-          CONTENT SECTION — with ToC sidebar
-         ═══════════════════════════════════════════ */}
-      <section className="relative py-12">
+      {/* ══════════════════════════════════════════
+          CONTENT SECTION — Clean reading zone with sticky TOC
+         ══════════════════════════════════════════ */}
+      <section className="relative py-10 sm:py-14">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex gap-8">
-            {/* ── Sidebar: Table of Contents ── */}
+          <div className="flex gap-10">
+            {/* ── Sticky Sidebar TOC (desktop) ── */}
             {toc.length > 0 && (
-              <motion.aside
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
-                className="hidden xl:block w-56 shrink-0"
-              >
-                <div className="sticky top-24 space-y-6">
+              <aside className="hidden xl:block w-52 shrink-0">
+                <div className="sticky top-20 space-y-6">
                   <div
                     className="p-4 rounded-xl"
                     style={{
-                      background: `${fc}05`,
-                      border: `1px solid ${fc}10`,
+                      background: `${fc}04`,
+                      border: `1px solid ${fc}08`,
                     }}
                   >
-                    <TableOfContents
+                    <DesktopTableOfContents
                       entries={toc}
                       factionColor={fc}
                       activeId={activeTocId}
                     />
                   </div>
 
-                  {/* Quick actions */}
-                  <div className="space-y-2">
-                    <button
-                      onClick={handleShare}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono transition-all hover:bg-bone/5 text-bone/40 hover:text-bone/70"
+                  {/* Author mini-card in sidebar */}
+                  {page.author && (
+                    <Link
+                      href={page.author.username ? `/usuarios/${page.author.username}` : '#'}
+                      className="flex items-center gap-3 p-3 rounded-lg transition-all hover:bg-bone/5"
+                      style={{ border: `1px solid ${fc}08` }}
                     >
-                      {copiedLink ? (
-                        <>
-                          <Check className="w-3.5 h-3.5" style={{ color: fc }} />
-                          <span style={{ color: fc }}>Copiado</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span>Copiar enlace</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                        style={{ background: `${fc}20` }}
+                      >
+                        <User className="w-3.5 h-3.5" style={{ color: fc }} />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-[9px] font-mono text-bone/30 tracking-wider uppercase block">Escrito por</span>
+                        <span className="text-xs text-bone/70 truncate block">
+                          {page.author.display_name || page.author.username}
+                        </span>
+                      </div>
+                    </Link>
+                  )}
                 </div>
-              </motion.aside>
+              </aside>
             )}
 
-            {/* ── Main Content ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex-1 min-w-0 max-w-4xl"
-            >
-              {/* Decorative header bar */}
+            {/* ── Main Content Column ── */}
+            <div className="flex-1 min-w-0 max-w-3xl mx-auto">
+              {/* Content container — clean, high contrast */}
               <div
-                className="relative flex items-center gap-3 px-6 py-3 rounded-t-2xl overflow-hidden"
-                style={{
-                  background: `linear-gradient(90deg, ${fc}12 0%, ${secondaryColor}08 50%, transparent 100%)`,
-                  borderBottom: `1px solid ${fc}15`,
-                }}
+                className="relative rounded-2xl overflow-hidden"
+                style={{ border: `1px solid ${fc}0A` }}
               >
-                {/* Animated gradient shimmer */}
-                <motion.div
-                  className="absolute inset-0 opacity-30"
-                  style={{
-                    background: `linear-gradient(90deg, transparent 0%, ${fc}10 50%, transparent 100%)`,
-                    backgroundSize: '200% 100%',
-                  }}
-                  animate={{ backgroundPosition: ['200% 0', '-200% 0'] }}
-                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                />
-                <Scroll className="w-4 h-4 relative z-10" style={{ color: `${fc}80` }} />
-                <span
-                  className="text-[10px] font-mono tracking-[0.3em] uppercase relative z-10"
-                  style={{ color: `${fc}50` }}
-                >
-                  REGISTRO IMPERIAL
-                </span>
-                <div className="flex-1" />
-                <span className="text-[10px] font-mono text-bone/20 relative z-10">
-                  {readingTime} min lectura
-                </span>
-              </div>
-
-              {/* Article content container */}
-              <div
-                className="relative p-8 sm:p-10 rounded-b-2xl"
-                style={{
-                  background: `linear-gradient(180deg, ${fc}06 0%, transparent 30%, transparent 70%, ${fc}03 100%)`,
-                  border: `1px solid ${fc}12`,
-                  borderTop: 'none',
-                }}
-              >
-                {/* Left border accent — faction gradient */}
+                {/* Top header bar */}
                 <div
-                  className="absolute top-0 bottom-0 left-0 w-[3px] rounded-bl-2xl"
+                  className="flex items-center gap-3 px-6 py-3"
                   style={{
-                    background: `linear-gradient(180deg, ${fc}80, ${secondaryColor}40, ${fc}15)`,
+                    background: `${fc}08`,
+                    borderBottom: `1px solid ${fc}0D`,
                   }}
-                />
-
-                {/* Subtle faction symbol watermark behind content */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-[0.02]">
-                  <div style={{ transform: 'scale(6)' }}>
-                    <FactionSymbol factionId={faction.id} size="xl" animated={false} />
-                  </div>
-                </div>
-
-                <GothicCorners className="text-imperial-gold/10" size={28} />
-
-                <WikiRenderer content={page.content} factionColor={fc} />
-              </div>
-
-              {/* ── Actions Row ── */}
-              <div className="mt-10">
-                <FactionDivider color={fc} />
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <Link href={`/facciones/${factionId}/wiki`}>
-                    <motion.button
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-bone/50 hover:text-bone transition-all"
-                      whileHover={{ x: -4, color: fc }}
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                      Volver a la Wiki
-                    </motion.button>
-                  </Link>
-
-                  <div className="flex items-center gap-3">
-                    <motion.button
-                      onClick={handleShare}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
-                      style={{
-                        background: `${fc}10`,
-                        color: `${fc}90`,
-                        border: `1px solid ${fc}20`,
-                      }}
-                      whileHover={{ scale: 1.03, boxShadow: `0 0 20px ${fc}15` }}
-                      whileTap={{ scale: 0.97 }}
-                    >
-                      {copiedLink ? (
-                        <><Check className="w-4 h-4" /> Enlace copiado</>
-                      ) : (
-                        <><Share2 className="w-4 h-4" /> Compartir</>
-                      )}
-                    </motion.button>
-                    <motion.button
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border opacity-40 cursor-not-allowed"
-                      style={{
-                        borderColor: `${fc}20`,
-                        color: `${fc}60`,
-                      }}
-                      disabled
-                    >
-                      <Edit3 className="w-4 h-4" />
-                      Sugerir edicion
-                    </motion.button>
-                  </div>
-                </div>
-              </div>
-
-              {/* ── Author Card ── */}
-              {page.author && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="mt-10"
                 >
-                  <div
-                    className="relative p-6 rounded-xl overflow-hidden"
-                    style={{
-                      background: `linear-gradient(135deg, ${fc}08 0%, ${secondaryColor}05 100%)`,
-                      border: `1px solid ${fc}15`,
-                    }}
+                  <BookOpen className="w-3.5 h-3.5" style={{ color: `${fc}60` }} />
+                  <span
+                    className="text-[10px] font-mono tracking-[0.3em] uppercase"
+                    style={{ color: `${fc}40` }}
                   >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
-                        style={{
-                          background: `linear-gradient(135deg, ${fc}30, ${secondaryColor}20)`,
-                          border: `2px solid ${fc}30`,
-                          boxShadow: `0 0 20px ${fc}15`,
-                        }}
-                      >
-                        <User className="w-6 h-6" style={{ color: fc }} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span
-                          className="text-[9px] font-mono tracking-[0.2em] uppercase block mb-1"
-                          style={{ color: `${fc}50` }}
-                        >
-                          ESCRITO POR
-                        </span>
-                        <p className="font-display text-lg text-bone/90 truncate">
-                          {page.author.display_name || page.author.username}
-                        </p>
-                      </div>
-                      {page.author.username && (
-                        <Link
-                          href={`/usuarios/${page.author.username}`}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all hover:bg-bone/5"
-                          style={{ color: `${fc}70`, border: `1px solid ${fc}15` }}
-                        >
-                          Ver perfil
-                          <ExternalLink className="w-3 h-3" />
-                        </Link>
-                      )}
+                    REGISTRO IMPERIAL
+                  </span>
+                  <div className="flex-1" />
+                  {page.category && (
+                    <span
+                      className="text-[10px] font-mono px-2 py-0.5 rounded"
+                      style={{ background: `${fc}10`, color: `${fc}60` }}
+                    >
+                      {page.category.name}
+                    </span>
+                  )}
+                </div>
+
+                {/* Article body — clean reading surface */}
+                <div
+                  className="px-6 sm:px-10 py-8 sm:py-10"
+                  style={{
+                    background: `linear-gradient(180deg, ${fc}03 0%, transparent 20%)`,
+                  }}
+                >
+                  <GothicCorners className="text-imperial-gold/8" size={24} />
+
+                  <WikiRenderer content={page.content} factionColor={fc} />
+                </div>
+              </div>
+
+              {/* ── Back + Actions Row ── */}
+              <div className="flex flex-wrap items-center justify-between gap-4 mt-8 pt-6" style={{ borderTop: `1px solid ${fc}10` }}>
+                <Link href={`/facciones/${factionId}/wiki`}>
+                  <button className="flex items-center gap-2 text-sm font-body text-bone/40 hover:text-bone/70 transition-colors">
+                    <ChevronLeft className="w-4 h-4" />
+                    Volver a la Wiki
+                  </button>
+                </Link>
+
+                {page.author && page.author.username && (
+                  <Link
+                    href={`/usuarios/${page.author.username}`}
+                    className="xl:hidden flex items-center gap-2 text-xs font-mono transition-all hover:bg-bone/5 px-3 py-1.5 rounded-lg"
+                    style={{ color: `${fc}60`, border: `1px solid ${fc}12` }}
+                  >
+                    <User className="w-3 h-3" />
+                    {page.author.display_name || page.author.username}
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                )}
+              </div>
+
+              {/* ── Gallery Section ── */}
+              {page.gallery_images && page.gallery_images.length > 0 && (
+                <div className="mt-12">
+                  {/* Section divider */}
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${fc}25, transparent)` }} />
+                    <div className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rotate-45" style={{ background: `${fc}40` }} />
+                      <Eye className="w-4 h-4" style={{ color: `${fc}40` }} />
+                      <div className="w-1.5 h-1.5 rotate-45" style={{ background: `${fc}40` }} />
                     </div>
+                    <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${fc}25, transparent)` }} />
                   </div>
-                </motion.div>
+
+                  <div className="flex items-center gap-3 mb-6">
+                    <span
+                      className="text-[9px] font-mono tracking-[0.3em] uppercase"
+                      style={{ color: `${fc}50` }}
+                    >
+                      ARCHIVOS PICTOGRAFICOS
+                    </span>
+                    <span className="text-[10px] font-mono text-bone/20">
+                      {page.gallery_images.length} imagenes
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {page.gallery_images.map((img, i) => (
+                      <motion.button
+                        key={i}
+                        type="button"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.04 }}
+                        className="relative aspect-[4/3] rounded-xl overflow-hidden group cursor-pointer"
+                        style={{ border: `1px solid ${fc}10` }}
+                        onClick={() => setLightboxIndex(i)}
+                      >
+                        <Image
+                          src={img}
+                          alt={`${page.title} - imagen ${i + 1}`}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div
+                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center"
+                          style={{ background: `${fc}30` }}
+                        >
+                          <div
+                            className="w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm"
+                            style={{ background: `${fc}40`, border: `1px solid ${fc}60` }}
+                          >
+                            <Eye className="w-5 h-5 text-white" />
+                          </div>
+                        </div>
+                        {/* Bottom glow on hover */}
+                        <div
+                          className="absolute bottom-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity"
+                          style={{ background: `linear-gradient(90deg, transparent, ${fc}, transparent)` }}
+                        />
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
               )}
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════
-          GALLERY SECTION
-         ═══════════════════════════════════════════ */}
-      {page.gallery_images && page.gallery_images.length > 0 && (
-        <section className="relative py-12">
-          <div className="max-w-6xl mx-auto px-6">
-            <FactionDivider color={fc} />
+      {/* ── Floating Action Bar ── */}
+      <FloatingActionBar
+        factionColor={fc}
+        onShare={handleShare}
+        copiedLink={copiedLink}
+        showScrollTop={showScrollTop}
+        tocCount={toc.length}
+        onOpenToc={() => setTocOpen(true)}
+      />
 
-            <div className="mt-8 mb-6 flex items-center gap-3">
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center"
-                style={{ background: `${fc}15`, border: `1px solid ${fc}20` }}
-              >
-                <BookOpen className="w-4 h-4" style={{ color: fc }} />
-              </div>
-              <div>
-                <span
-                  className="text-[9px] font-mono tracking-[0.3em] uppercase block"
-                  style={{ color: `${fc}50` }}
-                >
-                  ARCHIVOS PICTOGRAFICOS
-                </span>
-                <h2 className="font-display text-xl font-bold" style={{ color: fc }}>
-                  Galeria
-                </h2>
-              </div>
-            </div>
+      {/* ── Mobile TOC Drawer ── */}
+      <AnimatePresence>
+        <MobileTocDrawer
+          entries={toc}
+          factionColor={fc}
+          activeId={activeTocId}
+          isOpen={tocOpen}
+          onClose={() => setTocOpen(false)}
+        />
+      </AnimatePresence>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {page.gallery_images.map((img, i) => (
-                <motion.button
-                  key={i}
-                  type="button"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.06 }}
-                  className="relative aspect-square rounded-xl overflow-hidden group cursor-pointer"
-                  style={{ border: `1px solid ${fc}15` }}
-                  onClick={() => setLightboxIndex(i)}
-                  whileHover={{ scale: 1.02, boxShadow: `0 0 30px ${fc}20` }}
-                >
-                  <Image
-                    src={img}
-                    alt={`${page.title} - imagen ${i + 1}`}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  {/* Hover overlay */}
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center"
-                    style={{
-                      background: `linear-gradient(135deg, ${fc}30 0%, ${secondaryColor}20 100%)`,
-                    }}
-                  >
-                    <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm"
-                      style={{ background: `${fc}40`, border: `1px solid ${fc}60` }}
-                    >
-                      <Eye className="w-5 h-5 text-white" />
-                    </div>
-                  </div>
-                  {/* Bottom border glow on hover */}
-                  <div
-                    className="absolute bottom-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ background: `linear-gradient(90deg, transparent, ${fc}, transparent)` }}
-                  />
-                </motion.button>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ── Lightbox ── */}
+      {/* ── Gallery Lightbox ── */}
       <AnimatePresence>
         {lightboxIndex !== null && page.gallery_images && (
           <GalleryLightbox
@@ -954,31 +949,6 @@ export default function WikiArticlePage() {
             onNav={handleLightboxNav}
             factionColor={fc}
           />
-        )}
-      </AnimatePresence>
-
-      {/* ── Scroll to top ── */}
-      <AnimatePresence>
-        {showScrollTop && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            onClick={scrollToTop}
-            className="fixed bottom-8 right-8 p-3 rounded-full shadow-lg z-40 group"
-            style={{
-              background: `linear-gradient(135deg, ${fc}, ${secondaryColor})`,
-              boxShadow: `0 4px 30px ${fc}40`,
-            }}
-          >
-            <motion.div
-              className="absolute inset-0 rounded-full"
-              style={{ border: `2px solid ${fc}` }}
-              animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <ChevronUp className="w-5 h-5 text-void relative z-10" />
-          </motion.button>
         )}
       </AnimatePresence>
 
