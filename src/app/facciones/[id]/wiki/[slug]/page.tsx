@@ -12,7 +12,7 @@ import {
   User,
   BookOpen,
   Share2,
-  ChevronUp,
+
   Clock,
   Hash,
   ExternalLink,
@@ -27,7 +27,7 @@ import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { getFactionById } from '@/lib/data'
 import { getFactionTheme } from '@/lib/faction-themes'
-import { FactionSymbol } from '@/components/faction'
+
 import { WikiRenderer } from '@/components/wiki'
 import { GothicCorners } from '@/components/wiki/WikiDecorations'
 import { Button } from '@/components/ui/Button'
@@ -399,7 +399,7 @@ export default function WikiArticlePage() {
 
   const { scrollYProgress } = useScroll()
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1])
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0])
+
 
   const toc = useMemo(() => (page ? extractToc(page.content) : []), [page])
 
@@ -586,148 +586,134 @@ export default function WikiArticlePage() {
       <Navigation />
 
       {/* ══════════════════════════════════════════
-          HERO — Compact, cinematic, content-first
+          HEADER — Editorial: title block, then feature image
          ══════════════════════════════════════════ */}
-      <section
-        className="relative overflow-hidden"
-        style={{ minHeight: page.hero_image ? '45vh' : '32vh', maxHeight: '50vh' }}
-      >
-        {/* Hero Image */}
-        {page.hero_image && (
-          <div className="absolute inset-0">
-            <Image
-              src={page.hero_image}
-              alt={page.title}
-              fill
-              priority
-              className="object-cover"
-            />
-            {/* Gradient overlays — push content readable zone to bottom */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `linear-gradient(180deg,
-                  ${bgColor} 0%,
-                  ${bgColor}80 15%,
-                  transparent 40%,
-                  ${bgColor}60 70%,
-                  ${bgColor} 100%
-                )`,
-              }}
-            />
-            {/* Faction tint */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `linear-gradient(135deg, ${fc}12 0%, transparent 60%, ${secondaryColor}08 100%)`,
-              }}
-            />
-            {/* Vignette */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(3,3,8,0.5)_100%)]" />
-          </div>
-        )}
+      <section className="relative pt-28 pb-0">
+        {/* Subtle faction glow behind header area */}
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px] opacity-[0.06] pointer-events-none"
+          style={{ background: fc }}
+        />
 
-        {/* Faction Symbol watermark */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden"
-          style={{ opacity: heroOpacity }}
-        >
-          <div className="opacity-[0.04]" style={{ transform: 'scale(4)' }}>
-            <FactionSymbol factionId={faction.id} size="xl" animated={false} />
-          </div>
-        </motion.div>
+        <div className="relative max-w-3xl mx-auto px-6">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 font-body text-xs text-bone/40 mb-6">
+            <Link href={`/facciones/${factionId}`} className="hover:text-bone/70 transition-colors">
+              {faction.shortName}
+            </Link>
+            <ChevronRight className="w-3 h-3" style={{ color: `${fc}30` }} />
+            <Link href={`/facciones/${factionId}/wiki`} className="hover:text-bone/70 transition-colors">
+              Wiki
+            </Link>
+            {page.category && (
+              <>
+                <ChevronRight className="w-3 h-3" style={{ color: `${fc}30` }} />
+                <span style={{ color: `${fc}70` }}>{page.category.name}</span>
+              </>
+            )}
+          </nav>
 
-        {/* Hero Content — anchored to bottom */}
-        <div className="relative flex items-end" style={{ minHeight: page.hero_image ? '45vh' : '32vh', maxHeight: '50vh' }}>
-          <div className="w-full max-w-3xl mx-auto px-6 pb-10">
-            {/* Breadcrumb */}
-            <nav className="flex items-center gap-2 font-body text-xs text-bone/40 mb-4">
-              <Link href={`/facciones/${factionId}`} className="hover:text-bone/70 transition-colors">
-                {faction.shortName}
+          {/* Title */}
+          <h1
+            className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-5 leading-[0.95]"
+            style={{
+              background: theme?.gradients.text || `linear-gradient(90deg, ${fc}, ${glowColor})`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              filter: `drop-shadow(0 2px 20px ${fc}25)`,
+            }}
+          >
+            {page.title}
+          </h1>
+
+          {/* Excerpt */}
+          {page.excerpt && (
+            <p className="font-body text-base sm:text-lg text-bone/55 leading-relaxed mb-6 max-w-2xl">
+              {page.excerpt}
+            </p>
+          )}
+
+          {/* Meta row */}
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            {page.author && (
+              <Link
+                href={page.author.username ? `/usuarios/${page.author.username}` : '#'}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-body transition-all hover:scale-[1.03]"
+                style={{ background: `${fc}15`, border: `1px solid ${fc}20`, color: 'rgba(232,232,240,0.8)' }}
+              >
+                <div
+                  className="w-5 h-5 rounded-full flex items-center justify-center"
+                  style={{ background: `${fc}30` }}
+                >
+                  <User className="w-2.5 h-2.5" style={{ color: fc }} />
+                </div>
+                {page.author.display_name || page.author.username}
               </Link>
-              <ChevronRight className="w-3 h-3" style={{ color: `${fc}30` }} />
-              <Link href={`/facciones/${factionId}/wiki`} className="hover:text-bone/70 transition-colors">
-                Wiki
-              </Link>
-              {page.category && (
-                <>
-                  <ChevronRight className="w-3 h-3" style={{ color: `${fc}30` }} />
-                  <span style={{ color: `${fc}70` }}>{page.category.name}</span>
-                </>
-              )}
-            </nav>
-
-            {/* Title */}
-            <h1
-              className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-[0.95]"
-              style={{
-                background: theme?.gradients.text || `linear-gradient(90deg, ${fc}, ${glowColor})`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                filter: `drop-shadow(0 2px 20px ${fc}25)`,
-              }}
-            >
-              {page.title}
-            </h1>
-
-            {/* Excerpt */}
-            {page.excerpt && (
-              <p className="font-body text-base sm:text-lg text-bone/55 leading-relaxed mb-6 max-w-2xl">
-                {page.excerpt}
-              </p>
             )}
 
-            {/* Meta row — prominent, chip-style */}
-            <div className="flex flex-wrap items-center gap-3">
-              {page.author && (
-                <Link
-                  href={page.author.username ? `/usuarios/${page.author.username}` : '#'}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-body transition-all hover:scale-[1.03]"
-                  style={{ background: `${fc}15`, border: `1px solid ${fc}20`, color: 'rgba(232,232,240,0.8)' }}
-                >
-                  <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center"
-                    style={{ background: `${fc}30` }}
-                  >
-                    <User className="w-2.5 h-2.5" style={{ color: fc }} />
-                  </div>
-                  {page.author.display_name || page.author.username}
-                </Link>
+            <div className="flex items-center gap-3 text-xs text-bone/35 font-mono">
+              {page.published_at && (
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-3 h-3" style={{ color: `${fc}50` }} />
+                  {new Date(page.published_at).toLocaleDateString('es-ES', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
               )}
-
-              <div className="flex items-center gap-3 text-xs text-bone/35 font-mono">
-                {page.published_at && (
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="w-3 h-3" style={{ color: `${fc}50` }} />
-                    {new Date(page.published_at).toLocaleDateString('es-ES', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
-                  </span>
-                )}
-                <span className="flex items-center gap-1.5">
-                  <Clock className="w-3 h-3" style={{ color: `${fc}50` }} />
-                  {readingTime} min
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Eye className="w-3 h-3" style={{ color: `${fc}50` }} />
-                  {page.views_count}
-                </span>
-              </div>
+              <span className="flex items-center gap-1.5">
+                <Clock className="w-3 h-3" style={{ color: `${fc}50` }} />
+                {readingTime} min
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Eye className="w-3 h-3" style={{ color: `${fc}50` }} />
+                {page.views_count}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Bottom accent line */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-[2px]"
-          style={{
-            background: theme?.gradients.border || `linear-gradient(90deg, transparent, ${fc}, transparent)`,
-            boxShadow: `0 0 15px ${fc}25`,
-          }}
-        />
+        {/* Feature Image — full width, natural aspect ratio */}
+        {page.hero_image && (
+          <div className="max-w-5xl mx-auto px-6">
+            <div
+              className="relative rounded-2xl overflow-hidden"
+              style={{
+                border: `1px solid ${fc}15`,
+                boxShadow: `0 8px 40px rgba(0,0,0,0.4), 0 0 30px ${fc}08`,
+              }}
+            >
+              <div className="relative w-full" style={{ aspectRatio: '16 / 9', maxHeight: '65vh' }}>
+                <Image
+                  src={page.hero_image}
+                  alt={page.title}
+                  fill
+                  priority
+                  className="object-cover"
+                />
+                {/* Subtle vignette */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,rgba(3,3,8,0.3)_100%)] pointer-events-none" />
+                {/* Faction tint — very subtle */}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: `linear-gradient(135deg, ${fc}08 0%, transparent 60%, ${secondaryColor}05 100%)`,
+                  }}
+                />
+              </div>
+              {/* Bottom glow line */}
+              <div
+                className="absolute bottom-0 left-0 right-0 h-[2px]"
+                style={{
+                  background: theme?.gradients.border || `linear-gradient(90deg, transparent, ${fc}, transparent)`,
+                  boxShadow: `0 0 12px ${fc}20`,
+                }}
+              />
+            </div>
+          </div>
+        )}
       </section>
 
       {/* ══════════════════════════════════════════
