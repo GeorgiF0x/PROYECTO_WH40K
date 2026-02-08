@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/hooks/useAuth'
+import { optimizeImageUrl } from '@/lib/utils'
 import { Avatar, ReportModal } from '@/components/ui'
 import {
   Heart,
@@ -436,7 +437,10 @@ export default function MiniatureDetailPage() {
     )
   }
 
-  const images = miniature.images?.length ? miniature.images : [miniature.thumbnail_url || '/placeholder-miniature.jpg']
+  const rawImages = miniature.images?.length ? miniature.images : [miniature.thumbnail_url || '/placeholder-miniature.jpg']
+  // Optimized versions for Three.js and thumbnails
+  const images = rawImages.map((url) => optimizeImageUrl(url, 800, 80))
+  const thumbImages = rawImages.map((url) => optimizeImageUrl(url, 200, 70))
 
   return (
     <>
@@ -619,7 +623,7 @@ export default function MiniatureDetailPage() {
                 <div className="flex items-center gap-3">
                   {images.length > 1 && (
                     <div className="flex gap-2 overflow-x-auto flex-1">
-                      {images.map((img, idx) => (
+                      {thumbImages.map((img, idx) => (
                         <motion.button
                           key={idx}
                           onClick={() => setCurrentImageIndex(idx)}
@@ -882,7 +886,7 @@ export default function MiniatureDetailPage() {
                         whileHover={{ scale: 1.02 }}
                       >
                         <Image
-                          src={m.thumbnail_url || m.images?.[0] || '/placeholder-miniature.jpg'}
+                          src={optimizeImageUrl(m.thumbnail_url || m.images?.[0], 400, 75)}
                           alt={m.title}
                           fill
                           sizes="(max-width: 640px) 50vw, 20vw"
@@ -1015,7 +1019,7 @@ export default function MiniatureDetailPage() {
                 className="flex gap-2 mt-4 overflow-x-auto max-w-5xl"
                 onClick={(e) => e.stopPropagation()}
               >
-                {images.map((img, idx) => (
+                {thumbImages.map((img, idx) => (
                   <motion.button
                     key={idx}
                     onClick={() => setCurrentImageIndex(idx)}

@@ -152,8 +152,8 @@ export function CreatorEligibility({ userId, onEligible }: CreatorEligibilityPro
           return (
             <motion.div
               key={item.key}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: index * 0.1 }}
               className={cn(
                 'flex items-center justify-between p-3 rounded-lg border transition-colors',

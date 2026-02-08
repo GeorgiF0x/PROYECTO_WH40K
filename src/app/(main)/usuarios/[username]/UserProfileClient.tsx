@@ -27,6 +27,7 @@ import {
   ExternalLink,
   Star,
 } from 'lucide-react'
+import { optimizeImageUrl } from '@/lib/utils'
 import type { Profile, CreatorType } from '@/lib/types/database.types'
 import { CreatorBadge, getCreatorTypeConfig, PortfolioGrid } from '@/components/creator'
 import { ScribeBadge } from '@/components/wiki'
@@ -1228,7 +1229,7 @@ function FactionCard({ faction, index }: { faction: Faction; index: number }) {
 // ═══════════════════════════════════════════════════════════════════
 
 function MiniatureCard({ miniature, index, factionColor }: { miniature: Miniature; index: number; factionColor: string }) {
-  const imageUrl = miniature.thumbnail_url || miniature.images?.[0]
+  const imageUrl = optimizeImageUrl(miniature.thumbnail_url || miniature.images?.[0], 400, 75)
 
   return (
     <motion.div

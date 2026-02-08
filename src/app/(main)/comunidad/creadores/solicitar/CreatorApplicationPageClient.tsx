@@ -139,7 +139,7 @@ export function CreatorApplicationPageClient({
         </motion.div>
 
         {/* Status based content — min-height prevents CLS during AnimatePresence transitions */}
-        <div style={{ minHeight: '400px' }}>
+        <div style={{ minHeight: '600px' }}>
           <AnimatePresence mode="wait">
             {creatorStatus === 'pending' ? (
               <motion.div
