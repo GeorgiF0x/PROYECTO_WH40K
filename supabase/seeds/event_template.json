@@ -1,0 +1,69 @@
+{
+  "event": {
+    "organizer_id": "",
+    "store_id": null,
+    "name": "",
+    "slug": "",
+    "description": null,
+    "event_type": "casual_play",
+    "status": "draft",
+    "start_date": "",
+    "end_date": null,
+    "registration_deadline": null,
+    "venue_name": null,
+    "address": "",
+    "city": "",
+    "province": null,
+    "postal_code": null,
+    "country": "ES",
+    "latitude": 0,
+    "longitude": 0,
+    "game_system": null,
+    "format": null,
+    "max_participants": null,
+    "entry_fee": null,
+    "prizes": null,
+    "cover_image": null,
+    "images": [],
+    "contact_email": null,
+    "contact_phone": null,
+    "external_url": null,
+    "is_featured": false,
+    "is_official": false,
+    "tags": []
+  },
+
+  "event_registration": {
+    "event_id": "",
+    "user_id": "",
+    "status": "registered",
+    "notes": null
+  },
+
+  "__foreign_keys__": {
+    "organizer_id → profiles": {
+      "id": "uuid",
+      "username": "text",
+      "display_name": "text | null",
+      "avatar_url": "text | null",
+      "creator_status": "'none' | 'pending' | 'approved' | 'rejected'"
+    },
+    "store_id → stores": {
+      "id": "uuid",
+      "name": "text",
+      "slug": "text"
+    },
+    "event_registration.user_id → profiles": {
+      "id": "uuid",
+      "username": "text",
+      "display_name": "text | null",
+      "avatar_url": "text | null"
+    }
+  },
+
+  "__enums__": {
+    "event_type": ["tournament", "painting_workshop", "casual_play", "campaign", "release_event", "meetup", "other"],
+    "event_status": ["draft", "upcoming", "ongoing", "completed", "cancelled"],
+    "registration_status": ["registered", "waitlist", "cancelled", "attended"]
+  }
+}

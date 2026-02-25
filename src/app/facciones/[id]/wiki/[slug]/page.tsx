@@ -149,8 +149,13 @@ function GalleryLightbox({
           className="object-contain max-h-[85vh] rounded-lg"
           style={{ boxShadow: `0 0 60px ${factionColor}30` }}
         />
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-void/80 text-xs text-bone/60 font-mono">
-          {activeIndex + 1} / {images.length}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1">
+          <span className="px-3 py-1 rounded-full bg-void/80 text-xs text-bone/60 font-mono">
+            {activeIndex + 1} / {images.length}
+          </span>
+          <span className="px-3 py-1 rounded-lg bg-void/70 text-[11px] text-bone/50 font-body max-w-[60vw] truncate">
+            Imagen {activeIndex + 1} de {images.length}
+          </span>
         </div>
       </motion.div>
     </motion.div>
@@ -878,22 +883,24 @@ export default function WikiArticlePage() {
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
                         />
+                        {/* Hover overlay */}
                         <div
-                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center"
+                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center"
                           style={{ background: `${fc}30` }}
                         >
                           <div
-                            className="w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm"
+                            className="w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm mb-2"
                             style={{ background: `${fc}40`, border: `1px solid ${fc}60` }}
                           >
                             <Eye className="w-5 h-5 text-white" />
                           </div>
                         </div>
-                        {/* Bottom glow on hover */}
-                        <div
-                          className="absolute bottom-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity"
-                          style={{ background: `linear-gradient(90deg, transparent, ${fc}, transparent)` }}
-                        />
+                        {/* Label overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-void/90 via-void/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <p className="text-[11px] font-mono text-bone/80 truncate">
+                            {page.title} — Img {i + 1}
+                          </p>
+                        </div>
                       </motion.button>
                     ))}
                   </div>
