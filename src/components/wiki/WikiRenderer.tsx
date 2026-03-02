@@ -3,7 +3,10 @@
 import Link from 'next/link'
 import type { WikiContent, TiptapContent, TiptapNode, TiptapMark } from '@/lib/supabase/wiki.types'
 import { QuoteBlock, WarningBlock, ImageBlock, LoreBlock } from './blocks'
+import { WikiLinkPreview } from './WikiLinkPreview'
 import { cn } from '@/lib/utils'
+
+const WIKI_LINK_REGEX = /^\/facciones\/([^/]+)\/wiki\/([^/]+)$/
 
 interface WikiRendererProps {
   content: WikiContent
@@ -280,6 +283,16 @@ function RenderBNInline({ item, factionColor }: { item: BlockNoteInlineContent; 
         </a>
       )
     }
+
+    const wikiMatch = href.match(WIKI_LINK_REGEX)
+    if (wikiMatch) {
+      return (
+        <WikiLinkPreview href={href} factionId={wikiMatch[1]} slug={wikiMatch[2]} factionColor={factionColor}>
+          {linkContent}
+        </WikiLinkPreview>
+      )
+    }
+
     return (
       <Link href={href} className="underline hover:opacity-80 transition-opacity" style={{ color: factionColor }}>
         {linkContent}
@@ -560,6 +573,16 @@ function applyMark(content: React.ReactNode, mark: TiptapMark, factionColor: str
           </a>
         )
       }
+
+      const wikiMatch = href?.match(WIKI_LINK_REGEX)
+      if (wikiMatch) {
+        return (
+          <WikiLinkPreview href={href} factionId={wikiMatch[1]} slug={wikiMatch[2]} factionColor={factionColor}>
+            {content}
+          </WikiLinkPreview>
+        )
+      }
+
       return (
         <Link
           href={href || '#'}

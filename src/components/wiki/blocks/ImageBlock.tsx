@@ -73,9 +73,9 @@ export function ImageBlock({
           border: `1px solid ${factionColor}30`,
         }}
       >
-        <div className="relative aspect-video">
+        <div className="relative flex items-center justify-center bg-void-950" style={{ maxHeight: '500px' }}>
           {broken ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-void-950 text-bone/40">
+            <div className="flex flex-col items-center justify-center py-16 text-bone/40">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-10 w-10 mb-2 opacity-50"
@@ -96,8 +96,9 @@ export function ImageBlock({
             <Image
               src={src}
               alt={alt}
-              fill
-              className="object-cover"
+              width={800}
+              height={500}
+              className="w-full h-auto max-h-[500px] object-contain"
               onError={() => setBroken(true)}
             />
           ) : (
@@ -106,7 +107,7 @@ export function ImageBlock({
               src={src}
               alt={alt}
               loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="w-full h-auto max-h-[500px] object-contain"
               onError={() => setBroken(true)}
             />
           )}
