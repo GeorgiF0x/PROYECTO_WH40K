@@ -77,7 +77,8 @@ export default function Turnstile({
 
       // Add script tag
       const script = document.createElement('script')
-      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback'
+      script.src =
+        'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback'
       script.async = true
       script.defer = true
       document.head.appendChild(script)
@@ -99,11 +100,7 @@ export default function Turnstile({
   }
 
   return (
-    <div
-      ref={containerRef}
-      className={`flex justify-center ${className}`}
-      data-theme={theme}
-    />
+    <div ref={containerRef} className={`flex justify-center ${className}`} data-theme={theme} />
   )
 }
 

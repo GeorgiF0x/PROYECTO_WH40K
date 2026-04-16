@@ -18,7 +18,7 @@ import {
   Sparkles,
   Store,
   Shield,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react'
 import { cn, optimizeImageUrl } from '@/lib/utils'
 import type { EventWithOrganizer, EventType } from '@/lib/types/database.types'
@@ -30,13 +30,16 @@ interface EventCardProps {
 }
 
 // Event type configurations
-export const eventTypeConfig: Record<EventType, {
-  label: string
-  icon: typeof Trophy
-  color: string
-  colorHex: string
-  bgColor: string
-}> = {
+export const eventTypeConfig: Record<
+  EventType,
+  {
+    label: string
+    icon: typeof Trophy
+    color: string
+    colorHex: string
+    bgColor: string
+  }
+> = {
   tournament: {
     label: 'Torneo',
     icon: Trophy,
@@ -123,7 +126,8 @@ function EventCardImpl({ event, index = 0, variant = 'default' }: EventCardProps
   const config = eventTypeConfig[event.event_type]
   const Icon = config.icon
   const isSoon = isEventSoon(event.start_date)
-  const isFull = event.max_participants && (event.current_participants ?? 0) >= event.max_participants
+  const isFull =
+    event.max_participants && (event.current_participants ?? 0) >= event.max_participants
 
   if (variant === 'compact') {
     return (
@@ -133,40 +137,41 @@ function EventCardImpl({ event, index = 0, variant = 'default' }: EventCardProps
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: index * 0.05 }}
           className={cn(
-            'group flex items-center gap-4 p-3 rounded-xl border transition-all',
-            'bg-void-light/60 border-bone/10',
+            'group flex items-center gap-4 rounded-xl border p-3 transition-all',
+            'border-bone/10 bg-void-light/60',
             'hover:border-imperial-gold/30 hover:bg-void-light'
           )}
         >
           {/* Type indicator */}
           <div
-            className={cn('w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0', config.bgColor)}
+            className={cn(
+              'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg',
+              config.bgColor
+            )}
             style={{ borderLeft: `3px solid ${config.colorHex}` }}
           >
-            <Icon className={cn('w-5 h-5', config.color)} />
+            <Icon className={cn('h-5 w-5', config.color)} />
           </div>
 
           {/* Content */}
-          <div className="flex-1 min-w-0">
-            <h3 className="font-display font-semibold text-bone text-sm truncate group-hover:text-imperial-gold transition-colors">
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate font-display text-sm font-semibold text-bone transition-colors group-hover:text-imperial-gold">
               {event.name}
             </h3>
             <div className="flex items-center gap-3 text-xs text-bone/50">
               <span className="flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
+                <Calendar className="h-3 w-3" />
                 {formatEventDate(event.start_date)}
               </span>
               <span className="flex items-center gap-1">
-                <MapPin className="w-3 h-3" />
+                <MapPin className="h-3 w-3" />
                 {event.city}
               </span>
             </div>
           </div>
 
           {/* Official badge */}
-          {event.is_official && (
-            <Shield className="w-4 h-4 text-imperial-gold/60 flex-shrink-0" />
-          )}
+          {event.is_official && <Shield className="h-4 w-4 flex-shrink-0 text-imperial-gold/60" />}
         </motion.div>
       </Link>
     )
@@ -180,12 +185,14 @@ function EventCardImpl({ event, index = 0, variant = 'default' }: EventCardProps
       className="group relative"
     >
       <Link href={`/comunidad/eventos/${event.slug}`}>
-        <div className={cn(
-          'relative overflow-hidden rounded-xl border transition-all duration-300',
-          'bg-gradient-to-b from-void-light/90 to-void/95',
-          'border-bone/10 hover:border-imperial-gold/40',
-          'hover:shadow-lg hover:shadow-imperial-gold/10 hover:-translate-y-1'
-        )}>
+        <div
+          className={cn(
+            'relative overflow-hidden rounded-xl border transition-all duration-300',
+            'bg-gradient-to-b from-void-light/90 to-void/95',
+            'border-bone/10 hover:border-imperial-gold/40',
+            'hover:-translate-y-1 hover:shadow-lg hover:shadow-imperial-gold/10'
+          )}
+        >
           {/* Cover image or gradient */}
           <div className="relative h-36 overflow-hidden">
             {event.cover_image ? (
@@ -193,7 +200,7 @@ function EventCardImpl({ event, index = 0, variant = 'default' }: EventCardProps
                 src={optimizeImageUrl(event.cover_image, 600)}
                 alt={event.name}
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
             ) : (
               <div
@@ -208,24 +215,24 @@ function EventCardImpl({ event, index = 0, variant = 'default' }: EventCardProps
             <div className="absolute inset-0 bg-gradient-to-t from-void via-void/50 to-transparent" />
 
             {/* Top badges */}
-            <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
+            <div className="absolute left-3 right-3 top-3 flex items-start justify-between">
               {/* Event type badge */}
               <div
                 className={cn(
-                  'flex items-center gap-1.5 px-2.5 py-1 rounded-lg backdrop-blur-sm',
+                  'flex items-center gap-1.5 rounded-lg px-2.5 py-1 backdrop-blur-sm',
                   config.bgColor
                 )}
                 style={{ border: `1px solid ${config.colorHex}40` }}
               >
-                <Icon className={cn('w-3.5 h-3.5', config.color)} />
-                <span className={cn('text-xs font-mono', config.color)}>{config.label}</span>
+                <Icon className={cn('h-3.5 w-3.5', config.color)} />
+                <span className={cn('font-mono text-xs', config.color)}>{config.label}</span>
               </div>
 
               {/* Official badge */}
               {event.is_official && (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-imperial-gold/20 backdrop-blur-sm border border-imperial-gold/40">
-                  <Shield className="w-3.5 h-3.5 text-imperial-gold" />
-                  <span className="text-xs font-mono text-imperial-gold">Oficial</span>
+                <div className="flex items-center gap-1.5 rounded-lg border border-imperial-gold/40 bg-imperial-gold/20 px-2.5 py-1 backdrop-blur-sm">
+                  <Shield className="h-3.5 w-3.5 text-imperial-gold" />
+                  <span className="font-mono text-xs text-imperial-gold">Oficial</span>
                 </div>
               )}
             </div>
@@ -233,9 +240,9 @@ function EventCardImpl({ event, index = 0, variant = 'default' }: EventCardProps
             {/* Soon badge */}
             {isSoon && (
               <div className="absolute bottom-3 right-3">
-                <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-500/20 backdrop-blur-sm border border-emerald-500/40">
-                  <Sparkles className="w-3 h-3 text-emerald-400" />
-                  <span className="text-xs font-mono text-emerald-400">Pronto</span>
+                <div className="flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/20 px-2 py-1 backdrop-blur-sm">
+                  <Sparkles className="h-3 w-3 text-emerald-400" />
+                  <span className="font-mono text-xs text-emerald-400">Pronto</span>
                 </div>
               </div>
             )}
@@ -244,88 +251,97 @@ function EventCardImpl({ event, index = 0, variant = 'default' }: EventCardProps
           {/* Content */}
           <div className="p-4">
             {/* Title */}
-            <h3 className="font-display font-bold text-bone text-lg mb-2 line-clamp-2 group-hover:text-imperial-gold transition-colors">
+            <h3 className="mb-2 line-clamp-2 font-display text-lg font-bold text-bone transition-colors group-hover:text-imperial-gold">
               {event.name}
             </h3>
 
             {/* Date & Time */}
-            <div className="flex items-center gap-4 mb-3 text-sm">
+            <div className="mb-3 flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1.5 text-imperial-gold/80">
-                <Calendar className="w-4 h-4" />
-                <span className="font-mono">{formatEventDate(event.start_date, event.end_date)}</span>
+                <Calendar className="h-4 w-4" />
+                <span className="font-mono">
+                  {formatEventDate(event.start_date, event.end_date)}
+                </span>
               </div>
               <div className="flex items-center gap-1.5 text-bone/50">
-                <Clock className="w-4 h-4" />
+                <Clock className="h-4 w-4" />
                 <span className="font-mono">{formatEventTime(event.start_date)}</span>
               </div>
             </div>
 
             {/* Location */}
-            <div className="flex items-center gap-1.5 text-sm text-bone/60 mb-3">
-              <MapPin className="w-4 h-4 text-imperial-gold/50" />
+            <div className="mb-3 flex items-center gap-1.5 text-sm text-bone/60">
+              <MapPin className="h-4 w-4 text-imperial-gold/50" />
               <span className="truncate">
-                {event.venue_name ? `${event.venue_name}, ` : ''}{event.city}
+                {event.venue_name ? `${event.venue_name}, ` : ''}
+                {event.city}
               </span>
             </div>
 
             {/* Organizer */}
             {(event.store || event.organizer) && (
-              <div className="flex items-center gap-2 mb-3 p-2 rounded-lg bg-void/50">
+              <div className="mb-3 flex items-center gap-2 rounded-lg bg-void/50 p-2">
                 {event.store ? (
                   <>
-                    <Store className="w-4 h-4 text-imperial-gold/60" />
-                    <span className="text-xs text-bone/60 font-mono">{event.store.name}</span>
+                    <Store className="h-4 w-4 text-imperial-gold/60" />
+                    <span className="font-mono text-xs text-bone/60">{event.store.name}</span>
                   </>
-                ) : event.organizer && (
-                  <>
-                    <div className="w-5 h-5 rounded-full bg-void-light overflow-hidden">
-                      {event.organizer.avatar_url ? (
-                        <Image
-                          src={optimizeImageUrl(event.organizer.avatar_url, 40)}
-                          alt={event.organizer.display_name || event.organizer.username}
-                          width={20}
-                          height={20}
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[10px] text-bone/60">
-                          {(event.organizer.display_name || event.organizer.username).charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-xs text-bone/60 font-mono">
-                      {event.organizer.display_name || event.organizer.username}
-                    </span>
-                  </>
+                ) : (
+                  event.organizer && (
+                    <>
+                      <div className="h-5 w-5 overflow-hidden rounded-full bg-void-light">
+                        {event.organizer.avatar_url ? (
+                          <Image
+                            src={optimizeImageUrl(event.organizer.avatar_url, 40)}
+                            alt={event.organizer.display_name || event.organizer.username}
+                            width={20}
+                            height={20}
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-[10px] text-bone/60">
+                            {(event.organizer.display_name || event.organizer.username)
+                              .charAt(0)
+                              .toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <span className="font-mono text-xs text-bone/60">
+                        {event.organizer.display_name || event.organizer.username}
+                      </span>
+                    </>
+                  )
                 )}
               </div>
             )}
 
             {/* Bottom row: participants & game system */}
-            <div className="flex items-center justify-between pt-3 border-t border-bone/10">
+            <div className="flex items-center justify-between border-t border-bone/10 pt-3">
               {/* Participants */}
               {event.max_participants ? (
                 <div className="flex items-center gap-2">
-                  <Users className={cn('w-4 h-4', isFull ? 'text-red-400' : 'text-bone/50')} />
-                  <span className={cn('text-sm font-mono', isFull ? 'text-red-400' : 'text-bone/60')}>
+                  <Users className={cn('h-4 w-4', isFull ? 'text-red-400' : 'text-bone/50')} />
+                  <span
+                    className={cn('font-mono text-sm', isFull ? 'text-red-400' : 'text-bone/60')}
+                  >
                     {event.current_participants}/{event.max_participants}
                   </span>
                   {isFull && (
-                    <span className="text-xs px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-mono">
+                    <span className="rounded bg-red-500/20 px-1.5 py-0.5 font-mono text-xs text-red-400">
                       COMPLETO
                     </span>
                   )}
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-bone/40">
-                  <Users className="w-4 h-4" />
-                  <span className="text-sm font-mono">Libre</span>
+                  <Users className="h-4 w-4" />
+                  <span className="font-mono text-sm">Libre</span>
                 </div>
               )}
 
               {/* Game system */}
               {event.game_system && (
-                <span className="text-xs text-bone/40 font-mono truncate max-w-[120px]">
+                <span className="max-w-[120px] truncate font-mono text-xs text-bone/40">
                   {event.game_system}
                 </span>
               )}
@@ -334,7 +350,7 @@ function EventCardImpl({ event, index = 0, variant = 'default' }: EventCardProps
             {/* Entry fee */}
             {event.entry_fee && event.entry_fee > 0 && (
               <div className="mt-3 text-right">
-                <span className="text-sm font-display font-bold text-imperial-gold">
+                <span className="font-display text-sm font-bold text-imperial-gold">
                   {event.entry_fee.toFixed(2)}€
                 </span>
               </div>
@@ -345,7 +361,7 @@ function EventCardImpl({ event, index = 0, variant = 'default' }: EventCardProps
           <div
             className="h-1 w-full"
             style={{
-              background: `linear-gradient(90deg, transparent 0%, ${config.colorHex}60 50%, transparent 100%)`
+              background: `linear-gradient(90deg, transparent 0%, ${config.colorHex}60 50%, transparent 100%)`,
             }}
           />
         </div>

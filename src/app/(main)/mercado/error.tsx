@@ -16,42 +16,39 @@ export default function MercadoError({
   }, [error])
 
   return (
-    <div className="min-h-screen pt-24 pb-16 flex items-center justify-center px-6">
-      <div className="max-w-md w-full text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blood/20 border border-blood/30 mb-6">
-          <AlertTriangle className="w-8 h-8 text-blood" />
+    <div className="flex min-h-screen items-center justify-center px-6 pb-16 pt-24">
+      <div className="w-full max-w-md text-center">
+        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border border-blood/30 bg-blood/20">
+          <AlertTriangle className="h-8 w-8 text-blood" />
         </div>
 
-        <h1 className="text-2xl font-display font-bold text-bone mb-4">
+        <h1 className="mb-4 font-display text-2xl font-bold text-bone">
           Error al cargar el mercado
         </h1>
 
-        <p className="text-bone/60 font-body mb-8">
-          Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo o vuelve
-          al inicio.
+        <p className="mb-8 font-body text-bone/60">
+          Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo o vuelve al inicio.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col justify-center gap-3 sm:flex-row">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-imperial-gold text-void font-display font-bold rounded-lg hover:bg-imperial-gold/90 transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-imperial-gold px-6 py-3 font-display font-bold text-void transition-colors hover:bg-imperial-gold/90"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="h-4 w-4" />
             Intentar de nuevo
           </button>
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-void-light border border-bone/10 text-bone font-body rounded-lg hover:border-bone/30 transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-bone/10 bg-void-light px-6 py-3 font-body text-bone transition-colors hover:border-bone/30"
           >
-            <Home className="w-4 h-4" />
+            <Home className="h-4 w-4" />
             Volver al inicio
           </Link>
         </div>
 
         {error.digest && (
-          <p className="mt-8 text-xs text-bone/30 font-mono">
-            Error ID: {error.digest}
-          </p>
+          <p className="mt-8 font-mono text-xs text-bone/30">Error ID: {error.digest}</p>
         )}
       </div>
     </div>

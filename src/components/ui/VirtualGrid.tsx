@@ -105,9 +105,7 @@ export function VirtualGrid<T>({
                 {rowItems.map((item, colIndex) => {
                   const itemIndex = rowStart + colIndex
                   return (
-                    <div key={keyExtractor(item, itemIndex)}>
-                      {renderItem(item, itemIndex)}
-                    </div>
+                    <div key={keyExtractor(item, itemIndex)}>{renderItem(item, itemIndex)}</div>
                   )
                 })}
               </div>

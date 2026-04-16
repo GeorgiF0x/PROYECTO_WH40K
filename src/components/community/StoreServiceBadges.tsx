@@ -42,7 +42,7 @@ export default function StoreServiceBadges({ services, compact = false }: StoreS
               compact ? 'px-2 py-0.5 text-xs' : 'px-3 py-1.5 text-sm'
             }`}
           >
-            <Icon className={compact ? 'w-3 h-3' : 'w-4 h-4'} />
+            <Icon className={compact ? 'h-3 w-3' : 'h-4 w-4'} />
             {!compact && <span className="font-body">{service.label}</span>}
           </span>
         )

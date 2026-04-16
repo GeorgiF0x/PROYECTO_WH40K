@@ -62,15 +62,15 @@ export const ATTRIBUTE_DISPLAY_NAMES = {
 
 // Permission definitions
 export type Permission =
-  | 'manage_users'        // Admin only: Ban/unban users, change roles
-  | 'manage_stores'       // Mod+: Approve/reject stores
-  | 'manage_creators'     // Mod+: Approve/reject creator applications
-  | 'manage_events'       // Mod+: Approve/reject/feature events
-  | 'manage_listings'     // Mod+: Remove listings, ban sellers
-  | 'manage_reports'      // Mod+: View and resolve reports
-  | 'manage_content'      // Mod+: Edit/delete any miniature, comment, article
-  | 'view_analytics'      // Admin only: Access analytics
-  | 'system_settings'     // Admin only: Change system settings
+  | 'manage_users' // Admin only: Ban/unban users, change roles
+  | 'manage_stores' // Mod+: Approve/reject stores
+  | 'manage_creators' // Mod+: Approve/reject creator applications
+  | 'manage_events' // Mod+: Approve/reject/feature events
+  | 'manage_listings' // Mod+: Remove listings, ban sellers
+  | 'manage_reports' // Mod+: View and resolve reports
+  | 'manage_content' // Mod+: Edit/delete any miniature, comment, article
+  | 'view_analytics' // Admin only: Access analytics
+  | 'system_settings' // Admin only: Change system settings
 
 // Permission to minimum role mapping
 const PERMISSION_REQUIREMENTS: Record<Permission, UserRole> = {
@@ -173,7 +173,12 @@ export function getUserBadges(
   creatorStatus: CreatorStatus,
   isStoreOwner: boolean
 ): Array<{ name: string; title: string; icon: string; type: 'role' | 'creator' | 'store' }> {
-  const badges: Array<{ name: string; title: string; icon: string; type: 'role' | 'creator' | 'store' }> = []
+  const badges: Array<{
+    name: string
+    title: string
+    icon: string
+    type: 'role' | 'creator' | 'store'
+  }> = []
 
   // Add role badge if mod or admin
   if (role === 'admin' || role === 'moderator') {

@@ -15,7 +15,13 @@ import {
   Trash2,
   ExternalLink,
 } from 'lucide-react'
-import { DataTable, StatusBadge, FilterTabs, type Column, type Action } from '../components/ui/data-table'
+import {
+  DataTable,
+  StatusBadge,
+  FilterTabs,
+  type Column,
+  type Action,
+} from '../components/ui/data-table'
 import { Modal, ConfirmDialog, FormField, Input, Textarea, Select } from '../components/ui/modal'
 import { Button } from '../components/ui/button'
 import { createClient } from '@/lib/supabase/client'
@@ -76,10 +82,12 @@ export default function TiendasPage() {
     try {
       let query = supabase
         .from('stores')
-        .select(`
+        .select(
+          `
           *,
           submitter:profiles!stores_submitted_by_fkey(username, display_name)
-        `)
+        `
+        )
         .order('created_at', { ascending: false })
 
       if (statusFilter !== 'all') {
@@ -100,8 +108,14 @@ export default function TiendasPage() {
       ] = await Promise.all([
         supabase.from('stores').select('*', { count: 'exact', head: true }),
         supabase.from('stores').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('stores').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
-        supabase.from('stores').select('*', { count: 'exact', head: true }).eq('status', 'rejected'),
+        supabase
+          .from('stores')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'approved'),
+        supabase
+          .from('stores')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'rejected'),
       ])
 
       setCounts({
@@ -130,10 +144,7 @@ export default function TiendasPage() {
 
     try {
       if (confirmAction.action === 'delete') {
-        const { error } = await supabase
-          .from('stores')
-          .delete()
-          .eq('id', confirmAction.store.id)
+        const { error } = await supabase.from('stores').delete().eq('id', confirmAction.store.id)
         if (error) throw error
       } else {
         const newStatus = confirmAction.action === 'approve' ? 'approved' : 'rejected'
@@ -161,8 +172,8 @@ export default function TiendasPage() {
       sortable: true,
       render: (store) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-zinc-800 rounded-lg flex items-center justify-center">
-            <Store className="w-4 h-4 text-zinc-400" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-800">
+            <Store className="h-4 w-4 text-zinc-400" />
           </div>
           <div>
             <p className="font-medium text-white">{store.name}</p>
@@ -179,10 +190,8 @@ export default function TiendasPage() {
       sortable: true,
       render: (store) => (
         <div className="flex items-center gap-2 text-zinc-400">
-          <MapPin className="w-3.5 h-3.5" />
-          <span>
-            {[store.city, store.province].filter(Boolean).join(', ') || 'Sin ubicación'}
-          </span>
+          <MapPin className="h-3.5 w-3.5" />
+          <span>{[store.city, store.province].filter(Boolean).join(', ') || 'Sin ubicación'}</span>
         </div>
       ),
     },
@@ -200,11 +209,13 @@ export default function TiendasPage() {
       width: '120px',
       render: (store) => (
         <span className="text-zinc-500">
-          {store.created_at ? new Date(store.created_at).toLocaleDateString('es-ES', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-          }) : '-'}
+          {store.created_at
+            ? new Date(store.created_at).toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })
+            : '-'}
         </span>
       ),
     },
@@ -214,24 +225,24 @@ export default function TiendasPage() {
   const actions: Action<CommunityStore>[] = [
     {
       label: 'Ver detalles',
-      icon: <Eye className="w-4 h-4" />,
+      icon: <Eye className="h-4 w-4" />,
       onClick: (store) => setViewStore(store),
     },
     {
       label: 'Aprobar',
-      icon: <CheckCircle className="w-4 h-4" />,
+      icon: <CheckCircle className="h-4 w-4" />,
       onClick: (store) => setConfirmAction({ store, action: 'approve' }),
       show: (store) => store.status !== 'approved',
     },
     {
       label: 'Rechazar',
-      icon: <XCircle className="w-4 h-4" />,
+      icon: <XCircle className="h-4 w-4" />,
       onClick: (store) => setConfirmAction({ store, action: 'reject' }),
       show: (store) => store.status !== 'rejected',
     },
     {
       label: 'Eliminar',
-      icon: <Trash2 className="w-4 h-4" />,
+      icon: <Trash2 className="h-4 w-4" />,
       onClick: (store) => setConfirmAction({ store, action: 'delete' }),
       variant: 'danger',
     },
@@ -272,7 +283,7 @@ export default function TiendasPage() {
         searchFields={['name', 'city', 'province']}
         loading={loading}
         emptyMessage="No hay tiendas"
-        emptyIcon={<Store className="w-8 h-8 text-zinc-600 mx-auto" />}
+        emptyIcon={<Store className="mx-auto h-8 w-8 text-zinc-600" />}
         pageSize={10}
       />
 
@@ -316,11 +327,13 @@ export default function TiendasPage() {
             <div className="flex items-center gap-3">
               <StatusBadge status={viewStore.status} />
               <span className="text-xs text-zinc-500">
-                {viewStore.created_at ? `Creada el ${new Date(viewStore.created_at).toLocaleDateString('es-ES', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}` : ''}
+                {viewStore.created_at
+                  ? `Creada el ${new Date(viewStore.created_at).toLocaleDateString('es-ES', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })}`
+                  : ''}
               </span>
             </div>
 
@@ -331,7 +344,7 @@ export default function TiendasPage() {
             <div className="grid gap-3 pt-2">
               {viewStore.address && (
                 <div className="flex items-start gap-3 text-sm">
-                  <MapPin className="w-4 h-4 text-zinc-500 mt-0.5" />
+                  <MapPin className="mt-0.5 h-4 w-4 text-zinc-500" />
                   <div>
                     <p className="text-zinc-300">{viewStore.address}</p>
                     <p className="text-zinc-500">
@@ -345,18 +358,15 @@ export default function TiendasPage() {
 
               {viewStore.phone && (
                 <div className="flex items-center gap-3 text-sm">
-                  <Phone className="w-4 h-4 text-zinc-500" />
+                  <Phone className="h-4 w-4 text-zinc-500" />
                   <span className="text-zinc-300">{viewStore.phone}</span>
                 </div>
               )}
 
               {viewStore.email && (
                 <div className="flex items-center gap-3 text-sm">
-                  <Mail className="w-4 h-4 text-zinc-500" />
-                  <a
-                    href={`mailto:${viewStore.email}`}
-                    className="text-zinc-300 hover:text-white"
-                  >
+                  <Mail className="h-4 w-4 text-zinc-500" />
+                  <a href={`mailto:${viewStore.email}`} className="text-zinc-300 hover:text-white">
                     {viewStore.email}
                   </a>
                 </div>
@@ -364,24 +374,26 @@ export default function TiendasPage() {
 
               {viewStore.website && (
                 <div className="flex items-center gap-3 text-sm">
-                  <Globe className="w-4 h-4 text-zinc-500" />
+                  <Globe className="h-4 w-4 text-zinc-500" />
                   <a
                     href={viewStore.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-zinc-300 hover:text-white flex items-center gap-1"
+                    className="flex items-center gap-1 text-zinc-300 hover:text-white"
                   >
                     {viewStore.website}
-                    <ExternalLink className="w-3 h-3" />
+                    <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
               )}
             </div>
 
-            <div className="pt-2 border-t border-zinc-800">
+            <div className="border-t border-zinc-800 pt-2">
               <p className="text-xs text-zinc-500">Propietario</p>
               <p className="text-sm text-zinc-300">
-                {viewStore.submitter?.display_name || viewStore.submitter?.username || 'Desconocido'}
+                {viewStore.submitter?.display_name ||
+                  viewStore.submitter?.username ||
+                  'Desconocido'}
               </p>
             </div>
           </div>
@@ -397,22 +409,22 @@ export default function TiendasPage() {
           confirmAction?.action === 'approve'
             ? 'Aprobar tienda'
             : confirmAction?.action === 'reject'
-            ? 'Rechazar tienda'
-            : 'Eliminar tienda'
+              ? 'Rechazar tienda'
+              : 'Eliminar tienda'
         }
         description={
           confirmAction?.action === 'approve'
             ? `¿Aprobar "${confirmAction?.store.name}"? La tienda será visible públicamente.`
             : confirmAction?.action === 'reject'
-            ? `¿Rechazar "${confirmAction?.store.name}"? El propietario será notificado.`
-            : `¿Eliminar "${confirmAction?.store.name}"? Esta acción no se puede deshacer.`
+              ? `¿Rechazar "${confirmAction?.store.name}"? El propietario será notificado.`
+              : `¿Eliminar "${confirmAction?.store.name}"? Esta acción no se puede deshacer.`
         }
         confirmLabel={
           confirmAction?.action === 'approve'
             ? 'Aprobar'
             : confirmAction?.action === 'reject'
-            ? 'Rechazar'
-            : 'Eliminar'
+              ? 'Rechazar'
+              : 'Eliminar'
         }
         variant={confirmAction?.action === 'delete' ? 'danger' : 'default'}
         loading={actionLoading}

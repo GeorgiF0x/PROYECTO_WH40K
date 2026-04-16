@@ -22,7 +22,13 @@ import {
   UsersRound,
   Star,
 } from 'lucide-react'
-import { DataTable, StatusBadge, FilterTabs, type Column, type Action } from '../components/ui/data-table'
+import {
+  DataTable,
+  StatusBadge,
+  FilterTabs,
+  type Column,
+  type Action,
+} from '../components/ui/data-table'
 import { Modal, ConfirmDialog } from '../components/ui/modal'
 import { Button } from '../components/ui/button'
 import { createClient } from '@/lib/supabase/client'
@@ -37,7 +43,14 @@ interface EventItem {
   name: string
   slug: string
   description: string | null
-  event_type: 'tournament' | 'painting_workshop' | 'casual_play' | 'campaign' | 'release_event' | 'meetup' | 'other'
+  event_type:
+    | 'tournament'
+    | 'painting_workshop'
+    | 'casual_play'
+    | 'campaign'
+    | 'release_event'
+    | 'meetup'
+    | 'other'
   status: 'draft' | 'upcoming' | 'ongoing' | 'completed' | 'cancelled'
   start_date: string
   end_date: string | null
@@ -69,13 +82,13 @@ const eventTypeLabels: Record<string, string> = {
 }
 
 const eventTypeIcons: Record<string, React.ReactNode> = {
-  tournament: <Trophy className="w-3.5 h-3.5" />,
-  painting_workshop: <Palette className="w-3.5 h-3.5" />,
-  casual_play: <Gamepad2 className="w-3.5 h-3.5" />,
-  campaign: <Swords className="w-3.5 h-3.5" />,
-  release_event: <Gift className="w-3.5 h-3.5" />,
-  meetup: <UsersRound className="w-3.5 h-3.5" />,
-  other: <Calendar className="w-3.5 h-3.5" />,
+  tournament: <Trophy className="h-3.5 w-3.5" />,
+  painting_workshop: <Palette className="h-3.5 w-3.5" />,
+  casual_play: <Gamepad2 className="h-3.5 w-3.5" />,
+  campaign: <Swords className="h-3.5 w-3.5" />,
+  release_event: <Gift className="h-3.5 w-3.5" />,
+  meetup: <UsersRound className="h-3.5 w-3.5" />,
+  other: <Calendar className="h-3.5 w-3.5" />,
 }
 
 const eventTypeColors: Record<string, string> = {
@@ -132,10 +145,12 @@ export default function EventosPage() {
     try {
       let query = supabase
         .from('events')
-        .select(`
+        .select(
+          `
           *,
           organizer:profiles!events_organizer_id_fkey(username, display_name)
-        `)
+        `
+        )
         .order('start_date', { ascending: false })
 
       if (statusFilter !== 'all') {
@@ -158,10 +173,19 @@ export default function EventosPage() {
       ] = await Promise.all([
         supabase.from('events').select('*', { count: 'exact', head: true }),
         supabase.from('events').select('*', { count: 'exact', head: true }).eq('status', 'draft'),
-        supabase.from('events').select('*', { count: 'exact', head: true }).eq('status', 'upcoming'),
+        supabase
+          .from('events')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'upcoming'),
         supabase.from('events').select('*', { count: 'exact', head: true }).eq('status', 'ongoing'),
-        supabase.from('events').select('*', { count: 'exact', head: true }).eq('status', 'completed'),
-        supabase.from('events').select('*', { count: 'exact', head: true }).eq('status', 'cancelled'),
+        supabase
+          .from('events')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'completed'),
+        supabase
+          .from('events')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'cancelled'),
       ])
 
       setCounts({
@@ -192,10 +216,7 @@ export default function EventosPage() {
 
     try {
       if (confirmAction.action === 'delete') {
-        const { error } = await supabase
-          .from('events')
-          .delete()
-          .eq('id', confirmAction.event.id)
+        const { error } = await supabase.from('events').delete().eq('id', confirmAction.event.id)
         if (error) throw error
       } else if (confirmAction.action === 'cancel') {
         const { error } = await supabase
@@ -247,15 +268,13 @@ export default function EventosPage() {
       sortable: true,
       render: (event) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-zinc-800 rounded-lg flex items-center justify-center">
-            {eventTypeIcons[event.event_type] || <Calendar className="w-4 h-4 text-zinc-400" />}
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-800">
+            {eventTypeIcons[event.event_type] || <Calendar className="h-4 w-4 text-zinc-400" />}
           </div>
           <div>
             <div className="flex items-center gap-2">
               <p className="font-medium text-white">{event.name}</p>
-              {event.is_featured && (
-                <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              )}
+              {event.is_featured && <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />}
             </div>
             <p className="text-xs text-zinc-500">
               {event.organizer?.display_name || event.organizer?.username || 'Sin organizador'}
@@ -271,7 +290,7 @@ export default function EventosPage() {
       width: '140px',
       render: (event) => (
         <span
-          className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full border ${
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${
             eventTypeColors[event.event_type] || 'bg-zinc-800 text-zinc-400'
           }`}
         >
@@ -287,7 +306,7 @@ export default function EventosPage() {
       width: '120px',
       render: (event) => (
         <div className="flex items-center gap-2 text-zinc-400">
-          <Clock className="w-3.5 h-3.5" />
+          <Clock className="h-3.5 w-3.5" />
           <span>{formatDate(event.start_date)}</span>
         </div>
       ),
@@ -298,7 +317,7 @@ export default function EventosPage() {
       sortable: true,
       render: (event) => (
         <div className="flex items-center gap-2 text-zinc-400">
-          <MapPin className="w-3.5 h-3.5" />
+          <MapPin className="h-3.5 w-3.5" />
           <span>{event.city}</span>
         </div>
       ),
@@ -310,7 +329,17 @@ export default function EventosPage() {
       width: '120px',
       render: (event) => (
         <StatusBadge
-          status={event.status === 'upcoming' ? 'pending' : event.status === 'ongoing' ? 'active' : event.status === 'completed' ? 'approved' : event.status === 'cancelled' ? 'rejected' : 'inactive'}
+          status={
+            event.status === 'upcoming'
+              ? 'pending'
+              : event.status === 'ongoing'
+                ? 'active'
+                : event.status === 'completed'
+                  ? 'approved'
+                  : event.status === 'cancelled'
+                    ? 'rejected'
+                    : 'inactive'
+          }
           labels={statusLabels}
         />
       ),
@@ -321,26 +350,27 @@ export default function EventosPage() {
   const actions: Action<EventItem>[] = [
     {
       label: 'Ver detalles',
-      icon: <Eye className="w-4 h-4" />,
+      icon: <Eye className="h-4 w-4" />,
       onClick: (event) => setViewEvent(event),
     },
     {
-      label: (event) => event.is_featured ? 'Quitar destacado' : 'Destacar',
-      icon: <Star className="w-4 h-4" />,
-      onClick: (event) => setConfirmAction({
-        event,
-        action: event.is_featured ? 'unfeature' : 'feature',
-      }),
+      label: (event) => (event.is_featured ? 'Quitar destacado' : 'Destacar'),
+      icon: <Star className="h-4 w-4" />,
+      onClick: (event) =>
+        setConfirmAction({
+          event,
+          action: event.is_featured ? 'unfeature' : 'feature',
+        }),
     },
     {
       label: 'Cancelar evento',
-      icon: <XCircle className="w-4 h-4" />,
+      icon: <XCircle className="h-4 w-4" />,
       onClick: (event) => setConfirmAction({ event, action: 'cancel' }),
       show: (event) => event.status !== 'cancelled' && event.status !== 'completed',
     },
     {
       label: 'Eliminar',
-      icon: <Trash2 className="w-4 h-4" />,
+      icon: <Trash2 className="h-4 w-4" />,
       onClick: (event) => setConfirmAction({ event, action: 'delete' }),
       variant: 'danger',
     },
@@ -383,7 +413,7 @@ export default function EventosPage() {
         searchFields={['name', 'city', 'description']}
         loading={loading}
         emptyMessage="No hay eventos"
-        emptyIcon={<Calendar className="w-8 h-8 text-zinc-600 mx-auto" />}
+        emptyIcon={<Calendar className="mx-auto h-8 w-8 text-zinc-600" />}
         pageSize={10}
       />
 
@@ -400,12 +430,9 @@ export default function EventosPage() {
             </Button>
             {viewEvent && (
               <Button asChild>
-                <Link
-                  href={`/comunidad/eventos/${viewEvent.slug}`}
-                  target="_blank"
-                >
+                <Link href={`/comunidad/eventos/${viewEvent.slug}`} target="_blank">
                   Ver página
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <ExternalLink className="h-3.5 w-3.5" />
                 </Link>
               </Button>
             )}
@@ -414,13 +441,23 @@ export default function EventosPage() {
       >
         {viewEvent && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex flex-wrap items-center gap-3">
               <StatusBadge
-                status={viewEvent.status === 'upcoming' ? 'pending' : viewEvent.status === 'ongoing' ? 'active' : viewEvent.status === 'completed' ? 'approved' : viewEvent.status === 'cancelled' ? 'rejected' : 'inactive'}
+                status={
+                  viewEvent.status === 'upcoming'
+                    ? 'pending'
+                    : viewEvent.status === 'ongoing'
+                      ? 'active'
+                      : viewEvent.status === 'completed'
+                        ? 'approved'
+                        : viewEvent.status === 'cancelled'
+                          ? 'rejected'
+                          : 'inactive'
+                }
                 labels={statusLabels}
               />
               <span
-                className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full border ${
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${
                   eventTypeColors[viewEvent.event_type]
                 }`}
               >
@@ -428,8 +465,8 @@ export default function EventosPage() {
                 {eventTypeLabels[viewEvent.event_type]}
               </span>
               {viewEvent.is_featured && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                  <Star className="w-3 h-3 fill-current" />
+                <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-500">
+                  <Star className="h-3 w-3 fill-current" />
                   Destacado
                 </span>
               )}
@@ -441,7 +478,7 @@ export default function EventosPage() {
 
             <div className="grid gap-3 pt-2">
               <div className="flex items-center gap-3 text-sm">
-                <Clock className="w-4 h-4 text-zinc-500" />
+                <Clock className="h-4 w-4 text-zinc-500" />
                 <div>
                   <p className="text-zinc-300">{formatDateTime(viewEvent.start_date)}</p>
                   {viewEvent.end_date && (
@@ -451,11 +488,9 @@ export default function EventosPage() {
               </div>
 
               <div className="flex items-start gap-3 text-sm">
-                <MapPin className="w-4 h-4 text-zinc-500 mt-0.5" />
+                <MapPin className="mt-0.5 h-4 w-4 text-zinc-500" />
                 <div>
-                  {viewEvent.venue_name && (
-                    <p className="text-zinc-300">{viewEvent.venue_name}</p>
-                  )}
+                  {viewEvent.venue_name && <p className="text-zinc-300">{viewEvent.venue_name}</p>}
                   <p className="text-zinc-400">{viewEvent.address}</p>
                   <p className="text-zinc-500">{viewEvent.city}</p>
                 </div>
@@ -463,9 +498,10 @@ export default function EventosPage() {
 
               {viewEvent.max_participants && (
                 <div className="flex items-center gap-3 text-sm">
-                  <Users className="w-4 h-4 text-zinc-500" />
+                  <Users className="h-4 w-4 text-zinc-500" />
                   <span className="text-zinc-300">
-                    {viewEvent.current_participants ?? 0} / {viewEvent.max_participants} participantes
+                    {viewEvent.current_participants ?? 0} / {viewEvent.max_participants}{' '}
+                    participantes
                   </span>
                 </div>
               )}
@@ -478,10 +514,12 @@ export default function EventosPage() {
               )}
             </div>
 
-            <div className="pt-2 border-t border-zinc-800">
+            <div className="border-t border-zinc-800 pt-2">
               <p className="text-xs text-zinc-500">Organizador</p>
               <p className="text-sm text-zinc-300">
-                {viewEvent.organizer?.display_name || viewEvent.organizer?.username || 'Desconocido'}
+                {viewEvent.organizer?.display_name ||
+                  viewEvent.organizer?.username ||
+                  'Desconocido'}
               </p>
             </div>
           </div>
@@ -497,30 +535,34 @@ export default function EventosPage() {
           confirmAction?.action === 'feature'
             ? 'Destacar evento'
             : confirmAction?.action === 'unfeature'
-            ? 'Quitar destacado'
-            : confirmAction?.action === 'cancel'
-            ? 'Cancelar evento'
-            : 'Eliminar evento'
+              ? 'Quitar destacado'
+              : confirmAction?.action === 'cancel'
+                ? 'Cancelar evento'
+                : 'Eliminar evento'
         }
         description={
           confirmAction?.action === 'feature'
             ? `¿Destacar "${confirmAction?.event.name}"? Aparecerá en la portada.`
             : confirmAction?.action === 'unfeature'
-            ? `¿Quitar el destacado de "${confirmAction?.event.name}"?`
-            : confirmAction?.action === 'cancel'
-            ? `¿Cancelar "${confirmAction?.event.name}"? Los participantes serán notificados.`
-            : `¿Eliminar "${confirmAction?.event.name}"? Esta acción no se puede deshacer.`
+              ? `¿Quitar el destacado de "${confirmAction?.event.name}"?`
+              : confirmAction?.action === 'cancel'
+                ? `¿Cancelar "${confirmAction?.event.name}"? Los participantes serán notificados.`
+                : `¿Eliminar "${confirmAction?.event.name}"? Esta acción no se puede deshacer.`
         }
         confirmLabel={
           confirmAction?.action === 'feature'
             ? 'Destacar'
             : confirmAction?.action === 'unfeature'
-            ? 'Quitar'
-            : confirmAction?.action === 'cancel'
-            ? 'Cancelar evento'
-            : 'Eliminar'
+              ? 'Quitar'
+              : confirmAction?.action === 'cancel'
+                ? 'Cancelar evento'
+                : 'Eliminar'
         }
-        variant={confirmAction?.action === 'delete' || confirmAction?.action === 'cancel' ? 'danger' : 'default'}
+        variant={
+          confirmAction?.action === 'delete' || confirmAction?.action === 'cancel'
+            ? 'danger'
+            : 'default'
+        }
         loading={actionLoading}
       />
     </div>

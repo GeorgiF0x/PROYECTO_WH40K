@@ -89,8 +89,7 @@ export function DataTable<T extends Record<string, unknown>>({
       if (searchFields.length === 0) {
         // Search all string fields
         return Object.values(item).some(
-          (value) =>
-            typeof value === 'string' && value.toLowerCase().includes(searchLower)
+          (value) => typeof value === 'string' && value.toLowerCase().includes(searchLower)
         )
       }
       return searchFields.some((field) => {
@@ -139,11 +138,11 @@ export function DataTable<T extends Record<string, unknown>>({
   }
 
   const SortIcon = ({ columnKey }: { columnKey: string }) => {
-    if (sortKey !== columnKey) return <ArrowUpDown className="w-3.5 h-3.5 text-zinc-600" />
+    if (sortKey !== columnKey) return <ArrowUpDown className="h-3.5 w-3.5 text-zinc-600" />
     return sortDirection === 'asc' ? (
-      <ArrowUp className="w-3.5 h-3.5 text-amber-500" />
+      <ArrowUp className="h-3.5 w-3.5 text-amber-500" />
     ) : (
-      <ArrowDown className="w-3.5 h-3.5 text-amber-500" />
+      <ArrowDown className="h-3.5 w-3.5 text-amber-500" />
     )
   }
 
@@ -151,18 +150,18 @@ export function DataTable<T extends Record<string, unknown>>({
     <div className="space-y-4">
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={searchPlaceholder}
-          className="w-full pl-10 pr-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-lg text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700 transition-colors"
+          className="w-full rounded-lg border border-zinc-800 bg-zinc-900 py-2.5 pl-10 pr-4 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-700"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg overflow-hidden">
+      <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/50">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -170,13 +169,13 @@ export function DataTable<T extends Record<string, unknown>>({
                 {columns.map((column) => (
                   <th
                     key={column.key}
-                    className="px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider"
+                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400"
                     style={{ width: column.width }}
                   >
                     {column.sortable ? (
                       <button
                         onClick={() => handleSort(column.key)}
-                        className="flex items-center gap-1.5 hover:text-zinc-200 transition-colors"
+                        className="flex items-center gap-1.5 transition-colors hover:text-zinc-200"
                       >
                         {column.header}
                         <SortIcon columnKey={column.key} />
@@ -187,7 +186,7 @@ export function DataTable<T extends Record<string, unknown>>({
                   </th>
                 ))}
                 {actions && actions.length > 0 && (
-                  <th className="px-4 py-3 text-right text-xs font-medium text-zinc-400 uppercase tracking-wider w-16">
+                  <th className="w-16 px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-400">
                     Acciones
                   </th>
                 )}
@@ -200,8 +199,8 @@ export function DataTable<T extends Record<string, unknown>>({
                     colSpan={columns.length + (actions ? 1 : 0)}
                     className="px-4 py-12 text-center"
                   >
-                    <Loader2 className="w-6 h-6 text-zinc-500 animate-spin mx-auto" />
-                    <p className="text-sm text-zinc-500 mt-2">Cargando...</p>
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-zinc-500" />
+                    <p className="mt-2 text-sm text-zinc-500">Cargando...</p>
                   </td>
                 </tr>
               ) : paginatedData.length === 0 ? (
@@ -225,31 +224,20 @@ export function DataTable<T extends Record<string, unknown>>({
                       transition={{ duration: 0.15, delay: index * 0.02 }}
                       onClick={() => onRowClick?.(item)}
                       className={`${
-                        onRowClick
-                          ? 'cursor-pointer hover:bg-zinc-800/50'
-                          : 'hover:bg-zinc-800/30'
+                        onRowClick ? 'cursor-pointer hover:bg-zinc-800/50' : 'hover:bg-zinc-800/30'
                       } transition-colors`}
                     >
                       {columns.map((column) => (
-                        <td
-                          key={column.key}
-                          className="px-4 py-3 text-sm text-zinc-300"
-                        >
-                          {column.render
-                            ? column.render(item)
-                            : String(item[column.key] ?? '-')}
+                        <td key={column.key} className="px-4 py-3 text-sm text-zinc-300">
+                          {column.render ? column.render(item) : String(item[column.key] ?? '-')}
                         </td>
                       ))}
                       {actions && actions.length > 0 && (
                         <td className="px-4 py-3 text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                              >
-                                <MoreHorizontal className="w-4 h-4" />
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40">
@@ -271,10 +259,10 @@ export function DataTable<T extends Record<string, unknown>>({
                                           : ''
                                       }
                                     >
-                                      {action.icon && (
-                                        <span className="mr-2">{action.icon}</span>
-                                      )}
-                                      {typeof action.label === 'function' ? action.label(item) : action.label}
+                                      {action.icon && <span className="mr-2">{action.icon}</span>}
+                                      {typeof action.label === 'function'
+                                        ? action.label(item)
+                                        : action.label}
                                     </DropdownMenuItem>
                                   </React.Fragment>
                                 )
@@ -293,7 +281,7 @@ export function DataTable<T extends Record<string, unknown>>({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-800">
+          <div className="flex items-center justify-between border-t border-zinc-800 px-4 py-3">
             <p className="text-sm text-zinc-500">
               Mostrando {(currentPage - 1) * pageSize + 1} -{' '}
               {Math.min(currentPage * pageSize, sortedData.length)} de {sortedData.length}
@@ -306,7 +294,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 disabled={currentPage === 1}
                 className="h-8 w-8 p-0"
               >
-                <ChevronsLeft className="w-4 h-4" />
+                <ChevronsLeft className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
@@ -315,7 +303,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 disabled={currentPage === 1}
                 className="h-8 w-8 p-0"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="px-3 text-sm text-zinc-400">
                 {currentPage} / {totalPages}
@@ -327,7 +315,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 disabled={currentPage === totalPages}
                 className="h-8 w-8 p-0"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
@@ -336,7 +324,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 disabled={currentPage === totalPages}
                 className="h-8 w-8 p-0"
               >
-                <ChevronsRight className="w-4 h-4" />
+                <ChevronsRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -378,7 +366,7 @@ const statusColors: Record<string, string> = {
 export function StatusBadge({ status, labels = defaultLabels }: StatusBadgeProps) {
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full border ${
+      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
         statusColors[status] || statusColors.inactive
       }`}
     >
@@ -405,21 +393,19 @@ interface FilterTabsProps {
 
 export function FilterTabs({ tabs, activeTab, onChange }: FilterTabsProps) {
   return (
-    <div className="flex gap-1 p-1 bg-zinc-900 rounded-lg border border-zinc-800">
+    <div className="flex gap-1 rounded-lg border border-zinc-800 bg-zinc-900 p-1">
       {tabs.map((tab) => (
         <button
           key={tab.key}
           onClick={() => onChange(tab.key)}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-            activeTab === tab.key
-              ? 'bg-zinc-800 text-white'
-              : 'text-zinc-400 hover:text-zinc-200'
+          className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            activeTab === tab.key ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200'
           }`}
         >
           {tab.label}
           {tab.count !== undefined && (
             <span
-              className={`ml-1.5 px-1.5 py-0.5 text-xs rounded-full ${
+              className={`ml-1.5 rounded-full px-1.5 py-0.5 text-xs ${
                 activeTab === tab.key ? 'bg-zinc-700' : 'bg-zinc-800'
               }`}
             >

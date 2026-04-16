@@ -14,7 +14,7 @@ import {
   GraduationCap,
   ScrollText,
   Feather,
-  Loader2
+  Loader2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { CreatorType } from '@/lib/types/database.types'
@@ -35,7 +35,12 @@ const creatorTypes: {
   { value: 'youtuber', label: 'YouTubers', orderName: 'Orden de Vox-Emisores', icon: Video },
   { value: 'artist', label: 'Artistas', orderName: 'Orden de Iluminadores', icon: Brush },
   { value: 'blogger', label: 'Bloggers', orderName: 'Orden de Cronistas', icon: BookOpen },
-  { value: 'instructor', label: 'Instructores', orderName: 'Orden de Magisters', icon: GraduationCap }
+  {
+    value: 'instructor',
+    label: 'Instructores',
+    orderName: 'Orden de Magisters',
+    icon: GraduationCap,
+  },
 ]
 
 export function CreatorFilters({ className }: CreatorFiltersProps) {
@@ -49,21 +54,24 @@ export function CreatorFilters({ className }: CreatorFiltersProps) {
   const currentType = (searchParams.get('type') || 'all') as CreatorType | 'all'
   const acceptsCommissions = searchParams.get('commissions') === 'true'
 
-  const updateFilters = useCallback((updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString())
+  const updateFilters = useCallback(
+    (updates: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParams.toString())
 
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === '' || value === 'all') {
-        params.delete(key)
-      } else {
-        params.set(key, value)
-      }
-    })
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value === null || value === '' || value === 'all') {
+          params.delete(key)
+        } else {
+          params.set(key, value)
+        }
+      })
 
-    startTransition(() => {
-      router.push(`/comunidad/creadores?${params.toString()}`, { scroll: false })
-    })
-  }, [router, searchParams])
+      startTransition(() => {
+        router.push(`/comunidad/creadores?${params.toString()}`, { scroll: false })
+      })
+    },
+    [router, searchParams]
+  )
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -82,11 +90,11 @@ export function CreatorFilters({ className }: CreatorFiltersProps) {
   return (
     <div className={cn('space-y-4', className)}>
       {/* Main filter bar - Manuscript scroll style */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row">
         {/* Search - parchment input */}
         <form onSubmit={handleSearch} className="relative flex-1">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            <Feather className="w-4 h-4 text-imperial-gold/50" />
+          <div className="absolute left-4 top-1/2 flex -translate-y-1/2 items-center gap-2">
+            <Feather className="h-4 w-4 text-imperial-gold/50" />
           </div>
           <input
             type="text"
@@ -94,16 +102,16 @@ export function CreatorFilters({ className }: CreatorFiltersProps) {
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Buscar en los archivos..."
             className={cn(
-              'w-full pl-12 pr-4 py-3 rounded-lg',
-              'bg-void-light/80 border border-imperial-gold/20',
-              'text-bone placeholder-bone/30 font-body text-sm',
-              'focus:outline-none focus:ring-1 focus:ring-imperial-gold/50 focus:border-imperial-gold/40',
-              'hover:border-imperial-gold/30 transition-all'
+              'w-full rounded-lg py-3 pl-12 pr-4',
+              'border border-imperial-gold/20 bg-void-light/80',
+              'font-body text-sm text-bone placeholder-bone/30',
+              'focus:border-imperial-gold/40 focus:outline-none focus:ring-1 focus:ring-imperial-gold/50',
+              'transition-all hover:border-imperial-gold/30'
             )}
           />
           {/* Decorative corner */}
           <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-30">
-            <Search className="w-4 h-4 text-bone" />
+            <Search className="h-4 w-4 text-bone" />
           </div>
         </form>
 
@@ -111,18 +119,18 @@ export function CreatorFilters({ className }: CreatorFiltersProps) {
         <motion.button
           onClick={() => setShowFilters(!showFilters)}
           className={cn(
-            'flex items-center justify-center gap-2 px-5 py-3 rounded-lg border transition-all',
+            'flex items-center justify-center gap-2 rounded-lg border px-5 py-3 transition-all',
             showFilters || hasActiveFilters
-              ? 'bg-imperial-gold/15 border-imperial-gold/50 text-imperial-gold'
-              : 'bg-void-light/60 border-imperial-gold/20 text-bone/60 hover:border-imperial-gold/40 hover:text-bone'
+              ? 'border-imperial-gold/50 bg-imperial-gold/15 text-imperial-gold'
+              : 'border-imperial-gold/20 bg-void-light/60 text-bone/60 hover:border-imperial-gold/40 hover:text-bone'
           )}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          <SlidersHorizontal className="w-4 h-4" />
-          <span className="text-sm font-mono tracking-wider">FILTROS</span>
+          <SlidersHorizontal className="h-4 w-4" />
+          <span className="font-mono text-sm tracking-wider">FILTROS</span>
           {hasActiveFilters && (
-            <span className="w-2 h-2 rounded-full bg-imperial-gold animate-pulse" />
+            <span className="h-2 w-2 animate-pulse rounded-full bg-imperial-gold" />
           )}
         </motion.button>
 
@@ -132,10 +140,10 @@ export function CreatorFilters({ className }: CreatorFiltersProps) {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             onClick={clearFilters}
-            className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-blood-red/30 text-blood-red/60 hover:text-blood-red hover:border-blood-red/50 hover:bg-blood-red/5 transition-all"
+            className="border-blood-red/30 text-blood-red/60 hover:text-blood-red hover:border-blood-red/50 hover:bg-blood-red/5 flex items-center justify-center gap-2 rounded-lg border px-4 py-3 transition-all"
           >
-            <X className="w-4 h-4" />
-            <span className="hidden sm:inline text-sm font-mono tracking-wider">PURGAR</span>
+            <X className="h-4 w-4" />
+            <span className="hidden font-mono text-sm tracking-wider sm:inline">PURGAR</span>
           </motion.button>
         )}
       </div>
@@ -150,18 +158,18 @@ export function CreatorFilters({ className }: CreatorFiltersProps) {
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="relative p-5 rounded-xl bg-gradient-to-b from-void-light/90 to-void/80 border border-imperial-gold/20">
+            <div className="relative rounded-xl border border-imperial-gold/20 bg-gradient-to-b from-void-light/90 to-void/80 p-5">
               {/* Corner decorations */}
-              <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-imperial-gold/30" />
-              <div className="absolute top-2 right-2 w-4 h-4 border-t border-r border-imperial-gold/30" />
-              <div className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-imperial-gold/30" />
-              <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-imperial-gold/30" />
+              <div className="absolute left-2 top-2 h-4 w-4 border-l border-t border-imperial-gold/30" />
+              <div className="absolute right-2 top-2 h-4 w-4 border-r border-t border-imperial-gold/30" />
+              <div className="absolute bottom-2 left-2 h-4 w-4 border-b border-l border-imperial-gold/30" />
+              <div className="absolute bottom-2 right-2 h-4 w-4 border-b border-r border-imperial-gold/30" />
 
               {/* Section: Creator Orders */}
               <div className="mb-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <ScrollText className="w-4 h-4 text-imperial-gold/60" />
-                  <label className="text-xs font-mono text-imperial-gold/80 tracking-[0.15em] uppercase">
+                <div className="mb-3 flex items-center gap-2">
+                  <ScrollText className="h-4 w-4 text-imperial-gold/60" />
+                  <label className="font-mono text-xs uppercase tracking-[0.15em] text-imperial-gold/80">
                     Orden del Rememorizador
                   </label>
                 </div>
@@ -178,13 +186,18 @@ export function CreatorFilters({ className }: CreatorFiltersProps) {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         className={cn(
-                          'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-all',
+                          'flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-all',
                           isActive
-                            ? 'bg-imperial-gold/20 border-imperial-gold/50 text-imperial-gold shadow-sm shadow-imperial-gold/20'
-                            : 'bg-void/50 border-imperial-gold/15 text-bone/50 hover:border-imperial-gold/30 hover:text-bone/80'
+                            ? 'border-imperial-gold/50 bg-imperial-gold/20 text-imperial-gold shadow-sm shadow-imperial-gold/20'
+                            : 'border-imperial-gold/15 bg-void/50 text-bone/50 hover:border-imperial-gold/30 hover:text-bone/80'
                         )}
                       >
-                        <Icon className={cn('w-4 h-4', isActive ? 'text-imperial-gold' : 'text-bone/40')} />
+                        <Icon
+                          className={cn(
+                            'h-4 w-4',
+                            isActive ? 'text-imperial-gold' : 'text-bone/40'
+                          )}
+                        />
                         <span className="font-body">{type.label}</span>
                       </motion.button>
                     )
@@ -193,41 +206,45 @@ export function CreatorFilters({ className }: CreatorFiltersProps) {
               </div>
 
               {/* Divider */}
-              <div className="flex items-center gap-3 mb-5">
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent" />
-                <Feather className="w-3 h-3 text-imperial-gold/30" />
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent" />
+              <div className="mb-5 flex items-center gap-3">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent" />
+                <Feather className="h-3 w-3 text-imperial-gold/30" />
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent" />
               </div>
 
               {/* Section: Opciones */}
               <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <Palette className="w-4 h-4 text-imperial-gold/60" />
-                  <label className="text-xs font-mono text-imperial-gold/80 tracking-[0.15em] uppercase">
+                <div className="mb-3 flex items-center gap-2">
+                  <Palette className="h-4 w-4 text-imperial-gold/60" />
+                  <label className="font-mono text-xs uppercase tracking-[0.15em] text-imperial-gold/80">
                     Estado de Servicios
                   </label>
                 </div>
                 <motion.button
-                  onClick={() => updateFilters({
-                    commissions: acceptsCommissions ? null : 'true'
-                  })}
+                  onClick={() =>
+                    updateFilters({
+                      commissions: acceptsCommissions ? null : 'true',
+                    })
+                  }
                   disabled={isPending}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className={cn(
-                    'flex items-center gap-3 px-4 py-2.5 rounded-lg border text-sm transition-all',
+                    'flex items-center gap-3 rounded-lg border px-4 py-2.5 text-sm transition-all',
                     acceptsCommissions
-                      ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-400'
-                      : 'bg-void/50 border-imperial-gold/15 text-bone/50 hover:border-imperial-gold/30 hover:text-bone/80'
+                      ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-400'
+                      : 'border-imperial-gold/15 bg-void/50 text-bone/50 hover:border-imperial-gold/30 hover:text-bone/80'
                   )}
                 >
                   <div className="relative">
-                    <div className={cn(
-                      'w-2.5 h-2.5 rounded-full transition-colors',
-                      acceptsCommissions ? 'bg-emerald-400' : 'bg-bone/30'
-                    )} />
+                    <div
+                      className={cn(
+                        'h-2.5 w-2.5 rounded-full transition-colors',
+                        acceptsCommissions ? 'bg-emerald-400' : 'bg-bone/30'
+                      )}
+                    />
                     {acceptsCommissions && (
-                      <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping opacity-50" />
+                      <div className="absolute inset-0 h-2.5 w-2.5 animate-ping rounded-full bg-emerald-400 opacity-50" />
                     )}
                   </div>
                   <span className="font-body">Acepta encargos del Imperium</span>
@@ -245,8 +262,10 @@ export function CreatorFilters({ className }: CreatorFiltersProps) {
           animate={{ opacity: 1 }}
           className="flex items-center justify-center gap-3 py-2"
         >
-          <Loader2 className="w-4 h-4 text-imperial-gold animate-spin" />
-          <span className="text-xs font-mono text-bone/40 tracking-wider">CONSULTANDO ARCHIVOS...</span>
+          <Loader2 className="h-4 w-4 animate-spin text-imperial-gold" />
+          <span className="font-mono text-xs tracking-wider text-bone/40">
+            CONSULTANDO ARCHIVOS...
+          </span>
         </motion.div>
       )}
     </div>

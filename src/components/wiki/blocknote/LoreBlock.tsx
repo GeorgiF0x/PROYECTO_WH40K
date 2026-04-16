@@ -18,7 +18,7 @@ export const LoreBlock = createReactBlockSpec(
 
       return (
         <div
-          className="relative my-8 rounded-xl overflow-hidden"
+          className="relative my-8 overflow-hidden rounded-xl"
           style={{
             background: `linear-gradient(180deg, color-mix(in srgb, ${factionColor} 6%, transparent) 0%, transparent 100%)`,
             border: `1px solid color-mix(in srgb, ${factionColor} 15%, transparent)`,
@@ -32,9 +32,9 @@ export const LoreBlock = createReactBlockSpec(
               borderBottom: `1px solid color-mix(in srgb, ${factionColor} 12%, transparent)`,
             }}
           >
-            <Icon className="w-5 h-5" style={{ color: factionColor }} />
+            <Icon className="h-5 w-5" style={{ color: factionColor }} />
             <input
-              className="font-display text-base font-bold uppercase tracking-wider bg-transparent border-none outline-none flex-1"
+              className="flex-1 border-none bg-transparent font-display text-base font-bold uppercase tracking-wider outline-none"
               style={{ color: factionColor }}
               value={props.block.props.title}
               onChange={(e) => {
@@ -49,20 +49,20 @@ export const LoreBlock = createReactBlockSpec(
           {/* Content */}
           <div className="p-5">
             <div
-              className="font-body text-bone/85 leading-relaxed prose-sm inline-content"
+              className="prose-sm inline-content font-body leading-relaxed text-bone/85"
               ref={props.contentRef}
             />
           </div>
 
           {/* Corner decorations */}
           <div
-            className="absolute top-0 right-0 w-16 h-16 opacity-10 pointer-events-none"
+            className="pointer-events-none absolute right-0 top-0 h-16 w-16 opacity-10"
             style={{
               background: `linear-gradient(135deg, ${factionColor} 0%, transparent 50%)`,
             }}
           />
           <div
-            className="absolute bottom-0 left-0 w-16 h-16 opacity-10 pointer-events-none"
+            className="pointer-events-none absolute bottom-0 left-0 h-16 w-16 opacity-10"
             style={{
               background: `linear-gradient(-45deg, ${factionColor} 0%, transparent 50%)`,
             }}

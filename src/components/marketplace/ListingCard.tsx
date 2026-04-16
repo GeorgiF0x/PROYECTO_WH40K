@@ -50,10 +50,16 @@ interface ListingCardProps {
 
 const conditionLabels: Record<string, { label: string; color: string }> = {
   nib: { label: 'Nuevo en caja', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
-  nos: { label: 'Nuevo sin caja', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
+  nos: {
+    label: 'Nuevo sin caja',
+    color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+  },
   assembled: { label: 'Montado', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
   painted: { label: 'Pintado', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
-  pro_painted: { label: 'Pro Painted', color: 'bg-imperial-gold/20 text-imperial-gold border-imperial-gold/30' },
+  pro_painted: {
+    label: 'Pro Painted',
+    color: 'bg-imperial-gold/20 text-imperial-gold border-imperial-gold/30',
+  },
 }
 
 const typeLabels: Record<string, string> = {
@@ -83,32 +89,37 @@ function ListingCard({ listing, index = 0 }: ListingCardProps) {
   const thumbnailUrl = optimizeImageUrl(listing.images?.[0], 600)
   const condition = conditionLabels[listing.condition] || conditionLabels.assembled
 
-  const handleFavorite = useCallback(async (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (!user) return
+  const handleFavorite = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (!user) return
 
-    // Ensure we have a fresh session before the request
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
+      // Ensure we have a fresh session before the request
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      if (!session) return
 
-    const newFavorited = !isFavorited
-    setIsFavorited(newFavorited) // Optimistic update
+      const newFavorited = !isFavorited
+      setIsFavorited(newFavorited) // Optimistic update
 
-    if (newFavorited) {
-      const { error } = await supabase
-        .from('listing_favorites')
-        .insert({ listing_id: listing.id, user_id: user.id })
-      if (error) setIsFavorited(false) // Rollback
-    } else {
-      const { error } = await supabase
-        .from('listing_favorites')
-        .delete()
-        .eq('listing_id', listing.id)
-        .eq('user_id', user.id)
-      if (error) setIsFavorited(true) // Rollback
-    }
-  }, [user, isFavorited, supabase, listing.id])
+      if (newFavorited) {
+        const { error } = await supabase
+          .from('listing_favorites')
+          .insert({ listing_id: listing.id, user_id: user.id })
+        if (error) setIsFavorited(false) // Rollback
+      } else {
+        const { error } = await supabase
+          .from('listing_favorites')
+          .delete()
+          .eq('listing_id', listing.id)
+          .eq('user_id', user.id)
+        if (error) setIsFavorited(true) // Rollback
+      }
+    },
+    [user, isFavorited, supabase, listing.id]
+  )
 
   return (
     <motion.div
@@ -122,7 +133,7 @@ function ListingCard({ listing, index = 0 }: ListingCardProps) {
     >
       <Link href={`/mercado/${listing.id}`}>
         <motion.article
-          className="group relative bg-void-light rounded-xl overflow-hidden cursor-pointer"
+          className="group relative cursor-pointer overflow-hidden rounded-xl bg-void-light"
           onHoverStart={() => setIsHovered(true)}
           onHoverEnd={() => setIsHovered(false)}
           whileHover={{ y: -8 }}
@@ -130,7 +141,7 @@ function ListingCard({ listing, index = 0 }: ListingCardProps) {
         >
           {/* Animated border glow on hover */}
           <motion.div
-            className="absolute -inset-[1px] rounded-xl z-0"
+            className="absolute -inset-[1px] z-0 rounded-xl"
             style={{
               background: 'linear-gradient(135deg, #C9A227, transparent, #C9A227)',
               backgroundSize: '200% 200%',
@@ -144,12 +155,12 @@ function ListingCard({ listing, index = 0 }: ListingCardProps) {
           />
 
           {/* Card content */}
-          <div className="relative z-10 bg-void-light rounded-xl overflow-hidden">
+          <div className="relative z-10 overflow-hidden rounded-xl bg-void-light">
             {/* Image Container */}
             <div className="relative aspect-[4/3] overflow-hidden">
               {/* Loading skeleton */}
               {!imageLoaded && (
-                <div className="absolute inset-0 bg-void animate-pulse">
+                <div className="absolute inset-0 animate-pulse bg-void">
                   <div className="absolute inset-0 bg-gradient-to-br from-bone/5 to-transparent" />
                 </div>
               )}
@@ -170,36 +181,38 @@ function ListingCard({ listing, index = 0 }: ListingCardProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-transparent opacity-80" />
 
               {/* Price badge */}
-              <div className="absolute top-3 left-3">
-                <div className="px-3 py-1.5 bg-imperial-gold text-void font-display font-bold text-lg rounded-lg shadow-lg">
+              <div className="absolute left-3 top-3">
+                <div className="rounded-lg bg-imperial-gold px-3 py-1.5 font-display text-lg font-bold text-void shadow-lg">
                   {listing.price}€
                 </div>
               </div>
 
               {/* Favorite button */}
               <motion.button
-                className="absolute top-3 right-3 p-2 bg-void/80 backdrop-blur-sm rounded-lg"
+                className="absolute right-3 top-3 rounded-lg bg-void/80 p-2 backdrop-blur-sm"
                 onClick={handleFavorite}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <Heart
-                  className={`w-5 h-5 transition-colors ${
-                    isFavorited ? 'text-red-500 fill-red-500' : 'text-bone/60 hover:text-red-400'
+                  className={`h-5 w-5 transition-colors ${
+                    isFavorited ? 'fill-red-500 text-red-500' : 'text-bone/60 hover:text-red-400'
                   }`}
                 />
               </motion.button>
 
               {/* Condition badge */}
               <div className="absolute bottom-3 left-3">
-                <span className={`px-2.5 py-1 text-xs font-medium rounded-md border ${condition.color}`}>
+                <span
+                  className={`rounded-md border px-2.5 py-1 text-xs font-medium ${condition.color}`}
+                >
                   {condition.label}
                 </span>
               </div>
 
               {/* Type badge */}
               <div className="absolute bottom-3 right-3">
-                <span className="px-2.5 py-1 text-xs font-medium rounded-md bg-void/80 text-bone/80 border border-bone/20">
+                <span className="rounded-md border border-bone/20 bg-void/80 px-2.5 py-1 text-xs font-medium text-bone/80">
                   {typeLabels[listing.listing_type]}
                 </span>
               </div>
@@ -208,63 +221,66 @@ function ListingCard({ listing, index = 0 }: ListingCardProps) {
             {/* Info Section */}
             <div className="p-4">
               {/* Title */}
-              <h3 className="font-display font-bold text-bone text-lg leading-tight line-clamp-1 group-hover:text-imperial-gold transition-colors duration-300">
+              <h3 className="line-clamp-1 font-display text-lg font-bold leading-tight text-bone transition-colors duration-300 group-hover:text-imperial-gold">
                 {listing.title}
               </h3>
 
               {/* Category & Faction badges */}
-              <div className="flex flex-wrap gap-1.5 mt-1.5">
-                {listing.category && listing.category !== 'miniatures' && (() => {
-                  const cat = categoryConfig[listing.category] || categoryConfig.other
-                  const CatIcon = cat.icon
-                  return (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-body text-imperial-gold/70 bg-imperial-gold/10 border border-imperial-gold/20 rounded-md">
-                      <CatIcon className="w-3 h-3" />
-                      {cat.label}
-                    </span>
-                  )
-                })()}
-                {listing.faction && (() => {
-                  const iconPath = FACTION_ICONS[listing.faction.slug]
-                  return (
-                    <span
-                      className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-body rounded-md border"
-                      style={{
-                        color: listing.faction.primary_color || '#C9A227',
-                        borderColor: `${listing.faction.primary_color || '#C9A227'}40`,
-                        backgroundColor: `${listing.faction.primary_color || '#C9A227'}15`,
-                      }}
-                    >
-                      {iconPath && (
-                        <Image
-                          src={iconPath}
-                          alt={listing.faction.name}
-                          width={12}
-                          height={12}
-                          className="invert opacity-70"
-                        />
-                      )}
-                      {listing.faction.name}
-                    </span>
-                  )
-                })()}
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {listing.category &&
+                  listing.category !== 'miniatures' &&
+                  (() => {
+                    const cat = categoryConfig[listing.category] || categoryConfig.other
+                    const CatIcon = cat.icon
+                    return (
+                      <span className="inline-flex items-center gap-1 rounded-md border border-imperial-gold/20 bg-imperial-gold/10 px-2 py-0.5 font-body text-xs text-imperial-gold/70">
+                        <CatIcon className="h-3 w-3" />
+                        {cat.label}
+                      </span>
+                    )
+                  })()}
+                {listing.faction &&
+                  (() => {
+                    const iconPath = FACTION_ICONS[listing.faction.slug]
+                    return (
+                      <span
+                        className="inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-body text-xs"
+                        style={{
+                          color: listing.faction.primary_color || '#C9A227',
+                          borderColor: `${listing.faction.primary_color || '#C9A227'}40`,
+                          backgroundColor: `${listing.faction.primary_color || '#C9A227'}15`,
+                        }}
+                      >
+                        {iconPath && (
+                          <Image
+                            src={iconPath}
+                            alt={listing.faction.name}
+                            width={12}
+                            height={12}
+                            className="opacity-70 invert"
+                          />
+                        )}
+                        {listing.faction.name}
+                      </span>
+                    )
+                  })()}
               </div>
 
               {/* Description preview */}
-              <p className="mt-1 text-sm text-bone/50 line-clamp-2 font-body">
+              <p className="mt-1 line-clamp-2 font-body text-sm text-bone/50">
                 {listing.description}
               </p>
 
               {/* Location */}
               {listing.location && (
                 <div className="mt-3 flex items-center gap-1.5 text-bone/40">
-                  <MapPin className="w-4 h-4" />
-                  <span className="text-sm font-body truncate">{listing.location}</span>
+                  <MapPin className="h-4 w-4" />
+                  <span className="truncate font-body text-sm">{listing.location}</span>
                 </div>
               )}
 
               {/* Footer with seller info */}
-              <div className="mt-4 pt-4 border-t border-bone/10 flex items-center justify-between">
+              <div className="mt-4 flex items-center justify-between border-t border-bone/10 pt-4">
                 {/* Seller */}
                 <div className="flex items-center gap-2">
                   {listing.profiles ? (
@@ -275,19 +291,19 @@ function ListingCard({ listing, index = 0 }: ListingCardProps) {
                         fallback={listing.profiles.username}
                         size="xs"
                       />
-                      <span className="text-sm text-bone/60 font-body truncate max-w-[100px]">
+                      <span className="max-w-[100px] truncate font-body text-sm text-bone/60">
                         {listing.profiles.display_name || listing.profiles.username}
                       </span>
                     </>
                   ) : (
-                    <span className="text-sm text-bone/40 font-body">Vendedor</span>
+                    <span className="font-body text-sm text-bone/40">Vendedor</span>
                   )}
                 </div>
 
                 {/* Stats */}
                 <div className="flex items-center gap-3 text-bone/40">
                   <div className="flex items-center gap-1">
-                    <Eye className="w-4 h-4" />
+                    <Eye className="h-4 w-4" />
                     <span className="text-xs">{listing.views_count || 0}</span>
                   </div>
                 </div>

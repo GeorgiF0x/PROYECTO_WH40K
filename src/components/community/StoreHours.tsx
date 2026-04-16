@@ -40,7 +40,7 @@ export default function StoreHours({ hours, compact = false }: StoreHoursProps) 
     const todayHours = openingHours[today]
     return (
       <div className="flex items-center gap-1.5 text-sm">
-        <Clock className="w-4 h-4 text-imperial-gold/60" />
+        <Clock className="h-4 w-4 text-imperial-gold/60" />
         {todayHours ? (
           <span className="font-body text-bone/70">
             Hoy: {todayHours.open} - {todayHours.close}
@@ -54,8 +54,8 @@ export default function StoreHours({ hours, compact = false }: StoreHoursProps) 
 
   return (
     <div className="space-y-1.5">
-      <div className="flex items-center gap-2 mb-3">
-        <Clock className="w-5 h-5 text-imperial-gold" />
+      <div className="mb-3 flex items-center gap-2">
+        <Clock className="h-5 w-5 text-imperial-gold" />
         <h3 className="font-display font-semibold text-bone">Horario</h3>
       </div>
       {DAY_ORDER.map((day) => {
@@ -64,19 +64,23 @@ export default function StoreHours({ hours, compact = false }: StoreHoursProps) 
         return (
           <div
             key={day}
-            className={`flex items-center justify-between py-1.5 px-3 rounded-lg ${
-              isToday ? 'bg-imperial-gold/10 border border-imperial-gold/20' : ''
+            className={`flex items-center justify-between rounded-lg px-3 py-1.5 ${
+              isToday ? 'border border-imperial-gold/20 bg-imperial-gold/10' : ''
             }`}
           >
-            <span className={`text-sm font-body ${isToday ? 'text-imperial-gold font-semibold' : 'text-bone/60'}`}>
+            <span
+              className={`font-body text-sm ${isToday ? 'font-semibold text-imperial-gold' : 'text-bone/60'}`}
+            >
               {DAY_LABELS[day]}
             </span>
             {dayHours ? (
-              <span className={`text-sm font-body ${isToday ? 'text-imperial-gold' : 'text-bone/80'}`}>
+              <span
+                className={`font-body text-sm ${isToday ? 'text-imperial-gold' : 'text-bone/80'}`}
+              >
                 {dayHours.open} - {dayHours.close}
               </span>
             ) : (
-              <span className="text-sm font-body text-bone/30">Cerrado</span>
+              <span className="font-body text-sm text-bone/30">Cerrado</span>
             )}
           </div>
         )

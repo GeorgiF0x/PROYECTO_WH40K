@@ -56,14 +56,16 @@ async function getProfile(username: string) {
       : Promise.resolve({ data: [] }),
     supabase
       .from('miniatures')
-      .select(`
+      .select(
+        `
         id,
         title,
         thumbnail_url,
         images,
         miniature_likes(count),
         miniature_comments(count)
-      `)
+      `
+      )
       .eq('user_id', profile.id)
       .order('created_at', { ascending: false })
       .limit(6),
@@ -71,7 +73,13 @@ async function getProfile(username: string) {
   ])
 
   // Sort factions to match order in favorite_factions
-  let factions: { id: string; name: string; slug: string; primary_color: string | null; secondary_color: string | null }[] = []
+  let factions: {
+    id: string
+    name: string
+    slug: string
+    primary_color: string | null
+    secondary_color: string | null
+  }[] = []
   if (profile.favorite_factions && factionsResult.data) {
     factions = profile.favorite_factions
       .map((id: string) => factionsResult.data?.find((f) => f.id === id))

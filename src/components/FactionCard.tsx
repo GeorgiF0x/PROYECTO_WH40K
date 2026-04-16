@@ -32,7 +32,7 @@ export default function FactionCard({
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: index * 0.2 }}
         whileHover={{ y: -10 }}
-        className="group relative h-[500px] rounded-xl overflow-hidden cursor-pointer"
+        className="group relative h-[500px] cursor-pointer overflow-hidden rounded-xl"
       >
         {/* Background Image */}
         <Image
@@ -54,7 +54,7 @@ export default function FactionCard({
 
         {/* Hover Glow Effect */}
         <motion.div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
           style={{
             background: `radial-gradient(circle at center, ${color}20 0%, transparent 70%)`,
           }}
@@ -62,27 +62,27 @@ export default function FactionCard({
 
         {/* Top Border Accent */}
         <div
-          className="absolute top-0 left-0 w-full h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          className="absolute left-0 top-0 h-1 w-full opacity-0 transition-opacity duration-300 group-hover:opacity-100"
           style={{ backgroundColor: color }}
         />
 
         {/* Content */}
-        <div className="absolute inset-0 p-8 flex flex-col justify-end">
+        <div className="absolute inset-0 flex flex-col justify-end p-8">
           {/* Tagline */}
           <motion.span
-            className="font-body text-sm font-semibold tracking-wider uppercase mb-2 opacity-70 group-hover:opacity-100 transition-opacity"
+            className="mb-2 font-body text-sm font-semibold uppercase tracking-wider opacity-70 transition-opacity group-hover:opacity-100"
             style={{ color }}
           >
             {tagline}
           </motion.span>
 
           {/* Name */}
-          <h3 className="font-display text-3xl md:text-4xl font-black text-white mb-4 group-hover:text-shadow-lg transition-all">
+          <h3 className="group-hover:text-shadow-lg mb-4 font-display text-3xl font-black text-white transition-all md:text-4xl">
             {name}
           </h3>
 
           {/* Description */}
-          <p className="font-body text-bone/70 leading-relaxed mb-6 line-clamp-3 group-hover:text-bone/90 transition-colors">
+          <p className="mb-6 line-clamp-3 font-body leading-relaxed text-bone/70 transition-colors group-hover:text-bone/90">
             {description}
           </p>
 
@@ -102,7 +102,7 @@ export default function FactionCard({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="group-hover:translate-x-2 transition-transform duration-300"
+              className="transition-transform duration-300 group-hover:translate-x-2"
             >
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />

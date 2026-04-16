@@ -19,7 +19,7 @@ export default function Hero() {
   return (
     <section
       ref={ref}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden"
     >
       {/* Background Image */}
       <div className="absolute inset-0">
@@ -37,13 +37,13 @@ export default function Hero() {
 
         {/* Animated gradient orbs — CSS animations for infinite loops */}
         <div
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full animate-[heroOrbGold_8s_ease-in-out_infinite]"
+          className="absolute left-1/4 top-1/4 h-[600px] w-[600px] animate-[heroOrbGold_8s_ease-in-out_infinite] rounded-full"
           style={{
             background: 'radial-gradient(circle, rgba(201, 162, 39, 0.15) 0%, transparent 70%)',
           }}
         />
         <div
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full animate-[heroOrbRed_10s_ease-in-out_infinite]"
+          className="absolute bottom-1/4 right-1/4 h-[500px] w-[500px] animate-[heroOrbRed_10s_ease-in-out_infinite] rounded-full"
           style={{
             background: 'radial-gradient(circle, rgba(220, 20, 60, 0.1) 0%, transparent 70%)',
           }}
@@ -51,17 +51,15 @@ export default function Hero() {
       </div>
 
       {/* Grid Pattern */}
-      <div className="absolute inset-0 grid-pattern opacity-30" />
+      <div className="grid-pattern absolute inset-0 opacity-30" />
 
       {/* Content */}
       <motion.div
         style={{ opacity, scale, y }}
-        className="relative z-10 text-center px-6 max-w-5xl"
+        className="relative z-10 max-w-5xl px-6 text-center"
       >
         {/* Main Title */}
-        <h1
-          className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-6 leading-none tracking-tight"
-        >
+        <h1 className="mb-6 font-display text-5xl font-black leading-none tracking-tight sm:text-6xl md:text-7xl lg:text-8xl">
           <span className="text-white">EN EL GRIM</span>
           <br />
           <span className="text-gradient">DARKNESS</span>
@@ -72,10 +70,10 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="font-body text-xl md:text-2xl text-bone/70 max-w-2xl mx-auto mb-10 leading-relaxed font-light"
+          className="mx-auto mb-10 max-w-2xl font-body text-xl font-light leading-relaxed text-bone/70 md:text-2xl"
         >
-          Solo existe la guerra. Equipa tu ejército con las mejores miniaturas,
-          pinturas y accesorios del universo de Warhammer 40K.
+          Solo existe la guerra. Equipa tu ejército con las mejores miniaturas, pinturas y
+          accesorios del universo de Warhammer 40K.
         </motion.p>
 
         {/* CTAs */}
@@ -83,7 +81,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
+          className="flex flex-col justify-center gap-4 sm:flex-row"
         >
           <Link href="/facciones">
             <motion.button
@@ -108,7 +106,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7 }}
-          className="mt-20 grid grid-cols-3 gap-8 max-w-xl mx-auto"
+          className="mx-auto mt-20 grid max-w-xl grid-cols-3 gap-8"
         >
           {[
             { value: '500+', label: 'Productos' },
@@ -122,12 +120,10 @@ export default function Hero() {
               transition={{ delay: 0.8 + index * 0.1 }}
               className="text-center"
             >
-              <div className="font-display text-3xl md:text-4xl font-bold text-imperial-gold">
+              <div className="font-display text-3xl font-bold text-imperial-gold md:text-4xl">
                 {stat.value}
               </div>
-              <div className="font-body text-sm text-bone/50 mt-1 tracking-wide">
-                {stat.label}
-              </div>
+              <div className="mt-1 font-body text-sm tracking-wide text-bone/50">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -140,12 +136,10 @@ export default function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.0 }}
       >
-        <div className="flex flex-col items-center gap-2 cursor-pointer animate-[scrollBounce_2s_ease-in-out_infinite]">
-          <span className="font-body text-xs text-bone/40 tracking-widest uppercase">
-            Scroll
-          </span>
-          <div className="w-6 h-10 border border-bone/20 rounded-full flex justify-center pt-2">
-            <div className="w-1 h-2 bg-imperial-gold rounded-full animate-[scrollDot_1.5s_ease-in-out_infinite]" />
+        <div className="flex animate-[scrollBounce_2s_ease-in-out_infinite] cursor-pointer flex-col items-center gap-2">
+          <span className="font-body text-xs uppercase tracking-widest text-bone/40">Scroll</span>
+          <div className="flex h-10 w-6 justify-center rounded-full border border-bone/20 pt-2">
+            <div className="h-2 w-1 animate-[scrollDot_1.5s_ease-in-out_infinite] rounded-full bg-imperial-gold" />
           </div>
         </div>
       </motion.div>

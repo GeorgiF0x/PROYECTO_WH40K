@@ -21,11 +21,7 @@ export default function HolographicPedestal() {
       {/* Altar octagonal */}
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[1.4, 1.6, 0.15, 8]} />
-        <meshStandardMaterial
-          color="#0a0a12"
-          metalness={0.8}
-          roughness={0.3}
-        />
+        <meshStandardMaterial color="#0a0a12" metalness={0.8} roughness={0.3} />
       </mesh>
 
       {/* Anillo imperial-gold con pulso */}

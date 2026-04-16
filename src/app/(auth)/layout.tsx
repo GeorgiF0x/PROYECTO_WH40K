@@ -11,7 +11,7 @@ function Particle({ delay }: { delay: number }) {
   useEffect(() => {
     setDimensions({
       x: Math.random() * 100,
-      height: window.innerHeight
+      height: window.innerHeight,
     })
   }, [])
 
@@ -49,7 +49,7 @@ function RuneSymbol({ className, index }: { className?: string; index: number })
 
   return (
     <motion.span
-      className={`text-imperial-gold/10 font-display select-none ${className}`}
+      className={`select-none font-display text-imperial-gold/10 ${className}`}
       animate={{
         opacity: [0.05, 0.15, 0.05],
       }}
@@ -64,11 +64,7 @@ function RuneSymbol({ className, index }: { className?: string; index: number })
   )
 }
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const [particles, setParticles] = useState<number[]>([])
   const [mounted, setMounted] = useState(false)
 
@@ -78,7 +74,7 @@ export default function AuthLayout({
   }, [])
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-void">
+    <div className="relative min-h-screen overflow-hidden bg-void">
       {/* Atmospheric Background */}
       <div className="absolute inset-0">
         {/* Dark gradient base */}
@@ -112,13 +108,13 @@ export default function AuthLayout({
         )}
 
         {/* Decorative runes scattered */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <RuneSymbol className="absolute top-[10%] left-[5%] text-6xl" index={0} />
-          <RuneSymbol className="absolute top-[20%] right-[10%] text-8xl" index={1} />
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <RuneSymbol className="absolute left-[5%] top-[10%] text-6xl" index={0} />
+          <RuneSymbol className="absolute right-[10%] top-[20%] text-8xl" index={1} />
           <RuneSymbol className="absolute bottom-[30%] left-[15%] text-7xl" index={2} />
           <RuneSymbol className="absolute bottom-[15%] right-[5%] text-5xl" index={3} />
-          <RuneSymbol className="absolute top-[50%] left-[3%] text-4xl" index={4} />
-          <RuneSymbol className="absolute top-[70%] right-[12%] text-6xl" index={5} />
+          <RuneSymbol className="absolute left-[3%] top-[50%] text-4xl" index={4} />
+          <RuneSymbol className="absolute right-[12%] top-[70%] text-6xl" index={5} />
         </div>
 
         {/* Vignette effect */}
@@ -127,14 +123,14 @@ export default function AuthLayout({
 
       {/* Noise texture overlay */}
       <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
+        className="pointer-events-none absolute inset-0 opacity-[0.03] mix-blend-overlay"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
       />
 
       {/* Content */}
-      <div className="relative z-10 min-h-screen flex flex-col">
+      <div className="relative z-10 flex min-h-screen flex-col">
         {/* Header */}
         <motion.header
           className="p-6"
@@ -142,10 +138,10 @@ export default function AuthLayout({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Link href="/" className="inline-flex items-center gap-3 group">
+          <Link href="/" className="group inline-flex items-center gap-3">
             {/* Animated logo icon */}
             <motion.div
-              className="relative w-12 h-12"
+              className="relative h-12 w-12"
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ type: 'spring', stiffness: 400 }}
             >
@@ -184,7 +180,7 @@ export default function AuthLayout({
             </motion.div>
 
             <div className="flex flex-col">
-              <span className="font-display text-xl font-bold tracking-[0.2em] text-bone group-hover:text-white transition-colors">
+              <span className="font-display text-xl font-bold tracking-[0.2em] text-bone transition-colors group-hover:text-white">
                 FORGE
               </span>
               <span className="font-display text-xl font-bold tracking-[0.2em] text-imperial-gold">
@@ -195,14 +191,14 @@ export default function AuthLayout({
         </motion.header>
 
         {/* Main content */}
-        <main className="flex-1 flex items-center justify-center p-6">
+        <main className="flex flex-1 items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{
               duration: 0.7,
               delay: 0.2,
-              ease: [0.25, 0.46, 0.45, 0.94]
+              ease: [0.25, 0.46, 0.45, 0.94],
             }}
             className="w-full max-w-md"
           >
@@ -217,7 +213,7 @@ export default function AuthLayout({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <p className="text-sm text-bone/40 font-body tracking-wide">
+          <p className="font-body text-sm tracking-wide text-bone/40">
             En el grim darkness del futuro lejano, solo hay guerra.
           </p>
         </motion.footer>

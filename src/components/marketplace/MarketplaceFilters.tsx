@@ -112,7 +112,9 @@ export default function MarketplaceFilters({
     initialCondition as ConditionFilter
   )
   const [typeFilter, setTypeFilter] = useState<TypeFilter>(initialType as TypeFilter)
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>(initialCategory as CategoryFilter)
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>(
+    initialCategory as CategoryFilter
+  )
   const [locationFilter, setLocationFilter] = useState(initialLocation)
   const [favoritesOnly, setFavoritesOnly] = useState(initialFavorites === 'true')
 
@@ -231,10 +233,10 @@ export default function MarketplaceFilters({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
-      className="relative bg-void-light/50 backdrop-blur-xl rounded-2xl border border-bone/10 p-4 md:p-6"
+      className="relative rounded-2xl border border-bone/10 bg-void-light/50 p-4 backdrop-blur-xl md:p-6"
     >
       {/* === Row 1: Search + Sort + Actions === */}
-      <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
+      <form onSubmit={handleSearchSubmit} className="flex flex-col gap-3 md:flex-row">
         {/* Search Input */}
         <div className="relative flex-1">
           <motion.div
@@ -243,14 +245,14 @@ export default function MarketplaceFilters({
               color: searchQuery ? '#C9A227' : 'rgba(232, 232, 240, 0.4)',
             }}
           >
-            <Search className="w-5 h-5" />
+            <Search className="h-5 w-5" />
           </motion.div>
           <input
             type="text"
             placeholder="Buscar miniaturas, ejercitos..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors"
+            className="w-full rounded-xl border border-bone/10 bg-void py-3 pl-12 pr-4 font-body text-bone transition-colors placeholder:text-bone/30 focus:border-imperial-gold/50 focus:outline-none"
           />
         </div>
 
@@ -263,16 +265,16 @@ export default function MarketplaceFilters({
                 key={option.value}
                 type="button"
                 onClick={() => handleSortChange(option.value)}
-                className={`flex items-center gap-1.5 px-3 py-3 rounded-xl font-body text-sm font-medium transition-all ${
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-3 font-body text-sm font-medium transition-all ${
                   sortBy === option.value
                     ? 'bg-imperial-gold text-void'
-                    : 'bg-void border border-bone/10 text-bone/60 hover:border-imperial-gold/30 hover:text-bone'
+                    : 'border border-bone/10 bg-void text-bone/60 hover:border-imperial-gold/30 hover:text-bone'
                 }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 disabled={isPending}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="h-4 w-4" />
                 <span className="hidden sm:inline">{option.label}</span>
               </motion.button>
             )
@@ -283,16 +285,16 @@ export default function MarketplaceFilters({
         <motion.button
           type="button"
           onClick={handleFavoritesToggle}
-          className={`flex items-center gap-1.5 px-3 py-3 rounded-xl font-body text-sm font-medium transition-all ${
+          className={`flex items-center gap-1.5 rounded-xl px-3 py-3 font-body text-sm font-medium transition-all ${
             favoritesOnly
-              ? 'bg-red-500/20 border border-red-500/50 text-red-400'
-              : 'bg-void border border-bone/10 text-bone/60 hover:border-red-500/30 hover:text-red-400'
+              ? 'border border-red-500/50 bg-red-500/20 text-red-400'
+              : 'border border-bone/10 bg-void text-bone/60 hover:border-red-500/30 hover:text-red-400'
           }`}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           disabled={isPending}
         >
-          <Heart className={`w-4 h-4 ${favoritesOnly ? 'fill-current' : ''}`} />
+          <Heart className={`h-4 w-4 ${favoritesOnly ? 'fill-current' : ''}`} />
           <span className="hidden sm:inline">Favoritos</span>
         </motion.button>
 
@@ -300,18 +302,18 @@ export default function MarketplaceFilters({
         <motion.button
           type="button"
           onClick={() => setShowFilters(!showFilters)}
-          className={`relative flex items-center gap-1.5 px-3 py-3 rounded-xl font-body text-sm font-medium transition-all ${
+          className={`relative flex items-center gap-1.5 rounded-xl px-3 py-3 font-body text-sm font-medium transition-all ${
             showFilters
-              ? 'bg-imperial-gold/20 border border-imperial-gold/50 text-imperial-gold'
-              : 'bg-void border border-bone/10 text-bone/60 hover:border-imperial-gold/30'
+              ? 'border border-imperial-gold/50 bg-imperial-gold/20 text-imperial-gold'
+              : 'border border-bone/10 bg-void text-bone/60 hover:border-imperial-gold/30'
           }`}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          <SlidersHorizontal className="w-4 h-4" />
+          <SlidersHorizontal className="h-4 w-4" />
           <span className="hidden sm:inline">Filtros</span>
           {activeFilterCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center bg-imperial-gold text-void text-[10px] font-bold rounded-full">
+            <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-imperial-gold text-[10px] font-bold text-void">
               {activeFilterCount}
             </span>
           )}
@@ -320,11 +322,11 @@ export default function MarketplaceFilters({
         {/* Publish */}
         <Link href="/mercado/nuevo">
           <motion.span
-            className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-imperial-gold to-yellow-500 text-void font-display font-bold text-sm rounded-xl cursor-pointer"
+            className="flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-imperial-gold to-yellow-500 px-5 py-3 font-display text-sm font-bold text-void"
             whileHover={{ scale: 1.02, boxShadow: '0 8px 30px rgba(201, 162, 39, 0.3)' }}
             whileTap={{ scale: 0.98 }}
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="h-4 w-4" />
             <span>Publicar</span>
           </motion.span>
         </Link>
@@ -332,24 +334,27 @@ export default function MarketplaceFilters({
 
       {/* === Active filter chips === */}
       {activeFilterCount > 0 && (
-        <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-bone/5">
-          <span className="text-xs text-bone/40 font-body mr-1">Filtros:</span>
+        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-bone/5 pt-3">
+          <span className="mr-1 font-body text-xs text-bone/40">Filtros:</span>
 
-          {categoryFilter !== 'all' && (() => {
-            const cat = categoryOptions.find((c) => c.value === categoryFilter)
-            const CatIcon = cat?.icon || Layers
-            return (
-              <FilterChip
-                label={cat?.label || categoryFilter}
-                icon={<CatIcon className="w-3 h-3" />}
-                onClear={() => handleCategoryChange('all')}
-              />
-            )
-          })()}
+          {categoryFilter !== 'all' &&
+            (() => {
+              const cat = categoryOptions.find((c) => c.value === categoryFilter)
+              const CatIcon = cat?.icon || Layers
+              return (
+                <FilterChip
+                  label={cat?.label || categoryFilter}
+                  icon={<CatIcon className="h-3 w-3" />}
+                  onClear={() => handleCategoryChange('all')}
+                />
+              )
+            })()}
 
           {conditionFilter !== 'all' && (
             <FilterChip
-              label={conditionOptions.find((c) => c.value === conditionFilter)?.label || conditionFilter}
+              label={
+                conditionOptions.find((c) => c.value === conditionFilter)?.label || conditionFilter
+              }
               onClear={() => handleConditionChange('all')}
             />
           )}
@@ -372,7 +377,7 @@ export default function MarketplaceFilters({
                     alt=""
                     width={12}
                     height={12}
-                    className="invert opacity-70"
+                    className="opacity-70 invert"
                   />
                 ) : undefined
               }
@@ -383,7 +388,7 @@ export default function MarketplaceFilters({
           {locationFilter && (
             <FilterChip
               label={locationFilter}
-              icon={<MapPin className="w-3 h-3" />}
+              icon={<MapPin className="h-3 w-3" />}
               onClear={() => handleLocationChange('')}
             />
           )}
@@ -400,15 +405,14 @@ export default function MarketplaceFilters({
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="pt-4 mt-4 border-t border-bone/10 space-y-5">
-
+            <div className="mt-4 space-y-5 border-t border-bone/10 pt-4">
               {/* --- Row: Category pills (horizontal scroll) --- */}
               <div>
-                <label className="flex items-center gap-1.5 text-xs text-bone/50 mb-2.5 font-body uppercase tracking-wider">
-                  <Layers className="w-3.5 h-3.5" />
+                <label className="mb-2.5 flex items-center gap-1.5 font-body text-xs uppercase tracking-wider text-bone/50">
+                  <Layers className="h-3.5 w-3.5" />
                   Categoria
                 </label>
-                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                <div className="scrollbar-none flex gap-2 overflow-x-auto pb-1">
                   {categoryOptions.map((option) => {
                     const CatIcon = option.icon
                     return (
@@ -417,13 +421,13 @@ export default function MarketplaceFilters({
                         type="button"
                         onClick={() => handleCategoryChange(option.value)}
                         disabled={isPending}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body whitespace-nowrap transition-colors ${
+                        className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 font-body text-xs transition-colors ${
                           categoryFilter === option.value
-                            ? 'bg-imperial-gold text-void font-semibold'
-                            : 'bg-void border border-bone/10 text-bone/60 hover:border-bone/30'
+                            ? 'bg-imperial-gold font-semibold text-void'
+                            : 'border border-bone/10 bg-void text-bone/60 hover:border-bone/30'
                         }`}
                       >
-                        <CatIcon className="w-3.5 h-3.5" />
+                        <CatIcon className="h-3.5 w-3.5" />
                         {option.label}
                       </button>
                     )
@@ -432,47 +436,51 @@ export default function MarketplaceFilters({
               </div>
 
               {/* --- Row: Condition + Type + Location (compact grid) --- */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 {/* Condition */}
                 <div>
-                  <label className="flex items-center gap-1.5 text-xs text-bone/50 mb-2 font-body uppercase tracking-wider">
-                    <Package className="w-3.5 h-3.5" />
+                  <label className="mb-2 flex items-center gap-1.5 font-body text-xs uppercase tracking-wider text-bone/50">
+                    <Package className="h-3.5 w-3.5" />
                     Estado
                   </label>
                   <select
                     value={conditionFilter}
                     onChange={(e) => handleConditionChange(e.target.value as ConditionFilter)}
                     disabled={isPending}
-                    className="w-full px-3 py-2 bg-void border border-bone/10 rounded-lg font-body text-sm text-bone focus:outline-none focus:border-imperial-gold/50 transition-colors appearance-none cursor-pointer"
+                    className="w-full cursor-pointer appearance-none rounded-lg border border-bone/10 bg-void px-3 py-2 font-body text-sm text-bone transition-colors focus:border-imperial-gold/50 focus:outline-none"
                   >
                     {conditionOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
                     ))}
                   </select>
                 </div>
 
                 {/* Type */}
                 <div>
-                  <label className="flex items-center gap-1.5 text-xs text-bone/50 mb-2 font-body uppercase tracking-wider">
-                    <Store className="w-3.5 h-3.5" />
+                  <label className="mb-2 flex items-center gap-1.5 font-body text-xs uppercase tracking-wider text-bone/50">
+                    <Store className="h-3.5 w-3.5" />
                     Tipo
                   </label>
                   <select
                     value={typeFilter}
                     onChange={(e) => handleTypeChange(e.target.value as TypeFilter)}
                     disabled={isPending}
-                    className="w-full px-3 py-2 bg-void border border-bone/10 rounded-lg font-body text-sm text-bone focus:outline-none focus:border-imperial-gold/50 transition-colors appearance-none cursor-pointer"
+                    className="w-full cursor-pointer appearance-none rounded-lg border border-bone/10 bg-void px-3 py-2 font-body text-sm text-bone transition-colors focus:border-imperial-gold/50 focus:outline-none"
                   >
                     {typeOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
                     ))}
                   </select>
                 </div>
 
                 {/* Location */}
                 <div>
-                  <label className="flex items-center gap-1.5 text-xs text-bone/50 mb-2 font-body uppercase tracking-wider">
-                    <MapPin className="w-3.5 h-3.5" />
+                  <label className="mb-2 flex items-center gap-1.5 font-body text-xs uppercase tracking-wider text-bone/50">
+                    <MapPin className="h-3.5 w-3.5" />
                     Ubicacion
                   </label>
                   <input
@@ -480,27 +488,29 @@ export default function MarketplaceFilters({
                     placeholder="Ciudad o provincia..."
                     value={locationFilter}
                     onChange={(e) => handleLocationChange(e.target.value)}
-                    className="w-full px-3 py-2 bg-void border border-bone/10 rounded-lg font-body text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors"
+                    className="w-full rounded-lg border border-bone/10 bg-void px-3 py-2 font-body text-sm text-bone transition-colors placeholder:text-bone/30 focus:border-imperial-gold/50 focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* --- Faction: collapsible section --- */}
-              <div className="rounded-xl border border-bone/10 overflow-hidden">
+              <div className="overflow-hidden rounded-xl border border-bone/10">
                 {/* Faction header / toggle */}
                 <button
                   type="button"
                   onClick={() => setShowFactionPicker(!showFactionPicker)}
-                  className="w-full flex items-center justify-between px-4 py-3 bg-void/50 hover:bg-void/80 transition-colors"
+                  className="flex w-full items-center justify-between bg-void/50 px-4 py-3 transition-colors hover:bg-void/80"
                 >
                   <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-bone/50" />
-                    <span className="text-xs text-bone/50 font-body uppercase tracking-wider">Faccion</span>
+                    <Shield className="h-4 w-4 text-bone/50" />
+                    <span className="font-body text-xs uppercase tracking-wider text-bone/50">
+                      Faccion
+                    </span>
 
                     {/* Selected faction inline preview */}
                     {selectedFactionTag && (
                       <span
-                        className="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded text-xs font-body border"
+                        className="ml-2 inline-flex items-center gap-1 rounded border px-2 py-0.5 font-body text-xs"
                         style={{
                           color: selectedFactionTag.primary_color || '#C9A227',
                           borderColor: `${selectedFactionTag.primary_color || '#C9A227'}40`,
@@ -513,15 +523,18 @@ export default function MarketplaceFilters({
                             alt=""
                             width={12}
                             height={12}
-                            className="invert opacity-70"
+                            className="opacity-70 invert"
                           />
                         )}
                         {selectedFactionTag.name}
                         <span
-                          onClick={(e) => { e.stopPropagation(); handleClearFaction() }}
-                          className="ml-0.5 hover:opacity-70 cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleClearFaction()
+                          }}
+                          className="ml-0.5 cursor-pointer hover:opacity-70"
                         >
-                          <X className="w-3 h-3" />
+                          <X className="h-3 w-3" />
                         </span>
                       </span>
                     )}
@@ -530,7 +543,7 @@ export default function MarketplaceFilters({
                     animate={{ rotate: showFactionPicker ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <ChevronDown className="w-4 h-4 text-bone/40" />
+                    <ChevronDown className="h-4 w-4 text-bone/40" />
                   </motion.div>
                 </button>
 
@@ -544,27 +557,31 @@ export default function MarketplaceFilters({
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden"
                     >
-                      <div className="px-4 pb-4 pt-2 space-y-3 border-t border-bone/5">
+                      <div className="space-y-3 border-t border-bone/5 px-4 pb-4 pt-2">
                         {/* Category tabs */}
-                        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                        <div className="scrollbar-none flex gap-1.5 overflow-x-auto pb-1">
                           {CATEGORIES.map((cat) => (
                             <button
                               key={cat.id}
                               type="button"
                               onClick={() => setActiveFactionCategory(cat.id)}
-                              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-body whitespace-nowrap transition-all ${
+                              className={`flex items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-1.5 font-body text-xs transition-all ${
                                 activeFactionCategory === cat.id
-                                  ? 'bg-imperial-gold/20 border border-imperial-gold/40 text-imperial-gold'
-                                  : 'bg-void border border-bone/10 text-bone/50 hover:border-bone/20 hover:text-bone/70'
+                                  ? 'border border-imperial-gold/40 bg-imperial-gold/20 text-imperial-gold'
+                                  : 'border border-bone/10 bg-void text-bone/50 hover:border-bone/20 hover:text-bone/70'
                               }`}
                             >
                               {cat.icon && (
-                                <div className="w-3.5 h-3.5 relative">
+                                <div className="relative h-3.5 w-3.5">
                                   <Image
                                     src={cat.icon}
                                     alt={cat.label}
                                     fill
-                                    className={activeFactionCategory === cat.id ? 'opacity-80' : 'opacity-50 invert'}
+                                    className={
+                                      activeFactionCategory === cat.id
+                                        ? 'opacity-80'
+                                        : 'opacity-50 invert'
+                                    }
                                   />
                                 </div>
                               )}
@@ -574,8 +591,8 @@ export default function MarketplaceFilters({
                         </div>
 
                         {/* Faction grid */}
-                        <div className="max-h-[180px] overflow-y-auto scrollbar-thin scrollbar-thumb-bone/20 pr-1">
-                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
+                        <div className="scrollbar-thin scrollbar-thumb-bone/20 max-h-[180px] overflow-y-auto pr-1">
+                          <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 md:grid-cols-4">
                             {filteredFactionTags.map((faction) => {
                               const isSelected = faction.id === factionFilter
                               const iconPath = FACTION_ICONS[faction.slug]
@@ -585,10 +602,10 @@ export default function MarketplaceFilters({
                                   type="button"
                                   onClick={() => handleFactionChange(faction.id)}
                                   disabled={isPending}
-                                  className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-body transition-colors text-left ${
+                                  className={`flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-left font-body text-xs transition-colors ${
                                     isSelected
-                                      ? 'bg-imperial-gold/20 border border-imperial-gold/40 text-imperial-gold font-semibold'
-                                      : 'bg-void/50 border border-bone/5 text-bone/60 hover:border-bone/20 hover:text-bone/80'
+                                      ? 'border border-imperial-gold/40 bg-imperial-gold/20 font-semibold text-imperial-gold'
+                                      : 'border border-bone/5 bg-void/50 text-bone/60 hover:border-bone/20 hover:text-bone/80'
                                   }`}
                                 >
                                   {iconPath ? (
@@ -597,11 +614,11 @@ export default function MarketplaceFilters({
                                       alt=""
                                       width={14}
                                       height={14}
-                                      className={isSelected ? 'opacity-80' : 'invert opacity-50'}
+                                      className={isSelected ? 'opacity-80' : 'opacity-50 invert'}
                                     />
                                   ) : (
                                     <div
-                                      className="w-3.5 h-3.5 rounded-full shrink-0"
+                                      className="h-3.5 w-3.5 shrink-0 rounded-full"
                                       style={{ backgroundColor: faction.primary_color || '#666' }}
                                     />
                                   )}
@@ -612,7 +629,7 @@ export default function MarketplaceFilters({
                           </div>
 
                           {filteredFactionTags.length === 0 && (
-                            <p className="text-center text-bone/40 text-xs py-6 font-body">
+                            <p className="py-6 text-center font-body text-xs text-bone/40">
                               No hay facciones en esta categoria
                             </p>
                           )}
@@ -622,7 +639,6 @@ export default function MarketplaceFilters({
                   )}
                 </AnimatePresence>
               </div>
-
             </div>
           </motion.div>
         )}
@@ -630,9 +646,9 @@ export default function MarketplaceFilters({
 
       {/* Loading overlay */}
       {isPending && (
-        <div className="absolute inset-0 bg-void/50 rounded-2xl flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-void/50">
           <motion.div
-            className="w-6 h-6 border-2 border-bone/20 border-t-imperial-gold rounded-full"
+            className="h-6 w-6 rounded-full border-2 border-bone/20 border-t-imperial-gold"
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           />
@@ -656,7 +672,7 @@ function FilterChip({
 }) {
   return (
     <span
-      className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-body border transition-colors"
+      className="inline-flex items-center gap-1 rounded-md border px-2 py-1 font-body text-xs transition-colors"
       style={
         color
           ? {
@@ -672,9 +688,9 @@ function FilterChip({
       <button
         type="button"
         onClick={onClear}
-        className="ml-0.5 hover:opacity-60 transition-opacity"
+        className="ml-0.5 transition-opacity hover:opacity-60"
       >
-        <X className="w-3 h-3" />
+        <X className="h-3 w-3" />
       </button>
     </span>
   )

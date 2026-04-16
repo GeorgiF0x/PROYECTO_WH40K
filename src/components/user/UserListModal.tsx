@@ -39,7 +39,8 @@ export function UserListModal({ isOpen, onClose, title, userId, type }: UserList
       // Get users who follow this user
       const { data, error } = await supabase
         .from('follows')
-        .select(`
+        .select(
+          `
           follower:profiles!follows_follower_id_fkey(
             id,
             username,
@@ -47,7 +48,8 @@ export function UserListModal({ isOpen, onClose, title, userId, type }: UserList
             avatar_url,
             bio
           )
-        `)
+        `
+        )
         .eq('following_id', userId)
         .order('created_at', { ascending: false })
 
@@ -61,7 +63,8 @@ export function UserListModal({ isOpen, onClose, title, userId, type }: UserList
       // Get users this user follows
       const { data, error } = await supabase
         .from('follows')
-        .select(`
+        .select(
+          `
           following:profiles!follows_following_id_fkey(
             id,
             username,
@@ -69,7 +72,8 @@ export function UserListModal({ isOpen, onClose, title, userId, type }: UserList
             avatar_url,
             bio
           )
-        `)
+        `
+        )
         .eq('follower_id', userId)
         .order('created_at', { ascending: false })
 
@@ -86,7 +90,7 @@ export function UserListModal({ isOpen, onClose, title, userId, type }: UserList
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="md">
-      <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
+      <div className="max-h-96 space-y-2 overflow-y-auto pr-2">
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <Spinner size="lg" />
@@ -95,10 +99,10 @@ export function UserListModal({ isOpen, onClose, title, userId, type }: UserList
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-8"
+            className="py-8 text-center"
           >
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-bone/10 flex items-center justify-center">
-              <Users className="w-8 h-8 text-bone/40" />
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-bone/10">
+              <Users className="h-8 w-8 text-bone/40" />
             </div>
             <p className="text-bone/60">
               {type === 'followers' ? 'No tiene seguidores todavia' : 'No sigue a nadie todavia'}
@@ -113,12 +117,10 @@ export function UserListModal({ isOpen, onClose, title, userId, type }: UserList
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ delay: index * 0.05 }}
-                className="flex items-center gap-3 p-3 bg-void rounded-lg border border-bone/10 hover:border-imperial-gold/30 transition-colors"
+                className="flex items-center gap-3 rounded-lg border border-bone/10 bg-void p-3 transition-colors hover:border-imperial-gold/30"
               >
-                <UserCard user={user} className="flex-1 border-0 p-0 bg-transparent" />
-                {currentUser && currentUser.id !== user.id && (
-                  <FollowButton userId={user.id} />
-                )}
+                <UserCard user={user} className="flex-1 border-0 bg-transparent p-0" />
+                {currentUser && currentUser.id !== user.id && <FollowButton userId={user.id} />}
               </motion.div>
             ))}
           </AnimatePresence>

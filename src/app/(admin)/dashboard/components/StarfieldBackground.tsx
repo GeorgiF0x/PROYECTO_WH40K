@@ -23,11 +23,11 @@ interface WarpLine {
 }
 
 const STAR_COLORS = [
-  'rgba(232, 232, 240, 1)',    // bone - most common
-  'rgba(232, 232, 240, 0.8)',  // bone dim
-  'rgba(201, 162, 39, 0.7)',   // imperial-gold
-  'rgba(13, 155, 138, 0.6)',   // necron-teal
-  'rgba(107, 28, 95, 0.5)',    // warp-purple (rare)
+  'rgba(232, 232, 240, 1)', // bone - most common
+  'rgba(232, 232, 240, 0.8)', // bone dim
+  'rgba(201, 162, 39, 0.7)', // imperial-gold
+  'rgba(13, 155, 138, 0.6)', // necron-teal
+  'rgba(107, 28, 95, 0.5)', // warp-purple (rare)
 ]
 
 export function StarfieldBackground() {
@@ -43,10 +43,16 @@ export function StarfieldBackground() {
     const stars: Star[] = []
 
     for (let i = 0; i < starCount; i++) {
-      const colorIndex = Math.random() < 0.7 ? 0 :
-                        Math.random() < 0.7 ? 1 :
-                        Math.random() < 0.6 ? 2 :
-                        Math.random() < 0.7 ? 3 : 4
+      const colorIndex =
+        Math.random() < 0.7
+          ? 0
+          : Math.random() < 0.7
+            ? 1
+            : Math.random() < 0.6
+              ? 2
+              : Math.random() < 0.7
+                ? 3
+                : 4
 
       stars.push({
         x: Math.random() * width,
@@ -83,7 +89,7 @@ export function StarfieldBackground() {
   const maybeSpawnWarpLine = useCallback((width: number, height: number) => {
     if (Math.random() > 0.001) return // Very rare
 
-    const inactiveWarp = warpLinesRef.current.find(w => !w.active)
+    const inactiveWarp = warpLinesRef.current.find((w) => !w.active)
     if (!inactiveWarp) return
 
     inactiveWarp.x = Math.random() * width
@@ -96,89 +102,92 @@ export function StarfieldBackground() {
   }, [])
 
   // Draw function
-  const draw = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number, deltaTime: number) => {
-    // Clear canvas with slight fade for trail effect
-    ctx.fillStyle = 'rgba(3, 3, 8, 0.1)'
-    ctx.fillRect(0, 0, width, height)
+  const draw = useCallback(
+    (ctx: CanvasRenderingContext2D, width: number, height: number, deltaTime: number) => {
+      // Clear canvas with slight fade for trail effect
+      ctx.fillStyle = 'rgba(3, 3, 8, 0.1)'
+      ctx.fillRect(0, 0, width, height)
 
-    // Draw stars
-    starsRef.current.forEach(star => {
-      // Update twinkle
-      star.twinklePhase += star.twinkleSpeed * deltaTime
-      const twinkle = (Math.sin(star.twinklePhase) + 1) / 2
-      const currentOpacity = star.opacity * (0.5 + twinkle * 0.5)
+      // Draw stars
+      starsRef.current.forEach((star) => {
+        // Update twinkle
+        star.twinklePhase += star.twinkleSpeed * deltaTime
+        const twinkle = (Math.sin(star.twinklePhase) + 1) / 2
+        const currentOpacity = star.opacity * (0.5 + twinkle * 0.5)
 
-      // Draw star glow
-      const gradient = ctx.createRadialGradient(
-        star.x, star.y, 0,
-        star.x, star.y, star.size * 2
-      )
+        // Draw star glow
+        const gradient = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.size * 2)
 
-      const baseColor = star.color.replace(/[\d.]+\)$/, '')
-      gradient.addColorStop(0, `${baseColor}${currentOpacity})`)
-      gradient.addColorStop(1, `${baseColor}0)`)
+        const baseColor = star.color.replace(/[\d.]+\)$/, '')
+        gradient.addColorStop(0, `${baseColor}${currentOpacity})`)
+        gradient.addColorStop(1, `${baseColor}0)`)
 
-      ctx.beginPath()
-      ctx.arc(star.x, star.y, star.size * 2, 0, Math.PI * 2)
-      ctx.fillStyle = gradient
-      ctx.fill()
+        ctx.beginPath()
+        ctx.arc(star.x, star.y, star.size * 2, 0, Math.PI * 2)
+        ctx.fillStyle = gradient
+        ctx.fill()
 
-      // Draw star core
-      ctx.beginPath()
-      ctx.arc(star.x, star.y, star.size * 0.5, 0, Math.PI * 2)
-      ctx.fillStyle = star.color.replace(/[\d.]+\)$/, `${currentOpacity})`)
-      ctx.fill()
-    })
+        // Draw star core
+        ctx.beginPath()
+        ctx.arc(star.x, star.y, star.size * 0.5, 0, Math.PI * 2)
+        ctx.fillStyle = star.color.replace(/[\d.]+\)$/, `${currentOpacity})`)
+        ctx.fill()
+      })
 
-    // Draw warp lines
-    warpLinesRef.current.forEach(warp => {
-      if (!warp.active) return
+      // Draw warp lines
+      warpLinesRef.current.forEach((warp) => {
+        if (!warp.active) return
 
-      // Update warp line
-      warp.length += warp.speed * deltaTime * 0.5
-      warp.opacity -= 0.001 * deltaTime
+        // Update warp line
+        warp.length += warp.speed * deltaTime * 0.5
+        warp.opacity -= 0.001 * deltaTime
 
-      if (warp.opacity <= 0 || warp.length > 200) {
-        warp.active = false
-        return
-      }
+        if (warp.opacity <= 0 || warp.length > 200) {
+          warp.active = false
+          return
+        }
 
-      // Draw warp streak
-      const endX = warp.x + Math.cos(warp.angle) * warp.length
-      const endY = warp.y + Math.sin(warp.angle) * warp.length
+        // Draw warp streak
+        const endX = warp.x + Math.cos(warp.angle) * warp.length
+        const endY = warp.y + Math.sin(warp.angle) * warp.length
 
-      const gradient = ctx.createLinearGradient(warp.x, warp.y, endX, endY)
-      gradient.addColorStop(0, `rgba(107, 28, 95, 0)`)
-      gradient.addColorStop(0.3, `rgba(107, 28, 95, ${warp.opacity * 0.5})`)
-      gradient.addColorStop(0.7, `rgba(13, 155, 138, ${warp.opacity})`)
-      gradient.addColorStop(1, `rgba(13, 155, 138, 0)`)
+        const gradient = ctx.createLinearGradient(warp.x, warp.y, endX, endY)
+        gradient.addColorStop(0, `rgba(107, 28, 95, 0)`)
+        gradient.addColorStop(0.3, `rgba(107, 28, 95, ${warp.opacity * 0.5})`)
+        gradient.addColorStop(0.7, `rgba(13, 155, 138, ${warp.opacity})`)
+        gradient.addColorStop(1, `rgba(13, 155, 138, 0)`)
 
-      ctx.beginPath()
-      ctx.moveTo(warp.x, warp.y)
-      ctx.lineTo(endX, endY)
-      ctx.strokeStyle = gradient
-      ctx.lineWidth = 1.5
-      ctx.stroke()
-    })
+        ctx.beginPath()
+        ctx.moveTo(warp.x, warp.y)
+        ctx.lineTo(endX, endY)
+        ctx.strokeStyle = gradient
+        ctx.lineWidth = 1.5
+        ctx.stroke()
+      })
 
-    // Maybe spawn new warp line
-    maybeSpawnWarpLine(width, height)
-  }, [maybeSpawnWarpLine])
+      // Maybe spawn new warp line
+      maybeSpawnWarpLine(width, height)
+    },
+    [maybeSpawnWarpLine]
+  )
 
   // Animation loop
-  const animate = useCallback((time: number) => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+  const animate = useCallback(
+    (time: number) => {
+      const canvas = canvasRef.current
+      if (!canvas) return
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
 
-    const deltaTime = time - lastTimeRef.current
-    lastTimeRef.current = time
+      const deltaTime = time - lastTimeRef.current
+      lastTimeRef.current = time
 
-    draw(ctx, canvas.width, canvas.height, deltaTime)
-    animationRef.current = requestAnimationFrame(animate)
-  }, [draw])
+      draw(ctx, canvas.width, canvas.height, deltaTime)
+      animationRef.current = requestAnimationFrame(animate)
+    },
+    [draw]
+  )
 
   // Handle resize
   const handleResize = useCallback(() => {
@@ -218,7 +227,7 @@ export function StarfieldBackground() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none"
+      className="pointer-events-none fixed inset-0"
       style={{ zIndex: 0 }}
       aria-hidden="true"
     />
@@ -229,13 +238,13 @@ export function StarfieldBackground() {
 export function NebulaOverlay() {
   return (
     <div
-      className="fixed inset-0 pointer-events-none opacity-30"
+      className="pointer-events-none fixed inset-0 opacity-30"
       style={{ zIndex: 0 }}
       aria-hidden="true"
     >
       {/* Warp nebula - top right */}
       <div
-        className="absolute w-[800px] h-[600px] rounded-full blur-3xl"
+        className="absolute h-[600px] w-[800px] rounded-full blur-3xl"
         style={{
           top: '-10%',
           right: '-5%',
@@ -244,7 +253,7 @@ export function NebulaOverlay() {
       />
       {/* Teal nebula - bottom left */}
       <div
-        className="absolute w-[600px] h-[800px] rounded-full blur-3xl"
+        className="absolute h-[800px] w-[600px] rounded-full blur-3xl"
         style={{
           bottom: '-15%',
           left: '-10%',
@@ -253,7 +262,7 @@ export function NebulaOverlay() {
       />
       {/* Gold dust - center */}
       <div
-        className="absolute w-[400px] h-[400px] rounded-full blur-3xl"
+        className="absolute h-[400px] w-[400px] rounded-full blur-3xl"
         style={{
           top: '40%',
           left: '50%',

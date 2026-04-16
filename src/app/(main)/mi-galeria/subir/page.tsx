@@ -26,7 +26,10 @@ import {
 } from 'lucide-react'
 
 const uploadSchema = z.object({
-  title: z.string().min(3, 'El título debe tener al menos 3 caracteres').max(100, 'Máximo 100 caracteres'),
+  title: z
+    .string()
+    .min(3, 'El título debe tener al menos 3 caracteres')
+    .max(100, 'Máximo 100 caracteres'),
   description: z.string().max(2000, 'Máximo 2000 caracteres').optional(),
   faction_id: z.string().uuid('Facción inválida').optional().or(z.literal('')),
 })
@@ -106,9 +109,8 @@ export default function UploadMiniaturePage() {
 
     if (factionSearch) {
       const query = factionSearch.toLowerCase()
-      filtered = filtered.filter((f) =>
-        f.name.toLowerCase().includes(query) ||
-        f.slug.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (f) => f.name.toLowerCase().includes(query) || f.slug.toLowerCase().includes(query)
       )
     }
 
@@ -125,9 +127,7 @@ export default function UploadMiniaturePage() {
     e.preventDefault()
     setIsDragging(false)
 
-    const files = Array.from(e.dataTransfer.files).filter((f) =>
-      f.type.startsWith('image/')
-    )
+    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'))
     addImages(files)
   }, [])
 
@@ -164,22 +164,18 @@ export default function UploadMiniaturePage() {
     const compressed = await compressImage(image.file)
     const fileName = `${user?.id}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.webp`
 
-    const { data, error } = await supabase.storage
-      .from('miniatures')
-      .upload(fileName, compressed, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: compressed.type,
-      })
+    const { data, error } = await supabase.storage.from('miniatures').upload(fileName, compressed, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: compressed.type,
+    })
 
     if (error) {
       console.error('Upload error:', error)
       return null
     }
 
-    const { data: urlData } = supabase.storage
-      .from('miniatures')
-      .getPublicUrl(data.path)
+    const { data: urlData } = supabase.storage.from('miniatures').getPublicUrl(data.path)
 
     return urlData.publicUrl
   }
@@ -197,18 +193,14 @@ export default function UploadMiniaturePage() {
     const uploadedUrls: string[] = []
     for (let i = 0; i < images.length; i++) {
       const img = images[i]
-      setImages((prev) =>
-        prev.map((p) => (p.id === img.id ? { ...p, uploading: true } : p))
-      )
+      setImages((prev) => prev.map((p) => (p.id === img.id ? { ...p, uploading: true } : p)))
 
       const url = await uploadImage(img)
 
       if (url) {
         uploadedUrls.push(url)
         setImages((prev) =>
-          prev.map((p) =>
-            p.id === img.id ? { ...p, uploading: false, uploaded: true, url } : p
-          )
+          prev.map((p) => (p.id === img.id ? { ...p, uploading: false, uploaded: true, url } : p))
         )
       } else {
         setImages((prev) =>
@@ -266,9 +258,9 @@ export default function UploadMiniaturePage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center pb-16 pt-24">
         <motion.div
-          className="w-8 h-8 border-2 border-bone/20 border-t-necron-dark rounded-full"
+          className="h-8 w-8 rounded-full border-2 border-bone/20 border-t-necron-dark"
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
         />
@@ -277,22 +269,22 @@ export default function UploadMiniaturePage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
+    <div className="min-h-screen pb-16 pt-24">
       {/* Background effects */}
-      <div className="fixed inset-0 pointer-events-none">
+      <div className="pointer-events-none fixed inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(13,155,138,0.05)_0%,transparent_60%)]" />
       </div>
 
       <div className="relative z-10 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="mx-auto max-w-4xl">
           {/* Back Button */}
           <motion.button
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-bone/60 hover:text-necron-dark transition-colors mb-8"
+            className="mb-8 flex items-center gap-2 text-bone/60 transition-colors hover:text-necron-dark"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="h-5 w-5" />
             <span className="font-body">Volver</span>
           </motion.button>
 
@@ -300,34 +292,48 @@ export default function UploadMiniaturePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
+            className="mb-12 text-center"
           >
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', delay: 0.2 }}
-              className="relative inline-flex items-center justify-center w-16 h-16 rounded-full bg-necron-teal/10 border border-necron-teal/30 mb-4"
+              className="relative mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full border border-necron-teal/30 bg-necron-teal/10"
             >
               <motion.div
                 className="absolute inset-0 rounded-full bg-necron-teal/15 blur-md"
                 animate={{ opacity: [0.4, 0.8, 0.4] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
-              <svg width="28" height="37" viewBox="0 0 24 32" fill="none" className="text-necron-dark relative">
-                <ellipse cx="12" cy="9" rx="6" ry="8" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              <svg
+                width="28"
+                height="37"
+                viewBox="0 0 24 32"
+                fill="none"
+                className="relative text-necron-dark"
+              >
+                <ellipse
+                  cx="12"
+                  cy="9"
+                  rx="6"
+                  ry="8"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  fill="none"
+                />
                 <line x1="12" y1="17" x2="12" y2="30" stroke="currentColor" strokeWidth="1.5" />
                 <line x1="6" y1="22" x2="18" y2="22" stroke="currentColor" strokeWidth="1.5" />
                 <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1" fill="none" />
               </svg>
             </motion.div>
 
-            <h1 className="text-3xl md:text-4xl font-display font-bold tracking-wide mb-2">
-              <span className="text-necron-dark/50 text-lg block mb-1">SOLEMNACE //</span>
-              <span className="bg-gradient-to-r from-necron-dark via-necron to-necron-dark bg-clip-text text-transparent">Registro de Espécimen</span>
+            <h1 className="mb-2 font-display text-3xl font-bold tracking-wide md:text-4xl">
+              <span className="mb-1 block text-lg text-necron-dark/50">SOLEMNACE //</span>
+              <span className="bg-gradient-to-r from-necron-dark via-necron to-necron-dark bg-clip-text text-transparent">
+                Registro de Espécimen
+              </span>
             </h1>
-            <p className="text-bone/60 font-body">
-              Preserva tu obra en las Galerías Prismáticas
-            </p>
+            <p className="font-body text-bone/60">Preserva tu obra en las Galerías Prismáticas</p>
           </motion.div>
 
           {/* Success State */}
@@ -343,11 +349,11 @@ export default function UploadMiniaturePage() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring', delay: 0.2 }}
-                    className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-500/20 border border-green-500/40 mb-6"
+                    className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full border border-green-500/40 bg-green-500/20"
                   >
-                    <Check className="w-12 h-12 text-green-400" />
+                    <Check className="h-12 w-12 text-green-400" />
                   </motion.div>
-                  <h2 className="text-2xl font-display font-bold text-bone mb-2">
+                  <h2 className="mb-2 font-display text-2xl font-bold text-bone">
                     Registro Completado
                   </h2>
                   <p className="text-bone/60">Redirigiendo a tu galería...</p>
@@ -365,17 +371,20 @@ export default function UploadMiniaturePage() {
             className="space-y-8"
           >
             {/* Image Upload Area */}
-            <div className="bg-void-light/30 border border-bone/10 rounded-2xl p-6">
-              <label className="block text-lg font-display font-semibold text-bone mb-4">
+            <div className="rounded-2xl border border-bone/10 bg-void-light/30 p-6">
+              <label className="mb-4 block font-display text-lg font-semibold text-bone">
                 Imágenes <span className="text-necron-dark">*</span>
               </label>
 
               {/* Drop Zone with corner brackets */}
               <motion.div
-                onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  setIsDragging(true)
+                }}
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={handleDrop}
-                className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ${
+                className={`relative rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 ${
                   isDragging
                     ? 'border-necron-teal bg-necron-teal/10'
                     : 'border-bone/20 hover:border-necron-teal/50'
@@ -385,34 +394,29 @@ export default function UploadMiniaturePage() {
                 }}
               >
                 {/* Corner brackets */}
-                <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-necron-teal/40" />
-                <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-necron-teal/40" />
-                <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-necron-teal/40" />
-                <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-necron-teal/40" />
+                <div className="absolute left-2 top-2 h-4 w-4 border-l-2 border-t-2 border-necron-teal/40" />
+                <div className="absolute right-2 top-2 h-4 w-4 border-r-2 border-t-2 border-necron-teal/40" />
+                <div className="absolute bottom-2 left-2 h-4 w-4 border-b-2 border-l-2 border-necron-teal/40" />
+                <div className="absolute bottom-2 right-2 h-4 w-4 border-b-2 border-r-2 border-necron-teal/40" />
 
                 <input
                   type="file"
                   accept="image/*"
                   multiple
                   onChange={handleFileSelect}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
 
-                <motion.div
-                  animate={{ y: isDragging ? -5 : 0 }}
-                  className="pointer-events-none"
-                >
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bone/5 mb-4">
-                    <ImageIcon className="w-8 h-8 text-bone/40" />
+                <motion.div animate={{ y: isDragging ? -5 : 0 }} className="pointer-events-none">
+                  <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-bone/5">
+                    <ImageIcon className="h-8 w-8 text-bone/40" />
                   </div>
 
-                  <p className="text-bone/80 font-body mb-2">
+                  <p className="mb-2 font-body text-bone/80">
                     Arrastra tus imágenes aquí o{' '}
                     <span className="text-necron-dark">haz clic para seleccionar</span>
                   </p>
-                  <p className="text-bone/40 text-sm">
-                    PNG, JPG o WEBP. Máximo 10 imágenes.
-                  </p>
+                  <p className="text-sm text-bone/40">PNG, JPG o WEBP. Máximo 10 imágenes.</p>
                 </motion.div>
               </motion.div>
 
@@ -421,7 +425,7 @@ export default function UploadMiniaturePage() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"
+                  className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5"
                 >
                   <AnimatePresence>
                     {images.map((img, index) => (
@@ -430,32 +434,28 @@ export default function UploadMiniaturePage() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
-                        className="relative aspect-square rounded-xl overflow-hidden group"
+                        className="group relative aspect-square overflow-hidden rounded-xl"
                       >
-                        <img
-                          src={img.preview}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={img.preview} alt="" className="h-full w-full object-cover" />
 
                         {/* Overlay */}
-                        <div className="absolute inset-0 bg-void/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <div className="absolute inset-0 flex items-center justify-center bg-void/60 opacity-0 transition-opacity group-hover:opacity-100">
                           <motion.button
                             type="button"
                             onClick={() => removeImage(img.id)}
-                            className="p-2 bg-red-500/80 rounded-full text-white"
+                            className="rounded-full bg-red-500/80 p-2 text-white"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                           >
-                            <X className="w-4 h-4" />
+                            <X className="h-4 w-4" />
                           </motion.button>
                         </div>
 
                         {/* Status indicator */}
                         {img.uploading && (
-                          <div className="absolute inset-0 bg-void/80 flex items-center justify-center">
+                          <div className="absolute inset-0 flex items-center justify-center bg-void/80">
                             <motion.div
-                              className="w-8 h-8 border-2 border-bone/20 border-t-necron-dark rounded-full"
+                              className="h-8 w-8 rounded-full border-2 border-bone/20 border-t-necron-dark"
                               animate={{ rotate: 360 }}
                               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                             />
@@ -463,20 +463,20 @@ export default function UploadMiniaturePage() {
                         )}
 
                         {img.uploaded && (
-                          <div className="absolute top-2 right-2 p-1 bg-green-500 rounded-full">
-                            <Check className="w-3 h-3 text-white" />
+                          <div className="absolute right-2 top-2 rounded-full bg-green-500 p-1">
+                            <Check className="h-3 w-3 text-white" />
                           </div>
                         )}
 
                         {img.error && (
-                          <div className="absolute top-2 right-2 p-1 bg-red-500 rounded-full">
-                            <AlertCircle className="w-3 h-3 text-white" />
+                          <div className="absolute right-2 top-2 rounded-full bg-red-500 p-1">
+                            <AlertCircle className="h-3 w-3 text-white" />
                           </div>
                         )}
 
                         {/* Main image badge */}
                         {index === 0 && (
-                          <div className="absolute top-2 left-2 px-2 py-1 bg-necron-teal text-void text-xs font-bold rounded">
+                          <div className="absolute left-2 top-2 rounded bg-necron-teal px-2 py-1 text-xs font-bold text-void">
                             Principal
                           </div>
                         )}
@@ -487,7 +487,7 @@ export default function UploadMiniaturePage() {
                   {/* Add more button */}
                   {images.length < 10 && (
                     <motion.label
-                      className="aspect-square rounded-xl border-2 border-dashed border-bone/20 hover:border-necron-teal/50 flex items-center justify-center cursor-pointer transition-colors"
+                      className="flex aspect-square cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-bone/20 transition-colors hover:border-necron-teal/50"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -498,15 +498,15 @@ export default function UploadMiniaturePage() {
                         onChange={handleFileSelect}
                         className="hidden"
                       />
-                      <Plus className="w-8 h-8 text-bone/40" />
+                      <Plus className="h-8 w-8 text-bone/40" />
                     </motion.label>
                   )}
                 </motion.div>
               )}
 
               {images.length === 0 && (
-                <p className="mt-2 text-red-400 text-sm flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
+                <p className="mt-2 flex items-center gap-1 text-sm text-red-400">
+                  <AlertCircle className="h-3 w-3" />
                   Debes subir al menos una imagen
                 </p>
               )}
@@ -514,20 +514,20 @@ export default function UploadMiniaturePage() {
 
             {/* Title */}
             <div>
-              <label className="block text-lg font-display font-semibold text-bone mb-2">
+              <label className="mb-2 block font-display text-lg font-semibold text-bone">
                 Título <span className="text-necron-dark">*</span>
               </label>
               <input
                 type="text"
                 placeholder="Ej: Ultramarines Captain"
-                className={`w-full px-4 py-4 bg-void/50 border rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none transition-colors ${
+                className={`w-full rounded-xl border bg-void/50 px-4 py-4 font-body text-bone transition-colors placeholder:text-bone/30 focus:outline-none ${
                   errors.title ? 'border-red-500/50' : 'border-bone/10 focus:border-necron-teal/50'
                 }`}
                 {...register('title')}
               />
               {errors.title && (
-                <p className="mt-2 text-red-400 text-sm flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
+                <p className="mt-2 flex items-center gap-1 text-sm text-red-400">
+                  <AlertCircle className="h-3 w-3" />
                   {errors.title.message}
                 </p>
               )}
@@ -535,20 +535,20 @@ export default function UploadMiniaturePage() {
 
             {/* Description */}
             <div>
-              <label className="block text-lg font-display font-semibold text-bone mb-2">
+              <label className="mb-2 block font-display text-lg font-semibold text-bone">
                 Descripción
               </label>
               <textarea
                 rows={4}
                 placeholder="Describe tu miniatura, técnicas usadas, historia..."
-                className="w-full px-4 py-4 bg-void/50 border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-necron-teal/50 transition-colors resize-none"
+                className="w-full resize-none rounded-xl border border-bone/10 bg-void/50 px-4 py-4 font-body text-bone transition-colors placeholder:text-bone/30 focus:border-necron-teal/50 focus:outline-none"
                 {...register('description')}
               />
             </div>
 
             {/* Faction Selection */}
-            <div className="bg-void-light/30 border border-bone/10 rounded-2xl p-6">
-              <label className="block text-lg font-display font-semibold text-bone mb-4">
+            <div className="rounded-2xl border border-bone/10 bg-void-light/30 p-6">
+              <label className="mb-4 block font-display text-lg font-semibold text-bone">
                 Facción
               </label>
 
@@ -557,13 +557,13 @@ export default function UploadMiniaturePage() {
                 <motion.div
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-3 mb-4 p-3 rounded-xl border border-necron-teal/30"
+                  className="mb-4 flex items-center gap-3 rounded-xl border border-necron-teal/30 p-3"
                   style={{
                     background: `linear-gradient(135deg, ${selectedFactionDetails.primary_color}20, ${selectedFactionDetails.secondary_color || selectedFactionDetails.primary_color}10)`,
                   }}
                 >
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
                     style={{
                       background: `linear-gradient(135deg, ${selectedFactionDetails.primary_color || '#666'}, ${selectedFactionDetails.secondary_color || '#333'})`,
                     }}
@@ -577,40 +577,40 @@ export default function UploadMiniaturePage() {
                         className="invert"
                       />
                     ) : (
-                      <div className="w-4 h-4 rounded-full bg-white/30" />
+                      <div className="h-4 w-4 rounded-full bg-white/30" />
                     )}
                   </div>
-                  <span className="text-sm font-body text-necron-dark font-medium flex-1">
+                  <span className="flex-1 font-body text-sm font-medium text-necron-dark">
                     {selectedFactionDetails.name}
                   </span>
                   <motion.button
                     type="button"
                     onClick={() => setValue('faction_id', '')}
-                    className="p-1 text-bone/40 hover:text-bone transition-colors"
+                    className="p-1 text-bone/40 transition-colors hover:text-bone"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <X className="w-4 h-4" />
+                    <X className="h-4 w-4" />
                   </motion.button>
                 </motion.div>
               )}
 
               {/* Category tabs */}
-              <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-none mb-3">
+              <div className="scrollbar-none mb-3 flex gap-1 overflow-x-auto pb-2">
                 {CATEGORIES.map((cat) => (
                   <motion.button
                     key={cat.id}
                     type="button"
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body whitespace-nowrap transition-all ${
+                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 font-body text-xs transition-all ${
                       activeCategory === cat.id
                         ? 'bg-necron-teal text-void'
-                        : 'bg-void border border-bone/10 text-bone/60 hover:border-bone/30 hover:text-bone'
+                        : 'border border-bone/10 bg-void text-bone/60 hover:border-bone/30 hover:text-bone'
                     }`}
                     whileTap={{ scale: 0.95 }}
                   >
                     {cat.icon && (
-                      <div className="w-4 h-4 relative">
+                      <div className="relative h-4 w-4">
                         <Image
                           src={cat.icon}
                           alt={cat.label}
@@ -626,28 +626,28 @@ export default function UploadMiniaturePage() {
 
               {/* Faction search */}
               <div className="relative mb-3">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/40" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-bone/40" />
                 <input
                   type="text"
                   placeholder="Buscar facción..."
                   value={factionSearch}
                   onChange={(e) => setFactionSearch(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-void border border-bone/10 rounded-lg font-body text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-necron-teal/50"
+                  className="w-full rounded-lg border border-bone/10 bg-void py-2 pl-9 pr-4 font-body text-sm text-bone placeholder:text-bone/30 focus:border-necron-teal/50 focus:outline-none"
                 />
               </div>
 
               {/* Faction grid */}
               {factionsLoading ? (
-                <div className="h-[200px] flex items-center justify-center">
+                <div className="flex h-[200px] items-center justify-center">
                   <motion.div
-                    className="w-6 h-6 border-2 border-bone/20 border-t-necron-dark rounded-full"
+                    className="h-6 w-6 rounded-full border-2 border-bone/20 border-t-necron-dark"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   />
                 </div>
               ) : (
-                <div className="h-[220px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-bone/20">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="scrollbar-thin scrollbar-thumb-bone/20 h-[220px] overflow-y-auto pr-1">
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {filteredFactions.map((faction) => {
                       const isSelected = selectedFaction === faction.id
                       const iconPath = FACTION_ICONS[faction.slug]
@@ -656,10 +656,8 @@ export default function UploadMiniaturePage() {
                         <motion.button
                           key={faction.id}
                           type="button"
-                          onClick={() =>
-                            setValue('faction_id', isSelected ? '' : faction.id)
-                          }
-                          className={`relative p-3 rounded-xl border text-left transition-all ${
+                          onClick={() => setValue('faction_id', isSelected ? '' : faction.id)}
+                          className={`relative rounded-xl border p-3 text-left transition-all ${
                             isSelected
                               ? 'border-necron-teal'
                               : 'border-bone/10 hover:border-bone/30'
@@ -674,7 +672,7 @@ export default function UploadMiniaturePage() {
                         >
                           <div className="flex items-center gap-2">
                             <div
-                              className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
                               style={{
                                 background: `linear-gradient(135deg, ${faction.primary_color || '#666'}, ${faction.secondary_color || '#333'})`,
                               }}
@@ -688,24 +686,23 @@ export default function UploadMiniaturePage() {
                                   className="invert"
                                 />
                               ) : (
-                                <div className="w-4 h-4 rounded-full bg-white/30" />
+                                <div className="h-4 w-4 rounded-full bg-white/30" />
                               )}
                             </div>
 
-                            <div className="flex-1 min-w-0">
-                              <p className={`text-xs font-body font-medium truncate ${
-                                isSelected ? 'text-necron-dark' : 'text-bone/80'
-                              }`}>
+                            <div className="min-w-0 flex-1">
+                              <p
+                                className={`truncate font-body text-xs font-medium ${
+                                  isSelected ? 'text-necron-dark' : 'text-bone/80'
+                                }`}
+                              >
                                 {faction.name}
                               </p>
                             </div>
 
                             {isSelected && (
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                              >
-                                <Check className="w-4 h-4 text-necron-dark" />
+                              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                                <Check className="h-4 w-4 text-necron-dark" />
                               </motion.div>
                             )}
                           </div>
@@ -715,15 +712,15 @@ export default function UploadMiniaturePage() {
                   </div>
 
                   {filteredFactions.length === 0 && (
-                    <div className="h-full flex flex-col items-center justify-center py-8">
-                      <p className="text-bone/50 font-body text-sm">No se encontraron facciones</p>
+                    <div className="flex h-full flex-col items-center justify-center py-8">
+                      <p className="font-body text-sm text-bone/50">No se encontraron facciones</p>
                       <button
                         type="button"
                         onClick={() => {
                           setFactionSearch('')
                           setActiveCategory('all')
                         }}
-                        className="text-necron-dark text-xs mt-2 hover:underline"
+                        className="mt-2 text-xs text-necron-dark hover:underline"
                       >
                         Limpiar filtros
                       </button>
@@ -735,15 +732,15 @@ export default function UploadMiniaturePage() {
 
             {/* Info Box */}
             <motion.div
-              className="flex items-start gap-3 p-4 bg-necron-teal/5 border border-necron-teal/20 rounded-xl"
+              className="flex items-start gap-3 rounded-xl border border-necron-teal/20 bg-necron-teal/5 p-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              <Info className="w-5 h-5 text-necron-dark flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-bone/70 font-body">
-                <p className="font-semibold text-bone mb-1">Consejos para mejores fotos:</p>
-                <ul className="list-disc list-inside space-y-1 text-bone/60">
+              <Info className="mt-0.5 h-5 w-5 flex-shrink-0 text-necron-dark" />
+              <div className="font-body text-sm text-bone/70">
+                <p className="mb-1 font-semibold text-bone">Consejos para mejores fotos:</p>
+                <ul className="list-inside list-disc space-y-1 text-bone/60">
                   <li>Usa buena iluminación, preferiblemente luz natural</li>
                   <li>Fondo neutro para destacar la miniatura</li>
                   <li>Múltiples ángulos muestran mejor tu trabajo</li>
@@ -758,11 +755,11 @@ export default function UploadMiniaturePage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-xl"
+                  className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4"
                 >
-                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm font-body">
-                    <p className="font-semibold text-red-400 mb-1">Error al registrar miniatura</p>
+                  <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-400" />
+                  <div className="font-body text-sm">
+                    <p className="mb-1 font-semibold text-red-400">Error al registrar miniatura</p>
                     <p className="text-red-400/80">{submitError}</p>
                   </div>
                 </motion.div>
@@ -778,9 +775,11 @@ export default function UploadMiniaturePage() {
               >
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-bone/60">Subiendo imágenes...</span>
-                  <span className="text-necron-dark font-semibold">{Math.round(uploadProgress)}%</span>
+                  <span className="font-semibold text-necron-dark">
+                    {Math.round(uploadProgress)}%
+                  </span>
                 </div>
-                <div className="h-2 bg-void-light rounded-full overflow-hidden border border-bone/10">
+                <div className="h-2 overflow-hidden rounded-full border border-bone/10 bg-void-light">
                   <motion.div
                     className="h-full bg-gradient-to-r from-necron-dark to-yellow-500"
                     initial={{ width: 0 }}
@@ -795,24 +794,36 @@ export default function UploadMiniaturePage() {
             <motion.button
               type="submit"
               disabled={isSubmitting || images.length === 0}
-              className="relative w-full py-4 bg-gradient-to-r from-necron-dark via-necron to-necron-dark text-void font-display font-bold tracking-wider uppercase text-sm overflow-hidden rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-necron-dark via-necron to-necron-dark py-4 font-display text-sm font-bold uppercase tracking-wider text-void disabled:cursor-not-allowed disabled:opacity-50"
               style={{ backgroundSize: '200% 100%' }}
-              whileHover={!isSubmitting && images.length > 0 ? { scale: 1.01, backgroundPosition: '100% 0' } : {}}
+              whileHover={
+                !isSubmitting && images.length > 0
+                  ? { scale: 1.01, backgroundPosition: '100% 0' }
+                  : {}
+              }
               whileTap={!isSubmitting && images.length > 0 ? { scale: 0.99 } : {}}
-              animate={!isSubmitting && images.length > 0 ? {
-                boxShadow: [
-                  '0 4px 20px rgba(13, 155, 138, 0.3)',
-                  '0 4px 40px rgba(13, 155, 138, 0.5)',
-                  '0 4px 20px rgba(13, 155, 138, 0.3)',
-                ],
-              } : {}}
+              animate={
+                !isSubmitting && images.length > 0
+                  ? {
+                      boxShadow: [
+                        '0 4px 20px rgba(13, 155, 138, 0.3)',
+                        '0 4px 40px rgba(13, 155, 138, 0.5)',
+                        '0 4px 20px rgba(13, 155, 138, 0.3)',
+                      ],
+                    }
+                  : {}
+              }
               transition={{ duration: 2, repeat: Infinity }}
             >
               {/* Shimmer */}
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                 style={{ backgroundSize: '200% 100%' }}
-                animate={!isSubmitting && images.length > 0 ? { backgroundPosition: ['200% 0', '-200% 0'] } : {}}
+                animate={
+                  !isSubmitting && images.length > 0
+                    ? { backgroundPosition: ['200% 0', '-200% 0'] }
+                    : {}
+                }
                 transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
               />
 
@@ -820,7 +831,7 @@ export default function UploadMiniaturePage() {
                 {isSubmitting ? (
                   <>
                     <motion.div
-                      className="w-5 h-5 border-2 border-void/30 border-t-void rounded-full"
+                      className="h-5 w-5 rounded-full border-2 border-void/30 border-t-void"
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                     />
@@ -828,7 +839,7 @@ export default function UploadMiniaturePage() {
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-5 h-5" />
+                    <Sparkles className="h-5 w-5" />
                     Publicar Miniatura
                   </>
                 )}

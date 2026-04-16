@@ -66,14 +66,14 @@ const categoryLabels: Record<string, { label: string; icon: typeof Swords }> = {
 // Rogue Trader ornamental divider — diamond motif
 function OrnateDiv() {
   return (
-    <div className="flex items-center gap-3 my-1">
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-imperial-gold/20" />
+    <div className="my-1 flex items-center gap-3">
+      <div className="h-px flex-1 bg-gradient-to-r from-transparent to-imperial-gold/20" />
       <div className="flex items-center gap-1.5">
-        <div className="w-1 h-1 bg-imperial-gold/30 rotate-45" />
-        <div className="w-1.5 h-1.5 bg-imperial-gold/50 rotate-45" />
-        <div className="w-1 h-1 bg-imperial-gold/30 rotate-45" />
+        <div className="h-1 w-1 rotate-45 bg-imperial-gold/30" />
+        <div className="h-1.5 w-1.5 rotate-45 bg-imperial-gold/50" />
+        <div className="h-1 w-1 rotate-45 bg-imperial-gold/30" />
       </div>
-      <div className="flex-1 h-px bg-gradient-to-r from-imperial-gold/20 to-transparent" />
+      <div className="h-px flex-1 bg-gradient-to-r from-imperial-gold/20 to-transparent" />
     </div>
   )
 }
@@ -81,8 +81,8 @@ function OrnateDiv() {
 // Floating gold dust particles — unique to Rogue Trader theme
 const DUST_SEEDS = Array.from({ length: 6 }, (_, i) => ({
   id: i,
-  left: `${(i * 17 + 5) % 90 + 5}%`,
-  top: `${(i * 23 + 10) % 80 + 10}%`,
+  left: `${((i * 17 + 5) % 90) + 5}%`,
+  top: `${((i * 23 + 10) % 80) + 10}%`,
   drift: (i % 2 === 0 ? -1 : 1) * (20 + (i % 3) * 10),
   dur: 6 + (i % 3) * 2,
   delay: i * 0.8,
@@ -90,11 +90,11 @@ const DUST_SEEDS = Array.from({ length: 6 }, (_, i) => ({
 
 function GoldDust() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {DUST_SEEDS.map((p) => (
         <motion.div
           key={p.id}
-          className="absolute w-1 h-1 rounded-full bg-imperial-gold/40"
+          className="absolute h-1 w-1 rounded-full bg-imperial-gold/40"
           style={{ left: p.left, top: p.top }}
           animate={{
             y: [0, p.drift, 0],
@@ -114,13 +114,18 @@ function GoldDust() {
 
 // Baroque filigree corner — SVG curved ornament for Rogue Trader frames
 function BaroqueCorner({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
-  const posClass = { tl: 'top-0 left-0', tr: 'top-0 right-0', bl: 'bottom-0 left-0', br: 'bottom-0 right-0' }[position]
+  const posClass = {
+    tl: 'top-0 left-0',
+    tr: 'top-0 right-0',
+    bl: 'bottom-0 left-0',
+    br: 'bottom-0 right-0',
+  }[position]
   const flip = { tl: undefined, tr: 'scaleX(-1)', bl: 'scaleY(-1)', br: 'scale(-1)' }[position]
 
   return (
     <svg
       viewBox="0 0 60 60"
-      className={`absolute w-14 h-14 text-imperial-gold pointer-events-none ${posClass}`}
+      className={`pointer-events-none absolute h-14 w-14 text-imperial-gold ${posClass}`}
       style={flip ? { transform: flip } : undefined}
       fill="none"
       stroke="currentColor"
@@ -144,8 +149,8 @@ function BaroqueCorner({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
 
 // Star chart dots — Rogue Trader navigation map feel
 const CHART_STARS = Array.from({ length: 35 }, (_, i) => ({
-  left: `${(i * 7.3 + 13.7) % 98 + 1}%`,
-  top: `${(i * 11.9 + 5.3) % 98 + 1}%`,
+  left: `${((i * 7.3 + 13.7) % 98) + 1}%`,
+  top: `${((i * 11.9 + 5.3) % 98) + 1}%`,
   size: i % 7 === 0 ? 2.5 : i % 4 === 0 ? 1.5 : 1,
   opacity: i % 7 === 0 ? 0.25 : i % 4 === 0 ? 0.15 : 0.08,
   twinkle: i % 6 === 0,
@@ -155,7 +160,7 @@ const CHART_STARS = Array.from({ length: 35 }, (_, i) => ({
 
 function StarChart() {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {CHART_STARS.map((s, i) =>
         s.twinkle ? (
           <motion.div
@@ -163,7 +168,12 @@ function StarChart() {
             className="absolute rounded-full bg-imperial-gold"
             style={{ left: s.left, top: s.top, width: s.size, height: s.size }}
             animate={{ opacity: [s.opacity * 0.5, s.opacity * 1.5, s.opacity * 0.5] }}
-            transition={{ duration: s.twinkDur, repeat: Infinity, delay: s.twinkDelay, ease: 'easeInOut' }}
+            transition={{
+              duration: s.twinkDur,
+              repeat: Infinity,
+              delay: s.twinkDelay,
+              ease: 'easeInOut',
+            }}
           />
         ) : (
           <div
@@ -189,7 +199,7 @@ function WaxSeal({ price }: { price: number }) {
         alt="Sello de cera"
         width={82}
         height={82}
-        className="absolute inset-0 w-full h-full object-contain drop-shadow-lg pointer-events-none"
+        className="pointer-events-none absolute inset-0 h-full w-full object-contain drop-shadow-lg"
         priority
       />
       <span
@@ -263,17 +273,13 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
 
   const handlePrevImage = () => {
     if (listing?.images) {
-      setCurrentImageIndex((prev) =>
-        prev === 0 ? listing.images.length - 1 : prev - 1
-      )
+      setCurrentImageIndex((prev) => (prev === 0 ? listing.images.length - 1 : prev - 1))
     }
   }
 
   const handleNextImage = () => {
     if (listing?.images) {
-      setCurrentImageIndex((prev) =>
-        prev === listing.images.length - 1 ? 0 : prev + 1
-      )
+      setCurrentImageIndex((prev) => (prev === listing.images.length - 1 ? 0 : prev + 1))
     }
   }
 
@@ -296,8 +302,13 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
     }
     const newFavorited = !isFavorited
     setIsFavorited(newFavorited)
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) { setIsFavorited(!newFavorited); return }
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+    if (!session) {
+      setIsFavorited(!newFavorited)
+      return
+    }
     if (newFavorited) {
       const { error } = await supabase
         .from('listing_favorites')
@@ -333,7 +344,7 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
         transition={{ duration: 0.5 }}
         className="mb-8"
       >
-        <div className="relative bg-void-light/30 backdrop-blur-sm rounded-xl p-5 overflow-hidden">
+        <div className="relative overflow-hidden rounded-xl bg-void-light/30 p-5 backdrop-blur-sm">
           {/* Baroque filigree corners */}
           <BaroqueCorner position="tl" />
           <BaroqueCorner position="tr" />
@@ -344,48 +355,50 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
           <StarChart />
 
           {/* Warm golden vignette */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(201,162,39,0.06)_0%,transparent_60%)] pointer-events-none" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(201,162,39,0.06)_0%,transparent_60%)]" />
 
           {/* Floating gold dust */}
           <GoldDust />
 
           {/* Traveling golden shimmer along top edge */}
           <motion.div
-            className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold/50 to-transparent pointer-events-none"
+            className="pointer-events-none absolute left-0 top-0 h-[2px] w-24 bg-gradient-to-r from-transparent via-imperial-gold/50 to-transparent"
             animate={{ left: ['-10%', '110%'] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1 }}
           />
 
-          <div className="relative flex items-center justify-between flex-wrap gap-3">
+          <div className="relative flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               {/* Slowly rotating compass */}
               <div className="relative">
-                <div className="absolute inset-0 bg-imperial-gold/20 rounded-lg blur-sm" />
-                <div className="relative p-2 bg-imperial-gold/10 rounded-lg border border-imperial-gold/20">
+                <div className="absolute inset-0 rounded-lg bg-imperial-gold/20 blur-sm" />
+                <div className="relative rounded-lg border border-imperial-gold/20 bg-imperial-gold/10 p-2">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
                   >
-                    <Compass className="w-5 h-5 text-imperial-gold" />
+                    <Compass className="h-5 w-5 text-imperial-gold" />
                   </motion.div>
                 </div>
               </div>
               <div>
-                <span className="text-xs font-mono uppercase tracking-[0.25em] text-imperial-gold/70 block">
-                  Rogue Trader <span className="text-imperial-gold/30">◆</span> Manifiesto de Comercio
+                <span className="block font-mono text-xs uppercase tracking-[0.25em] text-imperial-gold/70">
+                  Rogue Trader <span className="text-imperial-gold/30">◆</span> Manifiesto de
+                  Comercio
                 </span>
-                <span className="text-[10px] font-mono text-bone/30 tracking-wider">
-                  REF: {refCode} <span className="text-imperial-gold/20">◆</span> FECHA REGISTRO: {createdDate}
+                <span className="font-mono text-[10px] tracking-wider text-bone/30">
+                  REF: {refCode} <span className="text-imperial-gold/20">◆</span> FECHA REGISTRO:{' '}
+                  {createdDate}
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-4 text-bone/40 text-xs font-mono">
+            <div className="flex items-center gap-4 font-mono text-xs text-bone/40">
               <span className="flex items-center gap-1.5">
-                <Eye className="w-3.5 h-3.5" />
+                <Eye className="h-3.5 w-3.5" />
                 {listing.views_count || 0} inspecciones
               </span>
               <span className="flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-green-500/60" />
+                <Shield className="h-3.5 w-3.5 text-green-500/60" />
                 Verificado
               </span>
             </div>
@@ -394,8 +407,7 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
       </motion.div>
 
       {/* ── Main Content Grid ──────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
         {/* ═══ IMAGE GALLERY ═══════════════════════════════ */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -403,13 +415,13 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
           transition={{ delay: 0.15, duration: 0.5 }}
         >
           {/* Main image with ornate frame */}
-          <div className="relative group">
+          <div className="group relative">
             {/* Outer glow on hover */}
-            <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-imperial-gold/30 via-transparent to-imperial-gold/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-imperial-gold/30 via-transparent to-imperial-gold/30 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-void-light border border-bone/10">
+            <div className="relative aspect-square overflow-hidden rounded-2xl border border-bone/10 bg-void-light">
               {/* Baroque filigree frame */}
-              <div className="absolute inset-0 z-10 pointer-events-none">
+              <div className="pointer-events-none absolute inset-0 z-10">
                 <BaroqueCorner position="tl" />
                 <BaroqueCorner position="tr" />
                 <BaroqueCorner position="bl" />
@@ -436,36 +448,36 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
               </AnimatePresence>
 
               {/* Dark gradient overlay at bottom */}
-              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-void/80 to-transparent pointer-events-none" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-void/80 to-transparent" />
 
               {/* Navigation arrows */}
               {images.length > 1 && (
                 <>
                   <button
                     onClick={handlePrevImage}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 bg-void/70 backdrop-blur-sm rounded-lg text-bone/80 hover:bg-imperial-gold hover:text-void transition-all border border-bone/10 hover:border-imperial-gold z-10"
+                    className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-lg border border-bone/10 bg-void/70 p-2.5 text-bone/80 backdrop-blur-sm transition-all hover:border-imperial-gold hover:bg-imperial-gold hover:text-void"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="h-5 w-5" />
                   </button>
                   <button
                     onClick={handleNextImage}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 bg-void/70 backdrop-blur-sm rounded-lg text-bone/80 hover:bg-imperial-gold hover:text-void transition-all border border-bone/10 hover:border-imperial-gold z-10"
+                    className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-lg border border-bone/10 bg-void/70 p-2.5 text-bone/80 backdrop-blur-sm transition-all hover:border-imperial-gold hover:bg-imperial-gold hover:text-void"
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="h-5 w-5" />
                   </button>
                 </>
               )}
 
               {/* Image counter */}
               {images.length > 1 && (
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-void/80 backdrop-blur-sm rounded-full text-xs text-bone/70 font-mono border border-bone/10 z-10">
+                <div className="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-full border border-bone/10 bg-void/80 px-4 py-1.5 font-mono text-xs text-bone/70 backdrop-blur-sm">
                   {currentImageIndex + 1} / {images.length}
                 </div>
               )}
 
               {/* Wax seal price stamp — stamp-down spring animation */}
               <motion.div
-                className="absolute top-4 left-4 z-10"
+                className="absolute left-4 top-4 z-10"
                 initial={{ scale: 2.5, rotate: -20, opacity: 0 }}
                 animate={{ scale: 1, rotate: 0, opacity: 1 }}
                 transition={{ type: 'spring', damping: 10, stiffness: 120, delay: 0.6 }}
@@ -474,26 +486,26 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
               </motion.div>
 
               {/* Action buttons overlay - top right */}
-              <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
+              <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
                 <motion.button
                   onClick={handleToggleFavorite}
-                  className={`p-2.5 rounded-lg backdrop-blur-sm border transition-all ${
+                  className={`rounded-lg border p-2.5 backdrop-blur-sm transition-all ${
                     isFavorited
-                      ? 'bg-red-500/30 border-red-500/50 text-red-400 shadow-lg shadow-red-500/20'
-                      : 'bg-void/60 border-bone/10 text-bone/70 hover:border-imperial-gold/30 hover:text-bone'
+                      ? 'border-red-500/50 bg-red-500/30 text-red-400 shadow-lg shadow-red-500/20'
+                      : 'border-bone/10 bg-void/60 text-bone/70 hover:border-imperial-gold/30 hover:text-bone'
                   }`}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
+                  <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
                 </motion.button>
                 <motion.button
                   onClick={handleShare}
-                  className="p-2.5 rounded-lg bg-void/60 backdrop-blur-sm border border-bone/10 text-bone/70 hover:border-imperial-gold/30 hover:text-bone transition-all"
+                  className="rounded-lg border border-bone/10 bg-void/60 p-2.5 text-bone/70 backdrop-blur-sm transition-all hover:border-imperial-gold/30 hover:text-bone"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <Share2 className="w-5 h-5" />
+                  <Share2 className="h-5 w-5" />
                 </motion.button>
               </div>
             </div>
@@ -501,23 +513,18 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
 
           {/* Thumbnail strip */}
           {images.length > 1 && (
-            <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+            <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
               {images.map((img, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
-                  className={`relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
+                  className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
                     index === currentImageIndex
                       ? 'border-imperial-gold shadow-md shadow-imperial-gold/20'
-                      : 'border-bone/10 hover:border-bone/30 opacity-60 hover:opacity-100'
+                      : 'border-bone/10 opacity-60 hover:border-bone/30 hover:opacity-100'
                   }`}
                 >
-                  <Image
-                    src={img}
-                    alt={`Thumbnail ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
+                  <Image src={img} alt={`Thumbnail ${index + 1}`} fill className="object-cover" />
                 </button>
               ))}
             </div>
@@ -533,11 +540,11 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
         >
           {/* Title */}
           <div>
-            <h1 className="text-3xl md:text-4xl font-display font-bold text-bone leading-tight">
+            <h1 className="font-display text-3xl font-bold leading-tight text-bone md:text-4xl">
               {listing.title}
             </h1>
-            <div className="mt-2 flex items-center gap-2 text-xs font-mono text-bone/30">
-              <ScrollText className="w-3.5 h-3.5" />
+            <div className="mt-2 flex items-center gap-2 font-mono text-xs text-bone/30">
+              <ScrollText className="h-3.5 w-3.5" />
               <span>Entrada de manifiesto #{refCode}</span>
             </div>
           </div>
@@ -545,97 +552,95 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
           {/* ── Badges ─────────────────────────────── */}
           <div className="flex flex-wrap gap-2.5">
             {/* Type badge - highlighted */}
-            <span className="inline-flex items-center gap-2 px-4 py-2 bg-imperial-gold/10 border border-imperial-gold/30 rounded-lg text-imperial-gold font-body text-sm font-medium">
-              <TypeIcon className="w-4 h-4" />
+            <span className="inline-flex items-center gap-2 rounded-lg border border-imperial-gold/30 bg-imperial-gold/10 px-4 py-2 font-body text-sm font-medium text-imperial-gold">
+              <TypeIcon className="h-4 w-4" />
               {listingType.label}
             </span>
             {/* Condition badge */}
-            <span className="inline-flex items-center gap-2 px-4 py-2 bg-void-light border border-bone/10 rounded-lg text-bone/70 font-body text-sm">
-              <Package className="w-4 h-4 text-bone/50" />
+            <span className="inline-flex items-center gap-2 rounded-lg border border-bone/10 bg-void-light px-4 py-2 font-body text-sm text-bone/70">
+              <Package className="h-4 w-4 text-bone/50" />
               {condition.label}
             </span>
             {/* Category badge */}
-            {listing.category && (() => {
-              const cat = categoryLabels[listing.category] || categoryLabels.miniatures
-              const CatIcon = cat.icon
-              return (
-                <span className="inline-flex items-center gap-2 px-4 py-2 bg-void-light border border-bone/10 rounded-lg text-bone/70 font-body text-sm">
-                  <CatIcon className="w-4 h-4 text-bone/50" />
-                  {cat.label}
-                </span>
-              )
-            })()}
+            {listing.category &&
+              (() => {
+                const cat = categoryLabels[listing.category] || categoryLabels.miniatures
+                const CatIcon = cat.icon
+                return (
+                  <span className="inline-flex items-center gap-2 rounded-lg border border-bone/10 bg-void-light px-4 py-2 font-body text-sm text-bone/70">
+                    <CatIcon className="h-4 w-4 text-bone/50" />
+                    {cat.label}
+                  </span>
+                )
+              })()}
             {/* Faction badge */}
-            {listing.faction && (() => {
-              const iconPath = FACTION_ICONS[listing.faction.slug]
-              return (
-                <span
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border font-body text-sm font-medium"
-                  style={{
-                    color: listing.faction.primary_color || '#C9A227',
-                    borderColor: `${listing.faction.primary_color || '#C9A227'}50`,
-                    backgroundColor: `${listing.faction.primary_color || '#C9A227'}15`,
-                  }}
-                >
-                  {iconPath && (
-                    <Image
-                      src={iconPath}
-                      alt={listing.faction.name}
-                      width={16}
-                      height={16}
-                      className="invert opacity-80"
-                    />
-                  )}
-                  {listing.faction.name}
-                </span>
-              )
-            })()}
+            {listing.faction &&
+              (() => {
+                const iconPath = FACTION_ICONS[listing.faction.slug]
+                return (
+                  <span
+                    className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 font-body text-sm font-medium"
+                    style={{
+                      color: listing.faction.primary_color || '#C9A227',
+                      borderColor: `${listing.faction.primary_color || '#C9A227'}50`,
+                      backgroundColor: `${listing.faction.primary_color || '#C9A227'}15`,
+                    }}
+                  >
+                    {iconPath && (
+                      <Image
+                        src={iconPath}
+                        alt={listing.faction.name}
+                        width={16}
+                        height={16}
+                        className="opacity-80 invert"
+                      />
+                    )}
+                    {listing.faction.name}
+                  </span>
+                )
+              })()}
           </div>
 
           <OrnateDiv />
 
           {/* ── Description ────────────────────────── */}
           <div className="relative">
-            <div className="relative bg-void-light/40 rounded-xl border border-bone/5 p-5 overflow-hidden">
+            <div className="relative overflow-hidden rounded-xl border border-bone/5 bg-void-light/40 p-5">
               {/* Left accent bookmark — Rogue Trader trade manifest feel */}
-              <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-gradient-to-b from-imperial-gold/30 via-imperial-gold/10 to-transparent rounded-l-xl" />
+              <div className="absolute bottom-0 left-0 top-0 w-[2px] rounded-l-xl bg-gradient-to-b from-imperial-gold/30 via-imperial-gold/10 to-transparent" />
 
-              <div className="flex items-center gap-2 mb-3">
-                <ScrollText className="w-4 h-4 text-imperial-gold/60" />
-                <h3 className="text-xs font-mono uppercase tracking-[0.15em] text-imperial-gold/60">
+              <div className="mb-3 flex items-center gap-2">
+                <ScrollText className="h-4 w-4 text-imperial-gold/60" />
+                <h3 className="font-mono text-xs uppercase tracking-[0.15em] text-imperial-gold/60">
                   Registro del Articulo <span className="text-imperial-gold/30">◆</span>
                 </h3>
               </div>
-              <p className="text-bone/70 font-body whitespace-pre-wrap leading-relaxed">
+              <p className="whitespace-pre-wrap font-body leading-relaxed text-bone/70">
                 {listing.description}
               </p>
             </div>
           </div>
 
           {/* ── Condition detail ────────────────────── */}
-          <div className="p-4 bg-void-light/40 rounded-xl border border-bone/5">
+          <div className="rounded-xl border border-bone/5 bg-void-light/40 p-4">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="absolute inset-0 bg-imperial-gold/20 rounded-lg blur-sm" />
-                <div className="relative p-2.5 bg-imperial-gold/10 rounded-lg border border-imperial-gold/20">
-                  <Package className="w-5 h-5 text-imperial-gold" />
+                <div className="absolute inset-0 rounded-lg bg-imperial-gold/20 blur-sm" />
+                <div className="relative rounded-lg border border-imperial-gold/20 bg-imperial-gold/10 p-2.5">
+                  <Package className="h-5 w-5 text-imperial-gold" />
                 </div>
               </div>
               <div>
-                <p className="font-display font-semibold text-bone">
-                  {condition.label}
-                </p>
-                <p className="text-sm text-bone/50 font-body">
-                  {condition.description}
-                </p>
+                <p className="font-display font-semibold text-bone">{condition.label}</p>
+                <p className="font-body text-sm text-bone/50">{condition.description}</p>
               </div>
             </div>
           </div>
 
           {/* ── Location ───────────────────────────── */}
           {listing.location && (
-            <div className="flex items-center gap-3 text-bone/50 px-1">
-              <MapPin className="w-4 h-4 text-imperial-gold/50" />
+            <div className="flex items-center gap-3 px-1 text-bone/50">
+              <MapPin className="h-4 w-4 text-imperial-gold/50" />
               <span className="font-body text-sm">{listing.location}</span>
             </div>
           )}
@@ -643,45 +648,45 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
           <OrnateDiv />
 
           {/* ── Seller Card ────────────────────────── */}
-          <div className="relative bg-void-light/40 rounded-xl border border-bone/5 overflow-hidden">
+          <div className="relative overflow-hidden rounded-xl border border-bone/5 bg-void-light/40">
             {/* Subtle top accent line */}
-            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-imperial-gold/30 to-transparent" />
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-imperial-gold/30 to-transparent" />
 
             <div className="p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <Compass className="w-3.5 h-3.5 text-imperial-gold/50" />
-                <h3 className="text-xs font-mono uppercase tracking-[0.15em] text-imperial-gold/50">
+              <div className="mb-4 flex items-center gap-2">
+                <Compass className="h-3.5 w-3.5 text-imperial-gold/50" />
+                <h3 className="font-mono text-xs uppercase tracking-[0.15em] text-imperial-gold/50">
                   Capitan Mercante <span className="text-imperial-gold/25">◆</span> Vendedor
                 </h3>
               </div>
               <div className="flex items-center justify-between">
                 <Link
                   href={`/usuarios/${listing.profiles?.username}`}
-                  className="flex items-center gap-3 group"
+                  className="group flex items-center gap-3"
                 >
                   <div className="relative">
-                    <div className="absolute -inset-0.5 bg-imperial-gold/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity blur-sm" />
+                    <div className="absolute -inset-0.5 rounded-full bg-imperial-gold/20 opacity-0 blur-sm transition-opacity group-hover:opacity-100" />
                     <Avatar
                       src={listing.profiles?.avatar_url}
-                      alt={listing.profiles?.display_name || listing.profiles?.username || 'Vendedor'}
+                      alt={
+                        listing.profiles?.display_name || listing.profiles?.username || 'Vendedor'
+                      }
                       fallback={listing.profiles?.username || 'V'}
                       size="lg"
                     />
                   </div>
                   <div>
-                    <p className="font-display font-semibold text-bone group-hover:text-imperial-gold transition-colors">
+                    <p className="font-display font-semibold text-bone transition-colors group-hover:text-imperial-gold">
                       {listing.profiles?.display_name || listing.profiles?.username}
                     </p>
-                    <p className="text-sm text-bone/40 font-body">
-                      @{listing.profiles?.username}
-                    </p>
+                    <p className="font-body text-sm text-bone/40">@{listing.profiles?.username}</p>
                   </div>
                 </Link>
                 <Link
                   href={`/usuarios/${listing.profiles?.username}`}
-                  className="p-2.5 text-bone/30 hover:text-imperial-gold transition-colors rounded-lg hover:bg-imperial-gold/5"
+                  className="rounded-lg p-2.5 text-bone/30 transition-colors hover:bg-imperial-gold/5 hover:text-imperial-gold"
                 >
-                  <ExternalLink className="w-5 h-5" />
+                  <ExternalLink className="h-5 w-5" />
                 </Link>
               </div>
             </div>
@@ -689,13 +694,13 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
 
           {/* ── Contact Error ──────────────────────── */}
           {contactError && !showContactModal && (
-            <p className="text-sm text-red-400 text-center font-body">{contactError}</p>
+            <p className="text-center font-body text-sm text-red-400">{contactError}</p>
           )}
 
           {/* ── Contact Button ─────────────────────── */}
           <motion.button
             onClick={handleOpenContact}
-            className="relative w-full group overflow-hidden rounded-xl"
+            className="group relative w-full overflow-hidden rounded-xl"
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -708,16 +713,17 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
               transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
               style={{ backgroundSize: '200% 100%' }}
             />
-            <div className="relative flex items-center justify-center gap-3 py-4 bg-gradient-to-r from-imperial-gold via-yellow-500 to-imperial-gold text-void font-display font-bold text-lg border border-imperial-gold/50">
+            <div className="relative flex items-center justify-center gap-3 border border-imperial-gold/50 bg-gradient-to-r from-imperial-gold via-yellow-500 to-imperial-gold py-4 font-display text-lg font-bold text-void">
               {/* Corner cuts */}
               <div
                 className="absolute inset-0 bg-gradient-to-r from-imperial-gold via-yellow-500 to-imperial-gold"
                 style={{
-                  clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+                  clipPath:
+                    'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
                 }}
               />
               <span className="relative z-10 flex items-center gap-3">
-                <MessageCircle className="w-5 h-5" />
+                <MessageCircle className="h-5 w-5" />
                 Iniciar Negociacion
               </span>
             </div>
@@ -726,9 +732,9 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
           {/* ── Report link ────────────────────────── */}
           <button
             onClick={() => setShowReportModal(true)}
-            className="flex items-center gap-2 text-xs text-bone/30 hover:text-red-400 transition-colors mx-auto font-mono uppercase tracking-wider"
+            className="mx-auto flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-bone/30 transition-colors hover:text-red-400"
           >
-            <Flag className="w-3.5 h-3.5" />
+            <Flag className="h-3.5 w-3.5" />
             Reportar anomalia
           </button>
         </motion.div>
@@ -741,7 +747,7 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-void/85 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-void/85 p-4 backdrop-blur-md"
             onClick={() => setShowContactModal(false)}
           >
             <motion.div
@@ -749,7 +755,7 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative bg-void-light rounded-2xl max-w-md w-full border border-bone/10 overflow-hidden"
+              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-bone/10 bg-void-light"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Baroque filigree corners */}
@@ -760,26 +766,26 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
 
               {/* Traveling golden shimmer — Rogue Trader */}
               <motion.div
-                className="absolute top-0 left-0 w-20 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold/40 to-transparent pointer-events-none"
+                className="pointer-events-none absolute left-0 top-0 h-[2px] w-20 bg-gradient-to-r from-transparent via-imperial-gold/40 to-transparent"
                 animate={{ left: ['-10%', '110%'] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.5 }}
               />
 
               <div className="p-6">
                 {/* Modal header */}
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-1.5 bg-imperial-gold/10 rounded-lg border border-imperial-gold/20">
-                    <Compass className="w-4 h-4 text-imperial-gold" />
+                <div className="mb-2 flex items-center gap-3">
+                  <div className="rounded-lg border border-imperial-gold/20 bg-imperial-gold/10 p-1.5">
+                    <Compass className="h-4 w-4 text-imperial-gold" />
                   </div>
-                  <span className="text-xs font-mono uppercase tracking-[0.15em] text-imperial-gold/60">
+                  <span className="font-mono text-xs uppercase tracking-[0.15em] text-imperial-gold/60">
                     Canal de Negociacion <span className="text-imperial-gold/30">◆</span>
                   </span>
                 </div>
 
-                <h3 className="text-xl font-display font-bold text-bone mb-2">
+                <h3 className="mb-2 font-display text-xl font-bold text-bone">
                   Contactar al vendedor
                 </h3>
-                <p className="text-bone/50 font-body text-sm mb-5">
+                <p className="mb-5 font-body text-sm text-bone/50">
                   Envia un mensaje a{' '}
                   <span className="text-imperial-gold/80">
                     {listing.profiles?.display_name || listing.profiles?.username}
@@ -792,24 +798,27 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
                   rows={4}
                   value={contactMessage}
                   onChange={(e) => setContactMessage(e.target.value)}
-                  className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/25 focus:outline-none focus:border-imperial-gold/40 focus:shadow-[0_0_0_3px_rgba(201,162,39,0.08)] resize-none mb-4 transition-all"
+                  className="mb-4 w-full resize-none rounded-xl border border-bone/10 bg-void px-4 py-3 font-body text-bone transition-all placeholder:text-bone/25 focus:border-imperial-gold/40 focus:shadow-[0_0_0_3px_rgba(201,162,39,0.08)] focus:outline-none"
                 />
 
                 {contactError && (
-                  <p className="text-sm text-red-400 font-body mb-4">{contactError}</p>
+                  <p className="mb-4 font-body text-sm text-red-400">{contactError}</p>
                 )}
 
                 <div className="flex gap-3">
                   <button
-                    onClick={() => { setShowContactModal(false); setContactError(null) }}
-                    className="flex-1 py-3 bg-void border border-bone/10 text-bone/50 font-display font-semibold rounded-xl hover:border-bone/20 hover:text-bone/70 transition-all"
+                    onClick={() => {
+                      setShowContactModal(false)
+                      setContactError(null)
+                    }}
+                    className="flex-1 rounded-xl border border-bone/10 bg-void py-3 font-display font-semibold text-bone/50 transition-all hover:border-bone/20 hover:text-bone/70"
                   >
                     Cancelar
                   </button>
                   <motion.button
                     onClick={handleSendMessage}
                     disabled={isSending || !contactMessage.trim()}
-                    className="flex-1 py-3 bg-imperial-gold text-void font-display font-bold rounded-xl disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-imperial-gold py-3 font-display font-bold text-void disabled:cursor-not-allowed disabled:opacity-40"
                     whileHover={{ scale: isSending ? 1 : 1.02 }}
                     whileTap={{ scale: isSending ? 1 : 0.98 }}
                   >
@@ -818,13 +827,13 @@ export default function ListingDetail({ listing }: ListingDetailProps) {
                         <motion.div
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                          className="w-4 h-4 border-2 border-void/30 border-t-void rounded-full"
+                          className="h-4 w-4 rounded-full border-2 border-void/30 border-t-void"
                         />
                         Transmitiendo...
                       </>
                     ) : (
                       <>
-                        <Send className="w-4 h-4" />
+                        <Send className="h-4 w-4" />
                         Enviar
                       </>
                     )}

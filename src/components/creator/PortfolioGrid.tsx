@@ -20,7 +20,7 @@ export function PortfolioGrid({
   creatorType,
   maxVisible = 4,
   showYouTubeVideos = true,
-  className
+  className,
 }: PortfolioGridProps) {
   const [expanded, setExpanded] = useState(false)
 
@@ -29,11 +29,11 @@ export function PortfolioGrid({
   }
 
   // Separate YouTube links from other links
-  const youtubeLinks = links.filter(url =>
-    url.includes('youtube.com') || url.includes('youtu.be')
+  const youtubeLinks = links.filter(
+    (url) => url.includes('youtube.com') || url.includes('youtu.be')
   )
-  const otherLinks = links.filter(url =>
-    !url.includes('youtube.com') && !url.includes('youtu.be')
+  const otherLinks = links.filter(
+    (url) => !url.includes('youtube.com') && !url.includes('youtu.be')
   )
 
   // For YouTubers, show videos prominently; for others, show link cards
@@ -47,27 +47,24 @@ export function PortfolioGrid({
       {showYouTubeVideos && youtubeLinks.length > 0 && (
         <div className="space-y-2">
           {isYoutuber && (
-            <h4 className="text-xs font-mono text-bone/50 tracking-wider flex items-center gap-2">
-              <ExternalLink className="w-3 h-3" />
+            <h4 className="flex items-center gap-2 font-mono text-xs tracking-wider text-bone/50">
+              <ExternalLink className="h-3 w-3" />
               CONTENIDO EN VIDEO
             </h4>
           )}
-          <YouTubeVideoGrid
-            videoUrls={youtubeLinks}
-            maxVideos={isYoutuber ? 4 : 2}
-          />
+          <YouTubeVideoGrid videoUrls={youtubeLinks} maxVideos={isYoutuber ? 4 : 2} />
         </div>
       )}
 
       {/* Other Links Grid */}
       {otherLinks.length > 0 && (
         <div className="space-y-3">
-          <h4 className="text-xs font-mono text-bone/50 tracking-wider flex items-center gap-2">
-            <LinkIcon className="w-3 h-3" />
+          <h4 className="flex items-center gap-2 font-mono text-xs tracking-wider text-bone/50">
+            <LinkIcon className="h-3 w-3" />
             {isYoutuber ? 'OTROS ENLACES' : 'PORTFOLIO / CONTENIDO'}
           </h4>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <AnimatePresence>
               {visibleLinks.map((url, idx) => (
                 <motion.div
@@ -87,18 +84,18 @@ export function PortfolioGrid({
           {hasMoreLinks && (
             <motion.button
               onClick={() => setExpanded(!expanded)}
-              className="flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 transition-colors mx-auto"
+              className="mx-auto flex items-center gap-2 text-sm text-purple-400 transition-colors hover:text-purple-300"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               {expanded ? (
                 <>
-                  <ChevronUp className="w-4 h-4" />
+                  <ChevronUp className="h-4 w-4" />
                   Ver menos
                 </>
               ) : (
                 <>
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="h-4 w-4" />
                   Ver {otherLinks.length - maxVisible} más
                 </>
               )}
@@ -114,7 +111,7 @@ export function PortfolioGrid({
 export function PortfolioLinksInline({
   links,
   maxVisible = 3,
-  className
+  className,
 }: {
   links: string[]
   maxVisible?: number
@@ -131,7 +128,7 @@ export function PortfolioLinksInline({
         <PortfolioLinkCardCompact key={`${url}-${idx}`} url={url} />
       ))}
       {extraCount > 0 && (
-        <span className="inline-flex items-center px-2 py-1 text-xs text-bone/50 font-mono">
+        <span className="inline-flex items-center px-2 py-1 font-mono text-xs text-bone/50">
           +{extraCount} más
         </span>
       )}

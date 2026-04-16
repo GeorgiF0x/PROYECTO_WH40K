@@ -30,12 +30,12 @@ export default function LoadMoreButton({ cursor, searchParams }: LoadMoreButtonP
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
-      className="flex justify-center mt-12"
+      className="mt-12 flex justify-center"
     >
       <motion.button
         onClick={handleLoadMore}
         disabled={isPending}
-        className="relative px-8 py-4 bg-transparent border border-imperial-gold/50 text-imperial-gold font-display font-semibold tracking-wider uppercase text-sm rounded-lg overflow-hidden group disabled:opacity-50"
+        className="group relative overflow-hidden rounded-lg border border-imperial-gold/50 bg-transparent px-8 py-4 font-display text-sm font-semibold uppercase tracking-wider text-imperial-gold disabled:opacity-50"
         whileHover={{ scale: isPending ? 1 : 1.02 }}
         whileTap={{ scale: isPending ? 1 : 0.98 }}
       >
@@ -49,7 +49,7 @@ export default function LoadMoreButton({ cursor, searchParams }: LoadMoreButtonP
           {isPending ? (
             <>
               <motion.div
-                className="w-4 h-4 border-2 border-imperial-gold/30 border-t-imperial-gold rounded-full"
+                className="h-4 w-4 rounded-full border-2 border-imperial-gold/30 border-t-imperial-gold"
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
               />

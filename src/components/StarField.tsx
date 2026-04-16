@@ -59,7 +59,7 @@ export default function StarField() {
   return (
     <>
       {/* Stars */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         {stars.map((star) => (
           <motion.div
             key={star.id}
@@ -85,7 +85,7 @@ export default function StarField() {
       </div>
 
       {/* Floating particles */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-[1]">
+      <div className="pointer-events-none fixed inset-0 z-[1] overflow-hidden">
         {particles.map((particle) => (
           <motion.div
             key={particle.id}

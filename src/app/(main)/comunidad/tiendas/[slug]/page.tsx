@@ -42,14 +42,16 @@ export default async function StoreSlugPage({ params }: PageProps) {
   }
 
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
   const userId = session?.user?.id
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
+    <div className="min-h-screen pb-16 pt-24">
       {/* Cartographic grid background */}
       <div
-        className="fixed inset-0 pointer-events-none z-0"
+        className="pointer-events-none fixed inset-0 z-0"
         style={{
           backgroundImage: `
             linear-gradient(rgba(201,162,39,0.03) 1px, transparent 1px),
@@ -59,7 +61,7 @@ export default async function StoreSlugPage({ params }: PageProps) {
         }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
         <StoreDetail store={store} userId={userId} />
       </div>
     </div>

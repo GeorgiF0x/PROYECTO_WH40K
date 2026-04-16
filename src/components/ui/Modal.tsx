@@ -62,26 +62,21 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', className
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'relative w-full bg-void-light border border-bone/20 rounded-lg shadow-xl',
+              'relative w-full rounded-lg border border-bone/20 bg-void-light shadow-xl',
               sizeClasses[size],
               className
             )}
           >
             {/* Header */}
             {title && (
-              <div className="flex items-center justify-between px-6 py-4 border-b border-bone/10">
+              <div className="flex items-center justify-between border-b border-bone/10 px-6 py-4">
                 <h2 className="text-lg font-semibold text-bone">{title}</h2>
                 <button
                   onClick={onClose}
-                  className="p-1 text-bone/60 hover:text-bone transition-colors"
+                  className="p-1 text-bone/60 transition-colors hover:text-bone"
                   aria-label="Cerrar"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

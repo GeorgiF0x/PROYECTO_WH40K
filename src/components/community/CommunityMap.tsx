@@ -8,7 +8,18 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { Store, StoreType } from '@/lib/types/database.types'
 
 interface CommunityMapProps {
-  stores: Pick<Store, 'id' | 'name' | 'slug' | 'latitude' | 'longitude' | 'city' | 'store_type' | 'avg_rating' | 'review_count'>[]
+  stores: Pick<
+    Store,
+    | 'id'
+    | 'name'
+    | 'slug'
+    | 'latitude'
+    | 'longitude'
+    | 'city'
+    | 'store_type'
+    | 'avg_rating'
+    | 'review_count'
+  >[]
   onStoreClick?: (slug: string) => void
   className?: string
   interactive?: boolean
@@ -26,7 +37,10 @@ const storeTypeConfig: Record<StoreType, { color: string; label: string; glow: s
 }
 
 // Create a stellar/waypoint marker element
-function createStoreMarker(store: Pick<Store, 'store_type' | 'name' | 'avg_rating' | 'review_count'>, size: number = 24): HTMLDivElement {
+function createStoreMarker(
+  store: Pick<Store, 'store_type' | 'name' | 'avg_rating' | 'review_count'>,
+  size: number = 24
+): HTMLDivElement {
   const config = storeTypeConfig[store.store_type] || storeTypeConfig.specialist
 
   // Outer wrapper (fixed, for positioning)
@@ -203,7 +217,7 @@ export default function CommunityMap({
     }
 
     // Clear existing markers
-    markersRef.current.forEach(marker => marker.remove())
+    markersRef.current.forEach((marker) => marker.remove())
     markersRef.current = []
 
     // Remove existing cluster layers if they exist
@@ -307,7 +321,7 @@ export default function CommunityMap({
       const zoom = map.current.getZoom()
 
       // Clear existing HTML markers
-      markersRef.current.forEach(marker => marker.remove())
+      markersRef.current.forEach((marker) => marker.remove())
       markersRef.current = []
 
       // Only show HTML markers when zoomed in enough (when clusters break apart)
@@ -315,7 +329,7 @@ export default function CommunityMap({
 
       // Get visible features that are NOT clustered
       const features = map.current.querySourceFeatures('stores-cluster', {
-        filter: ['!', ['has', 'point_count']]
+        filter: ['!', ['has', 'point_count']],
       })
 
       // Track which stores we've already added (to avoid duplicates)
@@ -329,12 +343,15 @@ export default function CommunityMap({
         const coords = (feature.geometry as GeoJSON.Point).coordinates as [number, number]
 
         // Create custom marker
-        const el = createStoreMarker({
-          store_type: props.store_type as StoreType,
-          name: props.name,
-          avg_rating: props.avg_rating,
-          review_count: props.review_count,
-        }, 20)
+        const el = createStoreMarker(
+          {
+            store_type: props.store_type as StoreType,
+            name: props.name,
+            avg_rating: props.avg_rating,
+            review_count: props.review_count,
+          },
+          20
+        )
 
         // Click handler
         el.addEventListener('click', (e) => {
@@ -349,26 +366,32 @@ export default function CommunityMap({
             offset: 15,
           })
             .setLngLat(coords)
-            .setHTML(`
+            .setHTML(
+              `
               <div class="store-popup-content">
                 <div class="store-popup-badge" style="background: ${storeTypeConfig[props.store_type as StoreType]?.color || '#C9A227'}20; border-color: ${storeTypeConfig[props.store_type as StoreType]?.color || '#C9A227'};">
                   ${storeTypeConfig[props.store_type as StoreType]?.label || 'Tienda'}
                 </div>
                 <h3 class="store-popup-title">${props.name}</h3>
                 <p class="store-popup-city">${props.city}</p>
-                ${Number(props.review_count) > 0 ? `
+                ${
+                  Number(props.review_count) > 0
+                    ? `
                   <div class="store-popup-rating">
                     <span class="star">★</span>
                     <span>${Number(props.avg_rating).toFixed(1)}</span>
                     <span class="count">(${props.review_count})</span>
                   </div>
-                ` : ''}
+                `
+                    : ''
+                }
                 <a href="/comunidad/tiendas/${props.slug}" class="store-popup-link">
                   <span>Ver puesto comercial</span>
                   <span>→</span>
                 </a>
               </div>
-            `)
+            `
+            )
             .addTo(map.current!)
 
           if (onStoreClick) {
@@ -378,7 +401,7 @@ export default function CommunityMap({
 
         const marker = new mapboxgl.Marker({
           element: el,
-          anchor: 'center'
+          anchor: 'center',
         })
           .setLngLat(coords)
           .addTo(map.current!)
@@ -398,14 +421,13 @@ export default function CommunityMap({
     }
     map.current.on('zoomend', debouncedUpdate)
     map.current.on('moveend', debouncedUpdate)
-
   }, [stores, onStoreClick])
 
   useEffect(() => {
     initMap()
     return () => {
       // Clean up markers
-      markersRef.current.forEach(marker => marker.remove())
+      markersRef.current.forEach((marker) => marker.remove())
       markersRef.current = []
       // Clean up map
       if (map.current) {
@@ -424,15 +446,15 @@ export default function CommunityMap({
   const mapContent = (
     <>
       {/* Dataslate frame - corner brackets */}
-      <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 border-imperial-gold/50 rounded-tl-lg z-20 pointer-events-none" />
-      <div className="absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 border-imperial-gold/50 rounded-tr-lg z-20 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-8 h-8 border-l-2 border-b-2 border-imperial-gold/50 rounded-bl-lg z-20 pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 border-imperial-gold/50 rounded-br-lg z-20 pointer-events-none" />
+      <div className="pointer-events-none absolute left-0 top-0 z-20 h-8 w-8 rounded-tl-lg border-l-2 border-t-2 border-imperial-gold/50" />
+      <div className="pointer-events-none absolute right-0 top-0 z-20 h-8 w-8 rounded-tr-lg border-r-2 border-t-2 border-imperial-gold/50" />
+      <div className="pointer-events-none absolute bottom-0 left-0 z-20 h-8 w-8 rounded-bl-lg border-b-2 border-l-2 border-imperial-gold/50" />
+      <div className="pointer-events-none absolute bottom-0 right-0 z-20 h-8 w-8 rounded-br-lg border-b-2 border-r-2 border-imperial-gold/50" />
 
       {/* Map container with grimdark filter */}
       <div
         ref={mapContainer}
-        className={`w-full h-full ${isFullscreen ? 'min-h-screen' : 'min-h-[400px]'}`}
+        className={`h-full w-full ${isFullscreen ? 'min-h-screen' : 'min-h-[400px]'}`}
         style={{
           filter: 'sepia(0.15) saturate(0.85) brightness(0.9) contrast(1.1)',
         }}
@@ -440,15 +462,16 @@ export default function CommunityMap({
 
       {/* Scanline overlay */}
       <div
-        className="absolute inset-0 pointer-events-none z-10 opacity-[0.03]"
+        className="pointer-events-none absolute inset-0 z-10 opacity-[0.03]"
         style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(201, 162, 39, 0.5) 2px, rgba(201, 162, 39, 0.5) 4px)',
+          backgroundImage:
+            'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(201, 162, 39, 0.5) 2px, rgba(201, 162, 39, 0.5) 4px)',
         }}
       />
 
       {/* Grid overlay - tactical display */}
       <div
-        className="absolute inset-0 pointer-events-none z-10 opacity-[0.04]"
+        className="pointer-events-none absolute inset-0 z-10 opacity-[0.04]"
         style={{
           backgroundImage: `
             linear-gradient(rgba(201, 162, 39, 0.3) 1px, transparent 1px),
@@ -460,17 +483,20 @@ export default function CommunityMap({
 
       {/* Vignette effect */}
       <div
-        className="absolute inset-0 pointer-events-none z-10"
+        className="pointer-events-none absolute inset-0 z-10"
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(10, 10, 15, 0.6) 100%)',
+          background:
+            'radial-gradient(ellipse at center, transparent 40%, rgba(10, 10, 15, 0.6) 100%)',
         }}
       />
 
       {/* Top-left label */}
-      <div className="absolute top-3 left-10 z-20 pointer-events-none">
-        <div className="flex items-center gap-2 px-2 py-1 bg-void/80 border border-imperial-gold/30 rounded">
-          <div className="w-1.5 h-1.5 rounded-full bg-imperial-gold animate-pulse" />
-          <span className="text-[10px] font-mono text-imperial-gold/80 tracking-wider">CARTOGRAPHIA IMPERIALIS</span>
+      <div className="pointer-events-none absolute left-10 top-3 z-20">
+        <div className="flex items-center gap-2 rounded border border-imperial-gold/30 bg-void/80 px-2 py-1">
+          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-imperial-gold" />
+          <span className="font-mono text-[10px] tracking-wider text-imperial-gold/80">
+            CARTOGRAPHIA IMPERIALIS
+          </span>
         </div>
       </div>
 
@@ -478,26 +504,28 @@ export default function CommunityMap({
       {showExpandButton && (
         <motion.button
           onClick={() => setIsFullscreen(!isFullscreen)}
-          className="absolute top-3 right-10 z-20 flex items-center gap-2 px-3 py-1.5 bg-void/90 border border-imperial-gold/40 rounded hover:bg-imperial-gold/20 hover:border-imperial-gold/60 transition-colors group"
+          className="group absolute right-10 top-3 z-20 flex items-center gap-2 rounded border border-imperial-gold/40 bg-void/90 px-3 py-1.5 transition-colors hover:border-imperial-gold/60 hover:bg-imperial-gold/20"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           title={isFullscreen ? 'Minimizar mapa (Esc)' : 'Expandir mapa'}
         >
           {isFullscreen ? (
-            <Minimize2 className="w-4 h-4 text-imperial-gold" />
+            <Minimize2 className="h-4 w-4 text-imperial-gold" />
           ) : (
-            <Maximize2 className="w-4 h-4 text-imperial-gold" />
+            <Maximize2 className="h-4 w-4 text-imperial-gold" />
           )}
-          <span className="text-[10px] font-mono text-imperial-gold/80 tracking-wider group-hover:text-imperial-gold hidden sm:inline">
+          <span className="hidden font-mono text-[10px] tracking-wider text-imperial-gold/80 group-hover:text-imperial-gold sm:inline">
             {isFullscreen ? 'MINIMIZAR' : 'EXPANDIR'}
           </span>
         </motion.button>
       )}
 
       {/* Bottom-right coordinates display */}
-      <div className="absolute bottom-3 right-10 z-20 pointer-events-none">
-        <div className="px-2 py-1 bg-void/80 border border-bone/20 rounded">
-          <span className="text-[9px] font-mono text-bone/50 tracking-wider">SEGMENTUM SOLAR • M41</span>
+      <div className="pointer-events-none absolute bottom-3 right-10 z-20">
+        <div className="rounded border border-bone/20 bg-void/80 px-2 py-1">
+          <span className="font-mono text-[9px] tracking-wider text-bone/50">
+            SEGMENTUM SOLAR • M41
+          </span>
         </div>
       </div>
 
@@ -507,10 +535,10 @@ export default function CommunityMap({
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           onClick={() => setIsFullscreen(false)}
-          className="absolute top-4 right-4 z-30 p-2 bg-void/90 border border-blood-red/50 rounded-lg hover:bg-blood-red/20 hover:border-blood-red transition-colors"
+          className="border-blood-red/50 hover:bg-blood-red/20 hover:border-blood-red absolute right-4 top-4 z-30 rounded-lg border bg-void/90 p-2 transition-colors"
           title="Cerrar (Esc)"
         >
-          <X className="w-5 h-5 text-blood-red" />
+          <X className="text-blood-red h-5 w-5" />
         </motion.button>
       )}
 
@@ -519,12 +547,13 @@ export default function CommunityMap({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20"
+          className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2"
         >
-          <div className="flex items-center gap-3 px-4 py-2 bg-void/90 border border-imperial-gold/30 rounded-lg">
-            <div className="w-2 h-2 rounded-full bg-imperial-gold animate-pulse" />
-            <span className="text-sm font-mono text-imperial-gold">
-              {stores.length} {stores.length === 1 ? 'UBICACIÓN DETECTADA' : 'UBICACIONES DETECTADAS'}
+          <div className="flex items-center gap-3 rounded-lg border border-imperial-gold/30 bg-void/90 px-4 py-2">
+            <div className="h-2 w-2 animate-pulse rounded-full bg-imperial-gold" />
+            <span className="font-mono text-sm text-imperial-gold">
+              {stores.length}{' '}
+              {stores.length === 1 ? 'UBICACIÓN DETECTADA' : 'UBICACIONES DETECTADAS'}
             </span>
           </div>
         </motion.div>
@@ -532,9 +561,11 @@ export default function CommunityMap({
 
       {/* Loading state */}
       {!mapLoaded && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-void z-30">
-          <Loader2 className="w-8 h-8 text-imperial-gold animate-spin mb-3" />
-          <span className="text-xs font-mono text-imperial-gold/60 tracking-widest">INICIALIZANDO COGITATOR...</span>
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-void">
+          <Loader2 className="mb-3 h-8 w-8 animate-spin text-imperial-gold" />
+          <span className="font-mono text-xs tracking-widest text-imperial-gold/60">
+            INICIALIZANDO COGITATOR...
+          </span>
         </div>
       )}
 
@@ -568,7 +599,7 @@ export default function CommunityMap({
           border-top-color: rgba(20, 20, 35, 0.98);
         }
         .store-popup .mapboxgl-popup-close-button {
-          color: #C9A227;
+          color: #c9a227;
           font-size: 20px;
           padding: 4px 8px;
           right: 4px;
@@ -583,7 +614,10 @@ export default function CommunityMap({
         /* Popup content styling */
         .store-popup-content {
           padding: 16px;
-          font-family: system-ui, -apple-system, sans-serif;
+          font-family:
+            system-ui,
+            -apple-system,
+            sans-serif;
         }
         .store-popup-badge {
           display: inline-block;
@@ -614,7 +648,7 @@ export default function CommunityMap({
           align-items: center;
           gap: 4px;
           font-size: 13px;
-          color: #C9A227;
+          color: #c9a227;
           margin-bottom: 12px;
         }
         .store-popup-rating .star {
@@ -632,7 +666,7 @@ export default function CommunityMap({
           margin: 0 -16px -16px;
           background: rgba(201, 162, 39, 0.1);
           border-top: 1px solid rgba(201, 162, 39, 0.2);
-          color: #C9A227;
+          color: #c9a227;
           text-decoration: none;
           font-size: 12px;
           font-weight: 600;
@@ -681,19 +715,19 @@ export default function CommunityMap({
           style={{ border: '4px solid rgba(201, 162, 39, 0.4)' }}
         >
           {/* Fullscreen header */}
-          <div className="absolute top-0 left-0 right-0 h-12 bg-void/95 border-b border-imperial-gold/30 flex items-center justify-between px-4 z-30">
+          <div className="absolute left-0 right-0 top-0 z-30 flex h-12 items-center justify-between border-b border-imperial-gold/30 bg-void/95 px-4">
             <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-imperial-gold animate-pulse" />
-              <span className="text-sm font-mono text-imperial-gold tracking-wider">MODO TACTICO ACTIVADO</span>
+              <div className="h-2 w-2 animate-pulse rounded-full bg-imperial-gold" />
+              <span className="font-mono text-sm tracking-wider text-imperial-gold">
+                MODO TACTICO ACTIVADO
+              </span>
             </div>
-            <span className="text-xs font-mono text-bone/40">Pulsa ESC para salir</span>
+            <span className="font-mono text-xs text-bone/40">Pulsa ESC para salir</span>
           </div>
 
           {/* Map content with padding for header */}
           <div className="absolute inset-0 pt-12">
-            <div className="relative w-full h-full overflow-hidden">
-              {mapContent}
-            </div>
+            <div className="relative h-full w-full overflow-hidden">{mapContent}</div>
           </div>
         </motion.div>
       </AnimatePresence>
@@ -702,7 +736,10 @@ export default function CommunityMap({
 
   // Normal mode
   return (
-    <div className={`relative rounded-xl overflow-hidden ${className}`} style={{ border: '2px solid rgba(201, 162, 39, 0.3)' }}>
+    <div
+      className={`relative overflow-hidden rounded-xl ${className}`}
+      style={{ border: '2px solid rgba(201, 162, 39, 0.3)' }}
+    >
       {mapContent}
     </div>
   )

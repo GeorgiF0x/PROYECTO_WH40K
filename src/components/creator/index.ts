@@ -1,4 +1,9 @@
-export { CreatorBadge, creatorTypeConfig, getCreatorTypeConfig, getAllCreatorTypes } from './CreatorBadge'
+export {
+  CreatorBadge,
+  creatorTypeConfig,
+  getCreatorTypeConfig,
+  getAllCreatorTypes,
+} from './CreatorBadge'
 export { CreatorCard } from './CreatorCard'
 export { CreatorGrid } from './CreatorGrid'
 export { CreatorEligibility } from './CreatorEligibility'

@@ -25,7 +25,11 @@ export function WikiRenderer({ content, factionColor = '#C9A227', className }: W
     return (
       <article className={cn('wiki-content', className)}>
         {content.blocks.map((block, index) => (
-          <RenderBlockNoteBlock key={index} block={block as BlockNoteBlock} factionColor={factionColor} />
+          <RenderBlockNoteBlock
+            key={index}
+            block={block as BlockNoteBlock}
+            factionColor={factionColor}
+          />
         ))}
       </article>
     )
@@ -64,7 +68,13 @@ interface BlockNoteInlineContent {
   content?: BlockNoteInlineContent[]
 }
 
-function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; factionColor: string }) {
+function RenderBlockNoteBlock({
+  block,
+  factionColor,
+}: {
+  block: BlockNoteBlock
+  factionColor: string
+}) {
   const children = block.children?.length ? (
     <div className="pl-6">
       {block.children.map((child, i) => (
@@ -77,8 +87,11 @@ function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; 
     case 'paragraph':
       return (
         <>
-          <p className="font-body text-bone/85 leading-relaxed mb-4">
-            <RenderBlockNoteInlineContent content={block.content as BlockNoteInlineContent[]} factionColor={factionColor} />
+          <p className="mb-4 font-body leading-relaxed text-bone/85">
+            <RenderBlockNoteInlineContent
+              content={block.content as BlockNoteInlineContent[]}
+              factionColor={factionColor}
+            />
           </p>
           {children}
         </>
@@ -89,7 +102,10 @@ function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; 
       return (
         <>
           <RenderBNHeading level={level} factionColor={factionColor}>
-            <RenderBlockNoteInlineContent content={block.content as BlockNoteInlineContent[]} factionColor={factionColor} />
+            <RenderBlockNoteInlineContent
+              content={block.content as BlockNoteInlineContent[]}
+              factionColor={factionColor}
+            />
           </RenderBNHeading>
           {children}
         </>
@@ -98,9 +114,12 @@ function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; 
 
     case 'bulletListItem':
       return (
-        <ul className="list-disc list-inside mb-2 space-y-1 font-body text-bone/85">
+        <ul className="mb-2 list-inside list-disc space-y-1 font-body text-bone/85">
           <li>
-            <RenderBlockNoteInlineContent content={block.content as BlockNoteInlineContent[]} factionColor={factionColor} />
+            <RenderBlockNoteInlineContent
+              content={block.content as BlockNoteInlineContent[]}
+              factionColor={factionColor}
+            />
             {children}
           </li>
         </ul>
@@ -108,9 +127,12 @@ function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; 
 
     case 'numberedListItem':
       return (
-        <ol className="list-decimal list-inside mb-2 space-y-1 font-body text-bone/85">
+        <ol className="mb-2 list-inside list-decimal space-y-1 font-body text-bone/85">
           <li>
-            <RenderBlockNoteInlineContent content={block.content as BlockNoteInlineContent[]} factionColor={factionColor} />
+            <RenderBlockNoteInlineContent
+              content={block.content as BlockNoteInlineContent[]}
+              factionColor={factionColor}
+            />
             {children}
           </li>
         </ol>
@@ -118,7 +140,7 @@ function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; 
 
     case 'checkListItem':
       return (
-        <div className="flex items-start gap-2 mb-2 font-body text-bone/85">
+        <div className="mb-2 flex items-start gap-2 font-body text-bone/85">
           <input
             type="checkbox"
             checked={block.props?.checked as boolean}
@@ -126,7 +148,10 @@ function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; 
             className="mt-1 accent-imperial-gold"
           />
           <span>
-            <RenderBlockNoteInlineContent content={block.content as BlockNoteInlineContent[]} factionColor={factionColor} />
+            <RenderBlockNoteInlineContent
+              content={block.content as BlockNoteInlineContent[]}
+              factionColor={factionColor}
+            />
           </span>
           {children}
         </div>
@@ -149,12 +174,10 @@ function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; 
       return (
         <>
           <pre
-            className="my-4 p-4 rounded-lg bg-void-dark overflow-x-auto"
+            className="my-4 overflow-x-auto rounded-lg bg-void-dark p-4"
             style={{ border: `1px solid ${factionColor}20` }}
           >
-            <code className="font-mono text-sm text-bone/90">
-              {block.props?.code as string}
-            </code>
+            <code className="font-mono text-sm text-bone/90">{block.props?.code as string}</code>
           </pre>
           {children}
         </>
@@ -168,7 +191,10 @@ function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; 
             type={(block.props?.alertType as 'heresy' | 'danger' | 'info' | 'imperial') || 'info'}
             title={block.props?.title as string}
           >
-            <RenderBlockNoteInlineContent content={block.content as BlockNoteInlineContent[]} factionColor={factionColor} />
+            <RenderBlockNoteInlineContent
+              content={block.content as BlockNoteInlineContent[]}
+              factionColor={factionColor}
+            />
           </WarningBlock>
           {children}
         </>
@@ -182,8 +208,11 @@ function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; 
             icon={(block.props?.icon as 'book' | 'scroll') || 'book'}
             factionColor={factionColor}
           >
-            <p className="font-body text-bone/85 leading-relaxed">
-              <RenderBlockNoteInlineContent content={block.content as BlockNoteInlineContent[]} factionColor={factionColor} />
+            <p className="font-body leading-relaxed text-bone/85">
+              <RenderBlockNoteInlineContent
+                content={block.content as BlockNoteInlineContent[]}
+                factionColor={factionColor}
+              />
             </p>
           </LoreBlock>
           {children}
@@ -208,8 +237,11 @@ function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; 
       if (block.content && Array.isArray(block.content)) {
         return (
           <>
-            <p className="font-body text-bone/85 leading-relaxed mb-4">
-              <RenderBlockNoteInlineContent content={block.content as BlockNoteInlineContent[]} factionColor={factionColor} />
+            <p className="mb-4 font-body leading-relaxed text-bone/85">
+              <RenderBlockNoteInlineContent
+                content={block.content as BlockNoteInlineContent[]}
+                factionColor={factionColor}
+              />
             </p>
             {children}
           </>
@@ -219,7 +251,15 @@ function RenderBlockNoteBlock({ block, factionColor }: { block: BlockNoteBlock; 
   }
 }
 
-function RenderBNHeading({ level, factionColor, children }: { level: number; factionColor: string; children: React.ReactNode }) {
+function RenderBNHeading({
+  level,
+  factionColor,
+  children,
+}: {
+  level: number
+  factionColor: string
+  children: React.ReactNode
+}) {
   const baseClasses = 'font-display font-bold text-white mb-4'
   const levelClasses: Record<number, string> = {
     1: 'text-3xl md:text-4xl mt-12 mb-6',
@@ -230,14 +270,40 @@ function RenderBNHeading({ level, factionColor, children }: { level: number; fac
   const headingStyle = { color: level <= 2 ? factionColor : undefined }
 
   switch (level) {
-    case 1: return <h1 className={headingClass} style={headingStyle}>{children}</h1>
-    case 2: return <h2 className={headingClass} style={headingStyle}>{children}</h2>
-    case 3: return <h3 className={headingClass} style={headingStyle}>{children}</h3>
-    default: return <h3 className={headingClass} style={headingStyle}>{children}</h3>
+    case 1:
+      return (
+        <h1 className={headingClass} style={headingStyle}>
+          {children}
+        </h1>
+      )
+    case 2:
+      return (
+        <h2 className={headingClass} style={headingStyle}>
+          {children}
+        </h2>
+      )
+    case 3:
+      return (
+        <h3 className={headingClass} style={headingStyle}>
+          {children}
+        </h3>
+      )
+    default:
+      return (
+        <h3 className={headingClass} style={headingStyle}>
+          {children}
+        </h3>
+      )
   }
 }
 
-function RenderBlockNoteInlineContent({ content, factionColor }: { content?: BlockNoteInlineContent[]; factionColor: string }) {
+function RenderBlockNoteInlineContent({
+  content,
+  factionColor,
+}: {
+  content?: BlockNoteInlineContent[]
+  factionColor: string
+}) {
   if (!content || !Array.isArray(content)) return null
 
   return (
@@ -249,7 +315,13 @@ function RenderBlockNoteInlineContent({ content, factionColor }: { content?: Blo
   )
 }
 
-function RenderBNInline({ item, factionColor }: { item: BlockNoteInlineContent; factionColor: string }) {
+function RenderBNInline({
+  item,
+  factionColor,
+}: {
+  item: BlockNoteInlineContent
+  factionColor: string
+}) {
   if (item.type === 'text') {
     let node: React.ReactNode = item.text
     const styles = item.styles || {}
@@ -260,13 +332,23 @@ function RenderBNInline({ item, factionColor }: { item: BlockNoteInlineContent; 
     if (styles.strikethrough) node = <s className="line-through">{node}</s>
     if (styles.code) {
       node = (
-        <code className="px-1.5 py-0.5 rounded text-sm font-mono" style={{ background: `${factionColor}15`, color: factionColor }}>
+        <code
+          className="rounded px-1.5 py-0.5 font-mono text-sm"
+          style={{ background: `${factionColor}15`, color: factionColor }}
+        >
           {node}
         </code>
       )
     }
     if (styles.backgroundColor && styles.backgroundColor !== 'default') {
-      node = <mark className="px-1 rounded" style={{ background: `${factionColor}30`, color: 'inherit' }}>{node}</mark>
+      node = (
+        <mark
+          className="rounded px-1"
+          style={{ background: `${factionColor}30`, color: 'inherit' }}
+        >
+          {node}
+        </mark>
+      )
     }
 
     return <>{node}</>
@@ -281,7 +363,13 @@ function RenderBNInline({ item, factionColor }: { item: BlockNoteInlineContent; 
 
     if (isExternal) {
       return (
-        <a href={href} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80 transition-opacity" style={{ color: factionColor }}>
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline transition-opacity hover:opacity-80"
+          style={{ color: factionColor }}
+        >
           {linkContent}
         </a>
       )
@@ -292,14 +380,23 @@ function RenderBNInline({ item, factionColor }: { item: BlockNoteInlineContent; 
       // Group 1 = legacy /facciones/.../wiki, group 2 = new /wiki/..., group 3 = slug
       const factionFromUrl = wikiMatch[1] || wikiMatch[2]
       return (
-        <WikiLinkPreview href={href} factionId={factionFromUrl} slug={wikiMatch[3]} factionColor={factionColor}>
+        <WikiLinkPreview
+          href={href}
+          factionId={factionFromUrl}
+          slug={wikiMatch[3]}
+          factionColor={factionColor}
+        >
           {linkContent}
         </WikiLinkPreview>
       )
     }
 
     return (
-      <Link href={href} className="underline hover:opacity-80 transition-opacity" style={{ color: factionColor }}>
+      <Link
+        href={href}
+        className="underline transition-opacity hover:opacity-80"
+        style={{ color: factionColor }}
+      >
         {linkContent}
       </Link>
     )
@@ -325,7 +422,7 @@ function RenderNode({ node, factionColor }: RenderNodeProps) {
   switch (node.type) {
     case 'paragraph':
       return (
-        <p className="font-body text-bone/85 leading-relaxed mb-4">
+        <p className="mb-4 font-body leading-relaxed text-bone/85">
           {node.content?.map((child, i) => (
             <RenderInline key={i} node={child} factionColor={factionColor} />
           ))}
@@ -337,7 +434,7 @@ function RenderNode({ node, factionColor }: RenderNodeProps) {
 
     case 'bulletList':
       return (
-        <ul className="list-disc list-inside mb-4 space-y-2 font-body text-bone/85">
+        <ul className="mb-4 list-inside list-disc space-y-2 font-body text-bone/85">
           {node.content?.map((item, i) => (
             <RenderNode key={i} node={item} factionColor={factionColor} />
           ))}
@@ -346,7 +443,7 @@ function RenderNode({ node, factionColor }: RenderNodeProps) {
 
     case 'orderedList':
       return (
-        <ol className="list-decimal list-inside mb-4 space-y-2 font-body text-bone/85">
+        <ol className="mb-4 list-inside list-decimal space-y-2 font-body text-bone/85">
           {node.content?.map((item, i) => (
             <RenderNode key={i} node={item} factionColor={factionColor} />
           ))}
@@ -376,7 +473,7 @@ function RenderNode({ node, factionColor }: RenderNodeProps) {
       }
       return (
         <blockquote
-          className="border-l-4 pl-4 my-4 italic text-bone/70"
+          className="my-4 border-l-4 pl-4 italic text-bone/70"
           style={{ borderColor: factionColor }}
         >
           {node.content?.map((child, i) => (
@@ -388,7 +485,7 @@ function RenderNode({ node, factionColor }: RenderNodeProps) {
     case 'codeBlock':
       return (
         <pre
-          className="my-4 p-4 rounded-lg bg-void-dark overflow-x-auto"
+          className="my-4 overflow-x-auto rounded-lg bg-void-dark p-4"
           style={{ border: `1px solid ${factionColor}20` }}
         >
           <code className="font-mono text-sm text-bone/90">
@@ -400,16 +497,18 @@ function RenderNode({ node, factionColor }: RenderNodeProps) {
     case 'horizontalRule':
       return (
         <hr
-          className="my-8 border-0 h-px"
-          style={{ background: `linear-gradient(90deg, transparent, ${factionColor}40, transparent)` }}
+          className="my-8 h-px border-0"
+          style={{
+            background: `linear-gradient(90deg, transparent, ${factionColor}40, transparent)`,
+          }}
         />
       )
 
     case 'image':
       return (
         <ImageBlock
-          src={node.attrs?.src as string || ''}
-          alt={node.attrs?.alt as string || ''}
+          src={(node.attrs?.src as string) || ''}
+          alt={(node.attrs?.alt as string) || ''}
           caption={node.attrs?.title as string}
           factionColor={factionColor}
         />
@@ -430,7 +529,7 @@ function RenderNode({ node, factionColor }: RenderNodeProps) {
     case 'loreBlock':
       return (
         <LoreBlock
-          title={node.attrs?.title as string || 'Lore'}
+          title={(node.attrs?.title as string) || 'Lore'}
           icon={node.attrs?.icon as 'book' | 'scroll'}
           factionColor={factionColor}
         >
@@ -443,7 +542,7 @@ function RenderNode({ node, factionColor }: RenderNodeProps) {
     case 'quoteBlock':
       return (
         <QuoteBlock
-          text={node.attrs?.text as string || extractTextContent(node)}
+          text={(node.attrs?.text as string) || extractTextContent(node)}
           author={node.attrs?.author as string}
           source={node.attrs?.source as string}
           factionColor={factionColor}
@@ -486,19 +585,47 @@ function RenderHeading({ node, factionColor }: RenderNodeProps) {
 
   switch (level) {
     case 1:
-      return <h1 className={headingClass} style={headingStyle}>{headingContent}</h1>
+      return (
+        <h1 className={headingClass} style={headingStyle}>
+          {headingContent}
+        </h1>
+      )
     case 2:
-      return <h2 className={headingClass} style={headingStyle}>{headingContent}</h2>
+      return (
+        <h2 className={headingClass} style={headingStyle}>
+          {headingContent}
+        </h2>
+      )
     case 3:
-      return <h3 className={headingClass} style={headingStyle}>{headingContent}</h3>
+      return (
+        <h3 className={headingClass} style={headingStyle}>
+          {headingContent}
+        </h3>
+      )
     case 4:
-      return <h4 className={headingClass} style={headingStyle}>{headingContent}</h4>
+      return (
+        <h4 className={headingClass} style={headingStyle}>
+          {headingContent}
+        </h4>
+      )
     case 5:
-      return <h5 className={headingClass} style={headingStyle}>{headingContent}</h5>
+      return (
+        <h5 className={headingClass} style={headingStyle}>
+          {headingContent}
+        </h5>
+      )
     case 6:
-      return <h6 className={headingClass} style={headingStyle}>{headingContent}</h6>
+      return (
+        <h6 className={headingClass} style={headingStyle}>
+          {headingContent}
+        </h6>
+      )
     default:
-      return <h3 className={headingClass} style={headingStyle}>{headingContent}</h3>
+      return (
+        <h3 className={headingClass} style={headingStyle}>
+          {headingContent}
+        </h3>
+      )
   }
 }
 
@@ -535,7 +662,11 @@ function RenderInlineContent({ node, factionColor }: RenderNodeProps) {
   return <RenderNode node={node} factionColor={factionColor} />
 }
 
-function applyMark(content: React.ReactNode, mark: TiptapMark, factionColor: string): React.ReactNode {
+function applyMark(
+  content: React.ReactNode,
+  mark: TiptapMark,
+  factionColor: string
+): React.ReactNode {
   switch (mark.type) {
     case 'bold':
       return <strong className="font-bold">{content}</strong>
@@ -552,7 +683,7 @@ function applyMark(content: React.ReactNode, mark: TiptapMark, factionColor: str
     case 'code':
       return (
         <code
-          className="px-1.5 py-0.5 rounded text-sm font-mono"
+          className="rounded px-1.5 py-0.5 font-mono text-sm"
           style={{
             background: `${factionColor}15`,
             color: factionColor,
@@ -571,7 +702,7 @@ function applyMark(content: React.ReactNode, mark: TiptapMark, factionColor: str
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:opacity-80 transition-opacity"
+            className="underline transition-opacity hover:opacity-80"
             style={{ color: factionColor }}
           >
             {content}
@@ -583,7 +714,12 @@ function applyMark(content: React.ReactNode, mark: TiptapMark, factionColor: str
       if (wikiMatch) {
         const factionFromUrl = wikiMatch[1] || wikiMatch[2]
         return (
-          <WikiLinkPreview href={href} factionId={factionFromUrl} slug={wikiMatch[3]} factionColor={factionColor}>
+          <WikiLinkPreview
+            href={href}
+            factionId={factionFromUrl}
+            slug={wikiMatch[3]}
+            factionColor={factionColor}
+          >
             {content}
           </WikiLinkPreview>
         )
@@ -592,7 +728,7 @@ function applyMark(content: React.ReactNode, mark: TiptapMark, factionColor: str
       return (
         <Link
           href={href || '#'}
-          className="underline hover:opacity-80 transition-opacity"
+          className="underline transition-opacity hover:opacity-80"
           style={{ color: factionColor }}
         >
           {content}
@@ -603,7 +739,7 @@ function applyMark(content: React.ReactNode, mark: TiptapMark, factionColor: str
     case 'highlight':
       return (
         <mark
-          className="px-1 rounded"
+          className="rounded px-1"
           style={{ background: `${factionColor}30`, color: 'inherit' }}
         >
           {content}

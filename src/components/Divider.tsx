@@ -8,10 +8,10 @@ interface DividerProps {
 
 export default function Divider({ icon = '⚔' }: DividerProps) {
   return (
-    <div className="relative w-full h-20 flex items-center justify-center overflow-hidden">
+    <div className="relative flex h-20 w-full items-center justify-center overflow-hidden">
       {/* Line */}
       <motion.div
-        className="absolute w-[40%] h-px bg-gradient-to-r from-transparent via-imperial-bronze to-transparent"
+        className="absolute h-px w-[40%] bg-gradient-to-r from-transparent via-imperial-bronze to-transparent"
         initial={{ scaleX: 0, opacity: 0 }}
         whileInView={{ scaleX: 1, opacity: 1 }}
         viewport={{ once: true }}
@@ -20,7 +20,7 @@ export default function Divider({ icon = '⚔' }: DividerProps) {
 
       {/* Icon */}
       <motion.div
-        className="relative z-10 w-16 h-16 flex items-center justify-center text-2xl text-imperial-gold bg-void px-4"
+        className="relative z-10 flex h-16 w-16 items-center justify-center bg-void px-4 text-2xl text-imperial-gold"
         initial={{ opacity: 0, scale: 0 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}

@@ -89,10 +89,7 @@ export async function searchMiniaturesBySimilarity(
 /**
  * Find miniatures similar to a given one
  */
-export async function findSimilarMiniatures(
-  miniatureId: string,
-  matchCount: number = 5
-) {
+export async function findSimilarMiniatures(miniatureId: string, matchCount: number = 5) {
   const { data, error } = await getSupabaseAdmin().rpc('find_similar_miniatures', {
     miniature_id: miniatureId,
     match_count: matchCount,
@@ -129,11 +126,7 @@ export async function generateMissingEmbeddings(): Promise<number> {
 
   for (const miniature of miniatures) {
     try {
-      await generateMiniatureEmbedding(
-        miniature.id,
-        miniature.title,
-        miniature.description
-      )
+      await generateMiniatureEmbedding(miniature.id, miniature.title, miniature.description)
       processed++
 
       // Rate limiting - wait 100ms between requests

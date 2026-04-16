@@ -58,7 +58,7 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
     >
       {/* CRT scanlines */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage:
             'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(201,162,39,0.4) 2px, rgba(201,162,39,0.4) 4px)',
@@ -67,7 +67,7 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
 
       {/* Sweeping scan line */}
       <motion.div
-        className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold/40 to-transparent pointer-events-none"
+        className="pointer-events-none absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold/40 to-transparent"
         animate={{ top: ['0%', '100%'] }}
         transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
       />
@@ -88,7 +88,7 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
       {/* Screen flicker */}
       {phase === 'boot' && (
         <motion.div
-          className="absolute inset-0 bg-imperial-gold/5 pointer-events-none"
+          className="pointer-events-none absolute inset-0 bg-imperial-gold/5"
           animate={{ opacity: [0, 0.08, 0, 0.04, 0] }}
           transition={{ duration: 0.3, repeat: Infinity, repeatDelay: 1.5 }}
         />
@@ -101,26 +101,26 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
         animate={{ opacity: phase !== 'flash' ? 1 : 0 }}
         transition={{ duration: 0.2 }}
       >
-        <div className="relative border border-imperial-gold/20 rounded-lg p-6 bg-void-light/10 overflow-hidden">
+        <div className="relative overflow-hidden rounded-lg border border-imperial-gold/20 bg-void-light/10 p-6">
           {/* Corner brackets */}
-          <div className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-imperial-gold/50" />
-          <div className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2 border-imperial-gold/50" />
-          <div className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2 border-imperial-gold/50" />
-          <div className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-imperial-gold/50" />
+          <div className="absolute left-0 top-0 h-5 w-5 border-l-2 border-t-2 border-imperial-gold/50" />
+          <div className="absolute right-0 top-0 h-5 w-5 border-r-2 border-t-2 border-imperial-gold/50" />
+          <div className="absolute bottom-0 left-0 h-5 w-5 border-b-2 border-l-2 border-imperial-gold/50" />
+          <div className="absolute bottom-0 right-0 h-5 w-5 border-b-2 border-r-2 border-imperial-gold/50" />
 
           {/* Header */}
-          <div className="flex items-center gap-3 mb-5 pb-3 border-b border-imperial-gold/10">
+          <div className="mb-5 flex items-center gap-3 border-b border-imperial-gold/10 pb-3">
             <motion.div
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
             >
-              <Cpu className="w-4 h-4 text-imperial-gold" />
+              <Cpu className="h-4 w-4 text-imperial-gold" />
             </motion.div>
-            <span className="text-xs font-body uppercase tracking-[0.3em] text-imperial-gold">
+            <span className="font-body text-xs uppercase tracking-[0.3em] text-imperial-gold">
               Cogitator MK.VII — Autenticacion Imperial
             </span>
             <motion.span
-              className="ml-auto text-xs font-body text-imperial-gold/50"
+              className="ml-auto font-body text-xs text-imperial-gold/50"
               animate={{ opacity: [1, 0] }}
               transition={{ duration: 0.6, repeat: Infinity }}
             >
@@ -129,7 +129,7 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
           </div>
 
           {/* Boot log lines */}
-          <div className="space-y-1 font-mono text-xs min-h-[240px]">
+          <div className="min-h-[240px] space-y-1 font-mono text-xs">
             {BOOT_LINES.slice(0, visibleLines).map((line, i) => (
               <motion.div
                 key={i}
@@ -138,18 +138,18 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
                 transition={{ duration: 0.15 }}
                 className={
                   line.text.includes('ACCESO AUTORIZADO')
-                    ? 'text-green-400 font-bold mt-2'
+                    ? 'mt-2 font-bold text-green-400'
                     : line.text.includes('OMNISSIAH')
-                    ? 'text-imperial-gold font-bold'
-                    : line.text.includes('OK')
-                    ? 'text-imperial-gold/70'
-                    : 'text-bone/50'
+                      ? 'font-bold text-imperial-gold'
+                      : line.text.includes('OK')
+                        ? 'text-imperial-gold/70'
+                        : 'text-bone/50'
                 }
               >
                 {line.text}
                 {i === visibleLines - 1 && phase === 'boot' && (
                   <motion.span
-                    className="inline-block ml-1 text-imperial-gold"
+                    className="ml-1 inline-block text-imperial-gold"
                     animate={{ opacity: [1, 0] }}
                     transition={{ duration: 0.5, repeat: Infinity }}
                   >
@@ -161,8 +161,8 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
           </div>
 
           {/* Progress bar */}
-          <div className="mt-4 pt-3 border-t border-imperial-gold/10">
-            <div className="h-1 bg-void rounded-full overflow-hidden">
+          <div className="mt-4 border-t border-imperial-gold/10 pt-3">
+            <div className="h-1 overflow-hidden rounded-full bg-void">
               <motion.div
                 className="h-full bg-gradient-to-r from-imperial-gold/60 via-imperial-gold to-imperial-gold/60"
                 initial={{ width: '0%' }}

@@ -40,10 +40,12 @@ export default function StoreReviews({ storeId, userId }: StoreReviewsProps) {
     setIsLoading(true)
     const { data, error: fetchError } = await supabase
       .from('store_reviews')
-      .select(`
+      .select(
+        `
         *,
         profiles:reviewer_id(username, display_name, avatar_url)
-      `)
+      `
+      )
       .eq('store_id', storeId)
       .order('created_at', { ascending: false })
 
@@ -73,14 +75,12 @@ export default function StoreReviews({ storeId, userId }: StoreReviewsProps) {
     setError(null)
     setIsSubmitting(true)
 
-    const { error: insertError } = await supabase
-      .from('store_reviews')
-      .insert({
-        store_id: storeId,
-        reviewer_id: userId,
-        rating: newRating,
-        content: newContent.trim() || null,
-      })
+    const { error: insertError } = await supabase.from('store_reviews').insert({
+      store_id: storeId,
+      reviewer_id: userId,
+      rating: newRating,
+      content: newContent.trim() || null,
+    })
 
     if (insertError) {
       if (insertError.code === '23505') {
@@ -98,24 +98,19 @@ export default function StoreReviews({ storeId, userId }: StoreReviewsProps) {
   }
 
   return (
-    <div className="p-6 bg-void-light rounded-2xl border border-bone/10">
-      <h3 className="font-display font-semibold text-bone text-lg flex items-center gap-2 mb-6">
-        <MessageSquare className="w-5 h-5 text-imperial-gold" />
+    <div className="rounded-2xl border border-bone/10 bg-void-light p-6">
+      <h3 className="mb-6 flex items-center gap-2 font-display text-lg font-semibold text-bone">
+        <MessageSquare className="h-5 w-5 text-imperial-gold" />
         Valoraciones ({reviews.length})
       </h3>
 
       {/* Submit review form */}
       {userId && !userHasReview && (
-        <form onSubmit={handleSubmit} className="mb-6 p-4 bg-void rounded-xl border border-bone/10">
-          <p className="text-sm font-body text-bone/60 mb-3">Tu valoracion</p>
+        <form onSubmit={handleSubmit} className="mb-6 rounded-xl border border-bone/10 bg-void p-4">
+          <p className="mb-3 font-body text-sm text-bone/60">Tu valoracion</p>
 
           <div className="mb-4">
-            <RatingStars
-              rating={newRating}
-              interactive
-              onChange={setNewRating}
-              size="lg"
-            />
+            <RatingStars rating={newRating} interactive onChange={setNewRating} size="lg" />
           </div>
 
           <textarea
@@ -123,7 +118,7 @@ export default function StoreReviews({ storeId, userId }: StoreReviewsProps) {
             onChange={(e) => setNewContent(e.target.value)}
             placeholder="Escribe tu experiencia (opcional)..."
             rows={3}
-            className="w-full px-4 py-3 bg-void-light border border-bone/10 rounded-xl font-body text-bone text-sm placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors resize-none mb-3"
+            className="mb-3 w-full resize-none rounded-xl border border-bone/10 bg-void-light px-4 py-3 font-body text-sm text-bone transition-colors placeholder:text-bone/30 focus:border-imperial-gold/50 focus:outline-none"
           />
 
           <AnimatePresence>
@@ -134,7 +129,7 @@ export default function StoreReviews({ storeId, userId }: StoreReviewsProps) {
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-3 flex items-center gap-2 text-sm text-red-400"
               >
-                <AlertCircle className="w-4 h-4" />
+                <AlertCircle className="h-4 w-4" />
                 {error}
               </motion.div>
             )}
@@ -143,14 +138,14 @@ export default function StoreReviews({ storeId, userId }: StoreReviewsProps) {
           <motion.button
             type="submit"
             disabled={isSubmitting || newRating === 0}
-            className="flex items-center gap-2 px-5 py-2.5 bg-imperial-gold text-void font-display font-bold text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 rounded-lg bg-imperial-gold px-5 py-2.5 font-display text-sm font-bold text-void disabled:cursor-not-allowed disabled:opacity-50"
             whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
             whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
           >
             {isSubmitting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Send className="w-4 h-4" />
+              <Send className="h-4 w-4" />
             )}
             Enviar valoracion
           </motion.button>
@@ -158,7 +153,7 @@ export default function StoreReviews({ storeId, userId }: StoreReviewsProps) {
       )}
 
       {!userId && (
-        <p className="mb-6 text-sm text-bone/40 font-body text-center py-4 bg-void rounded-xl border border-bone/10">
+        <p className="mb-6 rounded-xl border border-bone/10 bg-void py-4 text-center font-body text-sm text-bone/40">
           Inicia sesion para dejar una valoracion
         </p>
       )}
@@ -167,18 +162,18 @@ export default function StoreReviews({ storeId, userId }: StoreReviewsProps) {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="p-4 bg-void rounded-xl animate-pulse">
+            <div key={i} className="animate-pulse rounded-xl bg-void p-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-bone/10" />
-                <div className="h-4 bg-bone/10 rounded w-24" />
+                <div className="h-8 w-8 rounded-full bg-bone/10" />
+                <div className="h-4 w-24 rounded bg-bone/10" />
               </div>
-              <div className="mt-3 h-3 bg-bone/10 rounded w-full" />
-              <div className="mt-2 h-3 bg-bone/10 rounded w-2/3" />
+              <div className="mt-3 h-3 w-full rounded bg-bone/10" />
+              <div className="mt-2 h-3 w-2/3 rounded bg-bone/10" />
             </div>
           ))}
         </div>
       ) : reviews.length === 0 ? (
-        <p className="text-sm text-bone/40 font-body text-center py-8">
+        <p className="py-8 text-center font-body text-sm text-bone/40">
           Aun no hay valoraciones. Se el primero en opinar.
         </p>
       ) : (

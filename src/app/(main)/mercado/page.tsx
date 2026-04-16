@@ -29,14 +29,26 @@ async function getListings(searchParams: SearchParams): Promise<{
 }> {
   const supabase = await createClient()
 
-  const { sort = 'recent', condition, type, category, faction, location, q, cursor, favorites } = searchParams
+  const {
+    sort = 'recent',
+    condition,
+    type,
+    category,
+    faction,
+    location,
+    q,
+    cursor,
+    favorites,
+  } = searchParams
 
   // Resolve the current user up-front. The auth call hits a different service
   // than the listings query, so it costs ~50ms and lets us:
   //  - short-circuit when the favorites filter is active and there's no user
   //  - embed the per-user favorites flag directly into the listings query
   //    (eliminates the separate "is favorited?" round-trip we used to do)
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   if (favorites === 'true' && !user) {
     return { listings: [], nextCursor: null }
@@ -44,7 +56,8 @@ async function getListings(searchParams: SearchParams): Promise<{
 
   let query = supabase
     .from('listings')
-    .select(`
+    .select(
+      `
       *,
       profiles:seller_id (
         id,
@@ -57,9 +70,14 @@ async function getListings(searchParams: SearchParams): Promise<{
         name,
         slug,
         primary_color
-      )${user ? `,
-      user_favorite:listing_favorites!left(user_id)` : ''}
-    `)
+      )${
+        user
+          ? `,
+      user_favorite:listing_favorites!left(user_id)`
+          : ''
+      }
+    `
+    )
     .eq('status', 'active')
 
   // When logged in, the embedded relation is filtered server-side so each
@@ -76,7 +94,10 @@ async function getListings(searchParams: SearchParams): Promise<{
 
   // Apply filters (type assertions needed for Supabase enum types)
   if (condition && condition !== 'all') {
-    query = query.eq('condition', condition as 'nib' | 'nos' | 'assembled' | 'painted' | 'pro_painted')
+    query = query.eq(
+      'condition',
+      condition as 'nib' | 'nos' | 'assembled' | 'painted' | 'pro_painted'
+    )
   }
   if (type && type !== 'all') {
     query = query.eq('listing_type', type as 'sale' | 'trade' | 'both')
@@ -98,7 +119,9 @@ async function getListings(searchParams: SearchParams): Promise<{
   if (cursor) {
     const [cursorDate, cursorId] = cursor.split('_')
     if (sort === 'recent') {
-      query = query.or(`created_at.lt.${cursorDate},and(created_at.eq.${cursorDate},id.lt.${cursorId})`)
+      query = query.or(
+        `created_at.lt.${cursorDate},and(created_at.eq.${cursorDate},id.lt.${cursorId})`
+      )
     } else if (sort === 'price_low') {
       query = query.or(`price.gt.${cursorDate},and(price.eq.${cursorDate},id.gt.${cursorId})`)
     } else if (sort === 'price_high') {
@@ -167,13 +190,13 @@ export default async function MarketplacePage({
   const { listings, nextCursor } = await getListings(params)
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
+    <div className="min-h-screen pb-16 pt-24">
       {/* Hero Section */}
       <MarketplaceHero />
 
       {/* Filters Section */}
-      <section className="relative px-6 -mt-8 z-20">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative z-20 -mt-8 px-6">
+        <div className="mx-auto max-w-7xl">
           <Suspense fallback={<FiltersSkeleton />}>
             <MarketplaceFilters
               initialSort={params.sort}
@@ -190,12 +213,12 @@ export default async function MarketplacePage({
       </section>
 
       {/* Listings Grid */}
-      <section className="px-6 mt-12">
-        <div className="max-w-7xl mx-auto">
+      <section className="mt-12 px-6">
+        <div className="mx-auto max-w-7xl">
           {/* Results count */}
-          <div className="flex items-center justify-between mb-8">
-            <p className="text-bone/50 font-body">
-              <span className="text-imperial-gold font-semibold">{listings.length}</span> anuncios
+          <div className="mb-8 flex items-center justify-between">
+            <p className="font-body text-bone/50">
+              <span className="font-semibold text-imperial-gold">{listings.length}</span> anuncios
               encontrados
             </p>
           </div>
@@ -213,7 +236,10 @@ export default async function MarketplacePage({
 
           {/* Load More - Client Component for cursor pagination */}
           {nextCursor && (
-            <LoadMoreButton cursor={nextCursor} searchParams={params as Record<string, string | undefined>} />
+            <LoadMoreButton
+              cursor={nextCursor}
+              searchParams={params as Record<string, string | undefined>}
+            />
           )}
         </div>
       </section>
@@ -226,13 +252,13 @@ export default async function MarketplacePage({
 
 function FiltersSkeleton() {
   return (
-    <div className="bg-void-light/50 backdrop-blur-xl rounded-2xl border border-bone/10 p-4 md:p-6 animate-pulse">
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1 h-12 bg-void rounded-xl" />
+    <div className="animate-pulse rounded-2xl border border-bone/10 bg-void-light/50 p-4 backdrop-blur-xl md:p-6">
+      <div className="flex flex-col gap-4 md:flex-row">
+        <div className="h-12 flex-1 rounded-xl bg-void" />
         <div className="flex gap-2">
-          <div className="w-24 h-12 bg-void rounded-xl" />
-          <div className="w-24 h-12 bg-void rounded-xl" />
-          <div className="w-24 h-12 bg-void rounded-xl" />
+          <div className="h-12 w-24 rounded-xl bg-void" />
+          <div className="h-12 w-24 rounded-xl bg-void" />
+          <div className="h-12 w-24 rounded-xl bg-void" />
         </div>
       </div>
     </div>

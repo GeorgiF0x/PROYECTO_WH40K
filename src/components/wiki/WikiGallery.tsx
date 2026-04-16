@@ -75,7 +75,7 @@ export function WikiGallery({
 
   return (
     <div
-      className="rounded-lg overflow-hidden"
+      className="overflow-hidden rounded-lg"
       style={{
         background: '#0a0a12',
         border: `1px solid ${factionColor}30`,
@@ -83,35 +83,35 @@ export function WikiGallery({
     >
       {/* Header */}
       <div
-        className="flex items-center gap-2 px-4 py-3 border-b"
+        className="flex items-center gap-2 border-b px-4 py-3"
         style={{
           background: `linear-gradient(180deg, ${factionColor}10 0%, transparent 100%)`,
           borderColor: `${factionColor}20`,
         }}
       >
-        <Cpu className="w-4 h-4" style={{ color: factionColor }} />
-        <span className="font-display text-sm font-bold text-bone/90 uppercase tracking-wider">
+        <Cpu className="h-4 w-4" style={{ color: factionColor }} />
+        <span className="font-display text-sm font-bold uppercase tracking-wider text-bone/90">
           Biblioteca de Imagenes
         </span>
-        <span className="ml-auto text-xs text-bone/40 font-body">
+        <span className="ml-auto font-body text-xs text-bone/40">
           {images.length}/{maxImages}
         </span>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="space-y-4 p-4">
         {/* Image grid */}
         {images.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {images.map((url, i) => (
               <div
                 key={`${url}-${i}`}
-                className="group relative aspect-video rounded-lg overflow-hidden border"
+                className="group relative aspect-video overflow-hidden rounded-lg border"
                 style={{ borderColor: `${factionColor}20` }}
               >
                 <img
                   src={url}
                   alt={`Imagen ${i + 1}`}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                   onError={(e) => {
                     ;(e.target as HTMLImageElement).src = ''
                     ;(e.target as HTMLImageElement).style.display = 'none'
@@ -120,13 +120,13 @@ export function WikiGallery({
                 <button
                   type="button"
                   onClick={() => removeImage(i)}
-                  className="absolute top-1.5 right-1.5 p-1 rounded-full bg-void/80 border border-bone/20 text-bone/70 hover:text-blood-light hover:border-blood/40 transition-colors opacity-0 group-hover:opacity-100"
+                  className="absolute right-1.5 top-1.5 rounded-full border border-bone/20 bg-void/80 p-1 text-bone/70 opacity-0 transition-colors hover:border-blood/40 hover:text-blood-light group-hover:opacity-100"
                   title="Eliminar imagen"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
-                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-void/80 to-transparent px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="text-[10px] text-bone/60 font-body truncate block">
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-void/80 to-transparent px-2 py-1 opacity-0 transition-opacity group-hover:opacity-100">
+                  <span className="block truncate font-body text-[10px] text-bone/60">
                     {url.split('/').pop()}
                   </span>
                 </div>
@@ -138,8 +138,8 @@ export function WikiGallery({
         {/* Empty state */}
         {images.length === 0 && (
           <div className="flex flex-col items-center justify-center py-6 text-bone/30">
-            <ImagePlus className="w-8 h-8 mb-2" />
-            <span className="text-sm font-body">Sin imagenes</span>
+            <ImagePlus className="mb-2 h-8 w-8" />
+            <span className="font-body text-sm">Sin imagenes</span>
           </div>
         )}
 
@@ -148,35 +148,33 @@ export function WikiGallery({
           <div className="space-y-3">
             <div
               className="h-px"
-              style={{ background: `linear-gradient(90deg, transparent, ${factionColor}30, transparent)` }}
+              style={{
+                background: `linear-gradient(90deg, transparent, ${factionColor}30, transparent)`,
+              }}
             />
 
             {/* Tabs */}
-            <div className="flex gap-1 p-1 rounded-lg bg-void-light">
+            <div className="flex gap-1 rounded-lg bg-void-light p-1">
               <button
                 type="button"
                 onClick={() => setTab('upload')}
                 className={cn(
-                  'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded text-xs font-body transition-colors',
-                  tab === 'upload'
-                    ? 'bg-void text-bone'
-                    : 'text-bone/50 hover:text-bone/70'
+                  'flex flex-1 items-center justify-center gap-1.5 rounded py-1.5 font-body text-xs transition-colors',
+                  tab === 'upload' ? 'bg-void text-bone' : 'text-bone/50 hover:text-bone/70'
                 )}
               >
-                <Upload className="w-3.5 h-3.5" />
+                <Upload className="h-3.5 w-3.5" />
                 Subir archivo
               </button>
               <button
                 type="button"
                 onClick={() => setTab('url')}
                 className={cn(
-                  'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded text-xs font-body transition-colors',
-                  tab === 'url'
-                    ? 'bg-void text-bone'
-                    : 'text-bone/50 hover:text-bone/70'
+                  'flex flex-1 items-center justify-center gap-1.5 rounded py-1.5 font-body text-xs transition-colors',
+                  tab === 'url' ? 'bg-void text-bone' : 'text-bone/50 hover:text-bone/70'
                 )}
               >
-                <LinkIcon className="w-3.5 h-3.5" />
+                <LinkIcon className="h-3.5 w-3.5" />
                 URL
               </button>
             </div>
@@ -198,17 +196,17 @@ export function WikiGallery({
                   type="button"
                   onClick={() => fileRef.current?.click()}
                   disabled={uploading}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-dashed text-sm font-body transition-colors hover:bg-bone/5 disabled:opacity-50"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-dashed py-2.5 font-body text-sm transition-colors hover:bg-bone/5 disabled:opacity-50"
                   style={{ borderColor: `${factionColor}30`, color: `${factionColor}` }}
                 >
                   {uploading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" />
                       Subiendo...
                     </>
                   ) : (
                     <>
-                      <Upload className="w-4 h-4" />
+                      <Upload className="h-4 w-4" />
                       Seleccionar imagen
                     </>
                   )}
@@ -225,14 +223,14 @@ export function WikiGallery({
                   onChange={(e) => setUrlInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddUrl()}
                   placeholder="https://..."
-                  className="flex-1 px-3 py-2 rounded-lg bg-void-light border border-bone/10 text-bone text-sm font-body placeholder:text-bone/30 focus:outline-none focus:ring-1"
+                  className="flex-1 rounded-lg border border-bone/10 bg-void-light px-3 py-2 font-body text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:ring-1"
                   style={{ focusRingColor: factionColor } as React.CSSProperties}
                 />
                 <button
                   type="button"
                   onClick={handleAddUrl}
                   disabled={!urlInput.trim()}
-                  className="px-4 py-2 rounded-lg text-sm font-body font-semibold transition-colors disabled:opacity-40"
+                  className="rounded-lg px-4 py-2 font-body text-sm font-semibold transition-colors disabled:opacity-40"
                   style={{
                     background: factionColor,
                     color: '#0a0a12',
@@ -247,17 +245,13 @@ export function WikiGallery({
 
         {/* Full indicator */}
         {isFull && (
-          <p className="text-xs text-bone/40 font-body text-center">
+          <p className="text-center font-body text-xs text-bone/40">
             Limite de {maxImages} imagenes alcanzado
           </p>
         )}
 
         {/* Error */}
-        {error && (
-          <p className="text-xs text-blood-light font-body">
-            {error}
-          </p>
-        )}
+        {error && <p className="font-body text-xs text-blood-light">{error}</p>}
       </div>
     </div>
   )

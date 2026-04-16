@@ -91,9 +91,9 @@ describe('wikiContributionPostSchema', () => {
   const content = { type: 'doc' }
 
   it('accepts edits to an existing page', () => {
-    expect(
-      wikiContributionPostSchema.safeParse({ page_id: VALID_UUID, content }).success
-    ).toBe(true)
+    expect(wikiContributionPostSchema.safeParse({ page_id: VALID_UUID, content }).success).toBe(
+      true
+    )
   })
 
   it('accepts a new article suggestion', () => {
@@ -108,9 +108,9 @@ describe('wikiContributionPostSchema', () => {
 
   it('rejects when neither page_id nor (faction_id + suggested_title) is present', () => {
     expect(wikiContributionPostSchema.safeParse({ content }).success).toBe(false)
-    expect(
-      wikiContributionPostSchema.safeParse({ faction_id: VALID_UUID, content }).success
-    ).toBe(false)
+    expect(wikiContributionPostSchema.safeParse({ faction_id: VALID_UUID, content }).success).toBe(
+      false
+    )
   })
 })
 

@@ -15,7 +15,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const supabase = await createClient()
 
     // Check if user is admin or has wiki role
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     let isAdmin = false
     let wikiRole: string | null = null
     if (user) {
@@ -29,9 +31,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Build query - can search by ID or by faction_id/slug combo
-    let query = supabase
-      .from('faction_wiki_pages')
-      .select(`
+    let query = supabase.from('faction_wiki_pages').select(`
         *,
         author:profiles!faction_wiki_pages_author_id_fkey(username, display_name),
         category:wiki_categories(id, name, slug, icon)
@@ -92,7 +92,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const supabase = await createClient()
 
     // Check auth
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -160,11 +162,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       .from('faction_wiki_pages')
       .update(updateData)
       .eq('id', id)
-      .select(`
+      .select(
+        `
         *,
         author:profiles!faction_wiki_pages_author_id_fkey(username, display_name),
         category:wiki_categories(id, name, slug, icon)
-      `)
+      `
+      )
       .single()
 
     if (error) {
@@ -192,7 +196,9 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const supabase = await createClient()
 
     // Check auth
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -209,10 +215,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const { error } = await supabase
-      .from('faction_wiki_pages')
-      .delete()
-      .eq('id', id)
+    const { error } = await supabase.from('faction_wiki_pages').delete().eq('id', id)
 
     if (error) {
       console.error('Wiki page delete error:', error)

@@ -24,9 +24,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the client IP
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
-               request.headers.get('x-real-ip') ||
-               'unknown'
+    const ip =
+      request.headers.get('x-forwarded-for')?.split(',')[0] ||
+      request.headers.get('x-real-ip') ||
+      'unknown'
 
     // Verify with Cloudflare
     const formData = new URLSearchParams()
@@ -34,16 +35,13 @@ export async function POST(request: NextRequest) {
     formData.append('response', token)
     formData.append('remoteip', ip)
 
-    const response = await fetch(
-      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData.toString(),
-      }
-    )
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    })
 
     const data: TurnstileVerifyResponse = await response.json()
 
@@ -51,16 +49,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true })
     } else {
       console.error('[Turnstile] Verification failed:', data['error-codes'])
-      return NextResponse.json(
-        { success: false, error: 'Verificación fallida' },
-        { status: 400 }
-      )
+      return NextResponse.json({ success: false, error: 'Verificación fallida' }, { status: 400 })
     }
   } catch (error) {
     console.error('[Turnstile] Error:', error)
-    return NextResponse.json(
-      { success: false, error: 'Error interno' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Error interno' }, { status: 500 })
   }
 }

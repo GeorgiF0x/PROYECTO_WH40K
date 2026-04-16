@@ -96,7 +96,7 @@ export function WikiLinkPreview({
     return (
       <Link
         href={href}
-        className="underline decoration-dotted underline-offset-2 hover:decoration-solid transition-all"
+        className="underline decoration-dotted underline-offset-2 transition-all hover:decoration-solid"
         style={{ color: factionColor }}
       >
         {children}
@@ -109,7 +109,7 @@ export function WikiLinkPreview({
       <Popover.Trigger asChild>
         <Link
           href={href}
-          className="underline decoration-dotted underline-offset-2 hover:decoration-solid transition-all"
+          className="underline decoration-dotted underline-offset-2 transition-all hover:decoration-solid"
           style={{ color: factionColor }}
           onMouseEnter={handleEnter}
           onMouseLeave={handleLeave}
@@ -125,11 +125,11 @@ export function WikiLinkPreview({
           align="center"
           onMouseEnter={handleEnter}
           onMouseLeave={handleLeave}
-          className="z-50 w-80 animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+          className="animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 z-50 w-80"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <div
-            className="relative overflow-hidden rounded-xl bg-void-950"
+            className="bg-void-950 relative overflow-hidden rounded-xl"
             style={{
               border: `1px solid ${factionColor}25`,
               boxShadow: `0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${factionColor}15`,
@@ -139,7 +139,7 @@ export function WikiLinkPreview({
 
             {/* Thumbnail */}
             {loading ? (
-              <div className="h-36 w-full animate-pulse bg-void-800" />
+              <div className="bg-void-800 h-36 w-full animate-pulse" />
             ) : data?.hero_image ? (
               <div className="relative h-36 w-full overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -149,28 +149,28 @@ export function WikiLinkPreview({
                   className="h-full w-full object-cover"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-void-950 via-transparent to-transparent" />
+                <div className="from-void-950 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
               </div>
             ) : (
-              <div className="h-20 w-full bg-void-900" />
+              <div className="bg-void-900 h-20 w-full" />
             )}
 
             {/* Content */}
-            <div className="px-3.5 pb-3 pt-2 space-y-1.5">
+            <div className="space-y-1.5 px-3.5 pb-3 pt-2">
               {loading ? (
                 <>
-                  <div className="h-4 w-3/4 animate-pulse rounded bg-void-800" />
-                  <div className="h-3 w-full animate-pulse rounded bg-void-800" />
-                  <div className="h-3 w-2/3 animate-pulse rounded bg-void-800" />
+                  <div className="bg-void-800 h-4 w-3/4 animate-pulse rounded" />
+                  <div className="bg-void-800 h-3 w-full animate-pulse rounded" />
+                  <div className="bg-void-800 h-3 w-2/3 animate-pulse rounded" />
                 </>
               ) : data ? (
                 <>
-                  <h4 className="font-display text-sm font-bold text-white leading-tight line-clamp-1">
+                  <h4 className="line-clamp-1 font-display text-sm font-bold leading-tight text-white">
                     {data.title}
                   </h4>
 
                   {data.excerpt && (
-                    <p className="font-body text-xs text-bone/55 leading-relaxed line-clamp-2">
+                    <p className="line-clamp-2 font-body text-xs leading-relaxed text-bone/55">
                       {data.excerpt}
                     </p>
                   )}
@@ -179,7 +179,7 @@ export function WikiLinkPreview({
                   <div className="flex items-center gap-2 pt-0.5">
                     {data.category && (
                       <span
-                        className="inline-block rounded-full px-2 py-0.5 text-[10px] font-mono font-medium"
+                        className="inline-block rounded-full px-2 py-0.5 font-mono text-[10px] font-medium"
                         style={{
                           background: `${factionColor}15`,
                           color: factionColor,
@@ -189,7 +189,7 @@ export function WikiLinkPreview({
                         {data.category.name}
                       </span>
                     )}
-                    <span className="flex items-center gap-1 text-[10px] font-mono text-bone/40">
+                    <span className="flex items-center gap-1 font-mono text-[10px] text-bone/40">
                       <Eye className="h-2.5 w-2.5" />
                       {data.views_count.toLocaleString()}
                     </span>

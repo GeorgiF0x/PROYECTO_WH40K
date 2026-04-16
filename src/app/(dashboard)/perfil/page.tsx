@@ -73,7 +73,9 @@ export default function EditProfilePage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [avatarUploading, setAvatarUploading] = useState(false)
-  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle')
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>(
+    'idle'
+  )
   const [favoriteFactions, setFavoriteFactions] = useState<string[]>([])
   const [factionDetails, setFactionDetails] = useState<Faction[]>([])
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
@@ -112,7 +114,10 @@ export default function EditProfilePage() {
         youtube: p.youtube || '',
       }
       setFormData(initialData)
-      lastSavedData.current = JSON.stringify({ ...initialData, factions: p.favorite_factions || [] })
+      lastSavedData.current = JSON.stringify({
+        ...initialData,
+        factions: p.favorite_factions || [],
+      })
       if (p.favorite_factions) {
         setFavoriteFactions(p.favorite_factions)
       }
@@ -132,7 +137,7 @@ export default function EditProfilePage() {
         .in('id', favoriteFactions)
       if (data) {
         const ordered = favoriteFactions
-          .map(id => data.find(f => f.id === id))
+          .map((id) => data.find((f) => f.id === id))
           .filter(Boolean) as Faction[]
         setFactionDetails(ordered)
       }
@@ -225,9 +230,9 @@ export default function EditProfilePage() {
       .upload(filePath, compressed, { upsert: true, contentType: 'image/webp' })
 
     if (!uploadError) {
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath)
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('avatars').getPublicUrl(filePath)
 
       // Append cache-bust param to force refresh
       const url = `${publicUrl}?v=${Date.now()}`
@@ -238,7 +243,7 @@ export default function EditProfilePage() {
   }
 
   const updateField = (field: keyof ProfileFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   const toggleSection = (section: string) => {
@@ -261,18 +266,18 @@ export default function EditProfilePage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-void">
+      <div className="flex min-h-screen items-center justify-center bg-void">
         <motion.div
           className="flex flex-col items-center gap-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
           <motion.div
-            className="w-12 h-12 border-2 border-bone/20 border-t-imperial-gold rounded-full"
+            className="h-12 w-12 rounded-full border-2 border-bone/20 border-t-imperial-gold"
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           />
-          <p className="text-bone/50 font-mono text-sm">INICIALIZANDO COGITADOR...</p>
+          <p className="font-mono text-sm text-bone/50">INICIALIZANDO COGITADOR...</p>
         </motion.div>
       </div>
     )
@@ -285,7 +290,7 @@ export default function EditProfilePage() {
   return (
     <div className="min-h-screen bg-void">
       {/* Scan line effect - single pass on load */}
-      <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+      <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
         <motion.div
           className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold/30 to-transparent"
           initial={{ y: '-10vh' }}
@@ -295,7 +300,10 @@ export default function EditProfilePage() {
       </div>
 
       {/* Background texture */}
-      <div className="fixed inset-0 opacity-[0.02]" style={{ backgroundImage: 'url(/noise.png)' }} />
+      <div
+        className="fixed inset-0 opacity-[0.02]"
+        style={{ backgroundImage: 'url(/noise.png)' }}
+      />
 
       {/* Status indicator - fixed top right */}
       <AnimatePresence>
@@ -304,29 +312,33 @@ export default function EditProfilePage() {
             initial={{ opacity: 0, y: -20, x: 20 }}
             animate={{ opacity: 1, y: 0, x: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-20 right-6 z-40"
+            className="fixed right-6 top-20 z-40"
           >
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg backdrop-blur-xl border ${
-              saveStatus === 'saving' ? 'bg-imperial-gold/10 border-imperial-gold/30 text-imperial-gold' :
-              saveStatus === 'saved' ? 'bg-green-500/10 border-green-500/30 text-green-400' :
-              'bg-red-500/10 border-red-500/30 text-red-400'
-            }`}>
+            <div
+              className={`flex items-center gap-2 rounded-lg border px-4 py-2 backdrop-blur-xl ${
+                saveStatus === 'saving'
+                  ? 'border-imperial-gold/30 bg-imperial-gold/10 text-imperial-gold'
+                  : saveStatus === 'saved'
+                    ? 'border-green-500/30 bg-green-500/10 text-green-400'
+                    : 'border-red-500/30 bg-red-500/10 text-red-400'
+              }`}
+            >
               {saveStatus === 'saving' && (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="text-sm font-mono">SINCRONIZANDO...</span>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="font-mono text-sm">SINCRONIZANDO...</span>
                 </>
               )}
               {saveStatus === 'saved' && (
                 <>
-                  <Check className="w-4 h-4" />
-                  <span className="text-sm font-mono">GUARDADO</span>
+                  <Check className="h-4 w-4" />
+                  <span className="font-mono text-sm">GUARDADO</span>
                 </>
               )}
               {saveStatus === 'error' && (
                 <>
-                  <AlertCircle className="w-4 h-4" />
-                  <span className="text-sm font-mono">ERROR DE SINCRONIZACIÓN</span>
+                  <AlertCircle className="h-4 w-4" />
+                  <span className="font-mono text-sm">ERROR DE SINCRONIZACIÓN</span>
                 </>
               )}
             </div>
@@ -334,51 +346,51 @@ export default function EditProfilePage() {
         )}
       </AnimatePresence>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="flex items-center gap-3 mb-1">
-            <Cpu className="w-5 h-5 text-imperial-gold" />
-            <span className="text-xs font-mono text-imperial-gold/60 tracking-widest">
+          <div className="mb-1 flex items-center gap-3">
+            <Cpu className="h-5 w-5 text-imperial-gold" />
+            <span className="font-mono text-xs tracking-widest text-imperial-gold/60">
               ADMINISTRATUM // REGISTRO DE PERSONAL
             </span>
           </div>
-          <h1 className="text-3xl font-display font-bold text-bone tracking-wide">
+          <h1 className="font-display text-3xl font-bold tracking-wide text-bone">
             Manifiesto de Identidad
           </h1>
         </motion.div>
 
         {/* Main content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Left column - Avatar & Status */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className="lg:col-span-1 space-y-6"
+            className="space-y-6 lg:col-span-1"
           >
             {/* Avatar Card */}
-            <div className="relative group">
+            <div className="group relative">
               {/* Decorative corner brackets */}
-              <div className="absolute -top-1 -left-1 w-4 h-4 border-l-2 border-t-2 border-imperial-gold/40" />
-              <div className="absolute -top-1 -right-1 w-4 h-4 border-r-2 border-t-2 border-imperial-gold/40" />
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 border-l-2 border-b-2 border-imperial-gold/40" />
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 border-r-2 border-b-2 border-imperial-gold/40" />
+              <div className="absolute -left-1 -top-1 h-4 w-4 border-l-2 border-t-2 border-imperial-gold/40" />
+              <div className="absolute -right-1 -top-1 h-4 w-4 border-r-2 border-t-2 border-imperial-gold/40" />
+              <div className="absolute -bottom-1 -left-1 h-4 w-4 border-b-2 border-l-2 border-imperial-gold/40" />
+              <div className="absolute -bottom-1 -right-1 h-4 w-4 border-b-2 border-r-2 border-imperial-gold/40" />
 
-              <div className="bg-void-light/30 backdrop-blur-sm border border-bone/10 rounded-lg p-6">
+              <div className="rounded-lg border border-bone/10 bg-void-light/30 p-6 backdrop-blur-sm">
                 {/* Avatar */}
-                <div className="relative mx-auto w-fit mb-6">
+                <div className="relative mx-auto mb-6 w-fit">
                   <motion.div
                     className="absolute -inset-2 rounded-full opacity-40"
                     animate={{
-                      background: factionDetails.length > 0
-                        ? `conic-gradient(from 0deg, ${factionDetails[0].primary_color}, ${factionDetails[factionDetails.length-1]?.secondary_color || factionDetails[0].secondary_color}, ${factionDetails[0].primary_color})`
-                        : 'conic-gradient(from 0deg, #c9a227, #8b0000, #c9a227)',
+                      background:
+                        factionDetails.length > 0
+                          ? `conic-gradient(from 0deg, ${factionDetails[0].primary_color}, ${factionDetails[factionDetails.length - 1]?.secondary_color || factionDetails[0].secondary_color}, ${factionDetails[0].primary_color})`
+                          : 'conic-gradient(from 0deg, #c9a227, #8b0000, #c9a227)',
                       rotate: 360,
                     }}
                     transition={{ rotate: { duration: 10, repeat: Infinity, ease: 'linear' } }}
@@ -388,13 +400,13 @@ export default function EditProfilePage() {
                       src={avatarPreview || profile.avatar_url}
                       alt={formData.display_name || formData.username}
                       size="xl"
-                      className="w-32 h-32 ring-2 ring-void"
+                      className="h-32 w-32 ring-2 ring-void"
                     />
-                    <label className="absolute inset-0 flex items-center justify-center bg-void/60 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full">
+                    <label className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-void/60 opacity-0 transition-opacity group-hover:opacity-100">
                       {avatarUploading ? (
-                        <Loader2 className="w-8 h-8 text-imperial-gold animate-spin" />
+                        <Loader2 className="h-8 w-8 animate-spin text-imperial-gold" />
                       ) : (
-                        <Camera className="w-8 h-8 text-bone" />
+                        <Camera className="h-8 w-8 text-bone" />
                       )}
                       <input
                         type="file"
@@ -408,16 +420,16 @@ export default function EditProfilePage() {
                 </div>
 
                 {/* Name display */}
-                <div className="text-center mb-6">
-                  <h2 className="text-xl font-display font-bold text-bone">
+                <div className="mb-6 text-center">
+                  <h2 className="font-display text-xl font-bold text-bone">
                     {formData.display_name || formData.username}
                   </h2>
-                  <p className="text-bone/50 text-sm">@{formData.username}</p>
+                  <p className="text-sm text-bone/50">@{formData.username}</p>
                 </div>
 
                 {/* Faction badges */}
                 {factionDetails.length > 0 && (
-                  <div className="flex justify-center gap-2 mb-6">
+                  <div className="mb-6 flex justify-center gap-2">
                     {factionDetails.map((faction) => {
                       const iconPath = FACTION_ICONS[faction.slug]
                       return (
@@ -425,7 +437,7 @@ export default function EditProfilePage() {
                           key={faction.id}
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="w-10 h-10 rounded-lg flex items-center justify-center"
+                          className="flex h-10 w-10 items-center justify-center rounded-lg"
                           style={{
                             background: `linear-gradient(135deg, ${faction.primary_color}40, ${faction.secondary_color}20)`,
                             border: `1px solid ${faction.primary_color}50`,
@@ -433,9 +445,18 @@ export default function EditProfilePage() {
                           title={faction.name}
                         >
                           {iconPath ? (
-                            <Image src={iconPath} alt="" width={20} height={20} className="invert opacity-80" />
+                            <Image
+                              src={iconPath}
+                              alt=""
+                              width={20}
+                              height={20}
+                              className="opacity-80 invert"
+                            />
                           ) : (
-                            <Shield className="w-5 h-5" style={{ color: faction.primary_color || '#c9a227' }} />
+                            <Shield
+                              className="h-5 w-5"
+                              style={{ color: faction.primary_color || '#c9a227' }}
+                            />
                           )}
                         </motion.div>
                       )
@@ -446,27 +467,30 @@ export default function EditProfilePage() {
                 {/* View public profile */}
                 <Link
                   href={`/usuarios/${formData.username}`}
-                  className="flex items-center justify-center gap-2 w-full py-2 text-sm text-bone/60 hover:text-imperial-gold transition-colors"
+                  className="flex w-full items-center justify-center gap-2 py-2 text-sm text-bone/60 transition-colors hover:text-imperial-gold"
                 >
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="h-4 w-4" />
                   Ver perfil público
                 </Link>
               </div>
             </div>
 
             {/* Completeness indicator */}
-            <div className="bg-void-light/30 backdrop-blur-sm border border-bone/10 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-mono text-bone/50 tracking-wider">INTEGRIDAD DEL PERFIL</span>
-                <span className="text-sm font-mono text-imperial-gold">{completeness}%</span>
+            <div className="rounded-lg border border-bone/10 bg-void-light/30 p-4 backdrop-blur-sm">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="font-mono text-xs tracking-wider text-bone/50">
+                  INTEGRIDAD DEL PERFIL
+                </span>
+                <span className="font-mono text-sm text-imperial-gold">{completeness}%</span>
               </div>
-              <div className="h-2 bg-void rounded-full overflow-hidden">
+              <div className="h-2 overflow-hidden rounded-full bg-void">
                 <motion.div
                   className="h-full rounded-full"
                   style={{
-                    background: completeness === 100
-                      ? 'linear-gradient(90deg, #22c55e, #4ade80)'
-                      : 'linear-gradient(90deg, #c9a227, #fbbf24)',
+                    background:
+                      completeness === 100
+                        ? 'linear-gradient(90deg, #22c55e, #4ade80)'
+                        : 'linear-gradient(90deg, #c9a227, #fbbf24)',
                   }}
                   initial={{ width: 0 }}
                   animate={{ width: `${completeness}%` }}
@@ -474,7 +498,7 @@ export default function EditProfilePage() {
                 />
               </div>
               {completeness < 100 && (
-                <p className="text-xs text-bone/40 mt-2">
+                <p className="mt-2 text-xs text-bone/40">
                   Completa tu perfil para aumentar tu visibilidad
                 </p>
               )}
@@ -483,9 +507,9 @@ export default function EditProfilePage() {
             {/* Live Preview */}
             <div className="relative">
               {/* Header */}
-              <div className="flex items-center gap-2 mb-3">
-                <Zap className="w-4 h-4 text-imperial-gold/60" />
-                <span className="text-xs font-mono text-imperial-gold/60 tracking-widest">
+              <div className="mb-3 flex items-center gap-2">
+                <Zap className="h-4 w-4 text-imperial-gold/60" />
+                <span className="font-mono text-xs tracking-widest text-imperial-gold/60">
                   VISTA PREVIA EN VIVO
                 </span>
               </div>
@@ -496,20 +520,21 @@ export default function EditProfilePage() {
                 className="relative overflow-hidden rounded-xl border border-bone/10"
               >
                 {/* Corner brackets */}
-                <div className="absolute -top-0.5 -left-0.5 w-3 h-3 border-l border-t border-imperial-gold/40 z-10" />
-                <div className="absolute -top-0.5 -right-0.5 w-3 h-3 border-r border-t border-imperial-gold/40 z-10" />
-                <div className="absolute -bottom-0.5 -left-0.5 w-3 h-3 border-l border-b border-imperial-gold/40 z-10" />
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 border-r border-b border-imperial-gold/40 z-10" />
+                <div className="absolute -left-0.5 -top-0.5 z-10 h-3 w-3 border-l border-t border-imperial-gold/40" />
+                <div className="absolute -right-0.5 -top-0.5 z-10 h-3 w-3 border-r border-t border-imperial-gold/40" />
+                <div className="absolute -bottom-0.5 -left-0.5 z-10 h-3 w-3 border-b border-l border-imperial-gold/40" />
+                <div className="absolute -bottom-0.5 -right-0.5 z-10 h-3 w-3 border-b border-r border-imperial-gold/40" />
 
                 {/* Mini Banner */}
                 <motion.div
-                  className="h-16 relative overflow-hidden"
+                  className="relative h-16 overflow-hidden"
                   animate={{
-                    background: factionDetails.length > 0
-                      ? factionDetails.length === 1
-                        ? `linear-gradient(135deg, ${factionDetails[0].primary_color}90 0%, rgba(26,26,46,1) 50%, ${factionDetails[0].secondary_color}60 100%)`
-                        : `linear-gradient(135deg, ${factionDetails[0].primary_color}90 0%, rgba(26,26,46,1) 50%, ${factionDetails[factionDetails.length - 1].primary_color}60 100%)`
-                      : 'linear-gradient(135deg, rgba(139,0,0,0.4) 0%, rgba(26,26,46,1) 50%, rgba(201,162,39,0.3) 100%)',
+                    background:
+                      factionDetails.length > 0
+                        ? factionDetails.length === 1
+                          ? `linear-gradient(135deg, ${factionDetails[0].primary_color}90 0%, rgba(26,26,46,1) 50%, ${factionDetails[0].secondary_color}60 100%)`
+                          : `linear-gradient(135deg, ${factionDetails[0].primary_color}90 0%, rgba(26,26,46,1) 50%, ${factionDetails[factionDetails.length - 1].primary_color}60 100%)`
+                        : 'linear-gradient(135deg, rgba(139,0,0,0.4) 0%, rgba(26,26,46,1) 50%, rgba(201,162,39,0.3) 100%)',
                   }}
                   transition={{ duration: 0.5 }}
                 >
@@ -527,7 +552,7 @@ export default function EditProfilePage() {
 
                   {/* Faction badges mini */}
                   {factionDetails.length > 0 && (
-                    <div className="absolute top-2 right-2 flex gap-1">
+                    <div className="absolute right-2 top-2 flex gap-1">
                       {factionDetails.map((faction) => {
                         const iconPath = FACTION_ICONS[faction.slug]
                         return (
@@ -535,16 +560,22 @@ export default function EditProfilePage() {
                             key={faction.id}
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="w-6 h-6 rounded flex items-center justify-center backdrop-blur-sm"
+                            className="flex h-6 w-6 items-center justify-center rounded backdrop-blur-sm"
                             style={{
                               background: `linear-gradient(135deg, ${faction.primary_color}CC, ${faction.secondary_color}99)`,
                               border: '1px solid rgba(255,255,255,0.2)',
                             }}
                           >
                             {iconPath ? (
-                              <Image src={iconPath} alt="" width={12} height={12} className="invert opacity-90" />
+                              <Image
+                                src={iconPath}
+                                alt=""
+                                width={12}
+                                height={12}
+                                className="opacity-90 invert"
+                              />
                             ) : (
-                              <Shield className="w-3 h-3 text-white/90" />
+                              <Shield className="h-3 w-3 text-white/90" />
                             )}
                           </motion.div>
                         )
@@ -554,15 +585,16 @@ export default function EditProfilePage() {
                 </motion.div>
 
                 {/* Preview Content */}
-                <div className="bg-void-light/50 p-4 -mt-6 relative">
+                <div className="relative -mt-6 bg-void-light/50 p-4">
                   {/* Avatar mini */}
-                  <div className="relative w-fit mb-3">
+                  <div className="relative mb-3 w-fit">
                     <motion.div
                       className="absolute -inset-1 rounded-full opacity-40"
                       animate={{
-                        background: factionDetails.length > 0
-                          ? `conic-gradient(from 0deg, ${factionDetails[0].primary_color}, ${factionDetails[factionDetails.length-1]?.secondary_color || factionDetails[0].secondary_color}, ${factionDetails[0].primary_color})`
-                          : 'conic-gradient(from 0deg, #c9a227, #8b0000, #c9a227)',
+                        background:
+                          factionDetails.length > 0
+                            ? `conic-gradient(from 0deg, ${factionDetails[0].primary_color}, ${factionDetails[factionDetails.length - 1]?.secondary_color || factionDetails[0].secondary_color}, ${factionDetails[0].primary_color})`
+                            : 'conic-gradient(from 0deg, #c9a227, #8b0000, #c9a227)',
                         rotate: 360,
                       }}
                       transition={{ rotate: { duration: 10, repeat: Infinity, ease: 'linear' } }}
@@ -571,58 +603,55 @@ export default function EditProfilePage() {
                       src={avatarPreview || profile.avatar_url}
                       alt={formData.display_name || formData.username}
                       size="md"
-                      className="w-12 h-12 ring-2 ring-void-light relative"
+                      className="relative h-12 w-12 ring-2 ring-void-light"
                     />
                   </div>
 
                   {/* Name & Username */}
-                  <div className="flex items-center gap-2 mb-1">
-                    <Cpu className="w-3 h-3 text-imperial-gold/50" />
-                    <span className="text-[10px] font-mono text-imperial-gold/50 tracking-widest">
+                  <div className="mb-1 flex items-center gap-2">
+                    <Cpu className="h-3 w-3 text-imperial-gold/50" />
+                    <span className="font-mono text-[10px] tracking-widest text-imperial-gold/50">
                       PERFIL DE USUARIO
                     </span>
                   </div>
-                  <h3 className="text-lg font-display font-bold text-bone leading-tight">
+                  <h3 className="font-display text-lg font-bold leading-tight text-bone">
                     {formData.display_name || formData.username || 'Tu Nombre'}
                   </h3>
-                  <p className="text-xs text-bone/50 font-mono mb-2">
+                  <p className="mb-2 font-mono text-xs text-bone/50">
                     @{formData.username || 'usuario'}
                   </p>
 
                   {/* Bio preview */}
                   {formData.bio && (
-                    <p className="text-xs text-bone/60 mb-2 line-clamp-2 leading-relaxed">
+                    <p className="mb-2 line-clamp-2 text-xs leading-relaxed text-bone/60">
                       {formData.bio}
                     </p>
                   )}
 
                   {/* Location */}
                   {formData.location && (
-                    <div className="flex items-center gap-1 text-xs text-bone/40 mb-2">
-                      <MapPin className="w-3 h-3 text-imperial-gold/50" />
+                    <div className="mb-2 flex items-center gap-1 text-xs text-bone/40">
+                      <MapPin className="h-3 w-3 text-imperial-gold/50" />
                       {formData.location}
                     </div>
                   )}
 
                   {/* Social Links mini */}
                   {(formData.instagram || formData.twitter || formData.youtube) && (
-                    <div className="flex flex-wrap gap-1.5 mt-2">
+                    <div className="mt-2 flex flex-wrap gap-1.5">
                       {formData.instagram && (
-                        <div className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-pink-500/20 rounded text-[10px] text-pink-400">
-                          <Instagram className="w-3 h-3" />
-                          @{formData.instagram}
+                        <div className="flex items-center gap-1 rounded border border-pink-500/20 bg-gradient-to-r from-purple-500/10 to-pink-500/10 px-2 py-1 text-[10px] text-pink-400">
+                          <Instagram className="h-3 w-3" />@{formData.instagram}
                         </div>
                       )}
                       {formData.twitter && (
-                        <div className="flex items-center gap-1 px-2 py-1 bg-bone/5 border border-bone/10 rounded text-[10px] text-bone/60">
-                          <XIcon className="w-3 h-3" />
-                          @{formData.twitter}
+                        <div className="flex items-center gap-1 rounded border border-bone/10 bg-bone/5 px-2 py-1 text-[10px] text-bone/60">
+                          <XIcon className="h-3 w-3" />@{formData.twitter}
                         </div>
                       )}
                       {formData.youtube && (
-                        <div className="flex items-center gap-1 px-2 py-1 bg-red-500/10 border border-red-500/20 rounded text-[10px] text-red-400">
-                          <Youtube className="w-3 h-3" />
-                          @{formData.youtube}
+                        <div className="flex items-center gap-1 rounded border border-red-500/20 bg-red-500/10 px-2 py-1 text-[10px] text-red-400">
+                          <Youtube className="h-3 w-3" />@{formData.youtube}
                         </div>
                       )}
                     </div>
@@ -633,9 +662,9 @@ export default function EditProfilePage() {
               {/* View full profile link */}
               <Link
                 href={`/usuarios/${formData.username}`}
-                className="flex items-center justify-center gap-2 mt-3 py-2 text-xs text-bone/50 hover:text-imperial-gold transition-colors border border-bone/10 rounded-lg hover:border-imperial-gold/30"
+                className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-bone/10 py-2 text-xs text-bone/50 transition-colors hover:border-imperial-gold/30 hover:text-imperial-gold"
               >
-                <ExternalLink className="w-3 h-3" />
+                <ExternalLink className="h-3 w-3" />
                 Ver perfil completo
               </Link>
             </div>
@@ -646,7 +675,7 @@ export default function EditProfilePage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-2 space-y-4"
+            className="space-y-4 lg:col-span-2"
           >
             {/* Identity Section */}
             <AccordionSection
@@ -657,55 +686,70 @@ export default function EditProfilePage() {
               onToggle={() => toggleSection('identity')}
               status={formData.username.length >= 3 ? 'complete' : 'incomplete'}
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs font-mono text-bone/50 mb-2 tracking-wider">
+                  <label className="mb-2 block font-mono text-xs tracking-wider text-bone/50">
                     IDENTIFICADOR
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-bone/30 font-mono">@</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-bone/30">
+                      @
+                    </span>
                     <input
                       type="text"
                       value={formData.username}
-                      onChange={(e) => updateField('username', e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                      className="w-full pl-8 pr-10 py-3 bg-void/50 border border-bone/10 rounded-lg text-bone font-mono placeholder:text-bone/20 focus:outline-none focus:border-imperial-gold/50 transition-colors"
+                      onChange={(e) =>
+                        updateField(
+                          'username',
+                          e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')
+                        )
+                      }
+                      className="w-full rounded-lg border border-bone/10 bg-void/50 py-3 pl-8 pr-10 font-mono text-bone transition-colors placeholder:text-bone/20 focus:border-imperial-gold/50 focus:outline-none"
                       placeholder="usuario"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                      {usernameStatus === 'checking' && <Loader2 className="w-4 h-4 text-bone/40 animate-spin" />}
-                      {usernameStatus === 'available' && <Check className="w-4 h-4 text-green-400" />}
-                      {usernameStatus === 'taken' && <AlertCircle className="w-4 h-4 text-red-400" />}
+                      {usernameStatus === 'checking' && (
+                        <Loader2 className="h-4 w-4 animate-spin text-bone/40" />
+                      )}
+                      {usernameStatus === 'available' && (
+                        <Check className="h-4 w-4 text-green-400" />
+                      )}
+                      {usernameStatus === 'taken' && (
+                        <AlertCircle className="h-4 w-4 text-red-400" />
+                      )}
                     </div>
                   </div>
                   {usernameStatus === 'taken' && (
-                    <p className="text-red-400 text-xs mt-1 font-mono">IDENTIFICADOR NO DISPONIBLE</p>
+                    <p className="mt-1 font-mono text-xs text-red-400">
+                      IDENTIFICADOR NO DISPONIBLE
+                    </p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-bone/50 mb-2 tracking-wider">
+                  <label className="mb-2 block font-mono text-xs tracking-wider text-bone/50">
                     NOMBRE VISIBLE
                   </label>
                   <input
                     type="text"
                     value={formData.display_name}
                     onChange={(e) => updateField('display_name', e.target.value)}
-                    className="w-full px-4 py-3 bg-void/50 border border-bone/10 rounded-lg text-bone placeholder:text-bone/20 focus:outline-none focus:border-imperial-gold/50 transition-colors"
+                    className="w-full rounded-lg border border-bone/10 bg-void/50 px-4 py-3 text-bone transition-colors placeholder:text-bone/20 focus:border-imperial-gold/50 focus:outline-none"
                     placeholder="Tu Nombre"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-mono text-bone/50 mb-2 tracking-wider">
+                  <label className="mb-2 block font-mono text-xs tracking-wider text-bone/50">
                     UBICACIÓN DEL SECTOR
                   </label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/30" />
+                    <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-bone/30" />
                     <input
                       type="text"
                       value={formData.location}
                       onChange={(e) => updateField('location', e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-void/50 border border-bone/10 rounded-lg text-bone placeholder:text-bone/20 focus:outline-none focus:border-imperial-gold/50 transition-colors"
+                      className="w-full rounded-lg border border-bone/10 bg-void/50 py-3 pl-10 pr-4 text-bone transition-colors placeholder:text-bone/20 focus:border-imperial-gold/50 focus:outline-none"
                       placeholder="Ciudad, País"
                     />
                   </div>
@@ -726,11 +770,11 @@ export default function EditProfilePage() {
                 <textarea
                   value={formData.bio}
                   onChange={(e) => updateField('bio', e.target.value)}
-                  className="w-full px-4 py-3 bg-void/50 border border-bone/10 rounded-lg text-bone placeholder:text-bone/20 focus:outline-none focus:border-imperial-gold/50 transition-colors resize-none min-h-[120px]"
+                  className="min-h-[120px] w-full resize-none rounded-lg border border-bone/10 bg-void/50 px-4 py-3 text-bone transition-colors placeholder:text-bone/20 focus:border-imperial-gold/50 focus:outline-none"
                   placeholder="Registra tu historial de servicio, especializaciones y logros notables..."
                   maxLength={500}
                 />
-                <div className="absolute bottom-3 right-3 text-xs font-mono text-bone/30">
+                <div className="absolute bottom-3 right-3 font-mono text-xs text-bone/30">
                   {formData.bio.length}/500
                 </div>
               </div>
@@ -743,21 +787,27 @@ export default function EditProfilePage() {
               icon={Share2}
               isExpanded={expandedSection === 'social'}
               onToggle={() => toggleSection('social')}
-              status={formData.instagram || formData.twitter || formData.youtube ? 'complete' : 'incomplete'}
+              status={
+                formData.instagram || formData.twitter || formData.youtube
+                  ? 'complete'
+                  : 'incomplete'
+              }
             >
               <div className="space-y-4">
                 {/* Instagram */}
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-pink-500/30 flex items-center justify-center">
-                    <Instagram className="w-5 h-5 text-pink-400" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-pink-500/30 bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+                    <Instagram className="h-5 w-5 text-pink-400" />
                   </div>
-                  <div className="flex-1 relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-bone/30 font-mono text-sm">@</span>
+                  <div className="relative flex-1">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-bone/30">
+                      @
+                    </span>
                     <input
                       type="text"
                       value={formData.instagram}
                       onChange={(e) => updateField('instagram', e.target.value.replace('@', ''))}
-                      className="w-full pl-8 pr-4 py-2.5 bg-void/50 border border-bone/10 rounded-lg text-bone text-sm placeholder:text-bone/20 focus:outline-none focus:border-pink-500/50 transition-colors"
+                      className="w-full rounded-lg border border-bone/10 bg-void/50 py-2.5 pl-8 pr-4 text-sm text-bone transition-colors placeholder:text-bone/20 focus:border-pink-500/50 focus:outline-none"
                       placeholder="instagram"
                     />
                   </div>
@@ -765,16 +815,18 @@ export default function EditProfilePage() {
 
                 {/* Twitter/X */}
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-bone/5 border border-bone/20 flex items-center justify-center">
-                    <XIcon className="w-5 h-5 text-bone/70" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-bone/20 bg-bone/5">
+                    <XIcon className="h-5 w-5 text-bone/70" />
                   </div>
-                  <div className="flex-1 relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-bone/30 font-mono text-sm">@</span>
+                  <div className="relative flex-1">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-bone/30">
+                      @
+                    </span>
                     <input
                       type="text"
                       value={formData.twitter}
                       onChange={(e) => updateField('twitter', e.target.value.replace('@', ''))}
-                      className="w-full pl-8 pr-4 py-2.5 bg-void/50 border border-bone/10 rounded-lg text-bone text-sm placeholder:text-bone/20 focus:outline-none focus:border-bone/50 transition-colors"
+                      className="w-full rounded-lg border border-bone/10 bg-void/50 py-2.5 pl-8 pr-4 text-sm text-bone transition-colors placeholder:text-bone/20 focus:border-bone/50 focus:outline-none"
                       placeholder="twitter"
                     />
                   </div>
@@ -782,16 +834,18 @@ export default function EditProfilePage() {
 
                 {/* YouTube */}
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-red-500/20 border border-red-500/30 flex items-center justify-center">
-                    <Youtube className="w-5 h-5 text-red-400" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/20">
+                    <Youtube className="h-5 w-5 text-red-400" />
                   </div>
-                  <div className="flex-1 relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-bone/30 font-mono text-sm">@</span>
+                  <div className="relative flex-1">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-bone/30">
+                      @
+                    </span>
                     <input
                       type="text"
                       value={formData.youtube}
                       onChange={(e) => updateField('youtube', e.target.value.replace('@', ''))}
-                      className="w-full pl-8 pr-4 py-2.5 bg-void/50 border border-bone/10 rounded-lg text-bone text-sm placeholder:text-bone/20 focus:outline-none focus:border-red-500/50 transition-colors"
+                      className="w-full rounded-lg border border-bone/10 bg-void/50 py-2.5 pl-8 pr-4 text-sm text-bone transition-colors placeholder:text-bone/20 focus:border-red-500/50 focus:outline-none"
                       placeholder="canal"
                     />
                   </div>
@@ -809,8 +863,9 @@ export default function EditProfilePage() {
               status={favoriteFactions.length > 0 ? 'complete' : 'incomplete'}
               badge={`${favoriteFactions.length}/3`}
             >
-              <p className="text-sm text-bone/50 mb-4">
-                Declara tu lealtad a hasta 3 facciones. Esto personalizará la apariencia de tu perfil.
+              <p className="mb-4 text-sm text-bone/50">
+                Declara tu lealtad a hasta 3 facciones. Esto personalizará la apariencia de tu
+                perfil.
               </p>
               <FactionSelector
                 selectedFactions={favoriteFactions}
@@ -848,7 +903,7 @@ function CreatorSection({
   userId,
   username,
   creatorStatus,
-  creatorType
+  creatorType,
 }: {
   userId: string
   username: string
@@ -858,19 +913,19 @@ function CreatorSection({
   if (creatorStatus === 'approved' && creatorType) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-lg">
+        <div className="flex items-center gap-3 rounded-lg border border-purple-500/20 bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-4">
           <CreatorBadge type={creatorType} size="md" />
           <div>
-            <p className="text-bone font-medium">Eres un creador verificado</p>
+            <p className="font-medium text-bone">Eres un creador verificado</p>
             <p className="text-sm text-bone/50">Tu badge aparece en tu perfil publico</p>
           </div>
         </div>
         <Link
           href={`/usuarios/${username}`}
-          className="flex items-center gap-2 text-sm text-imperial-gold hover:text-imperial-gold/80 transition-colors"
+          className="flex items-center gap-2 text-sm text-imperial-gold transition-colors hover:text-imperial-gold/80"
         >
           Ver mi perfil publico
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
     )
@@ -878,11 +933,11 @@ function CreatorSection({
 
   if (creatorStatus === 'pending') {
     return (
-      <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+      <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
         <div className="flex items-center gap-3">
-          <Clock className="w-5 h-5 text-amber-400" />
+          <Clock className="h-5 w-5 text-amber-400" />
           <div>
-            <p className="text-bone font-medium">Solicitud en revision</p>
+            <p className="font-medium text-bone">Solicitud en revision</p>
             <p className="text-sm text-bone/50">
               Te notificaremos cuando sea revisada por nuestro equipo.
             </p>
@@ -895,18 +950,18 @@ function CreatorSection({
   if (creatorStatus === 'rejected') {
     return (
       <div className="space-y-4">
-        <div className="p-4 bg-blood-red/10 border border-blood-red/20 rounded-lg">
-          <p className="text-bone/70 text-sm">
-            Tu solicitud anterior fue rechazada. Puedes volver a intentarlo
-            cuando cumplas todos los requisitos.
+        <div className="bg-blood-red/10 border-blood-red/20 rounded-lg border p-4">
+          <p className="text-sm text-bone/70">
+            Tu solicitud anterior fue rechazada. Puedes volver a intentarlo cuando cumplas todos los
+            requisitos.
           </p>
         </div>
         <CreatorEligibility userId={userId} />
         <Link
           href="/comunidad/creadores/solicitar"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 text-purple-400 rounded-lg hover:bg-purple-500/30 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg border border-purple-500/30 bg-purple-500/20 px-4 py-2 text-purple-400 transition-colors hover:bg-purple-500/30"
         >
-          <Sparkles className="w-4 h-4" />
+          <Sparkles className="h-4 w-4" />
           Volver a solicitar
         </Link>
       </div>
@@ -917,17 +972,17 @@ function CreatorSection({
   return (
     <div className="space-y-4">
       <p className="text-sm text-bone/50">
-        Conviertete en creador verificado para obtener mayor visibilidad,
-        un badge especial y mostrar tus servicios en tu perfil.
+        Conviertete en creador verificado para obtener mayor visibilidad, un badge especial y
+        mostrar tus servicios en tu perfil.
       </p>
       <CreatorEligibility userId={userId} />
       <Link
         href="/comunidad/creadores/solicitar"
-        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 text-purple-400 rounded-lg hover:bg-purple-500/30 hover:border-purple-500/50 transition-all"
+        className="inline-flex items-center gap-2 rounded-lg border border-purple-500/30 bg-purple-500/20 px-4 py-2 text-purple-400 transition-all hover:border-purple-500/50 hover:bg-purple-500/30"
       >
-        <Sparkles className="w-4 h-4" />
+        <Sparkles className="h-4 w-4" />
         Solicitar ser creador
-        <ArrowRight className="w-4 h-4" />
+        <ArrowRight className="h-4 w-4" />
       </Link>
     </div>
   )
@@ -958,34 +1013,31 @@ function AccordionSection({
   return (
     <motion.div
       layout
-      className="bg-void-light/30 backdrop-blur-sm border border-bone/10 rounded-lg overflow-hidden"
+      className="overflow-hidden rounded-lg border border-bone/10 bg-void-light/30 backdrop-blur-sm"
     >
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 hover:bg-bone/5 transition-colors"
+        className="flex w-full items-center justify-between p-4 transition-colors hover:bg-bone/5"
       >
         <div className="flex items-center gap-3">
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-            status === 'complete' ? 'bg-green-500/10 text-green-400' : 'bg-bone/5 text-bone/40'
-          }`}>
-            <Icon className="w-4 h-4" />
+          <div
+            className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+              status === 'complete' ? 'bg-green-500/10 text-green-400' : 'bg-bone/5 text-bone/40'
+            }`}
+          >
+            <Icon className="h-4 w-4" />
           </div>
           <span className="font-display font-medium text-bone">{title}</span>
           {badge && (
-            <span className="text-xs font-mono text-bone/40 bg-void px-2 py-0.5 rounded">
+            <span className="rounded bg-void px-2 py-0.5 font-mono text-xs text-bone/40">
               {badge}
             </span>
           )}
         </div>
         <div className="flex items-center gap-2">
-          {status === 'complete' && (
-            <CircleDot className="w-4 h-4 text-green-400" />
-          )}
-          <motion.div
-            animate={{ rotate: isExpanded ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <ChevronDown className="w-5 h-5 text-bone/40" />
+          {status === 'complete' && <CircleDot className="h-4 w-4 text-green-400" />}
+          <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown className="h-5 w-5 text-bone/40" />
           </motion.div>
         </div>
       </button>
@@ -998,9 +1050,7 @@ function AccordionSection({
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="px-4 pb-4 pt-2 border-t border-bone/5">
-              {children}
-            </div>
+            <div className="border-t border-bone/5 px-4 pb-4 pt-2">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>

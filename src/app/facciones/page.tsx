@@ -17,7 +17,7 @@ export default function FactionsPage() {
       <Navigation />
 
       {/* Hero */}
-      <section className="relative pt-32 pb-20 px-6">
+      <section className="relative px-6 pb-20 pt-32">
         <div className="absolute inset-0">
           <div
             className="absolute inset-0 bg-cover bg-center"
@@ -28,11 +28,11 @@ export default function FactionsPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-void via-void/90 to-void" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto text-center">
+        <div className="relative mx-auto max-w-7xl text-center">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-block px-4 py-2 bg-blood-light/10 text-blood-light font-body text-sm font-semibold tracking-wider mb-6"
+            className="mb-6 inline-block bg-blood-light/10 px-4 py-2 font-body text-sm font-semibold tracking-wider text-blood-light"
           >
             WARHAMMER 40,000
           </motion.span>
@@ -41,7 +41,7 @@ export default function FactionsPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-display text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6"
+            className="mb-6 font-display text-5xl font-black text-white md:text-6xl lg:text-7xl"
           >
             Elige tu <span className="text-gradient">Faccion</span>
           </motion.h1>
@@ -50,9 +50,10 @@ export default function FactionsPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="font-body text-xl text-bone/60 max-w-2xl mx-auto"
+            className="mx-auto max-w-2xl font-body text-xl text-bone/60"
           >
-            Siete grandes poderes luchan por el dominio de la galaxia. Cada uno con su historia, estetica y estilo de juego unicos.
+            Siete grandes poderes luchan por el dominio de la galaxia. Cada uno con su historia,
+            estetica y estilo de juego unicos.
           </motion.p>
 
           {/* Quick faction symbols */}
@@ -60,7 +61,7 @@ export default function FactionsPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex justify-center gap-4 mt-8"
+            className="mt-8 flex justify-center gap-4"
           >
             {factions.map((faction, i) => (
               <motion.div
@@ -72,7 +73,7 @@ export default function FactionsPage() {
                 <Link href={`/facciones/${faction.id}`}>
                   <motion.div
                     whileHover={{ scale: 1.2, y: -5 }}
-                    className="p-2 rounded-lg transition-all hover:bg-white/5"
+                    className="rounded-lg p-2 transition-all hover:bg-white/5"
                   >
                     <FactionSymbol factionId={faction.id} size="sm" />
                   </motion.div>
@@ -84,10 +85,10 @@ export default function FactionsPage() {
       </section>
 
       {/* Factions Grid - Bento Style */}
-      <section className="relative py-20 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative px-6 py-20">
+        <div className="mx-auto max-w-7xl">
           {/* Featured Factions - First Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
             {factions.slice(0, 3).map((faction, index) => {
               const theme = getFactionTheme(faction.id)
               return (
@@ -98,7 +99,7 @@ export default function FactionsPage() {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ y: -10 }}
-                    className="group relative h-[500px] rounded-2xl overflow-hidden cursor-pointer"
+                    className="group relative h-[500px] cursor-pointer overflow-hidden rounded-2xl"
                   >
                     {/* Background */}
                     <Image
@@ -119,7 +120,7 @@ export default function FactionsPage() {
 
                     {/* Hover glow */}
                     <motion.div
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                       style={{
                         boxShadow: `inset 0 0 100px ${faction.color}30`,
                       }}
@@ -127,38 +128,38 @@ export default function FactionsPage() {
 
                     {/* Top accent */}
                     <div
-                      className="absolute top-0 left-0 w-full h-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute left-0 top-0 h-1 w-full opacity-0 transition-opacity group-hover:opacity-100"
                       style={{ backgroundColor: faction.color }}
                     />
 
                     {/* Content */}
-                    <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                    <div className="absolute inset-0 flex flex-col justify-end p-8">
                       <FactionSymbol factionId={faction.id} size="lg" className="mb-4" />
 
                       <span
-                        className="font-body text-sm font-semibold tracking-wider uppercase mb-2"
+                        className="mb-2 font-body text-sm font-semibold uppercase tracking-wider"
                         style={{ color: faction.color }}
                       >
                         {faction.tagline}
                       </span>
 
-                      <h2 className="font-display text-3xl md:text-4xl font-black text-white mb-4">
+                      <h2 className="mb-4 font-display text-3xl font-black text-white md:text-4xl">
                         {faction.name}
                       </h2>
 
-                      <p className="font-body text-bone/70 leading-relaxed mb-6 line-clamp-2">
+                      <p className="mb-6 line-clamp-2 font-body leading-relaxed text-bone/70">
                         {faction.description}
                       </p>
 
                       {/* Stats */}
-                      <div className="flex gap-4 mb-4">
+                      <div className="mb-4 flex gap-4">
                         {[
                           { label: 'Unidades', value: faction.stats.unitsCount },
                           { label: 'Dificultad', value: faction.stats.difficulty },
                         ].map((stat) => (
                           <div
                             key={stat.label}
-                            className="px-3 py-1.5 rounded text-xs font-body"
+                            className="rounded px-3 py-1.5 font-body text-xs"
                             style={{ background: `${faction.color}20` }}
                           >
                             <span className="text-bone/50">{stat.label}: </span>
@@ -174,13 +175,17 @@ export default function FactionsPage() {
                         <span>Explorar Faccion</span>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="w-5 h-5 group-hover:translate-x-2 transition-transform"
+                          className="h-5 w-5 transition-transform group-hover:translate-x-2"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
                           strokeWidth={2}
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3"
+                          />
                         </svg>
                       </div>
                     </div>
@@ -191,7 +196,7 @@ export default function FactionsPage() {
           </div>
 
           {/* Secondary Factions - Second Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {factions.slice(3).map((faction, index) => {
               const theme = getFactionTheme(faction.id)
               return (
@@ -202,7 +207,7 @@ export default function FactionsPage() {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ y: -8, scale: 1.02 }}
-                    className="group relative h-[350px] rounded-xl overflow-hidden cursor-pointer"
+                    className="group relative h-[350px] cursor-pointer overflow-hidden rounded-xl"
                   >
                     {/* Background */}
                     <Image
@@ -222,7 +227,7 @@ export default function FactionsPage() {
 
                     {/* Hover border */}
                     <motion.div
-                      className="absolute inset-0 rounded-xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity group-hover:opacity-100"
                       style={{
                         border: `2px solid ${faction.color}`,
                         boxShadow: `inset 0 0 60px ${faction.color}20`,
@@ -230,39 +235,43 @@ export default function FactionsPage() {
                     />
 
                     {/* Content */}
-                    <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                      <div className="flex items-center gap-3 mb-3">
+                    <div className="absolute inset-0 flex flex-col justify-end p-6">
+                      <div className="mb-3 flex items-center gap-3">
                         <FactionSymbol factionId={faction.id} size="md" />
                         <span
-                          className="font-body text-xs font-semibold tracking-wider uppercase"
+                          className="font-body text-xs font-semibold uppercase tracking-wider"
                           style={{ color: faction.color }}
                         >
                           {faction.tagline}
                         </span>
                       </div>
 
-                      <h2 className="font-display text-2xl font-black text-white mb-2">
+                      <h2 className="mb-2 font-display text-2xl font-black text-white">
                         {faction.name}
                       </h2>
 
-                      <p className="font-body text-sm text-bone/60 leading-relaxed line-clamp-2 mb-4">
+                      <p className="mb-4 line-clamp-2 font-body text-sm leading-relaxed text-bone/60">
                         {faction.description}
                       </p>
 
                       <div
-                        className="flex items-center gap-2 font-body text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="flex items-center gap-2 font-body text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100"
                         style={{ color: faction.color }}
                       >
                         <span>Ver mas</span>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="w-4 h-4"
+                          className="h-4 w-4"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
                           strokeWidth={2}
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3"
+                          />
                         </svg>
                       </div>
                     </div>
@@ -275,41 +284,42 @@ export default function FactionsPage() {
       </section>
 
       {/* CTA Section - Lexicanum Scribe */}
-      <section className="relative py-20 px-6">
+      <section className="relative px-6 py-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-4xl mx-auto relative"
+          className="relative mx-auto max-w-4xl"
         >
           {/* Main Card */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-void-light/90 via-void/95 to-amber-950/20 border border-amber-500/20">
+          <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-br from-void-light/90 via-void/95 to-amber-950/20">
             {/* Corner filigrees */}
-            <div className="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-amber-500/30 rounded-tl-2xl" />
-            <div className="absolute top-0 right-0 w-24 h-24 border-t-2 border-r-2 border-amber-500/30 rounded-tr-2xl" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 border-b-2 border-l-2 border-amber-500/30 rounded-bl-2xl" />
-            <div className="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-amber-500/30 rounded-br-2xl" />
+            <div className="absolute left-0 top-0 h-24 w-24 rounded-tl-2xl border-l-2 border-t-2 border-amber-500/30" />
+            <div className="absolute right-0 top-0 h-24 w-24 rounded-tr-2xl border-r-2 border-t-2 border-amber-500/30" />
+            <div className="absolute bottom-0 left-0 h-24 w-24 rounded-bl-2xl border-b-2 border-l-2 border-amber-500/30" />
+            <div className="absolute bottom-0 right-0 h-24 w-24 rounded-br-2xl border-b-2 border-r-2 border-amber-500/30" />
 
             {/* Top accent line */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/60 to-transparent" />
+            <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-transparent via-amber-500/60 to-transparent" />
 
             {/* Ambient glow */}
-            <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5 pointer-events-none" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5" />
 
             {/* Background pattern - subtle parchment lines */}
             <div
-              className="absolute inset-0 opacity-[0.03] pointer-events-none"
+              className="pointer-events-none absolute inset-0 opacity-[0.03]"
               style={{
-                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(245,158,11,0.5) 39px, rgba(245,158,11,0.5) 40px)',
+                backgroundImage:
+                  'repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(245,158,11,0.5) 39px, rgba(245,158,11,0.5) 40px)',
               }}
             />
 
             <div className="relative p-8 md:p-12">
-              <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+              <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-12">
                 {/* Icon Section */}
                 <div className="flex-shrink-0">
                   <motion.div
-                    className="relative w-28 h-28 md:w-32 md:h-32"
+                    className="relative h-28 w-28 md:h-32 md:w-32"
                     animate={{
                       filter: [
                         'drop-shadow(0 0 20px rgba(245, 158, 11, 0.2))',
@@ -327,16 +337,16 @@ export default function FactionsPage() {
                       transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
                     />
                     {/* Inner circle */}
-                    <div className="absolute inset-4 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-700/10 border border-amber-500/40 flex items-center justify-center">
-                      <Scroll className="w-12 h-12 md:w-14 md:h-14 text-amber-400" />
+                    <div className="absolute inset-4 flex items-center justify-center rounded-full border border-amber-500/40 bg-gradient-to-br from-amber-500/20 to-amber-700/10">
+                      <Scroll className="h-12 w-12 text-amber-400 md:h-14 md:w-14" />
                     </div>
                     {/* Floating feather */}
                     <motion.div
-                      className="absolute -top-2 -right-2"
+                      className="absolute -right-2 -top-2"
                       animate={{ y: [0, -5, 0], rotate: [0, 5, 0] }}
                       transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                     >
-                      <Feather className="w-8 h-8 text-amber-300" />
+                      <Feather className="h-8 w-8 text-amber-300" />
                     </motion.div>
                   </motion.div>
                 </div>
@@ -347,24 +357,25 @@ export default function FactionsPage() {
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    className="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-full text-amber-400 font-mono text-xs tracking-widest mb-4"
+                    className="mb-4 inline-block rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 font-mono text-xs tracking-widest text-amber-400"
                   >
                     ORDEN DEL LEXICANUM
                   </motion.span>
 
-                  <h2 className="font-display text-3xl md:text-4xl font-black text-white mb-4">
+                  <h2 className="mb-4 font-display text-3xl font-black text-white md:text-4xl">
                     Contribuye al{' '}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">
+                    <span className="bg-gradient-to-r from-amber-400 to-amber-200 bg-clip-text text-transparent">
                       Archivo Imperial
                     </span>
                   </h2>
 
-                  <p className="font-body text-lg text-bone/60 mb-6 max-w-xl">
-                    Unete a la Orden de Escribas del Lexicanum. Documenta el lore, crea articulos sobre las facciones y ayuda a preservar el conocimiento de la galaxia.
+                  <p className="mb-6 max-w-xl font-body text-lg text-bone/60">
+                    Unete a la Orden de Escribas del Lexicanum. Documenta el lore, crea articulos
+                    sobre las facciones y ayuda a preservar el conocimiento de la galaxia.
                   </p>
 
                   {/* Benefits Grid */}
-                  <div className="grid grid-cols-3 gap-3 mb-8">
+                  <div className="mb-8 grid grid-cols-3 gap-3">
                     {[
                       { icon: Feather, label: 'Crear articulos', desc: 'Escribe lore' },
                       { icon: BookOpen, label: 'Editar wiki', desc: 'Mejora contenido' },
@@ -376,10 +387,10 @@ export default function FactionsPage() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: i * 0.1 }}
-                        className="p-3 rounded-lg bg-void/50 border border-amber-500/10 hover:border-amber-500/30 transition-colors group"
+                        className="group rounded-lg border border-amber-500/10 bg-void/50 p-3 transition-colors hover:border-amber-500/30"
                       >
-                        <item.icon className="w-5 h-5 text-amber-400/70 mx-auto mb-1.5 group-hover:text-amber-400 transition-colors" />
-                        <p className="text-xs text-bone/70 font-medium">{item.label}</p>
+                        <item.icon className="mx-auto mb-1.5 h-5 w-5 text-amber-400/70 transition-colors group-hover:text-amber-400" />
+                        <p className="text-xs font-medium text-bone/70">{item.label}</p>
                       </motion.div>
                     ))}
                   </div>
@@ -389,11 +400,11 @@ export default function FactionsPage() {
                     <motion.button
                       whileHover={{ scale: 1.03, boxShadow: '0 0 30px rgba(245, 158, 11, 0.3)' }}
                       whileTap={{ scale: 0.98 }}
-                      className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-display font-bold text-lg rounded-lg transition-all group"
+                      className="group inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-amber-600 to-amber-700 px-8 py-4 font-display text-lg font-bold text-white transition-all hover:from-amber-500 hover:to-amber-600"
                     >
-                      <Feather className="w-5 h-5" />
+                      <Feather className="h-5 w-5" />
                       Solicitar ser Lexicanum Scribe
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </motion.button>
                   </Link>
                 </div>

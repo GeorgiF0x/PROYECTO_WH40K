@@ -1,8 +1,5 @@
 import type { BlockNoteEditor } from '@blocknote/core'
-import {
-  filterSuggestionItems,
-  insertOrUpdateBlockForSlashMenu,
-} from '@blocknote/core/extensions'
+import { filterSuggestionItems, insertOrUpdateBlockForSlashMenu } from '@blocknote/core/extensions'
 import { getDefaultReactSlashMenuItems } from '@blocknote/react'
 import type { WikiSchema } from './schema'
 
@@ -95,10 +92,7 @@ function getCustomSlashMenuItems(editor: WikiEditor) {
 }
 
 export function getWikiSlashMenuItems(editor: WikiEditor) {
-  return [
-    ...getDefaultReactSlashMenuItems(editor),
-    ...getCustomSlashMenuItems(editor),
-  ]
+  return [...getDefaultReactSlashMenuItems(editor), ...getCustomSlashMenuItems(editor)]
 }
 
 export function filterWikiSlashMenuItems(editor: WikiEditor, query: string) {

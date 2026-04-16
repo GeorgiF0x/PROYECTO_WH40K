@@ -35,14 +35,19 @@ export function Avatar({ src, alt = '', fallback, size = 'md', className }: Avat
   const initials = fallback
     ? fallback.slice(0, 2).toUpperCase()
     : alt
-      ? alt.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+      ? alt
+          .split(' ')
+          .map((n) => n[0])
+          .join('')
+          .slice(0, 2)
+          .toUpperCase()
       : '?'
 
   if (!src || hasError) {
     return (
       <div
         className={cn(
-          'flex items-center justify-center rounded-full bg-blood text-bone font-bold',
+          'flex items-center justify-center rounded-full bg-blood font-bold text-bone',
           sizeClasses[size],
           className
         )}
@@ -58,11 +63,7 @@ export function Avatar({ src, alt = '', fallback, size = 'md', className }: Avat
       src={optimizeImageUrl(src, sizePixels[size])}
       alt={alt}
       onError={() => setHasError(true)}
-      className={cn(
-        'rounded-full object-cover',
-        sizeClasses[size],
-        className
-      )}
+      className={cn('rounded-full object-cover', sizeClasses[size], className)}
     />
   )
 }

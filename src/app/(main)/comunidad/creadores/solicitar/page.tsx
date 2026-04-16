@@ -6,14 +6,17 @@ import type { CreatorType } from '@/lib/types/database.types'
 
 export const metadata: Metadata = {
   title: 'Solicitar ser Creador | Administratum',
-  description: 'Únete al programa de creadores verificados del Imperium. Demuestra tu valía y recibe la bendición del Administratum.'
+  description:
+    'Únete al programa de creadores verificados del Imperium. Demuestra tu valía y recibe la bendición del Administratum.',
 }
 
 export default async function CreatorApplicationPage() {
   const supabase = await createClient()
 
   // Check authentication
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   if (!user) {
     redirect('/login?redirect=/comunidad/creadores/solicitar')
@@ -22,7 +25,9 @@ export default async function CreatorApplicationPage() {
   // Get user's creator status and profile info
   const { data: profile } = await supabase
     .from('profiles')
-    .select('username, display_name, creator_status, creator_type, creator_verified_at, creator_application_date, creator_rejection_reason')
+    .select(
+      'username, display_name, creator_status, creator_type, creator_verified_at, creator_application_date, creator_rejection_reason'
+    )
     .eq('id', user.id)
     .single()
 

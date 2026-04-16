@@ -42,14 +42,10 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
   // ── List variant ────────────────────────────────────
   if (variant === 'list') {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-      >
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
         <Link href={`/galeria/${miniature.id}`}>
           <motion.article
-            className="group relative flex bg-void-light rounded-xl overflow-hidden cursor-pointer border border-bone/5"
+            className="group relative flex cursor-pointer overflow-hidden rounded-xl border border-bone/5 bg-void-light"
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
             whileHover={{ x: 4 }}
@@ -57,16 +53,19 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
           >
             {/* Animated border glow on hover */}
             <motion.div
-              className="absolute -inset-[1px] rounded-xl z-0"
-              style={{ background: 'linear-gradient(135deg, #0D9B8A, transparent, #0D9B8A)', backgroundSize: '200% 200%' }}
+              className="absolute -inset-[1px] z-0 rounded-xl"
+              style={{
+                background: 'linear-gradient(135deg, #0D9B8A, transparent, #0D9B8A)',
+                backgroundSize: '200% 200%',
+              }}
               initial={{ opacity: 0 }}
               animate={{ opacity: isHovered ? 0.5 : 0 }}
               transition={{ duration: 0.3 }}
             />
 
-            <div className="relative z-10 flex w-full bg-void-light rounded-xl overflow-hidden">
+            <div className="relative z-10 flex w-full overflow-hidden rounded-xl bg-void-light">
               {/* Thumbnail */}
-              <div className="relative w-28 h-28 sm:w-36 sm:h-36 flex-shrink-0 overflow-hidden">
+              <div className="relative h-28 w-28 flex-shrink-0 overflow-hidden sm:h-36 sm:w-36">
                 <Image
                   src={thumbnailUrl}
                   alt={miniature.title}
@@ -79,19 +78,19 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
               </div>
 
               {/* Content */}
-              <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+              <div className="flex min-w-0 flex-1 flex-col justify-between p-4">
                 <div>
-                  <h3 className="font-display font-bold text-bone text-base leading-tight line-clamp-1 group-hover:text-necron-dark transition-colors duration-300">
+                  <h3 className="line-clamp-1 font-display text-base font-bold leading-tight text-bone transition-colors duration-300 group-hover:text-necron-dark">
                     {miniature.title}
                   </h3>
                   {miniature.description && (
-                    <p className="mt-1 text-sm text-bone/50 line-clamp-2 font-body">
+                    <p className="mt-1 line-clamp-2 font-body text-sm text-bone/50">
                       {miniature.description}
                     </p>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between mt-2">
+                <div className="mt-2 flex items-center justify-between">
                   {/* Author */}
                   <div className="flex items-center gap-2">
                     {miniature.profiles ? (
@@ -102,16 +101,16 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
                           fallback={miniature.profiles.username}
                           size="xs"
                         />
-                        <span className="text-xs text-bone/60 font-body truncate max-w-[100px]">
+                        <span className="max-w-[100px] truncate font-body text-xs text-bone/60">
                           {miniature.profiles.display_name || miniature.profiles.username}
                         </span>
                       </>
                     ) : (
                       <>
-                        <div className="w-5 h-5 rounded-full bg-bone/10 flex items-center justify-center">
-                          <User className="w-3 h-3 text-bone/40" />
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-bone/10">
+                          <User className="h-3 w-3 text-bone/40" />
                         </div>
-                        <span className="text-xs text-bone/40 font-body">Anónimo</span>
+                        <span className="font-body text-xs text-bone/40">Anónimo</span>
                       </>
                     )}
                   </div>
@@ -119,15 +118,17 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
                   {/* Stats */}
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1">
-                      <Heart className={`w-3.5 h-3.5 ${miniature.user_has_liked ? 'text-red-500 fill-red-500' : 'text-bone/40'}`} />
+                      <Heart
+                        className={`h-3.5 w-3.5 ${miniature.user_has_liked ? 'fill-red-500 text-red-500' : 'text-bone/40'}`}
+                      />
                       <span className="text-xs text-bone/50">{miniature.likes_count || 0}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <MessageCircle className="w-3.5 h-3.5 text-bone/40" />
+                      <MessageCircle className="h-3.5 w-3.5 text-bone/40" />
                       <span className="text-xs text-bone/50">{miniature.comments_count || 0}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Eye className="w-3.5 h-3.5 text-bone/40" />
+                      <Eye className="h-3.5 w-3.5 text-bone/40" />
                       <span className="text-xs text-bone/50">{miniature.view_count || 0}</span>
                     </div>
                   </div>
@@ -137,7 +138,7 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
 
             {/* Bottom accent line */}
             <motion.div
-              className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-necron-teal via-necron to-necron-teal z-10"
+              className="absolute bottom-0 left-0 z-10 h-0.5 bg-gradient-to-r from-necron-teal via-necron to-necron-teal"
               initial={{ width: '0%' }}
               animate={{ width: isHovered ? '100%' : '0%' }}
               transition={{ duration: 0.3 }}
@@ -160,7 +161,7 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
     >
       <Link href={`/galeria/${miniature.id}`}>
         <motion.article
-          className="group relative bg-void-light rounded-xl overflow-hidden cursor-pointer"
+          className="group relative cursor-pointer overflow-hidden rounded-xl bg-void-light"
           onHoverStart={() => setIsHovered(true)}
           onHoverEnd={() => setIsHovered(false)}
           whileHover={{ y: -8 }}
@@ -168,7 +169,7 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
         >
           {/* Animated border glow on hover */}
           <motion.div
-            className="absolute -inset-[1px] rounded-xl z-0"
+            className="absolute -inset-[1px] z-0 rounded-xl"
             style={{
               background: 'linear-gradient(135deg, #0D9B8A, transparent, #0D9B8A)',
               backgroundSize: '200% 200%',
@@ -182,12 +183,12 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
           />
 
           {/* Card content */}
-          <div className="relative z-10 bg-void-light rounded-xl overflow-hidden">
+          <div className="relative z-10 overflow-hidden rounded-xl bg-void-light">
             {/* Image Container */}
             <div className="relative aspect-[4/5] overflow-hidden">
               {/* Loading skeleton */}
               {!imageLoaded && (
-                <div className="absolute inset-0 bg-void animate-pulse">
+                <div className="absolute inset-0 animate-pulse bg-void">
                   <div className="absolute inset-0 bg-gradient-to-br from-bone/5 to-transparent" />
                 </div>
               )}
@@ -217,13 +218,13 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
 
               {/* Stats on hover */}
               <motion.div
-                className="absolute top-4 right-4 flex flex-col gap-2"
+                className="absolute right-4 top-4 flex flex-col gap-2"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : 20 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-void/80 backdrop-blur-sm rounded-lg">
-                  <Heart className="w-4 h-4 text-bone/60" />
+                <div className="flex items-center gap-1.5 rounded-lg bg-void/80 px-2.5 py-1.5 backdrop-blur-sm">
+                  <Heart className="h-4 w-4 text-bone/60" />
                   <span className="text-xs font-medium text-bone/80">
                     {miniature.likes_count || 0}
                   </span>
@@ -232,18 +233,18 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
 
               {/* Quick actions on hover */}
               <motion.div
-                className="absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-3"
+                className="absolute bottom-20 left-1/2 flex -translate-x-1/2 items-center gap-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 20 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
               >
                 <motion.button
-                  className="flex items-center gap-2 px-4 py-2 bg-necron-teal text-void font-semibold text-sm rounded-lg"
+                  className="flex items-center gap-2 rounded-lg bg-necron-teal px-4 py-2 text-sm font-semibold text-void"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={(e) => e.preventDefault()}
                 >
-                  <Eye className="w-4 h-4" />
+                  <Eye className="h-4 w-4" />
                   Ver Detalle
                 </motion.button>
               </motion.div>
@@ -252,13 +253,13 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
             {/* Info Section */}
             <div className="p-4">
               {/* Title */}
-              <h3 className="font-display font-bold text-bone text-lg leading-tight line-clamp-1 group-hover:text-necron-dark transition-colors duration-300">
+              <h3 className="line-clamp-1 font-display text-lg font-bold leading-tight text-bone transition-colors duration-300 group-hover:text-necron-dark">
                 {miniature.title}
               </h3>
 
               {/* Description preview */}
               {miniature.description && (
-                <p className="mt-1 text-sm text-bone/50 line-clamp-2 font-body">
+                <p className="mt-1 line-clamp-2 font-body text-sm text-bone/50">
                   {miniature.description}
                 </p>
               )}
@@ -275,42 +276,33 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
                         fallback={miniature.profiles.username}
                         size="xs"
                       />
-                      <span className="text-sm text-bone/60 font-body truncate max-w-[100px]">
+                      <span className="max-w-[100px] truncate font-body text-sm text-bone/60">
                         {miniature.profiles.display_name || miniature.profiles.username}
                       </span>
                     </>
                   ) : (
                     <>
-                      <div className="w-6 h-6 rounded-full bg-bone/10 flex items-center justify-center">
-                        <User className="w-3 h-3 text-bone/40" />
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-bone/10">
+                        <User className="h-3 w-3 text-bone/40" />
                       </div>
-                      <span className="text-sm text-bone/40 font-body">Anónimo</span>
+                      <span className="font-body text-sm text-bone/40">Anónimo</span>
                     </>
                   )}
                 </div>
 
                 {/* Stats */}
                 <div className="flex items-center gap-3">
-                  <motion.div
-                    className="flex items-center gap-1"
-                    whileHover={{ scale: 1.1 }}
-                  >
+                  <motion.div className="flex items-center gap-1" whileHover={{ scale: 1.1 }}>
                     <Heart
-                      className={`w-4 h-4 ${
-                        miniature.user_has_liked
-                          ? 'text-red-500 fill-red-500'
-                          : 'text-bone/40'
+                      className={`h-4 w-4 ${
+                        miniature.user_has_liked ? 'fill-red-500 text-red-500' : 'text-bone/40'
                       }`}
                     />
-                    <span className="text-xs text-bone/50">
-                      {miniature.likes_count || 0}
-                    </span>
+                    <span className="text-xs text-bone/50">{miniature.likes_count || 0}</span>
                   </motion.div>
                   <div className="flex items-center gap-1">
-                    <MessageCircle className="w-4 h-4 text-bone/40" />
-                    <span className="text-xs text-bone/50">
-                      {miniature.comments_count || 0}
-                    </span>
+                    <MessageCircle className="h-4 w-4 text-bone/40" />
+                    <span className="text-xs text-bone/50">{miniature.comments_count || 0}</span>
                   </div>
                 </div>
               </div>
@@ -318,7 +310,7 @@ function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCard
 
             {/* Inner glow on hover */}
             <motion.div
-              className="absolute inset-0 pointer-events-none rounded-xl bg-[radial-gradient(ellipse_at_bottom,rgba(13,155,138,0.04)_0%,transparent_70%)]"
+              className="pointer-events-none absolute inset-0 rounded-xl bg-[radial-gradient(ellipse_at_bottom,rgba(13,155,138,0.04)_0%,transparent_70%)]"
               initial={{ opacity: 0 }}
               animate={{ opacity: isHovered ? 1 : 0 }}
               transition={{ duration: 0.3 }}

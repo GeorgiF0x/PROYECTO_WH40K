@@ -194,7 +194,7 @@ export const EMPTY_TIPTAP_CONTENT: TiptapContent = {
   content: [
     {
       type: 'paragraph',
-      content: []
-    }
-  ]
+      content: [],
+    },
+  ],
 }

@@ -20,10 +20,7 @@ export function optimizeImageUrl(
   if (!url.includes(SUPABASE_STORAGE_HOST)) return url
 
   // Replace /object/public/ with /render/image/public/ for transform endpoint
-  const transformed = url.replace(
-    '/storage/v1/object/public/',
-    '/storage/v1/render/image/public/'
-  )
+  const transformed = url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/')
 
   const separator = transformed.includes('?') ? '&' : '?'
   return `${transformed}${separator}width=${width}&quality=${quality}`

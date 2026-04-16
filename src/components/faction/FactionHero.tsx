@@ -27,7 +27,7 @@ export function FactionHero({ faction }: FactionHeroProps) {
   const theme = getFactionTheme(faction.id)
 
   return (
-    <section ref={ref} className="relative min-h-[90vh] flex items-end overflow-hidden">
+    <section ref={ref} className="relative flex min-h-[90vh] items-end overflow-hidden">
       {/* Dynamic Animated Background */}
       <motion.div className="absolute inset-0" style={{ y, scale }}>
         <FactionHeroBackground factionId={faction.id} />
@@ -64,32 +64,36 @@ export function FactionHero({ faction }: FactionHeroProps) {
       {/* Content */}
       <motion.div
         style={{ opacity }}
-        className="relative max-w-7xl mx-auto px-6 pb-16 pt-40 w-full"
+        className="relative mx-auto w-full max-w-7xl px-6 pb-16 pt-40"
       >
         {/* Breadcrumb */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-2 font-body text-sm text-bone/60 mb-6"
+          className="mb-6 flex items-center gap-2 font-body text-sm text-bone/60"
         >
-          <Link href="/" className="hover:text-white transition-colors">Inicio</Link>
+          <Link href="/" className="transition-colors hover:text-white">
+            Inicio
+          </Link>
           <span>/</span>
-          <Link href="/facciones" className="hover:text-white transition-colors">Facciones</Link>
+          <Link href="/facciones" className="transition-colors hover:text-white">
+            Facciones
+          </Link>
           <span>/</span>
           <span style={{ color: faction.color }}>{faction.shortName}</span>
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="flex-1">
             {/* Symbol and Tagline */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-4 mb-4"
+              className="mb-4 flex items-center gap-4"
             >
               <FactionSymbol factionId={faction.id} size="lg" />
               <span
-                className="font-body text-sm font-semibold tracking-widest uppercase"
+                className="font-body text-sm font-semibold uppercase tracking-widest"
                 style={{ color: faction.color }}
               >
                 {faction.tagline}
@@ -101,12 +105,13 @@ export function FactionHero({ faction }: FactionHeroProps) {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="font-display text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6"
+              className="mb-6 font-display text-5xl font-black text-white md:text-6xl lg:text-7xl"
             >
               <span
                 className="bg-clip-text text-transparent"
                 style={{
-                  backgroundImage: theme?.gradients.text || `linear-gradient(90deg, ${faction.color}, white)`,
+                  backgroundImage:
+                    theme?.gradients.text || `linear-gradient(90deg, ${faction.color}, white)`,
                 }}
               >
                 {faction.name}
@@ -118,7 +123,7 @@ export function FactionHero({ faction }: FactionHeroProps) {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="font-body text-xl text-bone/70 max-w-2xl leading-relaxed"
+              className="max-w-2xl font-body text-xl leading-relaxed text-bone/70"
             >
               {faction.description}
             </motion.p>
@@ -132,7 +137,7 @@ export function FactionHero({ faction }: FactionHeroProps) {
             className="lg:w-72"
           >
             <div
-              className="p-6 rounded-xl backdrop-blur-sm border"
+              className="rounded-xl border p-6 backdrop-blur-sm"
               style={{
                 background: `${theme?.cssVars['--faction-bg'] || '#030308'}90`,
                 borderColor: `${faction.color}30`,
@@ -140,7 +145,7 @@ export function FactionHero({ faction }: FactionHeroProps) {
               }}
             >
               <h3
-                className="font-display text-sm font-bold tracking-wider uppercase mb-4"
+                className="mb-4 font-display text-sm font-bold uppercase tracking-wider"
                 style={{ color: faction.color }}
               >
                 Estadisticas
@@ -152,7 +157,7 @@ export function FactionHero({ faction }: FactionHeroProps) {
                   { label: 'Dificultad', value: faction.stats.difficulty },
                   { label: 'Estilo', value: faction.stats.playstyle },
                 ].map((stat) => (
-                  <div key={stat.label} className="flex justify-between items-center">
+                  <div key={stat.label} className="flex items-center justify-between">
                     <span className="font-body text-sm text-bone/50">{stat.label}</span>
                     <span className="font-display text-sm font-bold text-white">{stat.value}</span>
                   </div>
@@ -160,19 +165,24 @@ export function FactionHero({ faction }: FactionHeroProps) {
               </div>
 
               {/* Difficulty bar */}
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <div className="flex justify-between mb-2">
+              <div className="mt-4 border-t border-white/10 pt-4">
+                <div className="mb-2 flex justify-between">
                   <span className="font-body text-xs text-bone/50">Nivel de Dificultad</span>
                 </div>
-                <div className="h-2 bg-void-light rounded-full overflow-hidden">
+                <div className="h-2 overflow-hidden rounded-full bg-void-light">
                   <motion.div
                     className="h-full rounded-full"
                     style={{ background: faction.color }}
                     initial={{ width: 0 }}
                     animate={{
-                      width: faction.stats.difficulty === 'Facil' ? '25%' :
-                             faction.stats.difficulty === 'Media' ? '50%' :
-                             faction.stats.difficulty === 'Dificil' ? '75%' : '100%'
+                      width:
+                        faction.stats.difficulty === 'Facil'
+                          ? '25%'
+                          : faction.stats.difficulty === 'Media'
+                            ? '50%'
+                            : faction.stats.difficulty === 'Dificil'
+                              ? '75%'
+                              : '100%',
                     }}
                     transition={{ duration: 1, delay: 0.5 }}
                   />
@@ -192,10 +202,10 @@ export function FactionHero({ faction }: FactionHeroProps) {
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-6 h-10 rounded-full border-2 border-bone/30 flex justify-center pt-2"
+            className="flex h-10 w-6 justify-center rounded-full border-2 border-bone/30 pt-2"
           >
             <motion.div
-              className="w-1.5 h-3 rounded-full"
+              className="h-3 w-1.5 rounded-full"
               style={{ background: faction.color }}
               animate={{ opacity: [1, 0.3, 1] }}
               transition={{ duration: 2, repeat: Infinity }}

@@ -53,11 +53,11 @@ export function ScribeApplicationsClient() {
       const res = await fetch(`/api/wiki/scribe-applications/${appId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, notes: reviewNotes || null })
+        body: JSON.stringify({ action, notes: reviewNotes || null }),
       })
 
       if (res.ok) {
-        setApplications(applications.filter(a => a.id !== appId))
+        setApplications(applications.filter((a) => a.id !== appId))
         setSelectedApp(null)
         setReviewNotes('')
       }
@@ -74,15 +74,15 @@ export function ScribeApplicationsClient() {
       <div>
         <Link
           href="/wiki-panel"
-          className="inline-flex items-center gap-2 text-bone/40 hover:text-bone/70 transition-colors mb-4 font-mono text-sm"
+          className="mb-4 inline-flex items-center gap-2 font-mono text-sm text-bone/40 transition-colors hover:text-bone/70"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="h-4 w-4" />
           VOLVER AL ARCHIVO
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="font-display text-3xl font-bold text-white mb-2">
+            <h1 className="mb-2 font-display text-3xl font-bold text-white">
               Solicitudes de Escribas
             </h1>
             <p className="font-body text-bone/60">
@@ -94,20 +94,24 @@ export function ScribeApplicationsClient() {
 
       {/* Status tabs */}
       <div className="flex gap-2">
-        {(['pending', 'approved', 'rejected'] as const).map(status => (
+        {(['pending', 'approved', 'rejected'] as const).map((status) => (
           <button
             key={status}
             onClick={() => setStatusFilter(status)}
-            className={`px-4 py-2 rounded-lg font-mono text-sm transition-all ${
+            className={`rounded-lg px-4 py-2 font-mono text-sm transition-all ${
               statusFilter === status
-                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                : 'bg-void-light/50 text-bone/50 border border-transparent hover:border-bone/10'
+                ? 'border border-amber-500/30 bg-amber-500/20 text-amber-400'
+                : 'border border-transparent bg-void-light/50 text-bone/50 hover:border-bone/10'
             }`}
           >
-            {status === 'pending' && <Clock className="w-4 h-4 inline mr-2" />}
-            {status === 'approved' && <CheckCircle2 className="w-4 h-4 inline mr-2" />}
-            {status === 'rejected' && <XCircle className="w-4 h-4 inline mr-2" />}
-            {status === 'pending' ? 'Pendientes' : status === 'approved' ? 'Aprobadas' : 'Rechazadas'}
+            {status === 'pending' && <Clock className="mr-2 inline h-4 w-4" />}
+            {status === 'approved' && <CheckCircle2 className="mr-2 inline h-4 w-4" />}
+            {status === 'rejected' && <XCircle className="mr-2 inline h-4 w-4" />}
+            {status === 'pending'
+              ? 'Pendientes'
+              : status === 'approved'
+                ? 'Aprobadas'
+                : 'Rechazadas'}
           </button>
         ))}
       </div>
@@ -116,13 +120,18 @@ export function ScribeApplicationsClient() {
       <div className="space-y-4">
         {loading ? (
           [...Array(3)].map((_, i) => (
-            <div key={i} className="h-32 bg-void-light rounded-lg animate-pulse" />
+            <div key={i} className="h-32 animate-pulse rounded-lg bg-void-light" />
           ))
         ) : applications.length === 0 ? (
-          <Card className="text-center py-12">
-            <Feather className="w-12 h-12 mx-auto mb-4 text-bone/30" />
-            <h3 className="font-display text-xl text-white mb-2">
-              No hay solicitudes {statusFilter === 'pending' ? 'pendientes' : statusFilter === 'approved' ? 'aprobadas' : 'rechazadas'}
+          <Card className="py-12 text-center">
+            <Feather className="mx-auto mb-4 h-12 w-12 text-bone/30" />
+            <h3 className="mb-2 font-display text-xl text-white">
+              No hay solicitudes{' '}
+              {statusFilter === 'pending'
+                ? 'pendientes'
+                : statusFilter === 'approved'
+                  ? 'aprobadas'
+                  : 'rechazadas'}
             </h3>
             <p className="font-body text-bone/60">
               {statusFilter === 'pending'
@@ -139,10 +148,10 @@ export function ScribeApplicationsClient() {
               transition={{ delay: i * 0.05 }}
             >
               <Card className="p-6">
-                <div className="flex flex-col lg:flex-row gap-6">
+                <div className="flex flex-col gap-6 lg:flex-row">
                   {/* User info */}
                   <div className="flex items-start gap-4 lg:w-1/3">
-                    <div className="w-12 h-12 rounded-full bg-void-light border border-bone/10 flex items-center justify-center overflow-hidden">
+                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-bone/10 bg-void-light">
                       {app.user?.avatar_url ? (
                         <Image
                           src={app.user.avatar_url}
@@ -152,22 +161,20 @@ export function ScribeApplicationsClient() {
                           className="object-cover"
                         />
                       ) : (
-                        <User className="w-6 h-6 text-bone/40" />
+                        <User className="h-6 w-6 text-bone/40" />
                       )}
                     </div>
                     <div>
                       <h3 className="font-display font-bold text-white">
                         {app.user?.display_name || app.user?.username || 'Usuario'}
                       </h3>
-                      <p className="text-sm text-bone/50 font-mono">
-                        @{app.user?.username}
-                      </p>
-                      <p className="text-xs text-bone/40 mt-1 flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
+                      <p className="font-mono text-sm text-bone/50">@{app.user?.username}</p>
+                      <p className="mt-1 flex items-center gap-1 text-xs text-bone/40">
+                        <Calendar className="h-3 w-3" />
                         {new Date(app.created_at).toLocaleDateString('es-ES', {
                           day: 'numeric',
                           month: 'short',
-                          year: 'numeric'
+                          year: 'numeric',
                         })}
                       </p>
                     </div>
@@ -177,11 +184,11 @@ export function ScribeApplicationsClient() {
                   <div className="flex-1 space-y-4">
                     {/* Motivation */}
                     <div>
-                      <h4 className="text-xs text-bone/50 font-mono mb-1 flex items-center gap-1">
-                        <MessageSquare className="w-3 h-3" />
+                      <h4 className="mb-1 flex items-center gap-1 font-mono text-xs text-bone/50">
+                        <MessageSquare className="h-3 w-3" />
                         MOTIVACION
                       </h4>
-                      <p className="text-sm text-bone/80 bg-void/30 rounded-lg p-3 border border-bone/5">
+                      <p className="rounded-lg border border-bone/5 bg-void/30 p-3 text-sm text-bone/80">
                         {app.motivation}
                       </p>
                     </div>
@@ -189,51 +196,43 @@ export function ScribeApplicationsClient() {
                     {/* Experience */}
                     {app.experience && (
                       <div>
-                        <h4 className="text-xs text-bone/50 font-mono mb-1 flex items-center gap-1">
-                          <BookOpen className="w-3 h-3" />
+                        <h4 className="mb-1 flex items-center gap-1 font-mono text-xs text-bone/50">
+                          <BookOpen className="h-3 w-3" />
                           EXPERIENCIA
                         </h4>
-                        <p className="text-sm text-bone/70">
-                          {app.experience}
-                        </p>
+                        <p className="text-sm text-bone/70">{app.experience}</p>
                       </div>
                     )}
 
                     {/* Sample topic */}
                     {app.sample_topic && (
                       <div>
-                        <h4 className="text-xs text-bone/50 font-mono mb-1 flex items-center gap-1">
-                          <Feather className="w-3 h-3" />
+                        <h4 className="mb-1 flex items-center gap-1 font-mono text-xs text-bone/50">
+                          <Feather className="h-3 w-3" />
                           TEMA DE INTERES
                         </h4>
-                        <p className="text-sm text-bone/70">
-                          {app.sample_topic}
-                        </p>
+                        <p className="text-sm text-bone/70">{app.sample_topic}</p>
                       </div>
                     )}
 
                     {/* Review notes (for processed) */}
                     {app.status !== 'pending' && app.reviewer_notes && (
-                      <div className="mt-4 p-3 rounded-lg bg-void/50 border border-bone/10">
-                        <h4 className="text-xs text-bone/50 font-mono mb-1">
-                          NOTAS DEL REVISOR
-                        </h4>
-                        <p className="text-sm text-bone/70">
-                          {app.reviewer_notes}
-                        </p>
+                      <div className="mt-4 rounded-lg border border-bone/10 bg-void/50 p-3">
+                        <h4 className="mb-1 font-mono text-xs text-bone/50">NOTAS DEL REVISOR</h4>
+                        <p className="text-sm text-bone/70">{app.reviewer_notes}</p>
                       </div>
                     )}
 
                     {/* Actions for pending */}
                     {app.status === 'pending' && (
-                      <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                         {selectedApp?.id === app.id ? (
                           <div className="flex-1 space-y-3">
                             <textarea
                               value={reviewNotes}
                               onChange={(e) => setReviewNotes(e.target.value)}
                               placeholder="Notas para el solicitante (opcional)..."
-                              className="w-full h-20 px-3 py-2 bg-void/50 border border-bone/10 rounded-lg text-bone text-sm placeholder-bone/30 focus:outline-none focus:border-amber-500/50 resize-none"
+                              className="h-20 w-full resize-none rounded-lg border border-bone/10 bg-void/50 px-3 py-2 text-sm text-bone placeholder-bone/30 focus:border-amber-500/50 focus:outline-none"
                             />
                             <div className="flex gap-2">
                               <Button
@@ -243,17 +242,17 @@ export function ScribeApplicationsClient() {
                                 onClick={() => handleAction(app.id, 'approve')}
                                 disabled={processingId === app.id}
                               >
-                                <CheckCircle2 className="w-4 h-4" />
+                                <CheckCircle2 className="h-4 w-4" />
                                 Aprobar
                               </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="flex-1 gap-2 border-blood-red/50 text-blood-red hover:bg-blood-red/10"
+                                className="border-blood-red/50 text-blood-red hover:bg-blood-red/10 flex-1 gap-2"
                                 onClick={() => handleAction(app.id, 'reject')}
                                 disabled={processingId === app.id}
                               >
-                                <XCircle className="w-4 h-4" />
+                                <XCircle className="h-4 w-4" />
                                 Rechazar
                               </Button>
                               <Button
@@ -275,7 +274,7 @@ export function ScribeApplicationsClient() {
                             className="gap-2"
                             onClick={() => setSelectedApp(app)}
                           >
-                            <AlertCircle className="w-4 h-4" />
+                            <AlertCircle className="h-4 w-4" />
                             Revisar solicitud
                           </Button>
                         )}

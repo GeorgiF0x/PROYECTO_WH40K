@@ -10,7 +10,7 @@ import type { LucideIcon } from 'lucide-react'
    ───────────────────────────────────────────────────── */
 export function WikiPageBackground() {
   return (
-    <div className="fixed inset-0 pointer-events-none z-0">
+    <div className="pointer-events-none fixed inset-0 z-0">
       {/* Grid overlay */}
       <div
         className="absolute inset-0"
@@ -46,8 +46,8 @@ export function WikiPageBackground() {
    ───────────────────────────────────────────────────── */
 const INK_PARTICLES = Array.from({ length: 12 }, (_, i) => ({
   id: i,
-  left: `${(i * 8.5 + 3) % 90 + 5}%`,
-  top: `${(i * 11 + 7) % 78 + 11}%`,
+  left: `${((i * 8.5 + 3) % 90) + 5}%`,
+  top: `${((i * 11 + 7) % 78) + 11}%`,
   drift: (i % 2 === 0 ? -1 : 1) * (8 + (i % 4) * 5),
   dur: 9 + (i % 3) * 2.5,
   delay: i * 0.6,
@@ -56,7 +56,7 @@ const INK_PARTICLES = Array.from({ length: 12 }, (_, i) => ({
 
 export function FloatingParticles({ color = 'bg-imperial-gold/30' }: { color?: string }) {
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       {INK_PARTICLES.map((p) => (
         <motion.div
           key={p.id}
@@ -134,7 +134,13 @@ export function GothicCorner({
   )
 }
 
-export function GothicCorners({ className = 'text-imperial-gold/40', size = 40 }: { className?: string; size?: number }) {
+export function GothicCorners({
+  className = 'text-imperial-gold/40',
+  size = 40,
+}: {
+  className?: string
+  size?: number
+}) {
   return (
     <>
       <GothicCorner position="tl" className={className} size={size} />
@@ -152,13 +158,13 @@ export function GothicCorners({ className = 'text-imperial-gold/40', size = 40 }
 export function ImperialDivider({ className = '' }: { className?: string }) {
   return (
     <div className={`flex items-center gap-4 ${className}`}>
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-imperial-gold/30 to-transparent" />
+      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-imperial-gold/30 to-transparent" />
       <div className="flex items-center gap-2">
-        <div className="w-1.5 h-1.5 rotate-45 bg-imperial-gold/50" />
-        <Feather className="w-4 h-4 text-imperial-gold/50" />
-        <div className="w-1.5 h-1.5 rotate-45 bg-imperial-gold/50" />
+        <div className="h-1.5 w-1.5 rotate-45 bg-imperial-gold/50" />
+        <Feather className="h-4 w-4 text-imperial-gold/50" />
+        <div className="h-1.5 w-1.5 rotate-45 bg-imperial-gold/50" />
       </div>
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-imperial-gold/30 to-transparent" />
+      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-imperial-gold/30 to-transparent" />
     </div>
   )
 }
@@ -179,7 +185,7 @@ export function SectionLabel({
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       {Icon && <Icon className="h-3.5 w-3.5 text-imperial-gold/50" />}
-      <span className="text-[10px] font-mono text-imperial-gold/60 tracking-[0.3em] uppercase">
+      <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-imperial-gold/60">
         {children}
       </span>
     </div>

@@ -61,7 +61,7 @@ export function ScribeApplicationPageClient({
       <div className="relative min-h-screen py-8 sm:py-12">
         <WikiPageBackground />
         <FloatingParticles />
-        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <BackLink />
           <ApprovedStatus
             username={username}
@@ -79,14 +79,14 @@ export function ScribeApplicationPageClient({
       <WikiPageBackground />
       <FloatingParticles />
 
-      <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <BackLink />
 
         {/* ── Hero Banner ── */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl mb-10 p-8 sm:p-10"
+          className="relative mb-10 overflow-hidden rounded-2xl p-8 sm:p-10"
           style={{
             background: 'linear-gradient(180deg, rgba(201,162,39,0.08) 0%, rgba(3,3,8,0.6) 100%)',
             border: '1px solid rgba(201,162,39,0.15)',
@@ -96,19 +96,20 @@ export function ScribeApplicationPageClient({
 
           {/* Ruled manuscript lines */}
           <div
-            className="absolute inset-0 pointer-events-none opacity-[0.03]"
+            className="pointer-events-none absolute inset-0 opacity-[0.03]"
             style={{
-              backgroundImage: 'repeating-linear-gradient(0deg, rgba(201,162,39,0.5) 0px, rgba(201,162,39,0.5) 1px, transparent 1px, transparent 28px)',
+              backgroundImage:
+                'repeating-linear-gradient(0deg, rgba(201,162,39,0.5) 0px, rgba(201,162,39,0.5) 1px, transparent 1px, transparent 28px)',
               backgroundPosition: '0 20px',
             }}
           />
 
           {/* Radial glow */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,162,39,0.08)_0%,transparent_70%)] pointer-events-none" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,162,39,0.08)_0%,transparent_70%)]" />
 
           <div className="relative text-center">
             {/* Animated quill icon */}
-            <div className="relative inline-flex items-center justify-center w-24 h-24 mb-6">
+            <div className="relative mb-6 inline-flex h-24 w-24 items-center justify-center">
               <motion.div
                 className="absolute inset-0 rounded-full border-2 border-amber-500/30"
                 animate={{ scale: [1, 1.25, 1], opacity: [0.4, 0.15, 0.4] }}
@@ -120,7 +121,7 @@ export function ScribeApplicationPageClient({
                 transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
               />
               <motion.div
-                className="relative w-20 h-20 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/5 border border-amber-500/50 flex items-center justify-center"
+                className="relative flex h-20 w-20 items-center justify-center rounded-full border border-amber-500/50 bg-gradient-to-br from-amber-500/20 to-amber-600/5"
                 animate={{
                   boxShadow: [
                     '0 0 20px rgba(245,158,11,0.15)',
@@ -130,18 +131,18 @@ export function ScribeApplicationPageClient({
                 }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <Feather className="w-10 h-10 text-amber-400" />
+                <Feather className="h-10 w-10 text-amber-400" />
               </motion.div>
             </div>
 
-            <SectionLabel icon={Crosshair} className="justify-center mb-3">
+            <SectionLabel icon={Crosshair} className="mb-3 justify-center">
               PETICION IMPERIAL // ARCHIVO LEXICANUM
             </SectionLabel>
 
-            <h1 className="text-3xl sm:text-4xl font-display font-bold text-bone mb-3 tracking-wide">
+            <h1 className="mb-3 font-display text-3xl font-bold tracking-wide text-bone sm:text-4xl">
               ORDEN DE ESCRIBAS
             </h1>
-            <p className="text-bone/50 font-mono text-sm tracking-wider max-w-md mx-auto">
+            <p className="mx-auto max-w-md font-mono text-sm tracking-wider text-bone/50">
               PETICION PARA EL ARCHIVO LEXICANUM
             </p>
           </div>
@@ -191,9 +192,9 @@ function BackLink() {
   return (
     <Link
       href="/facciones"
-      className="group inline-flex items-center gap-2 text-bone/40 hover:text-bone/70 transition-colors mb-8 font-mono text-sm"
+      className="group mb-8 inline-flex items-center gap-2 font-mono text-sm text-bone/40 transition-colors hover:text-bone/70"
     >
-      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+      <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
       RETORNAR AL ARCHIVO
     </Link>
   )
@@ -210,7 +211,11 @@ function ApprovedStatus({
   wikiRole: WikiRole | null
   isAdmin: boolean
 }) {
-  const roleLabel = isAdmin ? 'ARCHIVISTA MAYOR' : wikiRole === 'lexicanum' ? 'LEXICANUM' : 'ESCRIBA'
+  const roleLabel = isAdmin
+    ? 'ARCHIVISTA MAYOR'
+    : wikiRole === 'lexicanum'
+      ? 'LEXICANUM'
+      : 'ESCRIBA'
 
   return (
     <motion.div
@@ -219,27 +224,27 @@ function ApprovedStatus({
       className="space-y-6"
     >
       {/* Main approved card */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-void-light/90 to-void/80 border border-amber-500/30">
+      <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-b from-void-light/90 to-void/80">
         <GothicCorners className="text-amber-500/30" size={44} />
 
         {/* Top accent glow */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/60 to-transparent" />
+        <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-transparent via-amber-500/60 to-transparent" />
 
         {/* Parchment texture */}
         <div
-          className="absolute inset-0 opacity-[0.015] pointer-events-none"
+          className="pointer-events-none absolute inset-0 opacity-[0.015]"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           }}
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-amber-500/5 to-transparent pointer-events-none" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-amber-500/5 to-transparent" />
 
-        <div className="relative p-8 sm:p-10 text-center">
+        <div className="relative p-8 text-center sm:p-10">
           {/* Success icon with quill */}
-          <div className="relative inline-block mb-6">
+          <div className="relative mb-6 inline-block">
             <motion.div
-              className="w-24 h-24 rounded-full bg-amber-500/10 border-2 border-amber-500/40 flex items-center justify-center"
+              className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-amber-500/40 bg-amber-500/10"
               animate={{
                 boxShadow: [
                   '0 0 20px rgba(245, 158, 11, 0.2)',
@@ -249,29 +254,29 @@ function ApprovedStatus({
               }}
               transition={{ duration: 3, repeat: Infinity }}
             >
-              <Feather className="w-12 h-12 text-amber-400" />
+              <Feather className="h-12 w-12 text-amber-400" />
             </motion.div>
 
             <motion.div
-              className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-blood-red flex items-center justify-center border-2 border-blood-red/80"
+              className="bg-blood-red border-blood-red/80 absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-full border-2"
               initial={{ scale: 0, rotate: -20 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
             >
-              <CheckCircle2 className="w-5 h-5 text-bone" />
+              <CheckCircle2 className="h-5 w-5 text-bone" />
             </motion.div>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-display font-bold text-bone mb-2">
+          <h1 className="mb-2 font-display text-2xl font-bold text-bone sm:text-3xl">
             {roleLabel} DEL LEXICANUM
           </h1>
-          <p className="text-bone/60 font-body mb-6 max-w-md mx-auto">
-            Tu pluma ha sido bendecida por el Archivista Mayor. Tienes permiso para
-            inscribir conocimiento en los sagrados registros del Archivo Imperial.
+          <p className="mx-auto mb-6 max-w-md font-body text-bone/60">
+            Tu pluma ha sido bendecida por el Archivista Mayor. Tienes permiso para inscribir
+            conocimiento en los sagrados registros del Archivo Imperial.
           </p>
 
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-mono">
-            <BookOpen className="w-4 h-4" />
+          <div className="inline-flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-2 font-mono text-sm text-amber-400">
+            <BookOpen className="h-4 w-4" />
             ACCESO CONCEDIDO AL LEXICANUM
           </div>
         </div>
@@ -280,46 +285,54 @@ function ApprovedStatus({
       <ImperialDivider />
 
       {/* Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <motion.div whileHover={{ scale: 1.02, y: -4 }} transition={{ type: 'spring', stiffness: 300 }}>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <motion.div
+          whileHover={{ scale: 1.02, y: -4 }}
+          transition={{ type: 'spring', stiffness: 300 }}
+        >
           <Link
             href="/wiki-panel"
-            className="group flex items-center gap-4 p-5 rounded-xl bg-void-light/60 border border-amber-500/20 hover:border-amber-500/50 transition-all relative overflow-hidden"
+            className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-amber-500/20 bg-void-light/60 p-5 transition-all hover:border-amber-500/50"
           >
-            <GothicCorners className="text-amber-500/20 group-hover:text-amber-500/40 transition-colors" size={24} />
-            <div className="w-12 h-12 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-              <PenTool className="w-6 h-6 text-amber-400" />
+            <GothicCorners
+              className="text-amber-500/20 transition-colors group-hover:text-amber-500/40"
+              size={24}
+            />
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-amber-500/30 bg-amber-500/10 transition-colors group-hover:bg-amber-500/20">
+              <PenTool className="h-6 w-6 text-amber-400" />
             </div>
             <div className="flex-1">
-              <h3 className="font-display font-semibold text-bone group-hover:text-amber-400 transition-colors">
+              <h3 className="font-display font-semibold text-bone transition-colors group-hover:text-amber-400">
                 Crear Articulo
               </h3>
-              <p className="text-xs text-bone/40 font-mono">
-                Comenzar a escribir
-              </p>
+              <p className="font-mono text-xs text-bone/40">Comenzar a escribir</p>
             </div>
-            <ExternalLink className="w-4 h-4 text-bone/30 group-hover:text-amber-400/60 transition-colors" />
+            <ExternalLink className="h-4 w-4 text-bone/30 transition-colors group-hover:text-amber-400/60" />
           </Link>
         </motion.div>
 
-        <motion.div whileHover={{ scale: 1.02, y: -4 }} transition={{ type: 'spring', stiffness: 300 }}>
+        <motion.div
+          whileHover={{ scale: 1.02, y: -4 }}
+          transition={{ type: 'spring', stiffness: 300 }}
+        >
           <Link
             href="/facciones"
-            className="group flex items-center gap-4 p-5 rounded-xl bg-void-light/60 border border-amber-500/20 hover:border-amber-500/50 transition-all relative overflow-hidden"
+            className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-amber-500/20 bg-void-light/60 p-5 transition-all hover:border-amber-500/50"
           >
-            <GothicCorners className="text-amber-500/20 group-hover:text-amber-500/40 transition-colors" size={24} />
-            <div className="w-12 h-12 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-              <Library className="w-6 h-6 text-amber-400" />
+            <GothicCorners
+              className="text-amber-500/20 transition-colors group-hover:text-amber-500/40"
+              size={24}
+            />
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-amber-500/30 bg-amber-500/10 transition-colors group-hover:bg-amber-500/20">
+              <Library className="h-6 w-6 text-amber-400" />
             </div>
             <div className="flex-1">
-              <h3 className="font-display font-semibold text-bone group-hover:text-amber-400 transition-colors">
+              <h3 className="font-display font-semibold text-bone transition-colors group-hover:text-amber-400">
                 Explorar Archivo
               </h3>
-              <p className="text-xs text-bone/40 font-mono">
-                Ver facciones
-              </p>
+              <p className="font-mono text-xs text-bone/40">Ver facciones</p>
             </div>
-            <ExternalLink className="w-4 h-4 text-bone/30 group-hover:text-amber-400/60 transition-colors" />
+            <ExternalLink className="h-4 w-4 text-bone/30 transition-colors group-hover:text-amber-400/60" />
           </Link>
         </motion.div>
       </div>
@@ -329,15 +342,15 @@ function ApprovedStatus({
 
 function PendingStatus({ applicationDate }: { applicationDate?: string }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-void-light/90 to-void/80 border border-amber-500/30">
+    <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-b from-void-light/90 to-void/80">
       <GothicCorners className="text-amber-500/25" size={44} />
 
       {/* Top accent */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
+      <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
 
-      <div className="relative p-8 sm:p-10 text-center">
+      <div className="relative p-8 text-center sm:p-10">
         <motion.div
-          className="w-20 h-20 mx-auto mb-6 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center"
+          className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-amber-500/30 bg-amber-500/10"
           animate={{
             boxShadow: [
               '0 0 20px rgba(245, 158, 11, 0.2)',
@@ -347,25 +360,28 @@ function PendingStatus({ applicationDate }: { applicationDate?: string }) {
           }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <Clock className="w-10 h-10 text-amber-400" />
+          <Clock className="h-10 w-10 text-amber-400" />
         </motion.div>
 
-        <h2 className="text-xl sm:text-2xl font-display font-bold text-bone mb-3">
+        <h2 className="mb-3 font-display text-xl font-bold text-bone sm:text-2xl">
           Peticion en Revision
         </h2>
-        <p className="text-bone/60 mb-6 max-w-md mx-auto font-body">
-          Tu solicitud ha sido recibida por el Archivista Mayor. Un Lexicanum senior
-          revisara tu expediente y determinara si eres digno de portar la pluma sagrada.
+        <p className="mx-auto mb-6 max-w-md font-body text-bone/60">
+          Tu solicitud ha sido recibida por el Archivista Mayor. Un Lexicanum senior revisara tu
+          expediente y determinara si eres digno de portar la pluma sagrada.
         </p>
 
         {applicationDate && (
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-void/50 border border-void-light text-bone/50 text-xs font-mono">
-            <FileText className="w-4 h-4" />
-            REGISTRADA: {new Date(applicationDate).toLocaleDateString('es-ES', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            }).toUpperCase()}
+          <div className="inline-flex items-center gap-2 rounded-lg border border-void-light bg-void/50 px-4 py-2 font-mono text-xs text-bone/50">
+            <FileText className="h-4 w-4" />
+            REGISTRADA:{' '}
+            {new Date(applicationDate)
+              .toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })
+              .toUpperCase()}
           </div>
         )}
       </div>
@@ -375,21 +391,22 @@ function PendingStatus({ applicationDate }: { applicationDate?: string }) {
 
 function RejectedStatus({ reason }: { reason?: string | null }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-void-light/90 to-void/80 border border-blood-red/30">
+    <div className="border-blood-red/30 relative overflow-hidden rounded-2xl border bg-gradient-to-b from-void-light/90 to-void/80">
       <GothicCorners className="text-blood-red/25" size={36} />
 
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blood-red/40 to-transparent" />
+      <div className="via-blood-red/40 absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-transparent to-transparent" />
 
-      <div className="p-6 flex items-start gap-4">
-        <div className="w-12 h-12 rounded-full bg-blood-red/20 border border-blood-red/30 flex items-center justify-center flex-shrink-0">
-          <XCircle className="w-6 h-6 text-blood-red" />
+      <div className="flex items-start gap-4 p-6">
+        <div className="bg-blood-red/20 border-blood-red/30 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border">
+          <XCircle className="text-blood-red h-6 w-6" />
         </div>
         <div>
-          <h2 className="text-lg font-display font-bold text-bone mb-1">
+          <h2 className="mb-1 font-display text-lg font-bold text-bone">
             Peticion Anterior Denegada
           </h2>
-          <p className="text-bone/60 text-sm font-body">
-            {reason || 'El Archivista Mayor ha determinado que aun no estas preparado para portar la pluma. Puedes presentar una nueva peticion demostrando mayor conocimiento del lore.'}
+          <p className="font-body text-sm text-bone/60">
+            {reason ||
+              'El Archivista Mayor ha determinado que aun no estas preparado para portar la pluma. Puedes presentar una nueva peticion demostrando mayor conocimiento del lore.'}
           </p>
         </div>
       </div>
@@ -408,20 +425,20 @@ function ApplicationContent({ userId }: { userId: string }) {
       {/* Benefits */}
       <motion.div
         variants={itemVariants}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-void-light/90 to-void/80 border border-amber-500/20"
+        className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-b from-void-light/90 to-void/80"
       >
         <GothicCorners className="text-amber-500/25" size={36} />
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
+        <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
 
         <div className="relative p-6 sm:p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <Shield className="w-5 h-5 text-amber-400" />
-            <h3 className="font-display font-semibold text-bone tracking-wide">
+          <div className="mb-6 flex items-center gap-3">
+            <Shield className="h-5 w-5 text-amber-400" />
+            <h3 className="font-display font-semibold tracking-wide text-bone">
               PRIVILEGIOS DEL ESCRIBA
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {[
               { icon: PenTool, text: 'Crear y editar articulos en el Archivo del Lexicanum' },
               { icon: BookOpen, text: 'Acceso a borradores y articulos no publicados' },
@@ -436,10 +453,10 @@ function ApplicationContent({ userId }: { userId: string }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                className="flex items-start gap-3 p-3 rounded-lg border border-amber-500/10 bg-amber-500/[0.02] hover:border-amber-500/25 transition-colors"
+                className="flex items-start gap-3 rounded-lg border border-amber-500/10 bg-amber-500/[0.02] p-3 transition-colors hover:border-amber-500/25"
               >
-                <benefit.icon className="w-5 h-5 text-amber-400/70 flex-shrink-0 mt-0.5" />
-                <span className="text-bone/70 text-sm">{benefit.text}</span>
+                <benefit.icon className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-400/70" />
+                <span className="text-sm text-bone/70">{benefit.text}</span>
               </motion.div>
             ))}
           </div>
@@ -502,26 +519,24 @@ function ScribeApplicationForm({ userId }: { userId: string }) {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-void-light/90 to-void/80 border border-emerald-500/30"
+        className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-void-light/90 to-void/80"
       >
         <GothicCorners className="text-emerald-500/30" size={36} />
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
+        <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
 
-        <div className="p-8 sm:p-10 text-center">
+        <div className="p-8 text-center sm:p-10">
           <motion.div
-            className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center"
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/20"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200 }}
           >
-            <Send className="w-8 h-8 text-emerald-400" />
+            <Send className="h-8 w-8 text-emerald-400" />
           </motion.div>
-          <h3 className="text-xl font-display font-bold text-bone mb-2">
-            Peticion Enviada
-          </h3>
-          <p className="text-bone/60 text-sm font-body">
-            Tu solicitud ha sido registrada en el Archivo. El Archivista Mayor
-            revisara tu expediente y te notificara el veredicto.
+          <h3 className="mb-2 font-display text-xl font-bold text-bone">Peticion Enviada</h3>
+          <p className="font-body text-sm text-bone/60">
+            Tu solicitud ha sido registrada en el Archivo. El Archivista Mayor revisara tu
+            expediente y te notificara el veredicto.
           </p>
         </div>
       </motion.div>
@@ -529,23 +544,24 @@ function ScribeApplicationForm({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-void-light/90 to-void/80 border border-amber-500/20">
+    <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-b from-void-light/90 to-void/80">
       <GothicCorners className="text-amber-500/25" size={36} />
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
+      <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
 
       {/* Subtle ruled lines */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.015]"
+        className="pointer-events-none absolute inset-0 opacity-[0.015]"
         style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, rgba(201,162,39,0.5) 0px, rgba(201,162,39,0.5) 1px, transparent 1px, transparent 32px)',
+          backgroundImage:
+            'repeating-linear-gradient(0deg, rgba(201,162,39,0.5) 0px, rgba(201,162,39,0.5) 1px, transparent 1px, transparent 32px)',
           backgroundPosition: '0 24px',
         }}
       />
 
       <div className="relative p-6 sm:p-8">
-        <div className="flex items-center gap-3 mb-6">
-          <Scroll className="w-5 h-5 text-amber-400" />
-          <h3 className="font-display font-semibold text-bone tracking-wide">
+        <div className="mb-6 flex items-center gap-3">
+          <Scroll className="h-5 w-5 text-amber-400" />
+          <h3 className="font-display font-semibold tracking-wide text-bone">
             FORMULARIO DE PETICION
           </h3>
         </div>
@@ -553,38 +569,38 @@ function ScribeApplicationForm({ userId }: { userId: string }) {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Motivation (required) */}
           <div>
-            <label className="block text-sm font-mono text-bone/70 mb-2">
+            <label className="mb-2 block font-mono text-sm text-bone/70">
               ¿Por que deseas unirte a la Orden de Escribas? *
             </label>
             <textarea
               value={motivation}
               onChange={(e) => setMotivation(e.target.value)}
               placeholder="Describe tu motivacion para contribuir al Archivo del Lexicanum..."
-              className="w-full h-32 px-4 py-3 bg-void/50 border border-bone/10 rounded-lg text-bone placeholder-bone/30 focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 resize-none transition-all"
+              className="h-32 w-full resize-none rounded-lg border border-bone/10 bg-void/50 px-4 py-3 text-bone placeholder-bone/30 transition-all focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
               required
               minLength={50}
             />
-            <p className="text-xs text-bone/40 mt-1 font-mono">
+            <p className="mt-1 font-mono text-xs text-bone/40">
               Minimo 50 caracteres ({motivation.length}/50)
             </p>
           </div>
 
           {/* Experience (optional) */}
           <div>
-            <label className="block text-sm font-mono text-bone/70 mb-2">
+            <label className="mb-2 block font-mono text-sm text-bone/70">
               Experiencia con el lore de Warhammer 40K (opcional)
             </label>
             <textarea
               value={experience}
               onChange={(e) => setExperience(e.target.value)}
               placeholder="Libros leidos, ejercitos coleccionados, tiempo en el hobby..."
-              className="w-full h-24 px-4 py-3 bg-void/50 border border-bone/10 rounded-lg text-bone placeholder-bone/30 focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 resize-none transition-all"
+              className="h-24 w-full resize-none rounded-lg border border-bone/10 bg-void/50 px-4 py-3 text-bone placeholder-bone/30 transition-all focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
             />
           </div>
 
           {/* Sample topic (optional) */}
           <div>
-            <label className="block text-sm font-mono text-bone/70 mb-2">
+            <label className="mb-2 block font-mono text-sm text-bone/70">
               ¿Sobre que te gustaria escribir primero? (opcional)
             </label>
             <input
@@ -592,7 +608,7 @@ function ScribeApplicationForm({ userId }: { userId: string }) {
               value={sampleTopic}
               onChange={(e) => setSampleTopic(e.target.value)}
               placeholder="Ej: La Herejia de Horus, Los Primarcas, Los Tiranidos..."
-              className="w-full px-4 py-3 bg-void/50 border border-bone/10 rounded-lg text-bone placeholder-bone/30 focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all"
+              className="w-full rounded-lg border border-bone/10 bg-void/50 px-4 py-3 text-bone placeholder-bone/30 transition-all focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
             />
           </div>
 
@@ -601,9 +617,9 @@ function ScribeApplicationForm({ userId }: { userId: string }) {
             <motion.div
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 p-3 rounded-lg bg-blood-red/10 border border-blood-red/30 text-blood-red text-sm"
+              className="bg-blood-red/10 border-blood-red/30 text-blood-red flex items-center gap-2 rounded-lg border p-3 text-sm"
             >
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
               {error}
             </motion.div>
           )}
@@ -612,14 +628,14 @@ function ScribeApplicationForm({ userId }: { userId: string }) {
           <motion.button
             type="submit"
             disabled={!isValid || isSubmitting}
-            className="w-full py-3.5 px-6 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 disabled:from-bone/10 disabled:to-bone/10 disabled:text-bone/30 text-void font-display font-semibold rounded-lg transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.15)] hover:shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-700 px-6 py-3.5 font-display font-semibold text-void shadow-[0_0_20px_rgba(245,158,11,0.15)] transition-all hover:from-amber-500 hover:to-amber-600 hover:shadow-[0_0_30px_rgba(245,158,11,0.3)] disabled:from-bone/10 disabled:to-bone/10 disabled:text-bone/30"
             whileHover={isValid ? { scale: 1.01 } : undefined}
             whileTap={isValid ? { scale: 0.98 } : undefined}
           >
             {isSubmitting ? (
               <>
                 <motion.div
-                  className="w-5 h-5 border-2 border-void/30 border-t-void rounded-full"
+                  className="h-5 w-5 rounded-full border-2 border-void/30 border-t-void"
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 />
@@ -627,13 +643,13 @@ function ScribeApplicationForm({ userId }: { userId: string }) {
               </>
             ) : (
               <>
-                <Feather className="w-5 h-5" />
+                <Feather className="h-5 w-5" />
                 Enviar Peticion
               </>
             )}
           </motion.button>
 
-          <p className="text-xs text-bone/40 text-center font-mono">
+          <p className="text-center font-mono text-xs text-bone/40">
             El Archivista Mayor revisara tu peticion en los proximos dias
           </p>
         </form>

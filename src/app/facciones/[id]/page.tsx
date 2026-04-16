@@ -34,10 +34,10 @@ export default function FactionPage() {
 
   if (!faction) {
     return (
-      <main className="min-h-screen bg-void flex items-center justify-center">
+      <main className="flex min-h-screen items-center justify-center bg-void">
         <div className="noise-overlay" />
         <div className="text-center">
-          <h1 className="font-display text-4xl text-white mb-4">Faccion no encontrada</h1>
+          <h1 className="mb-4 font-display text-4xl text-white">Faccion no encontrada</h1>
           <Link href="/facciones" className="text-imperial-gold hover:underline">
             Volver a facciones
           </Link>
@@ -47,7 +47,7 @@ export default function FactionPage() {
   }
 
   // Get adjacent factions for navigation
-  const currentIndex = factions.findIndex(f => f.id === faction.id)
+  const currentIndex = factions.findIndex((f) => f.id === faction.id)
   const prevFaction = factions[(currentIndex - 1 + factions.length) % factions.length]
   const nextFaction = factions[(currentIndex + 1) % factions.length]
 
@@ -62,7 +62,7 @@ export default function FactionPage() {
       <div className="noise-overlay" />
 
       {/* Global faction effects (subtle) */}
-      <div className="fixed inset-0 pointer-events-none opacity-30">
+      <div className="pointer-events-none fixed inset-0 opacity-30">
         <FactionEffects factionId={faction.id} />
       </div>
 
@@ -72,11 +72,7 @@ export default function FactionPage() {
       <FactionHero faction={faction} />
 
       {/* Tabs Navigation */}
-      <FactionTabs
-        factionId={faction.id}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+      <FactionTabs factionId={faction.id} activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Tab Content */}
       <AnimatePresence mode="wait">
@@ -95,20 +91,20 @@ export default function FactionPage() {
 
       {/* Faction Navigation */}
       <section
-        className="relative py-16 border-t"
+        className="relative border-t py-16"
         style={{
           borderColor: `${faction.color}20`,
           background: `linear-gradient(180deg, transparent 0%, ${faction.color}05 100%)`,
         }}
       >
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="mx-auto max-w-7xl px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="mb-12 text-center"
           >
-            <h2 className="font-display text-2xl md:text-3xl font-black text-white mb-4">
+            <h2 className="mb-4 font-display text-2xl font-black text-white md:text-3xl">
               Explora Otras Facciones
             </h2>
             <p className="font-body text-bone/60">
@@ -116,7 +112,7 @@ export default function FactionPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {/* Previous Faction */}
             <Link href={`/facciones/${prevFaction.id}`}>
               <motion.div
@@ -124,7 +120,7 @@ export default function FactionPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 whileHover={{ x: -5 }}
-                className="group relative h-48 rounded-xl overflow-hidden"
+                className="group relative h-48 overflow-hidden rounded-xl"
               >
                 <Image
                   src={prevFaction.image}
@@ -133,16 +129,16 @@ export default function FactionPage() {
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-void via-void/80 to-transparent" />
-                <div className="absolute inset-0 p-6 flex flex-col justify-center">
-                  <div className="flex items-center gap-2 mb-2">
-                    <ChevronLeft className="w-5 h-5" style={{ color: prevFaction.color }} />
+                <div className="absolute inset-0 flex flex-col justify-center p-6">
+                  <div className="mb-2 flex items-center gap-2">
+                    <ChevronLeft className="h-5 w-5" style={{ color: prevFaction.color }} />
                     <span className="font-body text-sm text-bone/60">Anterior</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <FactionSymbol factionId={prevFaction.id} size="sm" animated={false} />
                     <div>
                       <span
-                        className="font-body text-xs font-semibold tracking-wider uppercase block mb-1"
+                        className="mb-1 block font-body text-xs font-semibold uppercase tracking-wider"
                         style={{ color: prevFaction.color }}
                       >
                         {prevFaction.tagline}
@@ -163,7 +159,7 @@ export default function FactionPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 whileHover={{ x: 5 }}
-                className="group relative h-48 rounded-xl overflow-hidden"
+                className="group relative h-48 overflow-hidden rounded-xl"
               >
                 <Image
                   src={nextFaction.image}
@@ -172,16 +168,16 @@ export default function FactionPage() {
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-l from-void via-void/80 to-transparent" />
-                <div className="absolute inset-0 p-6 flex flex-col justify-center items-end text-right">
-                  <div className="flex items-center gap-2 mb-2">
+                <div className="absolute inset-0 flex flex-col items-end justify-center p-6 text-right">
+                  <div className="mb-2 flex items-center gap-2">
                     <span className="font-body text-sm text-bone/60">Siguiente</span>
-                    <ChevronRight className="w-5 h-5" style={{ color: nextFaction.color }} />
+                    <ChevronRight className="h-5 w-5" style={{ color: nextFaction.color }} />
                   </div>
-                  <div className="flex items-center gap-3 flex-row-reverse">
+                  <div className="flex flex-row-reverse items-center gap-3">
                     <FactionSymbol factionId={nextFaction.id} size="sm" animated={false} />
                     <div>
                       <span
-                        className="font-body text-xs font-semibold tracking-wider uppercase block mb-1"
+                        className="mb-1 block font-body text-xs font-semibold uppercase tracking-wider"
                         style={{ color: nextFaction.color }}
                       >
                         {nextFaction.tagline}
@@ -201,13 +197,13 @@ export default function FactionPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mt-12 flex justify-center flex-wrap gap-3"
+            className="mt-12 flex flex-wrap justify-center gap-3"
           >
             {factions.map((f) => (
               <Link key={f.id} href={`/facciones/${f.id}`}>
                 <motion.div
                   whileHover={{ scale: 1.1, y: -2 }}
-                  className={`p-3 rounded-lg transition-all ${
+                  className={`rounded-lg p-3 transition-all ${
                     f.id === faction.id ? 'ring-2' : 'opacity-50 hover:opacity-100'
                   }`}
                   style={{

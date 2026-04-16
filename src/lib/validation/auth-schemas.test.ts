@@ -54,7 +54,11 @@ describe('registerSchema', () => {
   })
 
   it('rejects passwords without an uppercase letter', () => {
-    const result = registerSchema.safeParse({ ...valid, password: 'lowercase1', confirmPassword: 'lowercase1' })
+    const result = registerSchema.safeParse({
+      ...valid,
+      password: 'lowercase1',
+      confirmPassword: 'lowercase1',
+    })
     expect(result.success).toBe(false)
     if (!result.success) {
       expect(result.error.issues.map((i) => i.message)).toContain('Requiere una mayúscula')
@@ -110,9 +114,7 @@ describe('registerSchema', () => {
   })
 
   it('rejects an invalid email even when password is strong', () => {
-    expect(
-      registerSchema.safeParse({ ...valid, email: 'not-email' }).success
-    ).toBe(false)
+    expect(registerSchema.safeParse({ ...valid, email: 'not-email' }).success).toBe(false)
   })
 
   it('accepts an 8-char password at boundary', () => {

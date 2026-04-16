@@ -16,7 +16,13 @@ import {
   ExternalLink,
   Users,
 } from 'lucide-react'
-import { DataTable, StatusBadge, FilterTabs, type Column, type Action } from '../components/ui/data-table'
+import {
+  DataTable,
+  StatusBadge,
+  FilterTabs,
+  type Column,
+  type Action,
+} from '../components/ui/data-table'
 import { Modal, ConfirmDialog } from '../components/ui/modal'
 import { Button } from '../components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
@@ -34,7 +40,15 @@ interface CreatorProfile {
   avatar_url: string | null
   bio: string | null
   creator_status: 'none' | 'pending' | 'approved' | 'rejected' | null
-  creator_type: 'painter' | 'streamer' | 'youtuber' | 'blogger' | 'podcaster' | 'artist' | 'instructor' | null
+  creator_type:
+    | 'painter'
+    | 'streamer'
+    | 'youtuber'
+    | 'blogger'
+    | 'podcaster'
+    | 'artist'
+    | 'instructor'
+    | null
   creator_bio: string | null
   youtube: string | null
   instagram: string | null
@@ -114,10 +128,22 @@ export default function CreadoresPage() {
         { count: approvedCount },
         { count: rejectedCount },
       ] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).neq('creator_status', 'none'),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('creator_status', 'pending'),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('creator_status', 'approved'),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('creator_status', 'rejected'),
+        supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .neq('creator_status', 'none'),
+        supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .eq('creator_status', 'pending'),
+        supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .eq('creator_status', 'approved'),
+        supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .eq('creator_status', 'rejected'),
       ])
 
       setCounts({
@@ -177,9 +203,7 @@ export default function CreadoresPage() {
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-medium text-white">
-              {creator.display_name || creator.username}
-            </p>
+            <p className="font-medium text-white">{creator.display_name || creator.username}</p>
             <p className="text-xs text-zinc-500">@{creator.username}</p>
           </div>
         </div>
@@ -193,7 +217,7 @@ export default function CreadoresPage() {
       render: (creator) =>
         creator.creator_type ? (
           <span
-            className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full border ${
+            className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
               creatorTypeColors[creator.creator_type] || 'bg-zinc-800 text-zinc-400'
             }`}
           >
@@ -209,9 +233,7 @@ export default function CreadoresPage() {
       sortable: true,
       width: '120px',
       render: (creator) => (
-        <StatusBadge
-          status={creator.creator_status as 'pending' | 'approved' | 'rejected'}
-        />
+        <StatusBadge status={creator.creator_status as 'pending' | 'approved' | 'rejected'} />
       ),
     },
     {
@@ -225,9 +247,9 @@ export default function CreadoresPage() {
               href={creator.youtube}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 text-zinc-500 hover:text-red-500 transition-colors"
+              className="p-1 text-zinc-500 transition-colors hover:text-red-500"
             >
-              <Youtube className="w-4 h-4" />
+              <Youtube className="h-4 w-4" />
             </a>
           )}
           {creator.instagram && (
@@ -235,9 +257,9 @@ export default function CreadoresPage() {
               href={creator.instagram}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 text-zinc-500 hover:text-pink-500 transition-colors"
+              className="p-1 text-zinc-500 transition-colors hover:text-pink-500"
             >
-              <Instagram className="w-4 h-4" />
+              <Instagram className="h-4 w-4" />
             </a>
           )}
           {creator.twitter && (
@@ -245,16 +267,14 @@ export default function CreadoresPage() {
               href={creator.twitter}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 text-zinc-500 hover:text-blue-400 transition-colors"
+              className="p-1 text-zinc-500 transition-colors hover:text-blue-400"
             >
-              <Twitter className="w-4 h-4" />
+              <Twitter className="h-4 w-4" />
             </a>
           )}
-          {!creator.youtube &&
-            !creator.instagram &&
-            !creator.twitter && (
-              <span className="text-zinc-600 text-xs">-</span>
-            )}
+          {!creator.youtube && !creator.instagram && !creator.twitter && (
+            <span className="text-xs text-zinc-600">-</span>
+          )}
         </div>
       ),
     },
@@ -278,18 +298,18 @@ export default function CreadoresPage() {
   const actions: Action<CreatorProfile>[] = [
     {
       label: 'Ver perfil',
-      icon: <Eye className="w-4 h-4" />,
+      icon: <Eye className="h-4 w-4" />,
       onClick: (creator) => setViewCreator(creator),
     },
     {
       label: 'Aprobar',
-      icon: <CheckCircle className="w-4 h-4" />,
+      icon: <CheckCircle className="h-4 w-4" />,
       onClick: (creator) => setConfirmAction({ creator, action: 'approve' }),
       show: (creator) => creator.creator_status !== 'approved',
     },
     {
       label: 'Rechazar',
-      icon: <XCircle className="w-4 h-4" />,
+      icon: <XCircle className="h-4 w-4" />,
       onClick: (creator) => setConfirmAction({ creator, action: 'reject' }),
       show: (creator) => creator.creator_status !== 'rejected',
     },
@@ -330,7 +350,7 @@ export default function CreadoresPage() {
         searchFields={['username', 'display_name']}
         loading={loading}
         emptyMessage="No hay solicitudes de creador"
-        emptyIcon={<Palette className="w-8 h-8 text-zinc-600 mx-auto" />}
+        emptyIcon={<Palette className="mx-auto h-8 w-8 text-zinc-600" />}
         pageSize={10}
       />
 
@@ -376,9 +396,7 @@ export default function CreadoresPage() {
               <Avatar className="h-16 w-16">
                 <AvatarImage src={viewCreator.avatar_url || undefined} />
                 <AvatarFallback className="text-lg">
-                  {(viewCreator.display_name || viewCreator.username)
-                    ?.slice(0, 2)
-                    .toUpperCase()}
+                  {(viewCreator.display_name || viewCreator.username)?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
@@ -386,13 +404,13 @@ export default function CreadoresPage() {
                   {viewCreator.display_name || viewCreator.username}
                 </h3>
                 <p className="text-sm text-zinc-500">@{viewCreator.username}</p>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="mt-1 flex items-center gap-2">
                   <StatusBadge
                     status={viewCreator.creator_status as 'pending' | 'approved' | 'rejected'}
                   />
                   {viewCreator.creator_type && (
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full border ${
+                      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
                         creatorTypeColors[viewCreator.creator_type]
                       }`}
                     >
@@ -406,11 +424,11 @@ export default function CreadoresPage() {
             {/* Bio */}
             {viewCreator.creator_bio && (
               <div>
-                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5">
+                <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-[#E8E8F0]/40">
                   Descripcion como creador
                 </p>
-                <div className="max-h-36 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
-                  <p className="text-sm text-[#E8E8F0]/70 whitespace-pre-wrap break-words">
+                <div className="max-h-36 overflow-y-auto rounded-lg border border-[#C9A227]/10 bg-[#0a0a12]/80 p-3">
+                  <p className="whitespace-pre-wrap break-words text-sm text-[#E8E8F0]/70">
                     {viewCreator.creator_bio}
                   </p>
                 </div>
@@ -419,18 +437,18 @@ export default function CreadoresPage() {
 
             {viewCreator.bio && (
               <div>
-                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5">
+                <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-[#E8E8F0]/40">
                   Bio del perfil
                 </p>
-                <div className="max-h-28 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
-                  <p className="text-sm text-[#E8E8F0]/60 break-words">{viewCreator.bio}</p>
+                <div className="max-h-28 overflow-y-auto rounded-lg border border-[#C9A227]/10 bg-[#0a0a12]/80 p-3">
+                  <p className="break-words text-sm text-[#E8E8F0]/60">{viewCreator.bio}</p>
                 </div>
               </div>
             )}
 
             {/* Social links */}
             <div>
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">
                 Redes sociales
               </p>
               <div className="grid gap-2">
@@ -439,11 +457,11 @@ export default function CreadoresPage() {
                     href={viewCreator.youtube}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-2 bg-zinc-800/50 rounded-lg text-sm text-zinc-300 hover:bg-zinc-800 transition-colors"
+                    className="flex items-center gap-3 rounded-lg bg-zinc-800/50 p-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800"
                   >
-                    <Youtube className="w-4 h-4 text-red-500" />
+                    <Youtube className="h-4 w-4 text-red-500" />
                     <span className="flex-1 truncate">{viewCreator.youtube}</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-zinc-500" />
+                    <ExternalLink className="h-3.5 w-3.5 text-zinc-500" />
                   </a>
                 )}
                 {viewCreator.instagram && (
@@ -451,11 +469,11 @@ export default function CreadoresPage() {
                     href={viewCreator.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-2 bg-zinc-800/50 rounded-lg text-sm text-zinc-300 hover:bg-zinc-800 transition-colors"
+                    className="flex items-center gap-3 rounded-lg bg-zinc-800/50 p-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800"
                   >
-                    <Instagram className="w-4 h-4 text-pink-500" />
+                    <Instagram className="h-4 w-4 text-pink-500" />
                     <span className="flex-1 truncate">{viewCreator.instagram}</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-zinc-500" />
+                    <ExternalLink className="h-3.5 w-3.5 text-zinc-500" />
                   </a>
                 )}
                 {viewCreator.twitter && (
@@ -463,11 +481,11 @@ export default function CreadoresPage() {
                     href={viewCreator.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-2 bg-zinc-800/50 rounded-lg text-sm text-zinc-300 hover:bg-zinc-800 transition-colors"
+                    className="flex items-center gap-3 rounded-lg bg-zinc-800/50 p-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800"
                   >
-                    <Twitter className="w-4 h-4 text-blue-400" />
+                    <Twitter className="h-4 w-4 text-blue-400" />
                     <span className="flex-1 truncate">{viewCreator.twitter}</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-zinc-500" />
+                    <ExternalLink className="h-3.5 w-3.5 text-zinc-500" />
                   </a>
                 )}
                 {viewCreator.website && (
@@ -475,11 +493,11 @@ export default function CreadoresPage() {
                     href={viewCreator.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-2 bg-zinc-800/50 rounded-lg text-sm text-zinc-300 hover:bg-zinc-800 transition-colors"
+                    className="flex items-center gap-3 rounded-lg bg-zinc-800/50 p-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800"
                   >
-                    <Globe className="w-4 h-4 text-zinc-400" />
+                    <Globe className="h-4 w-4 text-zinc-400" />
                     <span className="flex-1 truncate">{viewCreator.website}</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-zinc-500" />
+                    <ExternalLink className="h-3.5 w-3.5 text-zinc-500" />
                   </a>
                 )}
                 {!viewCreator.youtube &&
@@ -492,15 +510,15 @@ export default function CreadoresPage() {
             </div>
 
             {/* Link to public profile */}
-            <div className="pt-2 border-t border-zinc-800">
+            <div className="border-t border-zinc-800 pt-2">
               <Link
                 href={`/usuarios/${viewCreator.username}`}
                 target="_blank"
                 className="flex items-center gap-2 text-sm text-amber-500 hover:text-amber-400"
               >
-                <Users className="w-4 h-4" />
+                <Users className="h-4 w-4" />
                 Ver perfil público
-                <ExternalLink className="w-3.5 h-3.5" />
+                <ExternalLink className="h-3.5 w-3.5" />
               </Link>
             </div>
           </div>
@@ -512,11 +530,7 @@ export default function CreadoresPage() {
         open={!!confirmAction}
         onClose={() => setConfirmAction(null)}
         onConfirm={handleAction}
-        title={
-          confirmAction?.action === 'approve'
-            ? 'Aprobar creador'
-            : 'Rechazar creador'
-        }
+        title={confirmAction?.action === 'approve' ? 'Aprobar creador' : 'Rechazar creador'}
         description={
           confirmAction?.action === 'approve'
             ? `¿Aprobar a "${

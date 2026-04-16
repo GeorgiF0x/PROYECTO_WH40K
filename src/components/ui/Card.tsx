@@ -21,8 +21,9 @@ export function Card({ children, className, hover = false, padding = 'md' }: Car
   return (
     <div
       className={cn(
-        'bg-void-light border border-bone/10 rounded-lg',
-        hover && 'transition-all duration-300 hover:border-gold/30 hover:shadow-lg hover:shadow-gold/5',
+        'rounded-lg border border-bone/10 bg-void-light',
+        hover &&
+          'hover:border-gold/30 hover:shadow-gold/5 transition-all duration-300 hover:shadow-lg',
         paddingClasses[padding],
         className
       )}
@@ -33,33 +34,17 @@ export function Card({ children, className, hover = false, padding = 'md' }: Car
 }
 
 export function CardHeader({ children, className }: { children: ReactNode; className?: string }) {
-  return (
-    <div className={cn('pb-4 border-b border-bone/10', className)}>
-      {children}
-    </div>
-  )
+  return <div className={cn('border-b border-bone/10 pb-4', className)}>{children}</div>
 }
 
 export function CardTitle({ children, className }: { children: ReactNode; className?: string }) {
-  return (
-    <h3 className={cn('text-lg font-semibold text-bone', className)}>
-      {children}
-    </h3>
-  )
+  return <h3 className={cn('text-lg font-semibold text-bone', className)}>{children}</h3>
 }
 
 export function CardContent({ children, className }: { children: ReactNode; className?: string }) {
-  return (
-    <div className={cn('pt-4', className)}>
-      {children}
-    </div>
-  )
+  return <div className={cn('pt-4', className)}>{children}</div>
 }
 
 export function CardFooter({ children, className }: { children: ReactNode; className?: string }) {
-  return (
-    <div className={cn('pt-4 mt-auto border-t border-bone/10', className)}>
-      {children}
-    </div>
-  )
+  return <div className={cn('mt-auto border-t border-bone/10 pt-4', className)}>{children}</div>
 }

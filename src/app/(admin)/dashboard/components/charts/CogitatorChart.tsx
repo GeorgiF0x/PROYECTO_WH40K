@@ -25,25 +25,25 @@ import { motion } from 'framer-motion'
 // ══════════════════════════════════════════════════════════════
 
 export const CHART_COLORS = {
-  primary: '#C9A227',      // Imperial Gold
-  secondary: '#8B0000',    // Blood Red
-  tertiary: '#6B1C5F',     // Warp Purple
-  success: '#0D9B8A',      // Necron Teal
-  warning: '#f59e0b',      // Amber
-  danger: '#8B0000',       // Blood Red
-  bone: '#E8E8F0',         // Bone
+  primary: '#C9A227', // Imperial Gold
+  secondary: '#8B0000', // Blood Red
+  tertiary: '#6B1C5F', // Warp Purple
+  success: '#0D9B8A', // Necron Teal
+  warning: '#f59e0b', // Amber
+  danger: '#8B0000', // Blood Red
+  bone: '#E8E8F0', // Bone
   muted: 'rgba(232, 232, 240, 0.4)',
   grid: 'rgba(201, 162, 39, 0.08)',
   void: '#030308',
 }
 
 export const CHART_PALETTE = [
-  CHART_COLORS.primary,    // Imperial Gold
-  CHART_COLORS.success,    // Necron Teal
-  CHART_COLORS.tertiary,   // Warp Purple
-  CHART_COLORS.warning,    // Amber
-  CHART_COLORS.secondary,  // Blood Red
-  '#00d4aa',               // Bright Teal
+  CHART_COLORS.primary, // Imperial Gold
+  CHART_COLORS.success, // Necron Teal
+  CHART_COLORS.tertiary, // Warp Purple
+  CHART_COLORS.warning, // Amber
+  CHART_COLORS.secondary, // Blood Red
+  '#00d4aa', // Bright Teal
 ]
 
 // ══════════════════════════════════════════════════════════════
@@ -69,26 +69,30 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-void-light/95 backdrop-blur-xl border border-imperial-gold/30 rounded-lg px-4 py-3 shadow-lg shadow-imperial-gold/10"
+        className="rounded-lg border border-imperial-gold/30 bg-void-light/95 px-4 py-3 shadow-lg shadow-imperial-gold/10 backdrop-blur-xl"
       >
         {/* Header */}
-        <div className="flex items-center gap-2 mb-2 pb-2 border-b border-imperial-gold/10">
-          <div className="w-1.5 h-1.5 rounded-full bg-necron-teal animate-pulse" />
-          <p className="text-[10px] font-mono text-imperial-gold/60 tracking-widest">{label}</p>
+        <div className="mb-2 flex items-center gap-2 border-b border-imperial-gold/10 pb-2">
+          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-necron-teal" />
+          <p className="font-mono text-[10px] tracking-widest text-imperial-gold/60">{label}</p>
         </div>
         {/* Data rows */}
         {payload.map((entry, index) => (
-          <div key={index} className="flex items-center gap-3 text-sm py-0.5">
+          <div key={index} className="flex items-center gap-3 py-0.5 text-sm">
             <motion.span
-              className="w-2 h-2 rounded-full"
+              className="h-2 w-2 rounded-full"
               style={{ backgroundColor: entry.color }}
               animate={{
-                boxShadow: [`0 0 4px ${entry.color}`, `0 0 8px ${entry.color}`, `0 0 4px ${entry.color}`],
+                boxShadow: [
+                  `0 0 4px ${entry.color}`,
+                  `0 0 8px ${entry.color}`,
+                  `0 0 4px ${entry.color}`,
+                ],
               }}
               transition={{ duration: 1.5, repeat: Infinity }}
             />
-            <span className="text-bone/60 font-mono text-xs">{entry.name}:</span>
-            <span className="text-bone font-mono font-medium">{entry.value.toLocaleString()}</span>
+            <span className="font-mono text-xs text-bone/60">{entry.name}:</span>
+            <span className="font-mono font-medium text-bone">{entry.value.toLocaleString()}</span>
           </div>
         ))}
       </motion.div>
@@ -119,11 +123,7 @@ export const SimpleAreaChart: React.FC<AreaChartProps> = ({
   showGrid = true,
 }) => {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <defs>
@@ -181,11 +181,7 @@ export const MultiLineChart: React.FC<LineChartProps> = ({
   showLegend = true,
 }) => {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} vertical={false} />
@@ -202,11 +198,7 @@ export const MultiLineChart: React.FC<LineChartProps> = ({
           />
           <Tooltip content={<CustomTooltip />} />
           {showLegend && (
-            <Legend
-              iconType="line"
-              iconSize={10}
-              wrapperStyle={{ fontSize: 12, paddingTop: 10 }}
-            />
+            <Legend iconType="line" iconSize={10} wrapperStyle={{ fontSize: 12, paddingTop: 10 }} />
           )}
           {lines.map((line) => (
             <Line
@@ -247,16 +239,17 @@ export const SimpleBarChart: React.FC<BarChartProps> = ({
   const isHorizontal = layout === 'horizontal'
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <ResponsiveContainer width="100%" height={height}>
         <BarChart
           data={data}
           layout={isHorizontal ? 'vertical' : 'horizontal'}
-          margin={{ top: 10, right: showValues ? 40 : 10, left: isHorizontal ? 80 : -20, bottom: 0 }}
+          margin={{
+            top: 10,
+            right: showValues ? 40 : 10,
+            left: isHorizontal ? 80 : -20,
+            bottom: 0,
+          }}
         >
           <CartesianGrid
             strokeDasharray="3 3"
@@ -266,19 +259,43 @@ export const SimpleBarChart: React.FC<BarChartProps> = ({
           />
           {isHorizontal ? (
             <>
-              <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: CHART_COLORS.muted, fontSize: 11 }} />
-              <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fill: CHART_COLORS.bone, fontSize: 12 }} width={75} />
+              <XAxis
+                type="number"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: CHART_COLORS.muted, fontSize: 11 }}
+              />
+              <YAxis
+                type="category"
+                dataKey="name"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: CHART_COLORS.bone, fontSize: 12 }}
+                width={75}
+              />
             </>
           ) : (
             <>
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: CHART_COLORS.muted, fontSize: 11 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: CHART_COLORS.muted, fontSize: 11 }} />
+              <XAxis
+                dataKey="name"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: CHART_COLORS.muted, fontSize: 11 }}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: CHART_COLORS.muted, fontSize: 11 }}
+              />
             </>
           )}
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="value" radius={[4, 4, 4, 4]} animationDuration={800}>
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill || CHART_PALETTE[index % CHART_PALETTE.length]} />
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.fill || CHART_PALETTE[index % CHART_PALETTE.length]}
+              />
             ))}
           </Bar>
         </BarChart>
@@ -305,11 +322,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
   const total = data.reduce((sum, item) => sum + item.value, 0)
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <ResponsiveContainer width="100%" height={height}>
         <PieChart>
           <Pie
@@ -323,7 +336,10 @@ export const DonutChart: React.FC<DonutChartProps> = ({
             animationDuration={800}
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill || CHART_PALETTE[index % CHART_PALETTE.length]} />
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.fill || CHART_PALETTE[index % CHART_PALETTE.length]}
+              />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
@@ -377,29 +393,35 @@ export const StatCard: React.FC<StatCardProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 rounded-lg p-5 hover:border-imperial-gold/30 transition-colors ${className}`}
+      className={`rounded-lg border border-imperial-gold/15 bg-void-light/50 p-5 backdrop-blur-sm transition-colors hover:border-imperial-gold/30 ${className}`}
       whileHover={{ scale: 1.02 }}
     >
       <div className="flex items-start justify-between">
         <div className="space-y-1">
-          <p className="text-xs font-mono text-imperial-gold/50 tracking-wider uppercase">{title}</p>
-          <p className="text-2xl font-display font-bold text-bone">
+          <p className="font-mono text-xs uppercase tracking-wider text-imperial-gold/50">
+            {title}
+          </p>
+          <p className="font-display text-2xl font-bold text-bone">
             {typeof value === 'number' ? value.toLocaleString() : value}
           </p>
-          {description && (
-            <p className="text-xs text-bone/40">{description}</p>
-          )}
+          {description && <p className="text-xs text-bone/40">{description}</p>}
           {trend && (
-            <p className={`text-xs font-mono ${trend.isPositive ? 'text-necron-teal' : 'text-blood-red'}`}>
+            <p
+              className={`font-mono text-xs ${trend.isPositive ? 'text-necron-teal' : 'text-blood-red'}`}
+            >
               {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}% vs ciclo anterior
             </p>
           )}
         </div>
         {icon && (
           <motion.div
-            className="p-2 bg-imperial-gold/10 border border-imperial-gold/20 rounded-lg text-imperial-gold"
+            className="rounded-lg border border-imperial-gold/20 bg-imperial-gold/10 p-2 text-imperial-gold"
             animate={{
-              boxShadow: ['0 0 5px rgba(201, 162, 39, 0.2)', '0 0 15px rgba(201, 162, 39, 0.3)', '0 0 5px rgba(201, 162, 39, 0.2)'],
+              boxShadow: [
+                '0 0 5px rgba(201, 162, 39, 0.2)',
+                '0 0 15px rgba(201, 162, 39, 0.3)',
+                '0 0 5px rgba(201, 162, 39, 0.2)',
+              ],
             }}
             transition={{ duration: 3, repeat: Infinity }}
           >
@@ -435,21 +457,21 @@ export const ChartCard: React.FC<ChartCardProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 rounded-lg p-5 hover:border-imperial-gold/30 transition-colors relative overflow-hidden ${className}`}
+      className={`relative overflow-hidden rounded-lg border border-imperial-gold/15 bg-void-light/50 p-5 backdrop-blur-sm transition-colors hover:border-imperial-gold/30 ${className}`}
     >
       {/* Corner accents */}
-      <span className="absolute top-2 left-2 w-2 h-2 border-l border-t border-imperial-gold/30" />
-      <span className="absolute top-2 right-2 w-2 h-2 border-r border-t border-imperial-gold/30" />
-      <span className="absolute bottom-2 left-2 w-2 h-2 border-l border-b border-imperial-gold/30" />
-      <span className="absolute bottom-2 right-2 w-2 h-2 border-r border-b border-imperial-gold/30" />
+      <span className="absolute left-2 top-2 h-2 w-2 border-l border-t border-imperial-gold/30" />
+      <span className="absolute right-2 top-2 h-2 w-2 border-r border-t border-imperial-gold/30" />
+      <span className="absolute bottom-2 left-2 h-2 w-2 border-b border-l border-imperial-gold/30" />
+      <span className="absolute bottom-2 right-2 h-2 w-2 border-b border-r border-imperial-gold/30" />
 
-      <div className="flex items-start justify-between mb-4">
+      <div className="mb-4 flex items-start justify-between">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-necron-teal animate-pulse" />
+          <div className="mb-1 flex items-center gap-2">
+            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-necron-teal" />
             <h3 className="text-sm font-medium text-bone">{title}</h3>
           </div>
-          {description && <p className="text-xs text-bone/40 font-mono">{description}</p>}
+          {description && <p className="font-mono text-xs text-bone/40">{description}</p>}
         </div>
         {action}
       </div>
@@ -481,7 +503,13 @@ export const Sparkline: React.FC<SparklineProps> = ({
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={chartData} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
         <defs>
-          <linearGradient id={`sparkline-gradient-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+          <linearGradient
+            id={`sparkline-gradient-${color.replace('#', '')}`}
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+          >
             <stop offset="0%" stopColor={color} stopOpacity={0.3} />
             <stop offset="100%" stopColor={color} stopOpacity={0} />
           </linearGradient>
@@ -565,14 +593,18 @@ export const RadialProgress: React.FC<RadialProgressProps> = ({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <motion.span
-          className="text-2xl font-display font-bold text-bone"
+          className="font-display text-2xl font-bold text-bone"
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
         >
           {Math.round(percentage)}%
         </motion.span>
-        {label && <span className="text-[10px] text-imperial-gold/60 font-mono uppercase tracking-wider">{label}</span>}
+        {label && (
+          <span className="font-mono text-[10px] uppercase tracking-wider text-imperial-gold/60">
+            {label}
+          </span>
+        )}
       </div>
     </div>
   )
@@ -596,11 +628,7 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
   height = 250,
 }) => {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <ResponsiveContainer width="100%" height={height}>
         <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} vertical={false} />
@@ -658,15 +686,15 @@ export const ComparisonBar: React.FC<ComparisonBarProps> = ({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-sm">
-        <span className="text-bone/60 font-mono">{label}</span>
-        <span className="text-bone font-mono font-medium">
+        <span className="font-mono text-bone/60">{label}</span>
+        <span className="font-mono font-medium text-bone">
           {value.toLocaleString()}
-          {showPercentage && <span className="text-bone/30 ml-1">({percentage.toFixed(1)}%)</span>}
+          {showPercentage && <span className="ml-1 text-bone/30">({percentage.toFixed(1)}%)</span>}
         </span>
       </div>
-      <div className="h-2 bg-void rounded-full overflow-hidden border border-imperial-gold/10">
+      <div className="h-2 overflow-hidden rounded-full border border-imperial-gold/10 bg-void">
         <motion.div
-          className="h-full rounded-full relative"
+          className="relative h-full rounded-full"
           style={{
             backgroundColor: color,
             boxShadow: `0 0 10px ${color}50`,
@@ -677,7 +705,7 @@ export const ComparisonBar: React.FC<ComparisonBarProps> = ({
         >
           {/* Animated glow at the end */}
           <motion.div
-            className="absolute right-0 top-0 bottom-0 w-2"
+            className="absolute bottom-0 right-0 top-0 w-2"
             style={{
               background: `linear-gradient(90deg, transparent, ${color})`,
             }}

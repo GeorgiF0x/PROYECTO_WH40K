@@ -15,7 +15,13 @@ import {
   Mail,
   Calendar,
 } from 'lucide-react'
-import { DataTable, StatusBadge, FilterTabs, type Column, type Action } from '../components/ui/data-table'
+import {
+  DataTable,
+  StatusBadge,
+  FilterTabs,
+  type Column,
+  type Action,
+} from '../components/ui/data-table'
 import { Modal, ConfirmDialog, FormField, Select } from '../components/ui/modal'
 import { Button } from '../components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
@@ -58,9 +64,9 @@ const roleColors: Record<string, string> = {
 }
 
 const roleIcons: Record<string, React.ReactNode> = {
-  admin: <ShieldCheck className="w-3.5 h-3.5" />,
-  moderator: <Shield className="w-3.5 h-3.5" />,
-  user: <Users className="w-3.5 h-3.5" />,
+  admin: <ShieldCheck className="h-3.5 w-3.5" />,
+  moderator: <Shield className="h-3.5 w-3.5" />,
+  user: <Users className="h-3.5 w-3.5" />,
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -92,10 +98,7 @@ export default function UsuariosPage() {
     const supabase = createClient()
 
     try {
-      let query = supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false })
+      let query = supabase.from('profiles').select('*').order('created_at', { ascending: false })
 
       if (filter === 'banned') {
         query = query.eq('is_banned', true)
@@ -118,7 +121,10 @@ export default function UsuariosPage() {
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'admin'),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'moderator'),
+        supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .eq('role', 'moderator'),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'user'),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_banned', true),
       ])
@@ -205,11 +211,9 @@ export default function UsuariosPage() {
           </Avatar>
           <div>
             <div className="flex items-center gap-2">
-              <p className="font-medium text-white">
-                {user.display_name || user.username}
-              </p>
+              <p className="font-medium text-white">{user.display_name || user.username}</p>
               {user.is_banned && (
-                <span className="px-1.5 py-0.5 text-[10px] font-medium bg-red-500/10 text-red-500 rounded">
+                <span className="rounded bg-red-500/10 px-1.5 py-0.5 text-[10px] font-medium text-red-500">
                   BANEADO
                 </span>
               )}
@@ -226,7 +230,7 @@ export default function UsuariosPage() {
       width: '140px',
       render: (user) => (
         <span
-          className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full border ${
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${
             roleColors[user.role]
           }`}
         >
@@ -269,20 +273,20 @@ export default function UsuariosPage() {
   const actions: Action<UserProfile>[] = [
     {
       label: 'Ver perfil',
-      icon: <Eye className="w-4 h-4" />,
+      icon: <Eye className="h-4 w-4" />,
       onClick: (user) => setViewUser(user),
     },
     {
       label: 'Cambiar rol',
-      icon: <UserCog className="w-4 h-4" />,
+      icon: <UserCog className="h-4 w-4" />,
       onClick: (user) => {
         setEditRole(user)
         setNewRole(user.role)
       },
     },
     {
-      label: user => user.is_banned ? 'Desbanear' : 'Banear',
-      icon: <Ban className="w-4 h-4" />,
+      label: (user) => (user.is_banned ? 'Desbanear' : 'Banear'),
+      icon: <Ban className="h-4 w-4" />,
       onClick: (user) => setConfirmBan(user),
       variant: 'danger',
     },
@@ -324,7 +328,7 @@ export default function UsuariosPage() {
         searchFields={['username', 'display_name']}
         loading={loading}
         emptyMessage="No hay usuarios"
-        emptyIcon={<Users className="w-8 h-8 text-zinc-600 mx-auto" />}
+        emptyIcon={<Users className="mx-auto h-8 w-8 text-zinc-600" />}
         pageSize={15}
       />
 
@@ -347,9 +351,7 @@ export default function UsuariosPage() {
               <Avatar className="h-16 w-16">
                 <AvatarImage src={viewUser.avatar_url || undefined} />
                 <AvatarFallback className="text-lg">
-                  {(viewUser.display_name || viewUser.username)
-                    ?.slice(0, 2)
-                    .toUpperCase()}
+                  {(viewUser.display_name || viewUser.username)?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
@@ -357,9 +359,9 @@ export default function UsuariosPage() {
                   {viewUser.display_name || viewUser.username}
                 </h3>
                 <p className="text-sm text-zinc-500">@{viewUser.username}</p>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="mt-1 flex items-center gap-2">
                   <span
-                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full border ${
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${
                       roleColors[viewUser.role]
                     }`}
                   >
@@ -367,7 +369,7 @@ export default function UsuariosPage() {
                     {roleLabels[viewUser.role]}
                   </span>
                   {viewUser.is_banned && (
-                    <span className="px-2 py-0.5 text-xs font-medium bg-red-500/10 text-red-500 rounded-full border border-red-500/20">
+                    <span className="rounded-full border border-red-500/20 bg-red-500/10 px-2 py-0.5 text-xs font-medium text-red-500">
                       Baneado
                     </span>
                   )}
@@ -378,7 +380,7 @@ export default function UsuariosPage() {
             {/* Bio */}
             {viewUser.bio && (
               <div>
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
+                <p className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500">
                   Bio
                 </p>
                 <p className="text-sm text-zinc-300">{viewUser.bio}</p>
@@ -388,7 +390,7 @@ export default function UsuariosPage() {
             {/* Info */}
             <div className="grid gap-2 pt-2">
               <div className="flex items-center gap-3 text-sm">
-                <Calendar className="w-4 h-4 text-zinc-500" />
+                <Calendar className="h-4 w-4 text-zinc-500" />
                 <span className="text-zinc-400">Registrado el</span>
                 <span className="text-zinc-300">
                   {new Date(viewUser.created_at).toLocaleDateString('es-ES', {
@@ -400,22 +402,22 @@ export default function UsuariosPage() {
               </div>
               {viewUser.creator_status === 'approved' && (
                 <div className="flex items-center gap-3 text-sm">
-                  <ShieldCheck className="w-4 h-4 text-purple-500" />
+                  <ShieldCheck className="h-4 w-4 text-purple-500" />
                   <span className="text-purple-400">Creador verificado</span>
                 </div>
               )}
             </div>
 
             {/* Link to public profile */}
-            <div className="pt-2 border-t border-zinc-800">
+            <div className="border-t border-zinc-800 pt-2">
               <Link
                 href={`/usuarios/${viewUser.username}`}
                 target="_blank"
                 className="flex items-center gap-2 text-sm text-amber-500 hover:text-amber-400"
               >
-                <Eye className="w-4 h-4" />
+                <Eye className="h-4 w-4" />
                 Ver perfil público
-                <ExternalLink className="w-3.5 h-3.5" />
+                <ExternalLink className="h-3.5 w-3.5" />
               </Link>
             </div>
           </div>

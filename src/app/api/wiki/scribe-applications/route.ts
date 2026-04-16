@@ -9,7 +9,10 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
 
     // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
     }
@@ -21,11 +24,13 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
       .single()
 
-    if (profile?.wiki_role || profile?.is_admin || profile?.role === 'admin' || profile?.role === 'moderator') {
-      return NextResponse.json(
-        { error: 'Ya tienes permisos para editar la wiki' },
-        { status: 400 }
-      )
+    if (
+      profile?.wiki_role ||
+      profile?.is_admin ||
+      profile?.role === 'admin' ||
+      profile?.role === 'moderator'
+    ) {
+      return NextResponse.json({ error: 'Ya tienes permisos para editar la wiki' }, { status: 400 })
     }
 
     // Check for pending application
@@ -37,10 +42,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (existingApp) {
-      return NextResponse.json(
-        { error: 'Ya tienes una solicitud pendiente' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Ya tienes una solicitud pendiente' }, { status: 400 })
     }
 
     // Parse body
@@ -49,31 +51,23 @@ export async function POST(request: NextRequest) {
     const { motivation, experience, sample_topic } = parsed.data
 
     // Create application
-    const { error: insertError } = await supabase
-      .from('scribe_applications')
-      .insert({
-        user_id: user.id,
-        motivation,
-        experience: experience ?? null,
-        sample_topic: sample_topic ?? null,
-        status: 'pending',
-      })
+    const { error: insertError } = await supabase.from('scribe_applications').insert({
+      user_id: user.id,
+      motivation,
+      experience: experience ?? null,
+      sample_topic: sample_topic ?? null,
+      status: 'pending',
+    })
 
     if (insertError) {
       console.error('Error creating scribe application:', insertError)
-      return NextResponse.json(
-        { error: 'Error al crear la solicitud' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Error al crear la solicitud' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true }, { status: 201 })
   } catch (error) {
     console.error('Error in scribe application POST:', error)
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
 
@@ -83,7 +77,10 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
 
     // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
     }
@@ -112,28 +109,24 @@ export async function GET(request: NextRequest) {
     // Fetch applications with user info
     const { data: applications, error: fetchError } = await supabase
       .from('scribe_applications')
-      .select(`
+      .select(
+        `
         *,
         user:profiles!scribe_applications_user_id_fkey(username, display_name, avatar_url),
         reviewer:profiles!scribe_applications_reviewer_id_fkey(username, display_name)
-      `)
+      `
+      )
       .eq('status', status)
       .order('created_at', { ascending: false })
 
     if (fetchError) {
       console.error('Error fetching scribe applications:', fetchError)
-      return NextResponse.json(
-        { error: 'Error al obtener las solicitudes' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Error al obtener las solicitudes' }, { status: 500 })
     }
 
     return NextResponse.json({ data: applications })
   } catch (error) {
     console.error('Error in scribe application GET:', error)
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

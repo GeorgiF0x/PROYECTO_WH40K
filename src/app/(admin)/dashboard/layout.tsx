@@ -39,7 +39,10 @@ const pageTitles: Record<string, { title: string; description: string }> = {
   '/dashboard': { title: 'Dashboard', description: 'Resumen general de la plataforma' },
   '/dashboard/tiendas': { title: 'Tiendas', description: 'Gestiona las tiendas de la comunidad' },
   '/dashboard/mercado': { title: 'Mercado', description: 'Gestiona los anuncios del mercado P2P' },
-  '/dashboard/creadores': { title: 'Creadores', description: 'Solicitudes y perfiles de creadores' },
+  '/dashboard/creadores': {
+    title: 'Creadores',
+    description: 'Solicitudes y perfiles de creadores',
+  },
   '/dashboard/usuarios': { title: 'Usuarios', description: 'Administra los usuarios registrados' },
   '/dashboard/eventos': { title: 'Eventos', description: 'Gestiona eventos de la comunidad' },
   '/dashboard/reportes': { title: 'Reportes', description: 'Modera contenido reportado' },
@@ -66,7 +69,7 @@ function getBreadcrumbs(pathname: string) {
 function notificationIcon(type: string) {
   switch (type) {
     case 'like':
-      return <Heart className="h-4 w-4 text-blood-red" />
+      return <Heart className="text-blood-red h-4 w-4" />
     case 'comment':
       return <MessageSquare className="h-4 w-4 text-necron-teal" />
     case 'follow':
@@ -93,11 +96,7 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(diff / 604800)}sem`
 }
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const { user, profile, isLoading, isAuthenticated } = useAuth()
@@ -176,15 +175,15 @@ export default function DashboardLayout({
         <header className="dashboard-header sticky top-0 z-40 flex h-16 items-center justify-between gap-4 px-6">
           {/* Breadcrumbs with imperial styling */}
           <div className="flex items-center gap-2 text-sm">
-            <div className="flex items-center gap-2 mr-2">
+            <div className="mr-2 flex items-center gap-2">
               <Cpu className="h-4 w-4 text-imperial-gold/60" />
-              <span className="text-[10px] font-mono text-imperial-gold/60 tracking-widest hidden md:inline">
+              <span className="hidden font-mono text-[10px] tracking-widest text-imperial-gold/60 md:inline">
                 STRATEGIUM
               </span>
             </div>
             <Link
               href="/dashboard"
-              className="text-bone/50 hover:text-imperial-gold transition-colors"
+              className="text-bone/50 transition-colors hover:text-imperial-gold"
             >
               <Home className="h-4 w-4" />
             </Link>
@@ -192,11 +191,11 @@ export default function DashboardLayout({
               <React.Fragment key={crumb.href}>
                 <ChevronRight className="h-3.5 w-3.5 text-bone/20" />
                 {index === breadcrumbs.length - 2 ? (
-                  <span className="text-bone font-medium">{crumb.title}</span>
+                  <span className="font-medium text-bone">{crumb.title}</span>
                 ) : (
                   <Link
                     href={crumb.href}
-                    className="text-bone/50 hover:text-imperial-gold transition-colors"
+                    className="text-bone/50 transition-colors hover:text-imperial-gold"
                   >
                     {crumb.title}
                   </Link>
@@ -216,7 +215,7 @@ export default function DashboardLayout({
             >
               <Search className="h-4 w-4" />
               <span className="hidden sm:inline">Buscar...</span>
-              <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-imperial-gold/20 bg-void-light px-1.5 font-mono text-[10px] text-bone/40">
+              <kbd className="hidden h-5 items-center gap-1 rounded border border-imperial-gold/20 bg-void-light px-1.5 font-mono text-[10px] text-bone/40 sm:inline-flex">
                 ⌘K
               </kbd>
             </motion.button>
@@ -225,7 +224,7 @@ export default function DashboardLayout({
             <Link
               href="/"
               target="_blank"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-bone/50 text-sm hover:bg-imperial-gold/5 hover:text-imperial-gold transition-colors"
+              className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-bone/50 transition-colors hover:bg-imperial-gold/5 hover:text-imperial-gold"
             >
               <ExternalLink className="h-4 w-4" />
               <span className="hidden sm:inline">Ver sitio</span>
@@ -235,14 +234,14 @@ export default function DashboardLayout({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <motion.button
-                  className="relative p-2 rounded-lg text-bone/50 hover:bg-imperial-gold/5 hover:text-imperial-gold transition-colors"
+                  className="relative rounded-lg p-2 text-bone/50 transition-colors hover:bg-imperial-gold/5 hover:text-imperial-gold"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <Bell className="h-5 w-5" />
                   {unreadCount > 0 && (
                     <motion.span
-                      className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-blood-red px-1 text-[9px] font-bold text-bone"
+                      className="bg-blood-red absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-bold text-bone"
                       animate={{
                         scale: [1, 1.15, 1],
                         opacity: [0.8, 1, 0.8],
@@ -254,16 +253,21 @@ export default function DashboardLayout({
                   )}
                 </motion.button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 bg-void-light/95 backdrop-blur-xl border-imperial-gold/20">
-                <div className="px-4 py-3 border-b border-imperial-gold/10 flex items-center justify-between">
+              <DropdownMenuContent
+                align="end"
+                className="w-80 border-imperial-gold/20 bg-void-light/95 backdrop-blur-xl"
+              >
+                <div className="flex items-center justify-between border-b border-imperial-gold/10 px-4 py-3">
                   <div className="flex items-center gap-2">
                     <Cpu className="h-3 w-3 text-imperial-gold/60" />
-                    <h4 className="text-xs font-mono text-imperial-gold/60 tracking-widest">TRANSMISIONES</h4>
+                    <h4 className="font-mono text-xs tracking-widest text-imperial-gold/60">
+                      TRANSMISIONES
+                    </h4>
                   </div>
                   {unreadCount > 0 && (
                     <button
                       onClick={() => markAllAsRead()}
-                      className="flex items-center gap-1 text-[10px] font-mono text-necron-teal/60 hover:text-necron-teal transition-colors"
+                      className="flex items-center gap-1 font-mono text-[10px] text-necron-teal/60 transition-colors hover:text-necron-teal"
                     >
                       <CheckCheck className="h-3 w-3" />
                       Marcar todas
@@ -273,7 +277,7 @@ export default function DashboardLayout({
 
                 {displayedNotifications.length === 0 ? (
                   <div className="py-6 text-center">
-                    <Bell className="h-8 w-8 mx-auto text-bone/20 mb-2" />
+                    <Bell className="mx-auto mb-2 h-8 w-8 text-bone/20" />
                     <p className="text-sm text-bone/40">Sin transmisiones pendientes</p>
                   </div>
                 ) : (
@@ -283,23 +287,25 @@ export default function DashboardLayout({
                         key={n.id}
                         onClick={() => markAsRead(n.id)}
                         className={cn(
-                          'flex items-start gap-3 px-4 py-3 cursor-pointer focus:bg-imperial-gold/5',
+                          'flex cursor-pointer items-start gap-3 px-4 py-3 focus:bg-imperial-gold/5',
                           !n.read && 'bg-imperial-gold/5'
                         )}
                       >
                         <div className="mt-0.5 shrink-0">{notificationIcon(n.type)}</div>
-                        <div className="flex-1 min-w-0">
-                          <p className={cn(
-                            'text-sm truncate',
-                            n.read ? 'text-bone/50' : 'text-bone font-medium'
-                          )}>
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className={cn(
+                              'truncate text-sm',
+                              n.read ? 'text-bone/50' : 'font-medium text-bone'
+                            )}
+                          >
                             {n.title}
                           </p>
                           {n.body && (
-                            <p className="text-xs text-bone/30 truncate mt-0.5">{n.body}</p>
+                            <p className="mt-0.5 truncate text-xs text-bone/30">{n.body}</p>
                           )}
                         </div>
-                        <span className="text-[10px] text-bone/30 font-mono shrink-0 mt-0.5">
+                        <span className="mt-0.5 shrink-0 font-mono text-[10px] text-bone/30">
                           {timeAgo(n.created_at)}
                         </span>
                       </DropdownMenuItem>
@@ -311,7 +317,7 @@ export default function DashboardLayout({
                   <div className="border-t border-imperial-gold/10 p-2">
                     <Link
                       href="/notificaciones"
-                      className="block w-full rounded-lg px-3 py-2 text-center text-xs font-mono text-imperial-gold/60 hover:bg-imperial-gold/5 hover:text-imperial-gold transition-colors tracking-wider"
+                      className="block w-full rounded-lg px-3 py-2 text-center font-mono text-xs tracking-wider text-imperial-gold/60 transition-colors hover:bg-imperial-gold/5 hover:text-imperial-gold"
                     >
                       VER TODAS LAS TRANSMISIONES
                     </Link>

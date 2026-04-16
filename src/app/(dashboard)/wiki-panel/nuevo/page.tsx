@@ -19,7 +19,13 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
-import { BlockNoteEditor, type WikiEditorRef, WikiGallery, FactionPicker, EditorGuide } from '@/components/wiki'
+import {
+  BlockNoteEditor,
+  type WikiEditorRef,
+  WikiGallery,
+  FactionPicker,
+  EditorGuide,
+} from '@/components/wiki'
 import {
   WikiPageBackground,
   GothicCorners,
@@ -60,9 +66,9 @@ function TacticalCard({
 }) {
   const c = color || 'rgba(201,162,39,0.25)'
   return (
-    <div className={`relative group ${className}`}>
+    <div className={`group relative ${className}`}>
       <div
-        className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        className="absolute left-0 right-0 top-0 h-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background: `linear-gradient(to right, transparent, ${c}, transparent)`,
         }}
@@ -96,7 +102,7 @@ export default function NewWikiArticlePage() {
   const [showGuide, setShowGuide] = useState(false)
   const heroFileRef = useRef<HTMLInputElement>(null)
 
-  const selectedFaction = factions.find(f => f.id === factionId)
+  const selectedFaction = factions.find((f) => f.id === factionId)
   const currentColor = selectedFaction?.color || '#C9A227'
 
   useEffect(() => {
@@ -130,27 +136,30 @@ export default function NewWikiArticlePage() {
     }
   }
 
-  const handleHeroUpload = useCallback(async (file: File) => {
-    setHeroUploading(true)
-    try {
-      const compressed = await compressImage(file)
-      const formData = new FormData()
-      formData.append('file', compressed)
-      if (factionId) formData.append('faction_id', factionId)
-      const res = await fetch('/api/wiki/upload', { method: 'POST', body: formData })
-      if (!res.ok) {
+  const handleHeroUpload = useCallback(
+    async (file: File) => {
+      setHeroUploading(true)
+      try {
+        const compressed = await compressImage(file)
+        const formData = new FormData()
+        formData.append('file', compressed)
+        if (factionId) formData.append('faction_id', factionId)
+        const res = await fetch('/api/wiki/upload', { method: 'POST', body: formData })
+        if (!res.ok) {
+          const data = await res.json()
+          throw new Error(data.error || 'Error al subir')
+        }
         const data = await res.json()
-        throw new Error(data.error || 'Error al subir')
+        setHeroImage(data.url)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error al subir imagen')
+      } finally {
+        setHeroUploading(false)
+        if (heroFileRef.current) heroFileRef.current.value = ''
       }
-      const data = await res.json()
-      setHeroImage(data.url)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al subir imagen')
-    } finally {
-      setHeroUploading(false)
-      if (heroFileRef.current) heroFileRef.current.value = ''
-    }
-  }, [factionId])
+    },
+    [factionId]
+  )
 
   function handleHeroDrop(e: React.DragEvent) {
     e.preventDefault()
@@ -214,7 +223,7 @@ export default function NewWikiArticlePage() {
       <WikiPageBackground />
 
       <motion.div
-        className="relative z-10 space-y-8 max-w-6xl"
+        className="relative z-10 max-w-6xl space-y-8"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -229,62 +238,62 @@ export default function NewWikiArticlePage() {
           }}
         >
           <GothicCorners className="text-imperial-gold/20" size={36} />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_center,rgba(201,162,39,0.06)_0%,transparent_60%)] pointer-events-none" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_center,rgba(201,162,39,0.06)_0%,transparent_60%)]" />
 
-          <div className="relative flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+          <div className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
             <div className="flex items-start gap-4">
               <Link href="/wiki-panel">
                 <Button variant="ghost" size="sm" className="mt-1">
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="h-4 w-4" />
                 </Button>
               </Link>
               <div>
                 <SectionLabel icon={Crosshair} className="mb-2">
                   NUEVO ARTICULO // ARCHIVO LEXICANUM
                 </SectionLabel>
-                <div className="flex items-center gap-3 mb-1">
-                  <h1 className="text-2xl font-display font-bold text-bone tracking-wide">
+                <div className="mb-1 flex items-center gap-3">
+                  <h1 className="font-display text-2xl font-bold tracking-wide text-bone">
                     Redaccion Imperial
                   </h1>
                   <div className="flex items-center gap-1.5">
                     <motion.div
-                      className="w-2 h-2 rounded-full bg-amber-500"
+                      className="h-2 w-2 rounded-full bg-amber-500"
                       animate={{ opacity: [1, 0.4, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     />
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono tracking-wider border bg-imperial-gold/15 border-imperial-gold/40 text-imperial-gold shadow-[0_0_12px_rgba(201,162,39,0.2)]">
-                      <Feather className="w-3 h-3" />
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-imperial-gold/40 bg-imperial-gold/15 px-2.5 py-1 font-mono text-[11px] tracking-wider text-imperial-gold shadow-[0_0_12px_rgba(201,162,39,0.2)]">
+                      <Feather className="h-3 w-3" />
                       SCRIBE
                     </span>
                   </div>
                 </div>
-                <p className="text-bone/40 font-mono text-sm">
+                <p className="font-mono text-sm text-bone/40">
                   Crea un nuevo registro para el Archivo Imperial
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex flex-wrap items-center gap-2">
               <motion.button
                 type="button"
                 onClick={() => handleSubmit('draft')}
                 disabled={loading}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/70 hover:bg-bone/5 hover:border-bone/30 hover:text-bone transition-all duration-200 disabled:opacity-40"
+                className="inline-flex items-center gap-2 rounded-lg border border-bone/15 bg-void-light/60 px-4 py-2 text-sm font-medium text-bone/70 transition-all duration-200 hover:border-bone/30 hover:bg-bone/5 hover:text-bone disabled:opacity-40"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <FileText className="w-4 h-4" />
+                <FileText className="h-4 w-4" />
                 Guardar Borrador
               </motion.button>
               <motion.button
                 type="button"
                 onClick={() => handleSubmit('published')}
                 disabled={loading}
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200 disabled:opacity-40"
+                className="inline-flex items-center gap-2 rounded-lg border border-imperial-gold/30 bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 px-5 py-2 text-sm font-semibold text-void shadow-[0_0_20px_rgba(201,162,39,0.2)] transition-all duration-200 hover:from-imperial-gold hover:to-imperial-gold/80 hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] disabled:opacity-40"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Globe className="w-4 h-4" />
+                <Globe className="h-4 w-4" />
                 Publicar
               </motion.button>
             </div>
@@ -298,7 +307,7 @@ export default function NewWikiArticlePage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-lg bg-blood/20 border border-blood/40 text-blood-light font-body"
+            className="rounded-lg border border-blood/40 bg-blood/20 p-4 font-body text-blood-light"
           >
             {error}
           </motion.div>
@@ -316,16 +325,16 @@ export default function NewWikiArticlePage() {
         </motion.div>
 
         {/* ── Main grid ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="space-y-6 lg:col-span-3">
             {/* Title & Slug */}
             <motion.div variants={itemVariants}>
               <TacticalCard color={`${currentColor}40`}>
                 <Card>
-                  <CardContent className="pt-4 space-y-4">
+                  <CardContent className="space-y-4 pt-4">
                     <div>
-                      <label className="block font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em] uppercase mb-2">
+                      <label className="mb-2 block font-mono text-[10px] uppercase tracking-[0.2em] text-imperial-gold/50">
                         TITULO *
                       </label>
                       <Input
@@ -336,7 +345,7 @@ export default function NewWikiArticlePage() {
                       />
                     </div>
                     <div>
-                      <label className="block font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em] uppercase mb-2">
+                      <label className="mb-2 block font-mono text-[10px] uppercase tracking-[0.2em] text-imperial-gold/50">
                         SLUG (URL) *
                       </label>
                       <Input
@@ -345,7 +354,7 @@ export default function NewWikiArticlePage() {
                         onChange={(e) => setSlug(e.target.value)}
                         placeholder="la-herejia-de-horus"
                       />
-                      <p className="mt-1 text-xs text-bone/40 font-mono">
+                      <p className="mt-1 font-mono text-xs text-bone/40">
                         /wiki/{factionId || '[faccion]'}/{slug || '[slug]'}
                       </p>
                     </div>
@@ -359,29 +368,34 @@ export default function NewWikiArticlePage() {
               <TacticalCard color={`${currentColor}40`}>
                 <Card padding="none">
                   <CardHeader className="border-b border-bone/10 p-4">
-                    <CardTitle className="text-base flex items-center justify-between">
+                    <CardTitle className="flex items-center justify-between text-base">
                       <div className="flex items-center gap-2">
                         <div
                           className="h-6 w-1 rounded-full"
-                          style={{ background: `linear-gradient(180deg, ${currentColor}, ${currentColor}40)` }}
+                          style={{
+                            background: `linear-gradient(180deg, ${currentColor}, ${currentColor}40)`,
+                          }}
                         />
-                        <span className="font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CONTENIDO</span>
+                        <span className="font-mono text-[10px] tracking-[0.2em] text-imperial-gold/50">
+                          CONTENIDO
+                        </span>
                       </div>
                       <button
                         type="button"
                         onClick={() => setShowGuide(!showGuide)}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono text-bone/40 hover:text-imperial-gold/70 hover:bg-imperial-gold/5 transition-colors"
+                        className="flex items-center gap-1.5 rounded-md px-2.5 py-1 font-mono text-[10px] text-bone/40 transition-colors hover:bg-imperial-gold/5 hover:text-imperial-gold/70"
                         title="Guia del editor"
                       >
-                        <HelpCircle className="w-3.5 h-3.5" />
+                        <HelpCircle className="h-3.5 w-3.5" />
                         <span className="hidden sm:inline">AYUDA</span>
                       </button>
                     </CardTitle>
                   </CardHeader>
                   <EditorGuide isOpen={showGuide} onClose={() => setShowGuide(false)} />
-                  <div className="px-4 py-2 border-b border-bone/5">
-                    <span className="text-[11px] font-mono text-bone/25 italic">
-                      Escribe <span className="text-imperial-gold/40">/</span> para insertar bloques especiales
+                  <div className="border-b border-bone/5 px-4 py-2">
+                    <span className="font-mono text-[11px] italic text-bone/25">
+                      Escribe <span className="text-imperial-gold/40">/</span> para insertar bloques
+                      especiales
                     </span>
                   </div>
                   <BlockNoteEditor
@@ -413,20 +427,24 @@ export default function NewWikiArticlePage() {
               <TacticalCard color={`${currentColor}30`}>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CATEGORIA</CardTitle>
+                    <CardTitle className="font-mono text-[10px] text-base tracking-[0.2em] text-imperial-gold/50">
+                      CATEGORIA
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <select
                       value={categoryId}
                       onChange={(e) => setCategoryId(e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg bg-void-light border border-bone/10 text-bone font-body focus:outline-none focus:ring-2 transition-all duration-200"
+                      className="w-full rounded-lg border border-bone/10 bg-void-light px-4 py-2 font-body text-bone transition-all duration-200 focus:outline-none focus:ring-2"
                       style={{
                         ['--tw-ring-color' as string]: currentColor,
                       }}
                     >
                       <option value="">Sin categoria</option>
-                      {categories.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
                       ))}
                     </select>
                   </CardContent>
@@ -439,7 +457,9 @@ export default function NewWikiArticlePage() {
               <TacticalCard color={`${currentColor}30`}>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">EXTRACTO</CardTitle>
+                    <CardTitle className="font-mono text-[10px] text-base tracking-[0.2em] text-imperial-gold/50">
+                      EXTRACTO
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Textarea
@@ -448,7 +468,7 @@ export default function NewWikiArticlePage() {
                       placeholder="Breve descripcion para listados..."
                       rows={3}
                     />
-                    <p className="mt-2 text-xs text-bone/40 font-mono">
+                    <p className="mt-2 font-mono text-xs text-bone/40">
                       Opcional. Se muestra en las tarjetas del listado.
                     </p>
                   </CardContent>
@@ -461,7 +481,9 @@ export default function NewWikiArticlePage() {
               <TacticalCard color={`${currentColor}30`}>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">IMAGEN PRINCIPAL</CardTitle>
+                    <CardTitle className="font-mono text-[10px] text-base tracking-[0.2em] text-imperial-gold/50">
+                      IMAGEN PRINCIPAL
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <input
@@ -475,32 +497,35 @@ export default function NewWikiArticlePage() {
                       className="hidden"
                     />
                     {heroImage ? (
-                      <div className="relative aspect-video rounded-lg overflow-hidden border border-bone/10 group/preview">
+                      <div className="group/preview relative aspect-video overflow-hidden rounded-lg border border-bone/10">
                         <img
                           src={heroImage}
                           alt="Preview"
-                          className="w-full h-full object-cover"
+                          className="h-full w-full object-cover"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none'
+                            ;(e.target as HTMLImageElement).style.display = 'none'
                           }}
                         />
                         <button
                           type="button"
                           onClick={() => setHeroImage('')}
-                          className="absolute top-2 right-2 p-1.5 rounded-full bg-void/80 border border-bone/20 text-bone/60 hover:text-blood-light hover:border-blood/40 transition-colors opacity-0 group-hover/preview:opacity-100"
+                          className="absolute right-2 top-2 rounded-full border border-bone/20 bg-void/80 p-1.5 text-bone/60 opacity-0 transition-colors hover:border-blood/40 hover:text-blood-light group-hover/preview:opacity-100"
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <X className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     ) : (
                       <button
                         type="button"
                         onClick={() => heroFileRef.current?.click()}
-                        onDragOver={(e) => { e.preventDefault(); setHeroDragOver(true) }}
+                        onDragOver={(e) => {
+                          e.preventDefault()
+                          setHeroDragOver(true)
+                        }}
                         onDragLeave={() => setHeroDragOver(false)}
                         onDrop={handleHeroDrop}
                         disabled={heroUploading}
-                        className="w-full flex flex-col items-center justify-center gap-2 py-8 rounded-lg border-2 border-dashed text-xs font-mono transition-all duration-200 hover:bg-bone/5 disabled:opacity-50"
+                        className="flex w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed py-8 font-mono text-xs transition-all duration-200 hover:bg-bone/5 disabled:opacity-50"
                         style={{
                           borderColor: heroDragOver ? currentColor : `${currentColor}30`,
                           color: currentColor,
@@ -509,20 +534,18 @@ export default function NewWikiArticlePage() {
                       >
                         {heroUploading ? (
                           <>
-                            <Loader2 className="w-6 h-6 animate-spin" />
+                            <Loader2 className="h-6 w-6 animate-spin" />
                             <span>Subiendo...</span>
                           </>
                         ) : (
                           <>
-                            <Upload className="w-6 h-6 opacity-60" />
+                            <Upload className="h-6 w-6 opacity-60" />
                             <span>Arrastra o haz clic para subir</span>
                           </>
                         )}
                       </button>
                     )}
-                    <p className="text-xs text-bone/40 font-mono">
-                      Recomendado: 1200x630px
-                    </p>
+                    <p className="font-mono text-xs text-bone/40">Recomendado: 1200x630px</p>
                   </CardContent>
                 </Card>
               </TacticalCard>
@@ -532,15 +555,19 @@ export default function NewWikiArticlePage() {
             {factionId && (
               <motion.div variants={itemVariants}>
                 <TacticalCard color={`${currentColor}30`}>
-                  <div className="rounded-xl bg-void-light/40 border border-bone/10 p-4">
-                    <span className="block font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em] uppercase mb-3">CLASIFICACION</span>
-                    <div className="space-y-2 text-sm font-body">
-                      <div className="flex justify-between items-center">
+                  <div className="rounded-xl border border-bone/10 bg-void-light/40 p-4">
+                    <span className="mb-3 block font-mono text-[10px] uppercase tracking-[0.2em] text-imperial-gold/50">
+                      CLASIFICACION
+                    </span>
+                    <div className="space-y-2 font-body text-sm">
+                      <div className="flex items-center justify-between">
                         <span className="text-bone/50">Faccion:</span>
-                        <span className="font-medium" style={{ color: currentColor }}>{selectedFaction?.name}</span>
+                        <span className="font-medium" style={{ color: currentColor }}>
+                          {selectedFaction?.name}
+                        </span>
                       </div>
                       {subFaction && (
-                        <div className="flex justify-between items-center">
+                        <div className="flex items-center justify-between">
                           <span className="text-bone/50">Subfaccion:</span>
                           <span className="text-bone/80">{subFaction}</span>
                         </div>
@@ -556,17 +583,14 @@ export default function NewWikiArticlePage() {
         <ImperialDivider />
 
         {/* ── Bottom action bar ── */}
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center justify-between pt-4"
-        >
+        <motion.div variants={itemVariants} className="flex items-center justify-between pt-4">
           <Link href="/wiki-panel">
             <motion.button
               type="button"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-bone/50 hover:text-bone transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-bone/50 transition-colors hover:text-bone"
               whileHover={{ x: -4 }}
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="h-4 w-4" />
               Cancelar
             </motion.button>
           </Link>
@@ -575,22 +599,22 @@ export default function NewWikiArticlePage() {
               type="button"
               onClick={() => handleSubmit('draft')}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/70 hover:bg-bone/5 hover:border-bone/30 hover:text-bone transition-all duration-200 disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-lg border border-bone/15 bg-void-light/60 px-4 py-2 text-sm font-medium text-bone/70 transition-all duration-200 hover:border-bone/30 hover:bg-bone/5 hover:text-bone disabled:opacity-40"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <FileText className="w-4 h-4" />
+              <FileText className="h-4 w-4" />
               Guardar Borrador
             </motion.button>
             <motion.button
               type="button"
               onClick={() => handleSubmit('published')}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200 disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-lg border border-imperial-gold/30 bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 px-5 py-2 text-sm font-semibold text-void shadow-[0_0_20px_rgba(201,162,39,0.2)] transition-all duration-200 hover:from-imperial-gold hover:to-imperial-gold/80 hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] disabled:opacity-40"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Globe className="w-4 h-4" />
+              <Globe className="h-4 w-4" />
               Publicar
             </motion.button>
           </div>

@@ -11,15 +11,15 @@ const StoreCard = dynamic(() => import('./StoreCard'), {
 
 function StoreCardSkeleton() {
   return (
-    <div className="bg-void-light rounded-xl overflow-hidden animate-pulse">
+    <div className="animate-pulse overflow-hidden rounded-xl bg-void-light">
       <div className="aspect-[16/9] bg-void" />
-      <div className="p-4 space-y-3">
-        <div className="h-6 bg-void rounded w-3/4" />
-        <div className="h-4 bg-void rounded w-full" />
-        <div className="h-4 bg-void rounded w-2/3" />
-        <div className="flex gap-2 mt-3">
-          <div className="h-6 bg-void rounded w-16" />
-          <div className="h-6 bg-void rounded w-16" />
+      <div className="space-y-3 p-4">
+        <div className="h-6 w-3/4 rounded bg-void" />
+        <div className="h-4 w-full rounded bg-void" />
+        <div className="h-4 w-2/3 rounded bg-void" />
+        <div className="mt-3 flex gap-2">
+          <div className="h-6 w-16 rounded bg-void" />
+          <div className="h-6 w-16 rounded bg-void" />
         </div>
       </div>
     </div>
@@ -39,7 +39,7 @@ export default function StoreGrid({
 }: StoreGridProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <StoreCardSkeleton key={i} />
         ))}
@@ -49,14 +49,12 @@ export default function StoreGrid({
 
   if (stores.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center animate-fadeIn">
-        <div className="w-20 h-20 rounded-full bg-void-light flex items-center justify-center mb-6">
-          <StoreIcon className="w-10 h-10 text-bone/30" />
+      <div className="flex animate-fadeIn flex-col items-center justify-center py-20 text-center">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-void-light">
+          <StoreIcon className="h-10 w-10 text-bone/30" />
         </div>
-        <h3 className="text-xl font-display font-semibold text-bone/60 mb-2">
-          Sin resultados
-        </h3>
-        <p className="text-bone/40 font-body max-w-md">{emptyMessage}</p>
+        <h3 className="mb-2 font-display text-xl font-semibold text-bone/60">Sin resultados</h3>
+        <p className="max-w-md font-body text-bone/40">{emptyMessage}</p>
       </div>
     )
   }
@@ -68,9 +66,7 @@ export default function StoreGrid({
       estimatedRowHeight={380}
       gap={24}
       keyExtractor={(s) => s.id}
-      renderItem={(store, index) => (
-        <StoreCard key={store.id} store={store} index={index} />
-      )}
+      renderItem={(store, index) => <StoreCard key={store.id} store={store} index={index} />}
     />
   )
 }

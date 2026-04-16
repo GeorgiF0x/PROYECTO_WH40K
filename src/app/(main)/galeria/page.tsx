@@ -6,12 +6,13 @@ import { getFactions } from '@/lib/cache/factions'
 
 export const metadata: Metadata = {
   title: 'Galerías Prismáticas de Solemnace | Grimdark Legion',
-  description: 'Explora las mejores miniaturas de Warhammer 40K pintadas por la comunidad. Galería de miniaturas del Imperium, Caos, Xenos y más.',
+  description:
+    'Explora las mejores miniaturas de Warhammer 40K pintadas por la comunidad. Galería de miniaturas del Imperium, Caos, Xenos y más.',
   openGraph: {
     title: 'Galerías Prismáticas de Solemnace',
     description: 'Colección de miniaturas de Warhammer 40K pintadas por la comunidad',
     type: 'website',
-  }
+  },
 }
 
 // Revalidate every 5 minutes for fresh content
@@ -25,7 +26,8 @@ export default async function GalleryPage() {
   const [{ data: initialMiniatures }, factionTags] = await Promise.all([
     supabase
       .from('miniatures')
-      .select(`
+      .select(
+        `
         *,
         profiles:user_id (
           id,
@@ -33,7 +35,8 @@ export default async function GalleryPage() {
           display_name,
           avatar_url
         )
-      `)
+      `
+      )
       .order('created_at', { ascending: false })
       .limit(24),
     getFactions(),

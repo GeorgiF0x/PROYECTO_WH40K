@@ -9,18 +9,17 @@ const ListingCard = dynamic(() => import('./ListingCard'), {
   loading: () => <ListingCardSkeleton />,
 })
 
-
 function ListingCardSkeleton() {
   return (
-    <div className="bg-void-light rounded-xl overflow-hidden animate-pulse">
+    <div className="animate-pulse overflow-hidden rounded-xl bg-void-light">
       <div className="aspect-[4/3] bg-void" />
-      <div className="p-4 space-y-3">
-        <div className="h-6 bg-void rounded w-3/4" />
-        <div className="h-4 bg-void rounded w-full" />
-        <div className="h-4 bg-void rounded w-2/3" />
-        <div className="pt-4 border-t border-bone/10 flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-void" />
-          <div className="h-4 bg-void rounded w-20" />
+      <div className="space-y-3 p-4">
+        <div className="h-6 w-3/4 rounded bg-void" />
+        <div className="h-4 w-full rounded bg-void" />
+        <div className="h-4 w-2/3 rounded bg-void" />
+        <div className="flex items-center gap-2 border-t border-bone/10 pt-4">
+          <div className="h-6 w-6 rounded-full bg-void" />
+          <div className="h-4 w-20 rounded bg-void" />
         </div>
       </div>
     </div>
@@ -40,20 +39,17 @@ export default function ListingGrid({
 }: ListingGridProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div
-            key={i}
-            className="bg-void-light rounded-xl overflow-hidden animate-pulse"
-          >
+          <div key={i} className="animate-pulse overflow-hidden rounded-xl bg-void-light">
             <div className="aspect-[4/3] bg-void" />
-            <div className="p-4 space-y-3">
-              <div className="h-6 bg-void rounded w-3/4" />
-              <div className="h-4 bg-void rounded w-full" />
-              <div className="h-4 bg-void rounded w-2/3" />
-              <div className="pt-4 border-t border-bone/10 flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-void" />
-                <div className="h-4 bg-void rounded w-20" />
+            <div className="space-y-3 p-4">
+              <div className="h-6 w-3/4 rounded bg-void" />
+              <div className="h-4 w-full rounded bg-void" />
+              <div className="h-4 w-2/3 rounded bg-void" />
+              <div className="flex items-center gap-2 border-t border-bone/10 pt-4">
+                <div className="h-6 w-6 rounded-full bg-void" />
+                <div className="h-4 w-20 rounded bg-void" />
               </div>
             </div>
           </div>
@@ -64,20 +60,18 @@ export default function ListingGrid({
 
   if (listings.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center animate-fadeIn">
-        <div className="w-20 h-20 rounded-full bg-void-light flex items-center justify-center mb-6">
-          <Package className="w-10 h-10 text-bone/30" />
+      <div className="flex animate-fadeIn flex-col items-center justify-center py-20 text-center">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-void-light">
+          <Package className="h-10 w-10 text-bone/30" />
         </div>
-        <h3 className="text-xl font-display font-semibold text-bone/60 mb-2">
-          Sin resultados
-        </h3>
-        <p className="text-bone/40 font-body max-w-md">{emptyMessage}</p>
+        <h3 className="mb-2 font-display text-xl font-semibold text-bone/60">Sin resultados</h3>
+        <p className="max-w-md font-body text-bone/40">{emptyMessage}</p>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {listings.map((listing, index) => (
         <ListingCard key={listing.id} listing={listing} index={index} />
       ))}

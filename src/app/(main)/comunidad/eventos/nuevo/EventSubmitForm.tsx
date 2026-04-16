@@ -31,7 +31,9 @@ import {
 import type { EventType } from '@/lib/types/database.types'
 import dynamic from 'next/dynamic'
 
-const LocationPicker = dynamic(() => import('@/components/community/LocationPicker'), { ssr: false })
+const LocationPicker = dynamic(() => import('@/components/community/LocationPicker'), {
+  ssr: false,
+})
 
 interface LocationResult {
   address: string
@@ -54,42 +56,42 @@ const eventTypeOptions: {
     label: 'Torneo',
     description: 'Competicion oficial o casual con rankings',
     icon: Trophy,
-    color: 'text-amber-400 border-amber-500/50 bg-amber-500/10'
+    color: 'text-amber-400 border-amber-500/50 bg-amber-500/10',
   },
   {
     value: 'painting_workshop',
     label: 'Taller de Pintura',
     description: 'Clases, demos o sesiones de pintura',
     icon: Paintbrush,
-    color: 'text-purple-400 border-purple-500/50 bg-purple-500/10'
+    color: 'text-purple-400 border-purple-500/50 bg-purple-500/10',
   },
   {
     value: 'casual_play',
     label: 'Partidas Casuales',
     description: 'Partidas amistosas sin presion',
     icon: Swords,
-    color: 'text-blue-400 border-blue-500/50 bg-blue-500/10'
+    color: 'text-blue-400 border-blue-500/50 bg-blue-500/10',
   },
   {
     value: 'campaign',
     label: 'Campaña',
     description: 'Campaña narrativa con varias sesiones',
     icon: BookOpen,
-    color: 'text-emerald-400 border-emerald-500/50 bg-emerald-500/10'
+    color: 'text-emerald-400 border-emerald-500/50 bg-emerald-500/10',
   },
   {
     value: 'release_event',
     label: 'Lanzamiento',
     description: 'Evento de lanzamiento de producto',
     icon: PartyPopper,
-    color: 'text-red-400 border-red-500/50 bg-red-500/10'
+    color: 'text-red-400 border-red-500/50 bg-red-500/10',
   },
   {
     value: 'meetup',
     label: 'Quedada',
     description: 'Encuentro social de la comunidad',
     icon: Users2,
-    color: 'text-cyan-400 border-cyan-500/50 bg-cyan-500/10'
+    color: 'text-cyan-400 border-cyan-500/50 bg-cyan-500/10',
   },
 ]
 
@@ -152,7 +154,9 @@ export default function EventSubmitForm() {
   }, [])
 
   const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) {
       router.push('/login?redirect=/comunidad/eventos/nuevo')
       return
@@ -212,7 +216,9 @@ export default function EventSubmitForm() {
       if (!startDate) throw new Error('La fecha de inicio es obligatoria')
       if (!location) throw new Error('Selecciona la ubicacion del evento')
 
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) throw new Error('Debes iniciar sesion')
 
       // Upload cover image if exists
@@ -226,9 +232,9 @@ export default function EventSubmitForm() {
 
         if (uploadError) throw uploadError
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('stores')
-          .getPublicUrl(fileName)
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from('stores').getPublicUrl(fileName)
 
         coverImageUrl = publicUrl
       }
@@ -241,31 +247,29 @@ export default function EventSubmitForm() {
 
       const finalGameSystem = gameSystem === 'Otro' ? customGameSystem : gameSystem
 
-      const { error: insertError } = await supabase
-        .from('events')
-        .insert({
-          organizer_id: user.id,
-          store_id: selectedStoreId || null,
-          name: name.trim(),
-          slug,
-          description: description.trim() || null,
-          event_type: eventType,
-          game_system: finalGameSystem || null,
-          start_date: startDateTime,
-          end_date: endDateTime,
-          venue_name: venueName.trim() || null,
-          address: location.address,
-          city: location.city,
-          province: location.province || null,
-          postal_code: location.postal_code || null,
-          latitude: location.latitude,
-          longitude: location.longitude,
-          max_participants: maxParticipants || null,
-          entry_fee: entryFee || null,
-          cover_image: coverImageUrl,
-          is_official: isOfficial && canCreateOfficial,
-          status: 'upcoming',
-        })
+      const { error: insertError } = await supabase.from('events').insert({
+        organizer_id: user.id,
+        store_id: selectedStoreId || null,
+        name: name.trim(),
+        slug,
+        description: description.trim() || null,
+        event_type: eventType,
+        game_system: finalGameSystem || null,
+        start_date: startDateTime,
+        end_date: endDateTime,
+        venue_name: venueName.trim() || null,
+        address: location.address,
+        city: location.city,
+        province: location.province || null,
+        postal_code: location.postal_code || null,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        max_participants: maxParticipants || null,
+        entry_fee: entryFee || null,
+        cover_image: coverImageUrl,
+        is_official: isOfficial && canCreateOfficial,
+        status: 'upcoming',
+      })
 
       if (insertError) throw insertError
 
@@ -279,7 +283,7 @@ export default function EventSubmitForm() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center pb-16 pt-24">
         <div className="animate-pulse text-bone/60">Verificando sesion...</div>
       </div>
     )
@@ -291,17 +295,17 @@ export default function EventSubmitForm() {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="max-w-2xl mx-auto text-center py-12"
+        className="mx-auto max-w-2xl py-12 text-center"
       >
-        <div className="relative p-8 sm:p-12 rounded-2xl bg-gradient-to-b from-void-light/90 to-void/80 border border-amber-500/30 overflow-hidden">
+        <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-b from-void-light/90 to-void/80 p-8 sm:p-12">
           {/* Corner decorations */}
-          <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-500/40" />
-          <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-amber-500/40" />
-          <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-amber-500/40" />
-          <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-500/40" />
+          <div className="absolute left-4 top-4 h-8 w-8 border-l-2 border-t-2 border-amber-500/40" />
+          <div className="absolute right-4 top-4 h-8 w-8 border-r-2 border-t-2 border-amber-500/40" />
+          <div className="absolute bottom-4 left-4 h-8 w-8 border-b-2 border-l-2 border-amber-500/40" />
+          <div className="absolute bottom-4 right-4 h-8 w-8 border-b-2 border-r-2 border-amber-500/40" />
 
           {/* Glow */}
-          <div className="absolute inset-0 bg-gradient-to-t from-amber-500/5 to-transparent pointer-events-none" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-amber-500/5 to-transparent" />
 
           <div className="relative">
             {/* Success icon */}
@@ -309,14 +313,14 @@ export default function EventSubmitForm() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              className="w-24 h-24 mx-auto mb-6 rounded-full bg-amber-500/10 border-2 border-amber-500/40 flex items-center justify-center"
+              className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 border-amber-500/40 bg-amber-500/10"
             >
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.4, type: 'spring', stiffness: 300 }}
               >
-                <Check className="w-12 h-12 text-amber-400" />
+                <Check className="h-12 w-12 text-amber-400" />
               </motion.div>
             </motion.div>
 
@@ -325,7 +329,7 @@ export default function EventSubmitForm() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-2xl sm:text-3xl font-display font-bold text-bone mb-3"
+              className="mb-3 font-display text-2xl font-bold text-bone sm:text-3xl"
             >
               Evento Registrado
             </motion.h1>
@@ -335,10 +339,10 @@ export default function EventSubmitForm() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-bone/60 font-body mb-6 max-w-md mx-auto"
+              className="mx-auto mb-6 max-w-md font-body text-bone/60"
             >
-              Tu evento ha sido inscrito en el Chronus Eventus.
-              Los guerreros del Imperium podran verlo y unirse.
+              Tu evento ha sido inscrito en el Chronus Eventus. Los guerreros del Imperium podran
+              verlo y unirse.
             </motion.p>
 
             {/* Status badge */}
@@ -346,17 +350,17 @@ export default function EventSubmitForm() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-mono mb-8"
+              className="mb-8 inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 font-mono text-sm text-emerald-400"
             >
-              <Clock className="w-4 h-4" />
+              <Clock className="h-4 w-4" />
               ESTADO: PUBLICADO
             </motion.div>
 
             {/* Divider */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
-              <Calendar className="w-4 h-4 text-amber-500/40" />
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+            <div className="mb-6 flex items-center gap-3">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+              <Calendar className="h-4 w-4 text-amber-500/40" />
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
             </div>
 
             {/* Actions */}
@@ -364,13 +368,13 @@ export default function EventSubmitForm() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              className="flex flex-col items-center justify-center gap-4 sm:flex-row"
             >
               <button
                 onClick={() => router.push('/comunidad/eventos')}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-void font-display font-bold rounded-xl hover:bg-amber-400 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-6 py-3 font-display font-bold text-void transition-colors hover:bg-amber-400"
               >
-                <Calendar className="w-5 h-5" />
+                <Calendar className="h-5 w-5" />
                 Ver Calendario
               </button>
               <button
@@ -384,7 +388,7 @@ export default function EventSubmitForm() {
                   setCoverImage(null)
                   setCoverPreview(null)
                 }}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-void-light border border-bone/20 text-bone font-display rounded-xl hover:border-bone/40 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl border border-bone/20 bg-void-light px-6 py-3 font-display text-bone transition-colors hover:border-bone/40"
               >
                 Crear Otro Evento
               </button>
@@ -397,7 +401,7 @@ export default function EventSubmitForm() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="text-xs text-bone/30 font-mono mt-6 tracking-wider"
+          className="mt-6 font-mono text-xs tracking-wider text-bone/30"
         >
           CHRONUS EVENTUS • REGISTRO TEMPORAL • ADMINISTRATUM
         </motion.p>
@@ -406,32 +410,30 @@ export default function EventSubmitForm() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="mx-auto max-w-3xl">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <button
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-bone/60 hover:text-amber-400 transition-colors font-body mb-6"
+          className="mb-6 inline-flex items-center gap-2 font-body text-bone/60 transition-colors hover:text-amber-400"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="h-4 w-4" />
           Volver
         </button>
 
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 rounded-lg bg-amber-500/20 border border-amber-500/30">
-            <Clock className="w-5 h-5 text-amber-500" />
+        <div className="mb-2 flex items-center gap-3">
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/20 p-2">
+            <Clock className="h-5 w-5 text-amber-500" />
           </div>
-          <span className="text-xs font-mono text-amber-500/80 tracking-widest">CHRONUS EVENTUS</span>
+          <span className="font-mono text-xs tracking-widest text-amber-500/80">
+            CHRONUS EVENTUS
+          </span>
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-display font-bold text-bone">
+        <h1 className="font-display text-3xl font-bold text-bone md:text-4xl">
           Crear Nuevo Evento
         </h1>
-        <p className="text-bone/60 font-body mt-2">
+        <p className="mt-2 font-body text-bone/60">
           Registra un evento en el calendario imperial para que otros guerreros puedan unirse.
         </p>
       </motion.div>
@@ -443,12 +445,15 @@ export default function EventSubmitForm() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl flex items-center gap-3"
+            className="mb-6 flex items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/20 p-4"
           >
-            <AlertCircle className="w-5 h-5 text-red-400" />
-            <span className="text-red-400 font-body">{error}</span>
-            <button onClick={() => setError(null)} className="ml-auto text-red-400 hover:text-red-300">
-              <X className="w-4 h-4" />
+            <AlertCircle className="h-5 w-5 text-red-400" />
+            <span className="font-body text-red-400">{error}</span>
+            <button
+              onClick={() => setError(null)}
+              className="ml-auto text-red-400 hover:text-red-300"
+            >
+              <X className="h-4 w-4" />
             </button>
           </motion.div>
         )}
@@ -463,41 +468,41 @@ export default function EventSubmitForm() {
         className="space-y-8"
       >
         {/* Cover image */}
-        <div className="p-6 bg-void-light rounded-2xl border border-bone/10">
-          <h2 className="text-lg font-display font-semibold text-bone mb-4 flex items-center gap-2">
-            <ImagePlus className="w-5 h-5 text-amber-500" />
+        <div className="rounded-2xl border border-bone/10 bg-void-light p-6">
+          <h2 className="mb-4 flex items-center gap-2 font-display text-lg font-semibold text-bone">
+            <ImagePlus className="h-5 w-5 text-amber-500" />
             Imagen de Portada
           </h2>
-          <p className="text-sm text-bone/50 font-body mb-4">
+          <p className="mb-4 font-body text-sm text-bone/50">
             Opcional. Una imagen atractiva puede aumentar la asistencia.
           </p>
           {coverPreview ? (
-            <div className="relative aspect-video rounded-xl overflow-hidden bg-void border border-bone/10">
+            <div className="relative aspect-video overflow-hidden rounded-xl border border-bone/10 bg-void">
               <Image src={coverPreview} alt="Cover preview" fill className="object-cover" />
               <button
                 type="button"
                 onClick={removeCoverImage}
-                className="absolute top-2 right-2 p-2 bg-red-500 rounded-full text-white hover:bg-red-600 transition-colors"
+                className="absolute right-2 top-2 rounded-full bg-red-500 p-2 text-white transition-colors hover:bg-red-600"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" />
               </button>
             </div>
           ) : (
-            <label className="block aspect-video rounded-xl border-2 border-dashed border-bone/20 hover:border-amber-500/50 cursor-pointer flex flex-col items-center justify-center gap-3 transition-colors bg-void/50">
-              <Upload className="w-8 h-8 text-bone/40" />
-              <span className="text-sm text-bone/40 font-body">Click para subir imagen</span>
+            <label className="block flex aspect-video cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-bone/20 bg-void/50 transition-colors hover:border-amber-500/50">
+              <Upload className="h-8 w-8 text-bone/40" />
+              <span className="font-body text-sm text-bone/40">Click para subir imagen</span>
               <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
             </label>
           )}
         </div>
 
         {/* Event type */}
-        <div className="p-6 bg-void-light rounded-2xl border border-bone/10">
-          <h2 className="text-lg font-display font-semibold text-bone mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-amber-500" />
+        <div className="rounded-2xl border border-bone/10 bg-void-light p-6">
+          <h2 className="mb-4 flex items-center gap-2 font-display text-lg font-semibold text-bone">
+            <Trophy className="h-5 w-5 text-amber-500" />
             Tipo de Evento *
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {eventTypeOptions.map((option) => {
               const Icon = option.icon
               const isSelected = eventType === option.value
@@ -506,21 +511,19 @@ export default function EventSubmitForm() {
                   key={option.value}
                   type="button"
                   onClick={() => setEventType(option.value)}
-                  className={`p-4 rounded-xl border text-left transition-all ${
-                    isSelected
-                      ? option.color
-                      : 'bg-void border-bone/10 hover:border-bone/30'
+                  className={`rounded-xl border p-4 text-left transition-all ${
+                    isSelected ? option.color : 'border-bone/10 bg-void hover:border-bone/30'
                   }`}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <Icon className={`w-5 h-5 ${isSelected ? '' : 'text-bone/60'}`} />
+                  <div className="mb-1 flex items-center gap-2">
+                    <Icon className={`h-5 w-5 ${isSelected ? '' : 'text-bone/60'}`} />
                     <span className={`font-display font-semibold ${isSelected ? '' : 'text-bone'}`}>
                       {option.label}
                     </span>
                   </div>
-                  <p className="text-xs text-bone/50 font-body">{option.description}</p>
+                  <p className="font-body text-xs text-bone/50">{option.description}</p>
                 </motion.button>
               )
             })}
@@ -528,45 +531,47 @@ export default function EventSubmitForm() {
         </div>
 
         {/* Basic info */}
-        <div className="p-6 bg-void-light rounded-2xl border border-bone/10 space-y-6">
-          <h2 className="text-lg font-display font-semibold text-bone flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-amber-500" />
+        <div className="space-y-6 rounded-2xl border border-bone/10 bg-void-light p-6">
+          <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-bone">
+            <Calendar className="h-5 w-5 text-amber-500" />
             Informacion del Evento
           </h2>
 
           <div>
-            <label className="block text-sm text-bone/60 mb-2 font-body">Nombre del evento *</label>
+            <label className="mb-2 block font-body text-sm text-bone/60">Nombre del evento *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ej: Torneo de Primavera 40K"
               maxLength={200}
-              className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-amber-500/50 transition-colors"
+              className="w-full rounded-xl border border-bone/10 bg-void px-4 py-3 font-body text-bone transition-colors placeholder:text-bone/30 focus:border-amber-500/50 focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-bone/60 mb-2 font-body">Descripcion</label>
+            <label className="mb-2 block font-body text-sm text-bone/60">Descripcion</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe el evento, reglas, premios, etc..."
               rows={4}
-              className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-amber-500/50 transition-colors resize-none"
+              className="w-full resize-none rounded-xl border border-bone/10 bg-void px-4 py-3 font-body text-bone transition-colors placeholder:text-bone/30 focus:border-amber-500/50 focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-bone/60 mb-2 font-body">Sistema de juego</label>
+            <label className="mb-2 block font-body text-sm text-bone/60">Sistema de juego</label>
             <select
               value={gameSystem}
               onChange={(e) => setGameSystem(e.target.value)}
-              className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone focus:outline-none focus:border-amber-500/50 transition-colors"
+              className="w-full rounded-xl border border-bone/10 bg-void px-4 py-3 font-body text-bone transition-colors focus:border-amber-500/50 focus:outline-none"
             >
               <option value="">Selecciona un sistema...</option>
               {gameSystemOptions.map((system) => (
-                <option key={system} value={system}>{system}</option>
+                <option key={system} value={system}>
+                  {system}
+                </option>
               ))}
             </select>
             {gameSystem === 'Otro' && (
@@ -575,77 +580,79 @@ export default function EventSubmitForm() {
                 value={customGameSystem}
                 onChange={(e) => setCustomGameSystem(e.target.value)}
                 placeholder="Especifica el sistema..."
-                className="mt-3 w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-amber-500/50 transition-colors"
+                className="mt-3 w-full rounded-xl border border-bone/10 bg-void px-4 py-3 font-body text-bone transition-colors placeholder:text-bone/30 focus:border-amber-500/50 focus:outline-none"
               />
             )}
           </div>
         </div>
 
         {/* Date & Time */}
-        <div className="p-6 bg-void-light rounded-2xl border border-bone/10 space-y-4">
-          <h2 className="text-lg font-display font-semibold text-bone flex items-center gap-2">
-            <Clock className="w-5 h-5 text-amber-500" />
+        <div className="space-y-4 rounded-2xl border border-bone/10 bg-void-light p-6">
+          <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-bone">
+            <Clock className="h-5 w-5 text-amber-500" />
             Fecha y Hora
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-sm text-bone/60 mb-2 font-body">Fecha inicio *</label>
+              <label className="mb-2 block font-body text-sm text-bone/60">Fecha inicio *</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone focus:outline-none focus:border-amber-500/50 transition-colors"
+                className="w-full rounded-xl border border-bone/10 bg-void px-4 py-3 font-body text-bone transition-colors focus:border-amber-500/50 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm text-bone/60 mb-2 font-body">Hora inicio</label>
+              <label className="mb-2 block font-body text-sm text-bone/60">Hora inicio</label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone focus:outline-none focus:border-amber-500/50 transition-colors"
+                className="w-full rounded-xl border border-bone/10 bg-void px-4 py-3 font-body text-bone transition-colors focus:border-amber-500/50 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm text-bone/60 mb-2 font-body">Fecha fin (opcional)</label>
+              <label className="mb-2 block font-body text-sm text-bone/60">
+                Fecha fin (opcional)
+              </label>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 min={startDate || new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone focus:outline-none focus:border-amber-500/50 transition-colors"
+                className="w-full rounded-xl border border-bone/10 bg-void px-4 py-3 font-body text-bone transition-colors focus:border-amber-500/50 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm text-bone/60 mb-2 font-body">Hora fin</label>
+              <label className="mb-2 block font-body text-sm text-bone/60">Hora fin</label>
               <input
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
                 disabled={!endDate}
-                className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone focus:outline-none focus:border-amber-500/50 transition-colors disabled:opacity-40"
+                className="w-full rounded-xl border border-bone/10 bg-void px-4 py-3 font-body text-bone transition-colors focus:border-amber-500/50 focus:outline-none disabled:opacity-40"
               />
             </div>
           </div>
         </div>
 
         {/* Location */}
-        <div className="p-6 bg-void-light rounded-2xl border border-bone/10 space-y-4">
-          <h2 className="text-lg font-display font-semibold text-bone flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-amber-500" />
+        <div className="space-y-4 rounded-2xl border border-bone/10 bg-void-light p-6">
+          <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-bone">
+            <MapPin className="h-5 w-5 text-amber-500" />
             Ubicacion *
           </h2>
 
           <div>
-            <label className="block text-sm text-bone/60 mb-2 font-body">Nombre del lugar</label>
+            <label className="mb-2 block font-body text-sm text-bone/60">Nombre del lugar</label>
             <input
               type="text"
               value={venueName}
               onChange={(e) => setVenueName(e.target.value)}
               placeholder="Ej: Centro Cultural, Tienda X, Local..."
-              className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-amber-500/50 transition-colors"
+              className="w-full rounded-xl border border-bone/10 bg-void px-4 py-3 font-body text-bone transition-colors placeholder:text-bone/30 focus:border-amber-500/50 focus:outline-none"
             />
           </div>
 
@@ -653,31 +660,35 @@ export default function EventSubmitForm() {
         </div>
 
         {/* Capacity & Fee */}
-        <div className="p-6 bg-void-light rounded-2xl border border-bone/10 space-y-4">
-          <h2 className="text-lg font-display font-semibold text-bone flex items-center gap-2">
-            <Users className="w-5 h-5 text-amber-500" />
+        <div className="space-y-4 rounded-2xl border border-bone/10 bg-void-light p-6">
+          <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-bone">
+            <Users className="h-5 w-5 text-amber-500" />
             Capacidad y Precio
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-sm text-bone/60 mb-2 font-body">Maximo participantes</label>
+              <label className="mb-2 block font-body text-sm text-bone/60">
+                Maximo participantes
+              </label>
               <div className="relative">
-                <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/40" />
+                <Users className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-bone/40" />
                 <input
                   type="number"
                   value={maxParticipants}
                   onChange={(e) => setMaxParticipants(e.target.value ? Number(e.target.value) : '')}
                   placeholder="Sin limite"
                   min={1}
-                  className="w-full pl-11 pr-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-amber-500/50 transition-colors"
+                  className="w-full rounded-xl border border-bone/10 bg-void py-3 pl-11 pr-4 font-body text-bone transition-colors placeholder:text-bone/30 focus:border-amber-500/50 focus:outline-none"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm text-bone/60 mb-2 font-body">Precio entrada (EUR)</label>
+              <label className="mb-2 block font-body text-sm text-bone/60">
+                Precio entrada (EUR)
+              </label>
               <div className="relative">
-                <Banknote className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/40" />
+                <Banknote className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-bone/40" />
                 <input
                   type="number"
                   value={entryFee}
@@ -685,7 +696,7 @@ export default function EventSubmitForm() {
                   placeholder="Gratis"
                   min={0}
                   step={0.01}
-                  className="w-full pl-11 pr-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-amber-500/50 transition-colors"
+                  className="w-full rounded-xl border border-bone/10 bg-void py-3 pl-11 pr-4 font-body text-bone transition-colors placeholder:text-bone/30 focus:border-amber-500/50 focus:outline-none"
                 />
               </div>
             </div>
@@ -694,42 +705,49 @@ export default function EventSubmitForm() {
 
         {/* Official toggle - only for creators/store owners */}
         {canCreateOfficial && (
-          <div className="p-6 bg-void-light rounded-2xl border border-imperial-gold/20 space-y-4">
-            <h2 className="text-lg font-display font-semibold text-bone flex items-center gap-2">
-              <Shield className="w-5 h-5 text-imperial-gold" />
+          <div className="space-y-4 rounded-2xl border border-imperial-gold/20 bg-void-light p-6">
+            <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-bone">
+              <Shield className="h-5 w-5 text-imperial-gold" />
               Evento Oficial
             </h2>
-            <p className="text-sm text-bone/50 font-body">
-              Como {isCreator ? 'creador verificado' : 'propietario de tienda'}, puedes marcar este evento como oficial.
+            <p className="font-body text-sm text-bone/50">
+              Como {isCreator ? 'creador verificado' : 'propietario de tienda'}, puedes marcar este
+              evento como oficial.
             </p>
 
             <motion.button
               type="button"
               onClick={() => setIsOfficial(!isOfficial)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${
+              className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition-all ${
                 isOfficial
-                  ? 'bg-imperial-gold/20 border-imperial-gold/50 text-imperial-gold'
-                  : 'bg-void border-bone/10 text-bone/60 hover:border-bone/30'
+                  ? 'border-imperial-gold/50 bg-imperial-gold/20 text-imperial-gold'
+                  : 'border-bone/10 bg-void text-bone/60 hover:border-bone/30'
               }`}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
             >
-              <div className={`w-3 h-3 rounded-full transition-colors ${isOfficial ? 'bg-imperial-gold' : 'bg-bone/30'}`} />
+              <div
+                className={`h-3 w-3 rounded-full transition-colors ${isOfficial ? 'bg-imperial-gold' : 'bg-bone/30'}`}
+              />
               <span className="font-body">Marcar como evento oficial</span>
             </motion.button>
 
             {/* Store selector if user has stores */}
             {userStores.length > 0 && isOfficial && (
               <div className="mt-4">
-                <label className="block text-sm text-bone/60 mb-2 font-body">Organizado por tienda (opcional)</label>
+                <label className="mb-2 block font-body text-sm text-bone/60">
+                  Organizado por tienda (opcional)
+                </label>
                 <select
                   value={selectedStoreId}
                   onChange={(e) => setSelectedStoreId(e.target.value)}
-                  className="w-full px-4 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone focus:outline-none focus:border-imperial-gold/50 transition-colors"
+                  className="w-full rounded-xl border border-bone/10 bg-void px-4 py-3 font-body text-bone transition-colors focus:border-imperial-gold/50 focus:outline-none"
                 >
                   <option value="">Sin tienda asociada</option>
                   {userStores.map((store) => (
-                    <option key={store.id} value={store.id}>{store.name}</option>
+                    <option key={store.id} value={store.id}>
+                      {store.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -741,14 +759,14 @@ export default function EventSubmitForm() {
         <motion.button
           type="submit"
           disabled={isSubmitting || success}
-          className="w-full py-4 bg-gradient-to-r from-amber-500 to-amber-400 text-void font-display font-bold text-lg rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 py-4 font-display text-lg font-bold text-void disabled:cursor-not-allowed disabled:opacity-50"
           whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
           whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center gap-2">
               <motion.div
-                className="w-5 h-5 border-2 border-void/30 border-t-void rounded-full"
+                className="h-5 w-5 rounded-full border-2 border-void/30 border-t-void"
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
               />

@@ -16,7 +16,7 @@ export async function GET(request: Request) {
       success: !error,
       error: error?.message,
       errorCode: error?.code,
-      hasSession: !!data?.session
+      hasSession: !!data?.session,
     })
 
     if (!error) {

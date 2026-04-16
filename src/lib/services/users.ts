@@ -14,11 +14,7 @@ export async function getProfileByUsername(username: string) {
 }
 
 export async function getProfileById(id: string) {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single()
 
   return { data, error }
 }

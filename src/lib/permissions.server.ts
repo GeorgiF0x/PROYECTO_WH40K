@@ -3,10 +3,7 @@
  * Use these functions in Server Components and API routes
  */
 
-import {
-  buildUserPermissions,
-  type UserPermissions,
-} from './permissions'
+import { buildUserPermissions, type UserPermissions } from './permissions'
 import type { UserRole, CreatorStatus, CreatorType } from '@/lib/types/database.types'
 
 // Server-side permission check helper

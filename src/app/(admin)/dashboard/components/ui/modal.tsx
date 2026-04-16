@@ -66,39 +66,37 @@ export function Modal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 16 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className={`relative w-full ${sizeClasses[size]} bg-gradient-to-b from-[#0e0e1a] to-[#060610] border border-[#C9A227]/15 rounded-xl shadow-[0_0_60px_rgba(0,0,0,0.8),0_0_30px_rgba(201,162,39,0.08)] overflow-hidden`}
+            className={`relative w-full ${sizeClasses[size]} overflow-hidden rounded-xl border border-[#C9A227]/15 bg-gradient-to-b from-[#0e0e1a] to-[#060610] shadow-[0_0_60px_rgba(0,0,0,0.8),0_0_30px_rgba(201,162,39,0.08)]`}
           >
             {/* Top accent line */}
-            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A227]/60 to-transparent" />
+            <div className="absolute left-0 right-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A227]/60 to-transparent" />
 
             {/* Corner accents */}
-            <div className="absolute top-2 left-2 w-3 h-3 border-l-2 border-t-2 border-[#C9A227]/25 rounded-tl-sm" />
-            <div className="absolute top-2 right-2 w-3 h-3 border-r-2 border-t-2 border-[#C9A227]/25 rounded-tr-sm" />
-            <div className="absolute bottom-2 left-2 w-3 h-3 border-l-2 border-b-2 border-[#C9A227]/25 rounded-bl-sm" />
-            <div className="absolute bottom-2 right-2 w-3 h-3 border-r-2 border-b-2 border-[#C9A227]/25 rounded-br-sm" />
+            <div className="absolute left-2 top-2 h-3 w-3 rounded-tl-sm border-l-2 border-t-2 border-[#C9A227]/25" />
+            <div className="absolute right-2 top-2 h-3 w-3 rounded-tr-sm border-r-2 border-t-2 border-[#C9A227]/25" />
+            <div className="absolute bottom-2 left-2 h-3 w-3 rounded-bl-sm border-b-2 border-l-2 border-[#C9A227]/25" />
+            <div className="absolute bottom-2 right-2 h-3 w-3 rounded-br-sm border-b-2 border-r-2 border-[#C9A227]/25" />
 
             {/* Header */}
-            <div className="flex items-start justify-between p-5 border-b border-[#C9A227]/10">
+            <div className="flex items-start justify-between border-b border-[#C9A227]/10 p-5">
               <div>
-                <h2 className="text-lg font-semibold text-[#E8E8F0] tracking-wide">{title}</h2>
-                {description && (
-                  <p className="text-sm text-[#E8E8F0]/40 mt-1">{description}</p>
-                )}
+                <h2 className="text-lg font-semibold tracking-wide text-[#E8E8F0]">{title}</h2>
+                {description && <p className="mt-1 text-sm text-[#E8E8F0]/40">{description}</p>}
               </div>
               <button
                 onClick={onClose}
-                className="h-8 w-8 flex items-center justify-center rounded-lg text-[#E8E8F0]/30 hover:text-[#E8E8F0]/70 hover:bg-[#E8E8F0]/5 transition-all duration-200 -mr-1 -mt-1"
+                className="-mr-1 -mt-1 flex h-8 w-8 items-center justify-center rounded-lg text-[#E8E8F0]/30 transition-all duration-200 hover:bg-[#E8E8F0]/5 hover:text-[#E8E8F0]/70"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
             {/* Content */}
-            <div className="p-5 max-h-[60vh] overflow-y-auto">{children}</div>
+            <div className="max-h-[60vh] overflow-y-auto p-5">{children}</div>
 
             {/* Footer */}
             {footer && (
-              <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-[#C9A227]/10 bg-[#030308]/40">
+              <div className="flex items-center justify-end gap-3 border-t border-[#C9A227]/10 bg-[#030308]/40 px-5 py-4">
                 {footer}
               </div>
             )}
@@ -177,21 +175,12 @@ interface FormFieldProps {
   required?: boolean
 }
 
-export function FormField({
-  label,
-  htmlFor,
-  error,
-  children,
-  required,
-}: FormFieldProps) {
+export function FormField({ label, htmlFor, error, children, required }: FormFieldProps) {
   return (
     <div className="space-y-1.5">
-      <label
-        htmlFor={htmlFor}
-        className="block text-sm font-medium text-[#E8E8F0]/70"
-      >
+      <label htmlFor={htmlFor} className="block text-sm font-medium text-[#E8E8F0]/70">
         {label}
-        {required && <span className="text-[#8B0000] ml-0.5">*</span>}
+        {required && <span className="ml-0.5 text-[#8B0000]">*</span>}
       </label>
       {children}
       {error && <p className="text-xs text-[#ff4444]">{error}</p>}
@@ -212,10 +201,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <input
         ref={ref}
-        className={`w-full px-3 py-2 bg-[#0a0a12]/80 border rounded-lg text-sm text-[#E8E8F0] placeholder:text-[#E8E8F0]/25 focus:outline-none focus:ring-1 transition-all duration-200 ${
+        className={`w-full rounded-lg border bg-[#0a0a12]/80 px-3 py-2 text-sm text-[#E8E8F0] transition-all duration-200 placeholder:text-[#E8E8F0]/25 focus:outline-none focus:ring-1 ${
           error
             ? 'border-[#8B0000] focus:border-[#8B0000] focus:ring-[#8B0000]/40'
-            : 'border-[#C9A227]/15 focus:border-[#C9A227]/40 focus:ring-[#C9A227]/20 hover:border-[#C9A227]/25'
+            : 'border-[#C9A227]/15 hover:border-[#C9A227]/25 focus:border-[#C9A227]/40 focus:ring-[#C9A227]/20'
         } ${className}`}
         {...props}
       />
@@ -228,8 +217,7 @@ Input.displayName = 'Input'
 // TEXTAREA
 // ══════════════════════════════════════════════════════════════
 
-interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: boolean
 }
 
@@ -238,10 +226,10 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <textarea
         ref={ref}
-        className={`w-full px-3 py-2 bg-[#0a0a12]/80 border rounded-lg text-sm text-[#E8E8F0] placeholder:text-[#E8E8F0]/25 focus:outline-none focus:ring-1 transition-all duration-200 resize-none ${
+        className={`w-full resize-none rounded-lg border bg-[#0a0a12]/80 px-3 py-2 text-sm text-[#E8E8F0] transition-all duration-200 placeholder:text-[#E8E8F0]/25 focus:outline-none focus:ring-1 ${
           error
             ? 'border-[#8B0000] focus:border-[#8B0000] focus:ring-[#8B0000]/40'
-            : 'border-[#C9A227]/15 focus:border-[#C9A227]/40 focus:ring-[#C9A227]/20 hover:border-[#C9A227]/25'
+            : 'border-[#C9A227]/15 hover:border-[#C9A227]/25 focus:border-[#C9A227]/40 focus:ring-[#C9A227]/20'
         } ${className}`}
         {...props}
       />
@@ -264,10 +252,10 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <select
         ref={ref}
-        className={`w-full px-3 py-2 bg-[#0a0a12]/80 border rounded-lg text-sm text-[#E8E8F0] focus:outline-none focus:ring-1 transition-all duration-200 ${
+        className={`w-full rounded-lg border bg-[#0a0a12]/80 px-3 py-2 text-sm text-[#E8E8F0] transition-all duration-200 focus:outline-none focus:ring-1 ${
           error
             ? 'border-[#8B0000] focus:border-[#8B0000] focus:ring-[#8B0000]/40'
-            : 'border-[#C9A227]/15 focus:border-[#C9A227]/40 focus:ring-[#C9A227]/20 hover:border-[#C9A227]/25'
+            : 'border-[#C9A227]/15 hover:border-[#C9A227]/25 focus:border-[#C9A227]/40 focus:ring-[#C9A227]/20'
         } ${className}`}
         {...props}
       >

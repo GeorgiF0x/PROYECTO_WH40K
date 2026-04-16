@@ -19,7 +19,8 @@ async function getListingAndIncrementViews(id: string): Promise<ListingWithSelle
     // Fetch listing data
     supabase
       .from('listings')
-      .select(`
+      .select(
+        `
         *,
         profiles:seller_id (
           id,
@@ -35,7 +36,8 @@ async function getListingAndIncrementViews(id: string): Promise<ListingWithSelle
           slug,
           primary_color
         )
-      `)
+      `
+      )
       .eq('id', id)
       .single(),
     // Increment views in parallel (fire-and-forget, we don't need the result)
@@ -105,10 +107,10 @@ export default async function ListingDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16 relative">
+    <div className="relative min-h-screen pb-16 pt-24">
       {/* Star chart background — Rogue Trader navigation map */}
       <div
-        className="fixed inset-0 pointer-events-none"
+        className="pointer-events-none fixed inset-0"
         style={{
           backgroundImage: `
             radial-gradient(circle, rgba(201,162,39,0.3) 1px, transparent 1px),
@@ -120,16 +122,16 @@ export default async function ListingDetailPage({ params }: PageProps) {
         }}
       />
       {/* Warm golden vignette overlay */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.04)_0%,transparent_50%)] pointer-events-none" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.04)_0%,transparent_50%)]" />
 
-      <div className="max-w-6xl mx-auto px-6 relative">
+      <div className="relative mx-auto max-w-6xl px-6">
         {/* Back button */}
         <div className="mb-6">
           <Link
             href="/mercado"
-            className="inline-flex items-center gap-2 text-bone/40 hover:text-imperial-gold transition-colors font-mono text-sm uppercase tracking-wider group"
+            className="group inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wider text-bone/40 transition-colors hover:text-imperial-gold"
           >
-            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Volver al mercado
           </Link>
         </div>
@@ -143,9 +145,9 @@ export default async function ListingDetailPage({ params }: PageProps) {
 // Custom not-found component for this route
 export function NotFound() {
   return (
-    <div className="min-h-screen pt-24 pb-16 flex items-center justify-center relative">
+    <div className="relative flex min-h-screen items-center justify-center pb-16 pt-24">
       <div
-        className="fixed inset-0 pointer-events-none"
+        className="pointer-events-none fixed inset-0"
         style={{
           backgroundImage: `
             radial-gradient(circle, rgba(201,162,39,0.3) 1px, transparent 1px),
@@ -156,27 +158,25 @@ export function NotFound() {
           opacity: 0.12,
         }}
       />
-      <div className="text-center relative">
-        <div className="relative inline-block mb-6">
-          <div className="absolute -inset-4 bg-imperial-gold/5 rounded-full blur-xl" />
-          <div className="relative p-4 bg-void-light/50 rounded-full border border-bone/10">
-            <Compass className="w-12 h-12 text-bone/20" />
+      <div className="relative text-center">
+        <div className="relative mb-6 inline-block">
+          <div className="absolute -inset-4 rounded-full bg-imperial-gold/5 blur-xl" />
+          <div className="relative rounded-full border border-bone/10 bg-void-light/50 p-4">
+            <Compass className="h-12 w-12 text-bone/20" />
           </div>
         </div>
-        <h2 className="text-2xl font-display font-bold text-bone mb-2">
-          Manifiesto no encontrado
-        </h2>
-        <p className="text-bone/50 mb-2 font-body">
+        <h2 className="mb-2 font-display text-2xl font-bold text-bone">Manifiesto no encontrado</h2>
+        <p className="mb-2 font-body text-bone/50">
           Este articulo puede haber sido retirado del comercio.
         </p>
-        <p className="text-xs font-mono text-bone/25 mb-8 uppercase tracking-wider">
+        <p className="mb-8 font-mono text-xs uppercase tracking-wider text-bone/25">
           Registro no disponible en los archivos del Rogue Trader
         </p>
         <Link
           href="/mercado"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-imperial-gold text-void font-display font-bold rounded-lg hover:bg-yellow-500 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg bg-imperial-gold px-6 py-3 font-display font-bold text-void transition-colors hover:bg-yellow-500"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="h-4 w-4" />
           Volver al mercado
         </Link>
       </div>

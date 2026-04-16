@@ -3,16 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import {
-  Check,
-  X,
-  Eye,
-  Clock,
-  User,
-  FileText,
-  ChevronLeft,
-  BookOpen,
-} from 'lucide-react'
+import { Check, X, Eye, Clock, User, FileText, ChevronLeft, BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
@@ -85,16 +76,12 @@ export default function WikiContributionsPage() {
       <div className="flex items-center gap-4">
         <Link href="/wiki-panel">
           <Button variant="ghost" size="sm">
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="font-display text-3xl font-bold text-white">
-            Contribuciones
-          </h1>
-          <p className="font-body text-bone/60">
-            Revisa las sugerencias de la comunidad
-          </p>
+          <h1 className="font-display text-3xl font-bold text-white">Contribuciones</h1>
+          <p className="font-body text-bone/60">Revisa las sugerencias de la comunidad</p>
         </div>
       </div>
 
@@ -104,10 +91,10 @@ export default function WikiContributionsPage() {
           <button
             key={status}
             onClick={() => setStatusFilter(status)}
-            className={`px-4 py-2 rounded-lg font-body text-sm transition-all ${
+            className={`rounded-lg px-4 py-2 font-body text-sm transition-all ${
               statusFilter === status
                 ? statusLabels[status].color
-                : 'text-bone/60 hover:text-bone hover:bg-bone/10'
+                : 'text-bone/60 hover:bg-bone/10 hover:text-bone'
             }`}
           >
             {statusLabels[status].label}
@@ -119,12 +106,12 @@ export default function WikiContributionsPage() {
       <div className="space-y-4">
         {loading ? (
           [...Array(3)].map((_, i) => (
-            <div key={i} className="h-24 bg-void-light rounded-lg animate-pulse" />
+            <div key={i} className="h-24 animate-pulse rounded-lg bg-void-light" />
           ))
         ) : contributions.length === 0 ? (
-          <Card className="text-center py-12">
-            <BookOpen className="w-12 h-12 mx-auto mb-4 text-bone/30" />
-            <h3 className="font-display text-xl text-white mb-2">
+          <Card className="py-12 text-center">
+            <BookOpen className="mx-auto mb-4 h-12 w-12 text-bone/30" />
+            <h3 className="mb-2 font-display text-xl text-white">
               No hay contribuciones {statusFilter === 'pending' ? 'pendientes' : ''}
             </h3>
             <p className="font-body text-bone/60">
@@ -136,10 +123,10 @@ export default function WikiContributionsPage() {
         ) : (
           contributions.map((contrib, i) => {
             const faction = contrib.page?.faction_id
-              ? factions.find(f => f.id === contrib.page?.faction_id)
+              ? factions.find((f) => f.id === contrib.page?.faction_id)
               : contrib.faction_id
-              ? factions.find(f => f.id === contrib.faction_id)
-              : null
+                ? factions.find((f) => f.id === contrib.faction_id)
+                : null
 
             return (
               <motion.div
@@ -148,46 +135,48 @@ export default function WikiContributionsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
               >
-                <Card hover className="flex flex-col sm:flex-row sm:items-center gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-body ${statusLabels[contrib.status].color}`}>
+                <Card hover className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <span
+                        className={`rounded-full px-2 py-0.5 font-body text-xs ${statusLabels[contrib.status].color}`}
+                      >
                         {statusLabels[contrib.status].label}
                       </span>
                       {faction && (
                         <span
-                          className="px-2 py-0.5 rounded-full text-xs font-body"
+                          className="rounded-full px-2 py-0.5 font-body text-xs"
                           style={{ background: `${faction.color}20`, color: faction.color }}
                         >
                           {faction.shortName}
                         </span>
                       )}
                       {contrib.page ? (
-                        <span className="text-xs text-bone/50 font-body">
+                        <span className="font-body text-xs text-bone/50">
                           Edicion de: {contrib.page.title}
                         </span>
                       ) : (
-                        <span className="text-xs text-green-400 font-body">
+                        <span className="font-body text-xs text-green-400">
                           Nuevo articulo: {contrib.suggested_title}
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-4 text-sm text-bone/50 font-body">
+                    <div className="flex items-center gap-4 font-body text-sm text-bone/50">
                       {contrib.contributor && (
                         <span className="flex items-center gap-1">
-                          <User className="w-3 h-3" />
+                          <User className="h-3 w-3" />
                           {contrib.contributor.display_name || contrib.contributor.username}
                         </span>
                       )}
                       <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
+                        <Clock className="h-3 w-3" />
                         {new Date(contrib.created_at).toLocaleDateString('es-ES')}
                       </span>
                     </div>
 
                     {contrib.reviewer_notes && (
-                      <p className="mt-2 text-sm text-bone/60 font-body italic">
+                      <p className="mt-2 font-body text-sm italic text-bone/60">
                         Notas: {contrib.reviewer_notes}
                       </p>
                     )}
@@ -199,7 +188,7 @@ export default function WikiContributionsPage() {
                       size="sm"
                       onClick={() => setSelectedContribution(contrib)}
                     >
-                      <Eye className="w-4 h-4" />
+                      <Eye className="h-4 w-4" />
                     </Button>
                     {contrib.status === 'pending' && (
                       <>
@@ -211,7 +200,7 @@ export default function WikiContributionsPage() {
                           }}
                           className="text-green-400 hover:text-green-300"
                         >
-                          <Check className="w-4 h-4" />
+                          <Check className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
@@ -221,7 +210,7 @@ export default function WikiContributionsPage() {
                           }}
                           className="text-red-400 hover:text-red-300"
                         >
-                          <X className="w-4 h-4" />
+                          <X className="h-4 w-4" />
                         </Button>
                       </>
                     )}
@@ -250,26 +239,30 @@ export default function WikiContributionsPage() {
           <div className="space-y-6">
             {/* Content Preview */}
             <div
-              className="max-h-96 overflow-y-auto p-4 rounded-lg"
-              style={{ background: 'rgba(10, 10, 18, 0.5)', border: '1px solid rgba(232,232,240,0.1)' }}
+              className="max-h-96 overflow-y-auto rounded-lg p-4"
+              style={{
+                background: 'rgba(10, 10, 18, 0.5)',
+                border: '1px solid rgba(232,232,240,0.1)',
+              }}
             >
               <WikiRenderer
                 content={selectedContribution.content as WikiContent}
                 factionColor={
-                  factions.find(f =>
-                    f.id === selectedContribution.page?.faction_id ||
-                    f.id === selectedContribution.faction_id
+                  factions.find(
+                    (f) =>
+                      f.id === selectedContribution.page?.faction_id ||
+                      f.id === selectedContribution.faction_id
                   )?.color || '#C9A227'
                 }
               />
             </div>
 
             {/* Contributor info */}
-            <div className="text-sm text-bone/60 font-body">
+            <div className="font-body text-sm text-bone/60">
               <span>Enviado por: </span>
               <span className="text-bone">
                 {selectedContribution.contributor?.display_name ||
-                 selectedContribution.contributor?.username}
+                  selectedContribution.contributor?.username}
               </span>
               <span> el </span>
               <span className="text-bone">
@@ -281,7 +274,7 @@ export default function WikiContributionsPage() {
             {selectedContribution.status === 'pending' && (
               <>
                 <div>
-                  <label className="block font-body text-sm text-bone/70 mb-2">
+                  <label className="mb-2 block font-body text-sm text-bone/70">
                     Notas de revision (opcional)
                   </label>
                   <Textarea
@@ -299,7 +292,7 @@ export default function WikiContributionsPage() {
                     disabled={reviewing}
                     className="gap-2"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="h-4 w-4" />
                     Rechazar
                   </Button>
                   <Button
@@ -308,7 +301,7 @@ export default function WikiContributionsPage() {
                     disabled={reviewing}
                     className="gap-2"
                   >
-                    <Check className="w-4 h-4" />
+                    <Check className="h-4 w-4" />
                     Aprobar
                   </Button>
                 </div>
@@ -316,8 +309,8 @@ export default function WikiContributionsPage() {
             )}
 
             {selectedContribution.status !== 'pending' && selectedContribution.reviewer_notes && (
-              <div className="p-4 rounded-lg bg-void-light border border-bone/10">
-                <h4 className="font-body text-sm font-semibold text-bone mb-2">
+              <div className="rounded-lg border border-bone/10 bg-void-light p-4">
+                <h4 className="mb-2 font-body text-sm font-semibold text-bone">
                   Notas del revisor:
                 </h4>
                 <p className="font-body text-sm text-bone/70">

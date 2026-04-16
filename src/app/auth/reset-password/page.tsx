@@ -56,16 +56,16 @@ function PasswordStrength({ password }: { password: string }) {
   ]
 
   return (
-    <div className="flex gap-3 mt-2">
+    <div className="mt-2 flex gap-3">
       {checks.map((check, i) => (
         <div key={i} className="flex items-center gap-1.5">
           <div
-            className={`w-1.5 h-1.5 rounded-full transition-colors ${
+            className={`h-1.5 w-1.5 rounded-full transition-colors ${
               check.valid ? 'bg-green-400' : 'bg-bone/20'
             }`}
           />
           <span
-            className={`text-xs font-body transition-colors ${
+            className={`font-body text-xs transition-colors ${
               check.valid ? 'text-green-400' : 'text-bone/40'
             }`}
           >
@@ -136,15 +136,15 @@ function ResetPasswordForm() {
         animate={{ opacity: 1, scale: 1 }}
         className="relative"
       >
-        <div className="absolute -inset-[1px] bg-gradient-to-r from-green-500/50 via-imperial-gold/30 to-green-500/50 rounded-xl" />
-        <div className="relative bg-gradient-to-b from-void-light to-void rounded-xl p-8 text-center">
+        <div className="absolute -inset-[1px] rounded-xl bg-gradient-to-r from-green-500/50 via-imperial-gold/30 to-green-500/50" />
+        <div className="relative rounded-xl bg-gradient-to-b from-void-light to-void p-8 text-center">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-            className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center"
+            className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-green-500/30 bg-green-500/20"
           >
-            <CheckCircle2 className="w-10 h-10 text-green-400" />
+            <CheckCircle2 className="h-10 w-10 text-green-400" />
           </motion.div>
 
           <motion.div
@@ -152,15 +152,15 @@ function ResetPasswordForm() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <h2 className="font-display text-2xl font-bold tracking-wider text-bone mb-3">
+            <h2 className="mb-3 font-display text-2xl font-bold tracking-wider text-bone">
               CONTRASEÑA <span className="text-green-400">ACTUALIZADA</span>
             </h2>
-            <p className="text-bone/60 font-body mb-8 max-w-sm mx-auto">
+            <p className="mx-auto mb-8 max-w-sm font-body text-bone/60">
               Tu contraseña ha sido cambiada exitosamente. Serás redirigido al login...
             </p>
 
             <div className="flex items-center justify-center gap-2 text-bone/40">
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
               <span className="text-sm">Redirigiendo...</span>
             </div>
           </motion.div>
@@ -179,7 +179,7 @@ function ResetPasswordForm() {
       {/* Card with animated border */}
       <div className="relative">
         <motion.div
-          className="absolute -inset-[1px] bg-gradient-to-r from-imperial-gold/50 via-blood/30 to-imperial-gold/50 rounded-xl opacity-75"
+          className="absolute -inset-[1px] rounded-xl bg-gradient-to-r from-imperial-gold/50 via-blood/30 to-imperial-gold/50 opacity-75"
           animate={{
             backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
           }}
@@ -191,17 +191,17 @@ function ResetPasswordForm() {
           style={{ backgroundSize: '200% 200%' }}
         />
 
-        <div className="relative bg-gradient-to-b from-void-light to-void rounded-xl p-8 backdrop-blur-sm">
+        <div className="relative rounded-xl bg-gradient-to-b from-void-light to-void p-8 backdrop-blur-sm">
           {/* Corner accents */}
-          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-imperial-gold/50 rounded-tl-xl" />
-          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-imperial-gold/50 rounded-tr-xl" />
-          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-imperial-gold/50 rounded-bl-xl" />
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-imperial-gold/50 rounded-br-xl" />
+          <div className="absolute left-0 top-0 h-8 w-8 rounded-tl-xl border-l-2 border-t-2 border-imperial-gold/50" />
+          <div className="absolute right-0 top-0 h-8 w-8 rounded-tr-xl border-r-2 border-t-2 border-imperial-gold/50" />
+          <div className="absolute bottom-0 left-0 h-8 w-8 rounded-bl-xl border-b-2 border-l-2 border-imperial-gold/50" />
+          <div className="absolute bottom-0 right-0 h-8 w-8 rounded-br-xl border-b-2 border-r-2 border-imperial-gold/50" />
 
           {/* Header */}
-          <motion.div variants={itemVariants} className="text-center mb-8">
+          <motion.div variants={itemVariants} className="mb-8 text-center">
             <motion.div
-              className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-imperial-gold/20 to-yellow-600/10 border border-imperial-gold/30 mb-4"
+              className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full border border-imperial-gold/30 bg-gradient-to-br from-imperial-gold/20 to-yellow-600/10"
               animate={{
                 boxShadow: [
                   '0 0 20px rgba(201, 162, 39, 0.2)',
@@ -211,12 +211,12 @@ function ResetPasswordForm() {
               }}
               transition={{ duration: 3, repeat: Infinity }}
             >
-              <Shield className="w-8 h-8 text-imperial-gold" />
+              <Shield className="h-8 w-8 text-imperial-gold" />
             </motion.div>
-            <h1 className="font-display text-2xl font-bold tracking-[0.15em] text-bone mb-2">
+            <h1 className="mb-2 font-display text-2xl font-bold tracking-[0.15em] text-bone">
               NUEVA <span className="text-imperial-gold">CONTRASEÑA</span>
             </h1>
-            <p className="text-bone/50 font-body text-sm tracking-wide">
+            <p className="font-body text-sm tracking-wide text-bone/50">
               Introduce tu nueva contraseña segura
             </p>
           </motion.div>
@@ -230,9 +230,9 @@ function ResetPasswordForm() {
                 exit={{ opacity: 0, height: 0, marginBottom: 0 }}
                 className="overflow-hidden"
               >
-                <div className="flex items-center gap-3 p-4 bg-blood/10 border border-blood/30 rounded-lg">
-                  <AlertCircle className="w-5 h-5 text-blood flex-shrink-0" />
-                  <p className="text-blood text-sm font-body">{error}</p>
+                <div className="flex items-center gap-3 rounded-lg border border-blood/30 bg-blood/10 p-4">
+                  <AlertCircle className="h-5 w-5 flex-shrink-0 text-blood" />
+                  <p className="font-body text-sm text-blood">{error}</p>
                 </div>
               </motion.div>
             )}
@@ -242,7 +242,7 @@ function ResetPasswordForm() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* New Password Field */}
             <motion.div variants={itemVariants}>
-              <label className="block text-xs font-display tracking-wider text-bone/70 mb-2 uppercase">
+              <label className="mb-2 block font-display text-xs uppercase tracking-wider text-bone/70">
                 Nueva Contraseña
               </label>
               <div className="relative">
@@ -251,17 +251,17 @@ function ResetPasswordForm() {
                     focusedField === 'password' ? 'text-imperial-gold' : 'text-bone/40'
                   }`}
                 >
-                  <Lock className="w-5 h-5" />
+                  <Lock className="h-5 w-5" />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••••••"
-                  className={`w-full bg-void border-2 rounded-lg pl-12 pr-12 py-3.5 font-body text-bone placeholder:text-bone/30 outline-none transition-all duration-300 ${
+                  className={`w-full rounded-lg border-2 bg-void py-3.5 pl-12 pr-12 font-body text-bone outline-none transition-all duration-300 placeholder:text-bone/30 ${
                     errors.password
                       ? 'border-blood/50 focus:border-blood'
                       : focusedField === 'password'
-                      ? 'border-imperial-gold/50 shadow-[0_0_20px_rgba(201,162,39,0.15)]'
-                      : 'border-bone/10 hover:border-bone/20'
+                        ? 'border-imperial-gold/50 shadow-[0_0_20px_rgba(201,162,39,0.15)]'
+                        : 'border-bone/10 hover:border-bone/20'
                   }`}
                   {...register('password')}
                   onFocus={() => setFocusedField('password')}
@@ -270,9 +270,9 @@ function ResetPasswordForm() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-bone/40 hover:text-bone/60 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-bone/40 transition-colors hover:text-bone/60"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
               <PasswordStrength password={password} />
@@ -280,7 +280,7 @@ function ResetPasswordForm() {
                 <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-blood text-xs mt-2 font-body"
+                  className="mt-2 font-body text-xs text-blood"
                 >
                   {errors.password.message}
                 </motion.p>
@@ -289,7 +289,7 @@ function ResetPasswordForm() {
 
             {/* Confirm Password Field */}
             <motion.div variants={itemVariants}>
-              <label className="block text-xs font-display tracking-wider text-bone/70 mb-2 uppercase">
+              <label className="mb-2 block font-display text-xs uppercase tracking-wider text-bone/70">
                 Confirmar Contraseña
               </label>
               <div className="relative">
@@ -298,17 +298,17 @@ function ResetPasswordForm() {
                     focusedField === 'confirmPassword' ? 'text-imperial-gold' : 'text-bone/40'
                   }`}
                 >
-                  <Shield className="w-5 h-5" />
+                  <Shield className="h-5 w-5" />
                 </div>
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="••••••••••••"
-                  className={`w-full bg-void border-2 rounded-lg pl-12 pr-12 py-3.5 font-body text-bone placeholder:text-bone/30 outline-none transition-all duration-300 ${
+                  className={`w-full rounded-lg border-2 bg-void py-3.5 pl-12 pr-12 font-body text-bone outline-none transition-all duration-300 placeholder:text-bone/30 ${
                     errors.confirmPassword
                       ? 'border-blood/50 focus:border-blood'
                       : focusedField === 'confirmPassword'
-                      ? 'border-imperial-gold/50 shadow-[0_0_20px_rgba(201,162,39,0.15)]'
-                      : 'border-bone/10 hover:border-bone/20'
+                        ? 'border-imperial-gold/50 shadow-[0_0_20px_rgba(201,162,39,0.15)]'
+                        : 'border-bone/10 hover:border-bone/20'
                   }`}
                   {...register('confirmPassword')}
                   onFocus={() => setFocusedField('confirmPassword')}
@@ -317,16 +317,20 @@ function ResetPasswordForm() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-bone/40 hover:text-bone/60 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-bone/40 transition-colors hover:text-bone/60"
                 >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
               {errors.confirmPassword && (
                 <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-blood text-xs mt-2 font-body"
+                  className="mt-2 font-body text-xs text-blood"
                 >
                   {errors.confirmPassword.message}
                 </motion.p>
@@ -338,15 +342,15 @@ function ResetPasswordForm() {
               <motion.button
                 type="submit"
                 disabled={isLoading}
-                className="relative w-full group overflow-hidden"
+                className="group relative w-full overflow-hidden"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-imperial-gold via-yellow-500 to-imperial-gold bg-[length:200%_100%] group-hover:animate-shimmer" />
-                <div className="relative px-8 py-4 font-display font-bold tracking-[0.2em] text-void text-sm flex items-center justify-center gap-3">
+                <div className="group-hover:animate-shimmer absolute inset-0 bg-gradient-to-r from-imperial-gold via-yellow-500 to-imperial-gold bg-[length:200%_100%]" />
+                <div className="relative flex items-center justify-center gap-3 px-8 py-4 font-display text-sm font-bold tracking-[0.2em] text-void">
                   {isLoading ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="h-5 w-5 animate-spin" />
                       ACTUALIZANDO...
                     </>
                   ) : (
@@ -360,11 +364,11 @@ function ResetPasswordForm() {
           {/* Back to Login */}
           <motion.p
             variants={itemVariants}
-            className="mt-8 text-center text-sm text-bone/50 font-body"
+            className="mt-8 text-center font-body text-sm text-bone/50"
           >
             <Link
               href="/login"
-              className="text-imperial-gold hover:text-imperial-gold/80 font-medium transition-colors"
+              className="font-medium text-imperial-gold transition-colors hover:text-imperial-gold/80"
             >
               Volver al Login
             </Link>
@@ -379,18 +383,18 @@ function ResetPasswordForm() {
 function ResetPasswordSkeleton() {
   return (
     <div className="relative">
-      <div className="absolute -inset-[1px] bg-gradient-to-r from-imperial-gold/20 via-blood/10 to-imperial-gold/20 rounded-xl animate-pulse" />
-      <div className="relative bg-void-light rounded-xl p-8">
+      <div className="absolute -inset-[1px] animate-pulse rounded-xl bg-gradient-to-r from-imperial-gold/20 via-blood/10 to-imperial-gold/20" />
+      <div className="relative rounded-xl bg-void-light p-8">
         <div className="space-y-6">
-          <div className="text-center space-y-2">
-            <div className="h-16 w-16 bg-bone/10 rounded-full mx-auto animate-pulse" />
-            <div className="h-8 bg-bone/10 rounded w-3/4 mx-auto animate-pulse" />
-            <div className="h-4 bg-bone/5 rounded w-1/2 mx-auto animate-pulse" />
+          <div className="space-y-2 text-center">
+            <div className="mx-auto h-16 w-16 animate-pulse rounded-full bg-bone/10" />
+            <div className="mx-auto h-8 w-3/4 animate-pulse rounded bg-bone/10" />
+            <div className="mx-auto h-4 w-1/2 animate-pulse rounded bg-bone/5" />
           </div>
           <div className="space-y-4">
-            <div className="h-14 bg-bone/5 rounded-lg animate-pulse" />
-            <div className="h-14 bg-bone/5 rounded-lg animate-pulse" />
-            <div className="h-12 bg-imperial-gold/20 rounded animate-pulse" />
+            <div className="h-14 animate-pulse rounded-lg bg-bone/5" />
+            <div className="h-14 animate-pulse rounded-lg bg-bone/5" />
+            <div className="h-12 animate-pulse rounded bg-imperial-gold/20" />
           </div>
         </div>
       </div>
@@ -400,7 +404,7 @@ function ResetPasswordSkeleton() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-void">
+    <div className="flex min-h-screen items-center justify-center bg-void p-4">
       <div className="w-full max-w-md">
         <Suspense fallback={<ResetPasswordSkeleton />}>
           <ResetPasswordForm />

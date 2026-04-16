@@ -68,11 +68,7 @@ export function FollowButton({
       onMouseLeave={() => setIsHovered(false)}
       className={className}
     >
-      {following
-        ? isHovered
-          ? 'Dejar de seguir'
-          : 'Siguiendo'
-        : 'Seguir'}
+      {following ? (isHovered ? 'Dejar de seguir' : 'Siguiendo') : 'Seguir'}
     </Button>
   )
 }

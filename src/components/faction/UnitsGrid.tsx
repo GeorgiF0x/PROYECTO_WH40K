@@ -12,13 +12,13 @@ interface UnitsGridProps {
 }
 
 const unitTypeIcons: Record<string, React.ReactNode> = {
-  'Personaje': <Crown className="w-4 h-4" />,
-  'Tropas': <Target className="w-4 h-4" />,
-  'Elite': <Swords className="w-4 h-4" />,
-  'Ataque Rapido': <Zap className="w-4 h-4" />,
-  'Apoyo Pesado': <Shield className="w-4 h-4" />,
-  'Lord of War': <Crown className="w-4 h-4" />,
-  'Transporte': <ChevronRight className="w-4 h-4" />,
+  Personaje: <Crown className="h-4 w-4" />,
+  Tropas: <Target className="h-4 w-4" />,
+  Elite: <Swords className="h-4 w-4" />,
+  'Ataque Rapido': <Zap className="h-4 w-4" />,
+  'Apoyo Pesado': <Shield className="h-4 w-4" />,
+  'Lord of War': <Crown className="h-4 w-4" />,
+  Transporte: <ChevronRight className="h-4 w-4" />,
 }
 
 export function UnitsGrid({ faction }: UnitsGridProps) {
@@ -27,30 +27,31 @@ export function UnitsGrid({ faction }: UnitsGridProps) {
 
   return (
     <section className="py-16 md:py-24">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="mx-auto max-w-7xl px-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="mb-16 text-center"
         >
           <span
-            className="font-body text-sm font-semibold tracking-widest uppercase mb-4 block"
+            className="mb-4 block font-body text-sm font-semibold uppercase tracking-widest"
             style={{ color: faction.color }}
           >
             Catalogo de Unidades
           </span>
-          <h2 className="font-display text-3xl md:text-4xl font-black text-white mb-4">
+          <h2 className="mb-4 font-display text-3xl font-black text-white md:text-4xl">
             Unidades Destacadas
           </h2>
-          <p className="font-body text-lg text-bone/60 max-w-xl mx-auto">
-            Las miniaturas mas iconicas de {faction.shortName}. Cada una con su historia y rol en el campo de batalla.
+          <p className="mx-auto max-w-xl font-body text-lg text-bone/60">
+            Las miniaturas mas iconicas de {faction.shortName}. Cada una con su historia y rol en el
+            campo de batalla.
           </p>
         </motion.div>
 
         {/* Units Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {faction.units.map((unit, index) => (
             <motion.article
               key={unit.name}
@@ -60,7 +61,7 @@ export function UnitsGrid({ faction }: UnitsGridProps) {
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -8, scale: 1.02 }}
               onClick={() => setSelectedUnit(unit)}
-              className="group relative rounded-xl overflow-hidden cursor-pointer"
+              className="group relative cursor-pointer overflow-hidden rounded-xl"
               style={{
                 background: theme?.gradients.card,
                 boxShadow: `0 4px 20px ${faction.color}10`,
@@ -78,7 +79,7 @@ export function UnitsGrid({ faction }: UnitsGridProps) {
 
                 {/* Unit Type Badge */}
                 <span
-                  className="absolute top-4 left-4 px-3 py-1.5 text-xs font-body font-semibold tracking-wide rounded flex items-center gap-1.5"
+                  className="absolute left-4 top-4 flex items-center gap-1.5 rounded px-3 py-1.5 font-body text-xs font-semibold tracking-wide"
                   style={{
                     background: faction.color,
                     color: '#000',
@@ -90,7 +91,7 @@ export function UnitsGrid({ faction }: UnitsGridProps) {
 
                 {/* Points Badge */}
                 <span
-                  className="absolute top-4 right-4 px-2 py-1 text-xs font-display font-bold rounded"
+                  className="absolute right-4 top-4 rounded px-2 py-1 font-display text-xs font-bold"
                   style={{
                     background: 'rgba(0,0,0,0.6)',
                     color: faction.color,
@@ -103,26 +104,26 @@ export function UnitsGrid({ faction }: UnitsGridProps) {
 
               {/* Content */}
               <div className="p-5">
-                <h3 className="font-display text-lg font-bold text-white mb-2 group-hover:text-opacity-90 transition-colors">
+                <h3 className="mb-2 font-display text-lg font-bold text-white transition-colors group-hover:text-opacity-90">
                   {unit.name}
                 </h3>
-                <p className="font-body text-sm text-bone/60 leading-relaxed line-clamp-2">
+                <p className="line-clamp-2 font-body text-sm leading-relaxed text-bone/60">
                   {unit.description}
                 </p>
 
                 {/* View more indicator */}
                 <div
-                  className="mt-4 flex items-center gap-2 font-body text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="mt-4 flex items-center gap-2 font-body text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100"
                   style={{ color: faction.color }}
                 >
                   <span>Ver detalles</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="h-4 w-4" />
                 </div>
               </div>
 
               {/* Hover border effect */}
               <motion.div
-                className="absolute inset-0 rounded-xl pointer-events-none"
+                className="pointer-events-none absolute inset-0 rounded-xl"
                 style={{
                   border: `1px solid ${faction.color}`,
                   opacity: 0,
@@ -152,7 +153,7 @@ export function UnitsGrid({ faction }: UnitsGridProps) {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 onClick={(e) => e.stopPropagation()}
-                className="relative max-w-3xl w-full rounded-2xl overflow-hidden"
+                className="relative w-full max-w-3xl overflow-hidden rounded-2xl"
                 style={{
                   background: theme?.cssVars['--faction-bg'] || '#030308',
                   border: `1px solid ${faction.color}40`,
@@ -162,18 +163,18 @@ export function UnitsGrid({ faction }: UnitsGridProps) {
                 {/* Close button */}
                 <button
                   onClick={() => setSelectedUnit(null)}
-                  className="absolute top-4 right-4 z-10 p-2 rounded-full transition-colors"
+                  className="absolute right-4 top-4 z-10 rounded-full p-2 transition-colors"
                   style={{
                     background: `${faction.color}20`,
                     color: faction.color,
                   }}
                 >
-                  <X className="w-5 h-5" />
+                  <X className="h-5 w-5" />
                 </button>
 
                 <div className="grid grid-cols-1 md:grid-cols-2">
                   {/* Image */}
-                  <div className="relative h-64 md:h-full min-h-[300px]">
+                  <div className="relative h-64 min-h-[300px] md:h-full">
                     <Image
                       src={selectedUnit.image}
                       alt={selectedUnit.name}
@@ -191,27 +192,27 @@ export function UnitsGrid({ faction }: UnitsGridProps) {
                   {/* Content */}
                   <div className="p-6 md:p-8">
                     {/* Header */}
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="mb-2 flex items-center gap-2">
                       <span
-                        className="px-2 py-1 text-xs font-body font-semibold tracking-wide rounded flex items-center gap-1"
+                        className="flex items-center gap-1 rounded px-2 py-1 font-body text-xs font-semibold tracking-wide"
                         style={{ background: `${faction.color}20`, color: faction.color }}
                       >
                         {unitTypeIcons[selectedUnit.type]}
                         {selectedUnit.type}
                       </span>
                       <span
-                        className="px-2 py-1 text-xs font-display font-bold rounded"
+                        className="rounded px-2 py-1 font-display text-xs font-bold"
                         style={{ background: 'rgba(255,255,255,0.1)', color: faction.color }}
                       >
                         {selectedUnit.points} pts
                       </span>
                     </div>
 
-                    <h2 className="font-display text-2xl md:text-3xl font-black text-white mb-4">
+                    <h2 className="mb-4 font-display text-2xl font-black text-white md:text-3xl">
                       {selectedUnit.name}
                     </h2>
 
-                    <p className="font-body text-bone/70 leading-relaxed mb-6">
+                    <p className="mb-6 font-body leading-relaxed text-bone/70">
                       {selectedUnit.lore}
                     </p>
 
@@ -219,7 +220,7 @@ export function UnitsGrid({ faction }: UnitsGridProps) {
                     {selectedUnit.stats && (
                       <div className="mb-6">
                         <h4
-                          className="font-display text-sm font-bold tracking-wider uppercase mb-3"
+                          className="mb-3 font-display text-sm font-bold uppercase tracking-wider"
                           style={{ color: faction.color }}
                         >
                           Caracteristicas
@@ -228,11 +229,13 @@ export function UnitsGrid({ faction }: UnitsGridProps) {
                           {Object.entries(selectedUnit.stats).map(([stat, value]) => (
                             <div
                               key={stat}
-                              className="text-center p-2 rounded"
+                              className="rounded p-2 text-center"
                               style={{ background: `${faction.color}10` }}
                             >
-                              <div className="font-body text-xs text-bone/50 mb-1">{stat}</div>
-                              <div className="font-display text-sm font-bold text-white">{value}</div>
+                              <div className="mb-1 font-body text-xs text-bone/50">{stat}</div>
+                              <div className="font-display text-sm font-bold text-white">
+                                {value}
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -240,11 +243,8 @@ export function UnitsGrid({ faction }: UnitsGridProps) {
                     )}
 
                     {/* Description */}
-                    <div
-                      className="p-4 rounded-lg"
-                      style={{ background: `${faction.color}10` }}
-                    >
-                      <p className="font-body text-sm text-bone/60 italic">
+                    <div className="rounded-lg p-4" style={{ background: `${faction.color}10` }}>
+                      <p className="font-body text-sm italic text-bone/60">
                         {selectedUnit.description}
                       </p>
                     </div>

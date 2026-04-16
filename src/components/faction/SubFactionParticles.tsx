@@ -21,11 +21,7 @@ interface ParticleConfig {
   animationType: number
 }
 
-export function SubFactionParticles({
-  factionId,
-  theme,
-  count = 10
-}: SubFactionParticlesProps) {
+export function SubFactionParticles({ factionId, theme, count = 10 }: SubFactionParticlesProps) {
   const subFactions = useMemo(() => getSubFactionIcons(factionId), [factionId])
 
   const particles = useMemo<ParticleConfig[]>(() => {
@@ -58,7 +54,7 @@ export function SubFactionParticles({
   if (particles.length === 0) return null
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {particles.map((particle, i) => {
         const encodedIconUrl = encodeURI(particle.subFaction.icon)
 
@@ -137,7 +133,7 @@ export function SubFactionParticles({
             <img
               src={encodedIconUrl}
               alt=""
-              className="relative w-full h-full object-contain"
+              className="relative h-full w-full object-contain"
               style={{
                 filter: `
                   drop-shadow(0 0 10px ${theme.colors.glow})

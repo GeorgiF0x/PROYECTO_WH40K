@@ -12,14 +12,25 @@ const CommunityMap = dynamic(() => import('./CommunityMap'), {
 
 function MapPlaceholder() {
   return (
-    <div className="w-full h-full min-h-[400px] bg-void-light rounded-xl animate-pulse border border-bone/10 flex items-center justify-center">
-      <Loader2 className="w-8 h-8 text-imperial-gold/40 animate-spin" />
+    <div className="flex h-full min-h-[400px] w-full animate-pulse items-center justify-center rounded-xl border border-bone/10 bg-void-light">
+      <Loader2 className="h-8 w-8 animate-spin text-imperial-gold/40" />
     </div>
   )
 }
 
 interface CommunityMapWrapperProps {
-  stores: Pick<Store, 'id' | 'name' | 'slug' | 'latitude' | 'longitude' | 'city' | 'store_type' | 'avg_rating' | 'review_count'>[]
+  stores: Pick<
+    Store,
+    | 'id'
+    | 'name'
+    | 'slug'
+    | 'latitude'
+    | 'longitude'
+    | 'city'
+    | 'store_type'
+    | 'avg_rating'
+    | 'review_count'
+  >[]
   className?: string
   center?: [number, number]
   zoom?: number

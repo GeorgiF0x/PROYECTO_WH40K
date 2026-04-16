@@ -11,31 +11,32 @@ interface QuoteBlockProps {
   className?: string
 }
 
-export function QuoteBlock({ text, author, source, factionColor = '#C9A227', className }: QuoteBlockProps) {
+export function QuoteBlock({
+  text,
+  author,
+  source,
+  factionColor = '#C9A227',
+  className,
+}: QuoteBlockProps) {
   return (
     <blockquote
-      className={cn(
-        'relative my-8 p-6 rounded-xl',
-        className
-      )}
+      className={cn('relative my-8 rounded-xl p-6', className)}
       style={{
         background: `linear-gradient(135deg, ${factionColor}15 0%, transparent 100%)`,
         border: `1px solid ${factionColor}30`,
       }}
     >
       <QuoteIcon
-        className="absolute top-3 left-3 w-6 h-6 opacity-30"
+        className="absolute left-3 top-3 h-6 w-6 opacity-30"
         style={{ color: factionColor }}
       />
       <QuoteIcon
-        className="absolute bottom-3 right-3 w-6 h-6 opacity-30 rotate-180"
+        className="absolute bottom-3 right-3 h-6 w-6 rotate-180 opacity-30"
         style={{ color: factionColor }}
       />
 
       <div className="pl-6">
-        <p className="font-body text-lg italic text-bone/90 leading-relaxed">
-          "{text}"
-        </p>
+        <p className="font-body text-lg italic leading-relaxed text-bone/90">"{text}"</p>
 
         {(author || source) && (
           <footer className="mt-4 font-body">
@@ -44,9 +45,7 @@ export function QuoteBlock({ text, author, source, factionColor = '#C9A227', cla
                 {author}
               </span>
             )}
-            {source && (
-              <span className="text-bone/50"> — {source}</span>
-            )}
+            {source && <span className="text-bone/50"> — {source}</span>}
           </footer>
         )}
       </div>

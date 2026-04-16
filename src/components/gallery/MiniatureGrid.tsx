@@ -19,21 +19,21 @@ interface MiniatureGridProps {
 // Loading skeleton card
 function SkeletonCard() {
   return (
-    <div className="bg-void-light rounded-xl overflow-hidden animate-pulse">
+    <div className="animate-pulse overflow-hidden rounded-xl bg-void-light">
       <div className="aspect-[4/5] bg-void">
-        <div className="w-full h-full bg-gradient-to-br from-bone/5 to-transparent" />
+        <div className="h-full w-full bg-gradient-to-br from-bone/5 to-transparent" />
       </div>
-      <div className="p-4 space-y-3">
-        <div className="h-5 bg-bone/10 rounded w-3/4" />
-        <div className="h-4 bg-bone/5 rounded w-full" />
+      <div className="space-y-3 p-4">
+        <div className="h-5 w-3/4 rounded bg-bone/10" />
+        <div className="h-4 w-full rounded bg-bone/5" />
         <div className="flex items-center justify-between pt-2">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-bone/10" />
-            <div className="h-3 bg-bone/5 rounded w-16" />
+            <div className="h-6 w-6 rounded-full bg-bone/10" />
+            <div className="h-3 w-16 rounded bg-bone/5" />
           </div>
           <div className="flex items-center gap-3">
-            <div className="h-3 bg-bone/5 rounded w-8" />
-            <div className="h-3 bg-bone/5 rounded w-8" />
+            <div className="h-3 w-8 rounded bg-bone/5" />
+            <div className="h-3 w-8 rounded bg-bone/5" />
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@ export default function MiniatureGrid({
 }: MiniatureGridProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
@@ -59,15 +59,15 @@ export default function MiniatureGrid({
 
   if (miniatures.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 animate-fadeIn">
-        <div className="relative w-32 h-32 mb-6">
+      <div className="flex animate-fadeIn flex-col items-center justify-center py-20">
+        <div className="relative mb-6 h-32 w-32">
           {/* Empty state illustration with CSS animation */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-necron-teal/5 to-transparent animate-pulse" />
-          <div className="absolute inset-4 rounded-full border-2 border-dashed border-necron-teal/20 flex items-center justify-center">
+          <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-br from-necron-teal/5 to-transparent" />
+          <div className="absolute inset-4 flex items-center justify-center rounded-full border-2 border-dashed border-necron-teal/20">
             <div className="animate-spin-slow">
               {/* Tesseract cube SVG */}
               <svg
-                className="w-12 h-12 text-necron-dark/20"
+                className="h-12 w-12 text-necron-dark/20"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 200 200"
@@ -82,12 +82,8 @@ export default function MiniatureGrid({
             </div>
           </div>
         </div>
-        <h3 className="text-xl font-display font-bold text-necron-dark/40 mb-2">
-          Galería Vacía
-        </h3>
-        <p className="text-bone/40 text-center max-w-sm font-body">
-          {emptyMessage}
-        </p>
+        <h3 className="mb-2 font-display text-xl font-bold text-necron-dark/40">Galería Vacía</h3>
+        <p className="max-w-sm text-center font-body text-bone/40">{emptyMessage}</p>
       </div>
     )
   }
@@ -97,12 +93,7 @@ export default function MiniatureGrid({
     return (
       <div className="flex flex-col gap-4">
         {miniatures.map((miniature, index) => (
-          <MiniatureCard
-            key={miniature.id}
-            miniature={miniature}
-            index={index}
-            variant="list"
-          />
+          <MiniatureCard key={miniature.id} miniature={miniature} index={index} variant="list" />
         ))}
       </div>
     )
@@ -116,12 +107,7 @@ export default function MiniatureGrid({
       gap={24}
       keyExtractor={(m) => m.id}
       renderItem={(miniature, index) => (
-        <MiniatureCard
-          key={miniature.id}
-          miniature={miniature}
-          index={index}
-          variant="card"
-        />
+        <MiniatureCard key={miniature.id} miniature={miniature} index={index} variant="card" />
       )}
     />
   )

@@ -16,7 +16,13 @@ import {
   AlertTriangle,
   ExternalLink,
 } from 'lucide-react'
-import { DataTable, StatusBadge, FilterTabs, type Column, type Action } from '../components/ui/data-table'
+import {
+  DataTable,
+  StatusBadge,
+  FilterTabs,
+  type Column,
+  type Action,
+} from '../components/ui/data-table'
 import { Modal, ConfirmDialog, FormField, Textarea, Select } from '../components/ui/modal'
 import { Button } from '../components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
@@ -66,11 +72,11 @@ const contentTypeLabels: Record<string, string> = {
 }
 
 const contentTypeIcons: Record<string, React.ReactNode> = {
-  miniature: <Image className="w-3.5 h-3.5" />,
-  listing: <ShoppingBag className="w-3.5 h-3.5" />,
-  comment: <MessageSquare className="w-3.5 h-3.5" />,
-  message: <MessageSquare className="w-3.5 h-3.5" />,
-  profile: <User className="w-3.5 h-3.5" />,
+  miniature: <Image className="h-3.5 w-3.5" />,
+  listing: <ShoppingBag className="h-3.5 w-3.5" />,
+  comment: <MessageSquare className="h-3.5 w-3.5" />,
+  message: <MessageSquare className="h-3.5 w-3.5" />,
+  profile: <User className="h-3.5 w-3.5" />,
 }
 
 const contentTypeColors: Record<string, string> = {
@@ -131,12 +137,14 @@ export default function ReportesPage() {
     try {
       let query = supabase
         .from('reports')
-        .select(`
+        .select(
+          `
           *,
           reporter:profiles!reports_reporter_id_fkey(username, display_name, avatar_url),
           reported_user:profiles!reports_reported_user_id_fkey(username, display_name, avatar_url),
           resolver:profiles!reports_resolved_by_fkey(username, display_name)
-        `)
+        `
+        )
         .order('created_at', { ascending: false })
 
       if (statusFilter !== 'all') {
@@ -157,10 +165,22 @@ export default function ReportesPage() {
         { count: dismissedCount },
       ] = await Promise.all([
         supabase.from('reports').select('*', { count: 'exact', head: true }),
-        supabase.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'reviewed'),
-        supabase.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'resolved'),
-        supabase.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'dismissed'),
+        supabase
+          .from('reports')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending'),
+        supabase
+          .from('reports')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'reviewed'),
+        supabase
+          .from('reports')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'resolved'),
+        supabase
+          .from('reports')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'dismissed'),
       ])
 
       setCounts({
@@ -189,7 +209,9 @@ export default function ReportesPage() {
     const supabase = createClient()
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
 
       const updateData: Record<string, unknown> = {
         status: newStatus,
@@ -200,10 +222,7 @@ export default function ReportesPage() {
         updateData.resolved_by = user?.id
       }
 
-      const { error } = await supabase
-        .from('reports')
-        .update(updateData)
-        .eq('id', updateReport.id)
+      const { error } = await supabase.from('reports').update(updateData).eq('id', updateReport.id)
 
       if (error) throw error
 
@@ -259,7 +278,7 @@ export default function ReportesPage() {
       width: '130px',
       render: (report) => (
         <span
-          className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full border ${
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${
             contentTypeColors[report.content_type] || 'bg-zinc-800 text-zinc-400'
           }`}
         >
@@ -274,11 +293,9 @@ export default function ReportesPage() {
       sortable: true,
       render: (report) => (
         <div>
-          <p className="font-medium text-white">
-            {reasonLabels[report.reason] || report.reason}
-          </p>
+          <p className="font-medium text-white">{reasonLabels[report.reason] || report.reason}</p>
           {report.description && (
-            <p className="text-xs text-zinc-500 line-clamp-1">{report.description}</p>
+            <p className="line-clamp-1 text-xs text-zinc-500">{report.description}</p>
           )}
         </div>
       ),
@@ -291,7 +308,9 @@ export default function ReportesPage() {
           <Avatar className="h-6 w-6">
             <AvatarImage src={report.reporter?.avatar_url || undefined} />
             <AvatarFallback className="text-xs">
-              {(report.reporter?.display_name || report.reporter?.username)?.slice(0, 2).toUpperCase()}
+              {(report.reporter?.display_name || report.reporter?.username)
+                ?.slice(0, 2)
+                .toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <span className="text-sm text-zinc-300">
@@ -305,9 +324,7 @@ export default function ReportesPage() {
       header: 'Fecha',
       sortable: true,
       width: '120px',
-      render: (report) => (
-        <span className="text-zinc-500">{formatDate(report.created_at)}</span>
-      ),
+      render: (report) => <span className="text-zinc-500">{formatDate(report.created_at)}</span>,
     },
     {
       key: 'status',
@@ -316,7 +333,15 @@ export default function ReportesPage() {
       width: '120px',
       render: (report) => (
         <StatusBadge
-          status={report.status === 'reviewed' ? 'pending' : report.status === 'resolved' ? 'approved' : report.status === 'dismissed' ? 'inactive' : 'pending'}
+          status={
+            report.status === 'reviewed'
+              ? 'pending'
+              : report.status === 'resolved'
+                ? 'approved'
+                : report.status === 'dismissed'
+                  ? 'inactive'
+                  : 'pending'
+          }
           labels={statusLabels}
         />
       ),
@@ -327,12 +352,12 @@ export default function ReportesPage() {
   const actions: Action<ReportItem>[] = [
     {
       label: 'Ver detalles',
-      icon: <Eye className="w-4 h-4" />,
+      icon: <Eye className="h-4 w-4" />,
       onClick: (report) => setViewReport(report),
     },
     {
       label: 'Marcar en revisión',
-      icon: <Clock className="w-4 h-4" />,
+      icon: <Clock className="h-4 w-4" />,
       onClick: (report) => {
         setUpdateReport(report)
         setNewStatus('reviewed')
@@ -341,7 +366,7 @@ export default function ReportesPage() {
     },
     {
       label: 'Resolver',
-      icon: <CheckCircle className="w-4 h-4" />,
+      icon: <CheckCircle className="h-4 w-4" />,
       onClick: (report) => {
         setUpdateReport(report)
         setNewStatus('resolved')
@@ -350,7 +375,7 @@ export default function ReportesPage() {
     },
     {
       label: 'Descartar',
-      icon: <XCircle className="w-4 h-4" />,
+      icon: <XCircle className="h-4 w-4" />,
       onClick: (report) => {
         setUpdateReport(report)
         setNewStatus('dismissed')
@@ -379,8 +404,8 @@ export default function ReportesPage() {
           <p className="text-sm text-zinc-400">Gestiona los reportes de la comunidad</p>
         </div>
         {pendingCount > 0 && (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full">
-            <AlertTriangle className="w-4 h-4 text-red-500" />
+          <div className="flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1.5">
+            <AlertTriangle className="h-4 w-4 text-red-500" />
             <span className="text-sm text-red-500">{pendingCount} pendientes</span>
           </div>
         )}
@@ -403,7 +428,7 @@ export default function ReportesPage() {
         searchFields={['reason', 'description']}
         loading={loading}
         emptyMessage="No hay reportes"
-        emptyIcon={<Flag className="w-8 h-8 text-zinc-600 mx-auto" />}
+        emptyIcon={<Flag className="mx-auto h-8 w-8 text-zinc-600" />}
         pageSize={10}
       />
 
@@ -447,49 +472,59 @@ export default function ReportesPage() {
         {viewReport && (
           <div className="space-y-5">
             {/* Status and type */}
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex flex-wrap items-center gap-3">
               <StatusBadge
-                status={viewReport.status === 'reviewed' ? 'pending' : viewReport.status === 'resolved' ? 'approved' : viewReport.status === 'dismissed' ? 'inactive' : 'pending'}
+                status={
+                  viewReport.status === 'reviewed'
+                    ? 'pending'
+                    : viewReport.status === 'resolved'
+                      ? 'approved'
+                      : viewReport.status === 'dismissed'
+                        ? 'inactive'
+                        : 'pending'
+                }
                 labels={statusLabels}
               />
               <span
-                className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full border ${
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${
                   contentTypeColors[viewReport.content_type]
                 }`}
               >
                 {contentTypeIcons[viewReport.content_type]}
                 {contentTypeLabels[viewReport.content_type]}
               </span>
-              <span className="text-xs text-zinc-500">
-                {formatDateTime(viewReport.created_at)}
-              </span>
+              <span className="text-xs text-zinc-500">{formatDateTime(viewReport.created_at)}</span>
             </div>
 
             {/* Reason */}
             <div>
-              <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5">
+              <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-[#E8E8F0]/40">
                 Motivo del reporte
               </p>
-              <p className="text-sm text-white font-medium mb-2">
+              <p className="mb-2 text-sm font-medium text-white">
                 {reasonLabels[viewReport.reason] || viewReport.reason}
               </p>
               {viewReport.description && (
-                <div className="max-h-32 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
-                  <p className="text-sm text-[#E8E8F0]/60 whitespace-pre-wrap break-words">{viewReport.description}</p>
+                <div className="max-h-32 overflow-y-auto rounded-lg border border-[#C9A227]/10 bg-[#0a0a12]/80 p-3">
+                  <p className="whitespace-pre-wrap break-words text-sm text-[#E8E8F0]/60">
+                    {viewReport.description}
+                  </p>
                 </div>
               )}
             </div>
 
             {/* Reporter */}
             <div>
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">
                 Reportado por
               </p>
               <div className="flex items-center gap-3">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={viewReport.reporter?.avatar_url || undefined} />
                   <AvatarFallback>
-                    {(viewReport.reporter?.display_name || viewReport.reporter?.username)?.slice(0, 2).toUpperCase()}
+                    {(viewReport.reporter?.display_name || viewReport.reporter?.username)
+                      ?.slice(0, 2)
+                      .toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div>
@@ -504,14 +539,18 @@ export default function ReportesPage() {
             {/* Reported user (if applicable) */}
             {viewReport.reported_user && (
               <div>
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">
+                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">
                   Usuario reportado
                 </p>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={viewReport.reported_user?.avatar_url || undefined} />
                     <AvatarFallback>
-                      {(viewReport.reported_user?.display_name || viewReport.reported_user?.username)?.slice(0, 2).toUpperCase()}
+                      {(
+                        viewReport.reported_user?.display_name || viewReport.reported_user?.username
+                      )
+                        ?.slice(0, 2)
+                        .toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div>
@@ -526,7 +565,7 @@ export default function ReportesPage() {
 
             {/* Link to content */}
             {getContentLink(viewReport) && (
-              <div className="pt-2 border-t border-zinc-800">
+              <div className="border-t border-zinc-800 pt-2">
                 <a
                   href={getContentLink(viewReport)!}
                   target="_blank"
@@ -535,25 +574,26 @@ export default function ReportesPage() {
                 >
                   {contentTypeIcons[viewReport.content_type]}
                   Ver contenido reportado
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </div>
             )}
 
             {/* Resolution info (if resolved) */}
-            {(viewReport.status === 'resolved' || viewReport.status === 'dismissed') && viewReport.resolved_at && (
-              <div className="pt-2 border-t border-zinc-800">
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
-                  {viewReport.status === 'resolved' ? 'Resuelto' : 'Descartado'}
-                </p>
-                <p className="text-sm text-zinc-400">
-                  {formatDateTime(viewReport.resolved_at)}
-                  {viewReport.resolver && (
-                    <> por {viewReport.resolver.display_name || viewReport.resolver.username}</>
-                  )}
-                </p>
-              </div>
-            )}
+            {(viewReport.status === 'resolved' || viewReport.status === 'dismissed') &&
+              viewReport.resolved_at && (
+                <div className="border-t border-zinc-800 pt-2">
+                  <p className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500">
+                    {viewReport.status === 'resolved' ? 'Resuelto' : 'Descartado'}
+                  </p>
+                  <p className="text-sm text-zinc-400">
+                    {formatDateTime(viewReport.resolved_at)}
+                    {viewReport.resolver && (
+                      <> por {viewReport.resolver.display_name || viewReport.resolver.username}</>
+                    )}
+                  </p>
+                </div>
+              )}
           </div>
         )}
       </Modal>
@@ -569,8 +609,8 @@ export default function ReportesPage() {
           newStatus === 'reviewed'
             ? 'Marcar en revisión'
             : newStatus === 'resolved'
-            ? 'Resolver reporte'
-            : 'Descartar reporte'
+              ? 'Resolver reporte'
+              : 'Descartar reporte'
         }
         size="md"
         footer={
@@ -589,7 +629,13 @@ export default function ReportesPage() {
               disabled={actionLoading}
               className={newStatus === 'dismissed' ? 'bg-zinc-600 hover:bg-zinc-500' : ''}
             >
-              {actionLoading ? 'Procesando...' : newStatus === 'reviewed' ? 'Marcar en revisión' : newStatus === 'resolved' ? 'Resolver' : 'Descartar'}
+              {actionLoading
+                ? 'Procesando...'
+                : newStatus === 'reviewed'
+                  ? 'Marcar en revisión'
+                  : newStatus === 'resolved'
+                    ? 'Resolver'
+                    : 'Descartar'}
             </Button>
           </>
         }
@@ -600,8 +646,8 @@ export default function ReportesPage() {
               {newStatus === 'reviewed'
                 ? `¿Marcar el reporte sobre "${contentTypeLabels[updateReport.content_type]}" como en revisión?`
                 : newStatus === 'resolved'
-                ? `¿Marcar el reporte sobre "${contentTypeLabels[updateReport.content_type]}" como resuelto?`
-                : `¿Descartar el reporte sobre "${contentTypeLabels[updateReport.content_type]}"? Esto indica que no se tomará ninguna acción.`}
+                  ? `¿Marcar el reporte sobre "${contentTypeLabels[updateReport.content_type]}" como resuelto?`
+                  : `¿Descartar el reporte sobre "${contentTypeLabels[updateReport.content_type]}"? Esto indica que no se tomará ninguna acción.`}
             </p>
 
             {(newStatus === 'resolved' || newStatus === 'dismissed') && (

@@ -27,7 +27,10 @@ import {
 import type { Miniature } from '@/lib/types/database.types'
 
 const editSchema = z.object({
-  title: z.string().min(3, 'El titulo debe tener al menos 3 caracteres').max(100, 'Maximo 100 caracteres'),
+  title: z
+    .string()
+    .min(3, 'El titulo debe tener al menos 3 caracteres')
+    .max(100, 'Maximo 100 caracteres'),
   description: z.string().max(2000, 'Maximo 2000 caracteres').optional(),
   faction_id: z.string().optional(),
 })
@@ -114,9 +117,8 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
 
     if (factionSearch) {
       const query = factionSearch.toLowerCase()
-      filtered = filtered.filter((f) =>
-        f.name.toLowerCase().includes(query) ||
-        f.slug.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (f) => f.name.toLowerCase().includes(query) || f.slug.toLowerCase().includes(query)
       )
     }
 
@@ -134,11 +136,7 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
     const loadMiniature = async () => {
       if (!id) return
 
-      const { data, error } = await supabase
-        .from('miniatures')
-        .select('*')
-        .eq('id', id)
-        .single()
+      const { data, error } = await supabase.from('miniatures').select('*').eq('id', id).single()
 
       if (error || !data) {
         setError('No se encontro la miniatura')
@@ -186,9 +184,7 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
     e.preventDefault()
     setIsDragging(false)
 
-    const files = Array.from(e.dataTransfer.files).filter((f) =>
-      f.type.startsWith('image/')
-    )
+    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'))
     addImages(files)
   }, [])
 
@@ -235,22 +231,18 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
     const compressed = await compressImage(image.file)
     const fileName = `${user?.id}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.webp`
 
-    const { data, error } = await supabase.storage
-      .from('miniatures')
-      .upload(fileName, compressed, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: compressed.type,
-      })
+    const { data, error } = await supabase.storage.from('miniatures').upload(fileName, compressed, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: compressed.type,
+    })
 
     if (error) {
       console.error('Upload error:', error)
       return null
     }
 
-    const { data: urlData } = supabase.storage
-      .from('miniatures')
-      .getPublicUrl(data.path)
+    const { data: urlData } = supabase.storage.from('miniatures').getPublicUrl(data.path)
 
     return urlData.publicUrl
   }
@@ -268,9 +260,7 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
     for (const img of images) {
       if (img.isNew) {
         setImages((prev) =>
-          prev.map((p) =>
-            p.isNew && p.id === img.id ? { ...p, uploading: true } : p
-          )
+          prev.map((p) => (p.isNew && p.id === img.id ? { ...p, uploading: true } : p))
         )
 
         const url = await uploadImage(img)
@@ -302,8 +292,7 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
 
     // Check if title/description changed for embedding regeneration
     const contentChanged =
-      data.title !== miniature.title ||
-      data.description !== miniature.description
+      data.title !== miniature.title || data.description !== miniature.description
 
     // Update miniature record
     const { error: updateError } = await supabase
@@ -362,10 +351,7 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
     }
 
     // Delete miniature record
-    const { error } = await supabase
-      .from('miniatures')
-      .delete()
-      .eq('id', miniature.id)
+    const { error } = await supabase.from('miniatures').delete().eq('id', miniature.id)
 
     if (error) {
       console.error('Error deleting miniature:', error)
@@ -379,9 +365,9 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
 
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center pb-16 pt-24">
         <motion.div
-          className="w-8 h-8 border-2 border-bone/20 border-t-imperial-gold rounded-full"
+          className="h-8 w-8 rounded-full border-2 border-bone/20 border-t-imperial-gold"
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
         />
@@ -391,14 +377,14 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
 
   if (error && !miniature) {
     return (
-      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center pb-16 pt-24">
         <div className="text-center">
-          <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-display font-bold text-bone mb-2">Error</h1>
-          <p className="text-bone/60 mb-6">{error}</p>
+          <AlertCircle className="mx-auto mb-4 h-16 w-16 text-red-400" />
+          <h1 className="mb-2 font-display text-2xl font-bold text-bone">Error</h1>
+          <p className="mb-6 text-bone/60">{error}</p>
           <button
             onClick={() => router.push('/mi-galeria')}
-            className="px-6 py-3 bg-imperial-gold text-void font-display font-bold rounded-lg"
+            className="rounded-lg bg-imperial-gold px-6 py-3 font-display font-bold text-void"
           >
             Volver a Mi Galeria
           </button>
@@ -408,22 +394,22 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
+    <div className="min-h-screen pb-16 pt-24">
       {/* Background effects */}
-      <div className="fixed inset-0 pointer-events-none">
+      <div className="pointer-events-none fixed inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.05)_0%,transparent_60%)]" />
       </div>
 
       <div className="relative z-10 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="mx-auto max-w-4xl">
           {/* Back Button */}
           <motion.button
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-bone/60 hover:text-imperial-gold transition-colors mb-8"
+            className="mb-8 flex items-center gap-2 text-bone/60 transition-colors hover:text-imperial-gold"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="h-5 w-5" />
             <span className="font-body">Volver</span>
           </motion.button>
 
@@ -431,26 +417,24 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-between mb-12"
+            className="mb-12 flex items-center justify-between"
           >
             <div>
-              <h1 className="text-3xl md:text-4xl font-display font-bold tracking-wide mb-2">
+              <h1 className="mb-2 font-display text-3xl font-bold tracking-wide md:text-4xl">
                 <span className="text-bone">Editar </span>
                 <span className="text-gradient">Miniatura</span>
               </h1>
-              <p className="text-bone/60 font-body">
-                Modifica los detalles de tu miniatura
-              </p>
+              <p className="font-body text-bone/60">Modifica los detalles de tu miniatura</p>
             </div>
 
             <motion.button
               onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+              className="flex items-center gap-2 rounded-lg px-4 py-2 text-red-400 transition-colors hover:bg-red-500/10"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Trash2 className="w-5 h-5" />
-              <span className="hidden sm:inline font-body">Eliminar</span>
+              <Trash2 className="h-5 w-5" />
+              <span className="hidden font-body sm:inline">Eliminar</span>
             </motion.button>
           </motion.div>
 
@@ -461,42 +445,43 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 flex items-center justify-center bg-void/90 backdrop-blur-xl p-6"
+                className="fixed inset-0 z-50 flex items-center justify-center bg-void/90 p-6 backdrop-blur-xl"
               >
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.9, opacity: 0 }}
-                  className="bg-void-light border border-bone/20 rounded-2xl p-8 max-w-md w-full"
+                  className="w-full max-w-md rounded-2xl border border-bone/20 bg-void-light p-8"
                 >
-                  <div className="text-center mb-6">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/20 border border-red-500/40 mb-4">
-                      <Trash2 className="w-8 h-8 text-red-400" />
+                  <div className="mb-6 text-center">
+                    <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full border border-red-500/40 bg-red-500/20">
+                      <Trash2 className="h-8 w-8 text-red-400" />
                     </div>
-                    <h2 className="text-xl font-display font-bold text-bone mb-2">
+                    <h2 className="mb-2 font-display text-xl font-bold text-bone">
                       Eliminar miniatura
                     </h2>
-                    <p className="text-bone/60 font-body">
-                      Esta accion no se puede deshacer. Se eliminaran todas las imagenes y comentarios asociados.
+                    <p className="font-body text-bone/60">
+                      Esta accion no se puede deshacer. Se eliminaran todas las imagenes y
+                      comentarios asociados.
                     </p>
                   </div>
 
                   <div className="flex gap-3">
                     <button
                       onClick={() => setShowDeleteConfirm(false)}
-                      className="flex-1 px-4 py-3 border border-bone/20 text-bone rounded-lg font-body hover:bg-bone/5 transition-colors"
+                      className="flex-1 rounded-lg border border-bone/20 px-4 py-3 font-body text-bone transition-colors hover:bg-bone/5"
                     >
                       Cancelar
                     </button>
                     <button
                       onClick={handleDelete}
                       disabled={isDeleting}
-                      className="flex-1 px-4 py-3 bg-red-500 text-white rounded-lg font-body hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-red-500 px-4 py-3 font-body text-white transition-colors hover:bg-red-600 disabled:opacity-50"
                     >
                       {isDeleting ? (
                         <>
                           <motion.div
-                            className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                            className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white"
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                           />
@@ -525,11 +510,11 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring', delay: 0.2 }}
-                    className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-500/20 border border-green-500/40 mb-6"
+                    className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full border border-green-500/40 bg-green-500/20"
                   >
-                    <Check className="w-12 h-12 text-green-400" />
+                    <Check className="h-12 w-12 text-green-400" />
                   </motion.div>
-                  <h2 className="text-2xl font-display font-bold text-bone mb-2">
+                  <h2 className="mb-2 font-display text-2xl font-bold text-bone">
                     Cambios Guardados
                   </h2>
                   <p className="text-bone/60">Redirigiendo a tu galeria...</p>
@@ -543,10 +528,10 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3"
+              className="mb-6 flex items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4"
             >
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-              <p className="text-red-400 font-body">{error}</p>
+              <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-400" />
+              <p className="font-body text-red-400">{error}</p>
             </motion.div>
           )}
 
@@ -560,17 +545,17 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
           >
             {/* Image Upload Area */}
             <div>
-              <label className="block text-lg font-display font-semibold text-bone mb-4">
+              <label className="mb-4 block font-display text-lg font-semibold text-bone">
                 Imagenes <span className="text-imperial-gold">*</span>
               </label>
 
               {/* Image Grid with Drag & Drop Reorder */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-4">
+              <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
                 <AnimatePresence>
                   {images.map((img, index) => (
                     <div
                       key={img.isNew ? img.id : img.url}
-                      className="relative aspect-square rounded-xl overflow-hidden group cursor-move"
+                      className="group relative aspect-square cursor-move overflow-hidden rounded-xl"
                       draggable
                       onDragStart={(e) => {
                         e.dataTransfer.setData('text/plain', index.toString())
@@ -587,32 +572,32 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                       <img
                         src={img.isNew ? img.preview : img.url}
                         alt=""
-                        className="w-full h-full object-cover"
+                        className="h-full w-full object-cover"
                       />
 
                       {/* Drag handle */}
-                      <div className="absolute top-2 left-2 p-1 bg-void/60 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                        <GripVertical className="w-4 h-4 text-bone" />
+                      <div className="absolute left-2 top-2 rounded bg-void/60 p-1 opacity-0 transition-opacity group-hover:opacity-100">
+                        <GripVertical className="h-4 w-4 text-bone" />
                       </div>
 
                       {/* Remove button */}
-                      <div className="absolute inset-0 bg-void/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="absolute inset-0 flex items-center justify-center bg-void/60 opacity-0 transition-opacity group-hover:opacity-100">
                         <motion.button
                           type="button"
                           onClick={() => removeImage(index)}
-                          className="p-2 bg-red-500/80 rounded-full text-white"
+                          className="rounded-full bg-red-500/80 p-2 text-white"
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                         >
-                          <X className="w-4 h-4" />
+                          <X className="h-4 w-4" />
                         </motion.button>
                       </div>
 
                       {/* Status indicators for new images */}
                       {img.isNew && img.uploading && (
-                        <div className="absolute inset-0 bg-void/80 flex items-center justify-center">
+                        <div className="absolute inset-0 flex items-center justify-center bg-void/80">
                           <motion.div
-                            className="w-8 h-8 border-2 border-bone/20 border-t-imperial-gold rounded-full"
+                            className="h-8 w-8 rounded-full border-2 border-bone/20 border-t-imperial-gold"
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                           />
@@ -620,20 +605,20 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                       )}
 
                       {img.isNew && img.uploaded && (
-                        <div className="absolute top-2 right-2 p-1 bg-green-500 rounded-full">
-                          <Check className="w-3 h-3 text-white" />
+                        <div className="absolute right-2 top-2 rounded-full bg-green-500 p-1">
+                          <Check className="h-3 w-3 text-white" />
                         </div>
                       )}
 
                       {img.isNew && img.error && (
-                        <div className="absolute top-2 right-2 p-1 bg-red-500 rounded-full">
-                          <AlertCircle className="w-3 h-3 text-white" />
+                        <div className="absolute right-2 top-2 rounded-full bg-red-500 p-1">
+                          <AlertCircle className="h-3 w-3 text-white" />
                         </div>
                       )}
 
                       {/* Main image badge */}
                       {index === 0 && (
-                        <div className="absolute bottom-2 left-2 px-2 py-1 bg-imperial-gold text-void text-xs font-bold rounded">
+                        <div className="absolute bottom-2 left-2 rounded bg-imperial-gold px-2 py-1 text-xs font-bold text-void">
                           Principal
                         </div>
                       )}
@@ -644,7 +629,7 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                 {/* Add more button */}
                 {images.length < 10 && (
                   <motion.label
-                    className="aspect-square rounded-xl border-2 border-dashed border-bone/20 hover:border-imperial-gold/50 flex items-center justify-center cursor-pointer transition-colors"
+                    className="flex aspect-square cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-bone/20 transition-colors hover:border-imperial-gold/50"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -655,18 +640,18 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                       onChange={handleFileSelect}
                       className="hidden"
                     />
-                    <Plus className="w-8 h-8 text-bone/40" />
+                    <Plus className="h-8 w-8 text-bone/40" />
                   </motion.label>
                 )}
               </div>
 
-              <p className="text-bone/40 text-sm font-body">
+              <p className="font-body text-sm text-bone/40">
                 Arrastra para reordenar. La primera imagen sera la portada.
               </p>
 
               {images.length === 0 && (
-                <p className="mt-2 text-red-400 text-sm flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
+                <p className="mt-2 flex items-center gap-1 text-sm text-red-400">
+                  <AlertCircle className="h-3 w-3" />
                   Debes tener al menos una imagen
                 </p>
               )}
@@ -674,20 +659,22 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
 
             {/* Title */}
             <div>
-              <label className="block text-lg font-display font-semibold text-bone mb-2">
+              <label className="mb-2 block font-display text-lg font-semibold text-bone">
                 Titulo <span className="text-imperial-gold">*</span>
               </label>
               <input
                 type="text"
                 placeholder="Ej: Ultramarines Captain"
-                className={`w-full px-4 py-4 bg-void-light border rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none transition-colors ${
-                  errors.title ? 'border-red-500/50' : 'border-bone/10 focus:border-imperial-gold/50'
+                className={`w-full rounded-xl border bg-void-light px-4 py-4 font-body text-bone transition-colors placeholder:text-bone/30 focus:outline-none ${
+                  errors.title
+                    ? 'border-red-500/50'
+                    : 'border-bone/10 focus:border-imperial-gold/50'
                 }`}
                 {...register('title')}
               />
               {errors.title && (
-                <p className="mt-2 text-red-400 text-sm flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
+                <p className="mt-2 flex items-center gap-1 text-sm text-red-400">
+                  <AlertCircle className="h-3 w-3" />
                   {errors.title.message}
                 </p>
               )}
@@ -695,20 +682,20 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
 
             {/* Description */}
             <div>
-              <label className="block text-lg font-display font-semibold text-bone mb-2">
+              <label className="mb-2 block font-display text-lg font-semibold text-bone">
                 Descripcion
               </label>
               <textarea
                 rows={4}
                 placeholder="Describe tu miniatura, tecnicas usadas, historia..."
-                className="w-full px-4 py-4 bg-void-light border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors resize-none"
+                className="w-full resize-none rounded-xl border border-bone/10 bg-void-light px-4 py-4 font-body text-bone transition-colors placeholder:text-bone/30 focus:border-imperial-gold/50 focus:outline-none"
                 {...register('description')}
               />
             </div>
 
             {/* Faction Selection */}
-            <div className="bg-void-light/30 border border-bone/10 rounded-2xl p-6">
-              <label className="block text-lg font-display font-semibold text-bone mb-4">
+            <div className="rounded-2xl border border-bone/10 bg-void-light/30 p-6">
+              <label className="mb-4 block font-display text-lg font-semibold text-bone">
                 Faccion
               </label>
 
@@ -717,13 +704,13 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                 <motion.div
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-3 mb-4 p-3 rounded-xl border border-imperial-gold/30"
+                  className="mb-4 flex items-center gap-3 rounded-xl border border-imperial-gold/30 p-3"
                   style={{
                     background: `linear-gradient(135deg, ${selectedFactionDetails.primary_color}20, ${selectedFactionDetails.secondary_color || selectedFactionDetails.primary_color}10)`,
                   }}
                 >
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
                     style={{
                       background: `linear-gradient(135deg, ${selectedFactionDetails.primary_color || '#666'}, ${selectedFactionDetails.secondary_color || '#333'})`,
                     }}
@@ -737,40 +724,40 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                         className="invert"
                       />
                     ) : (
-                      <div className="w-4 h-4 rounded-full bg-white/30" />
+                      <div className="h-4 w-4 rounded-full bg-white/30" />
                     )}
                   </div>
-                  <span className="text-sm font-body text-imperial-gold font-medium flex-1">
+                  <span className="flex-1 font-body text-sm font-medium text-imperial-gold">
                     {selectedFactionDetails.name}
                   </span>
                   <motion.button
                     type="button"
                     onClick={() => setValue('faction_id', undefined)}
-                    className="p-1 text-bone/40 hover:text-bone transition-colors"
+                    className="p-1 text-bone/40 transition-colors hover:text-bone"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <X className="w-4 h-4" />
+                    <X className="h-4 w-4" />
                   </motion.button>
                 </motion.div>
               )}
 
               {/* Category tabs */}
-              <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-none mb-3">
+              <div className="scrollbar-none mb-3 flex gap-1 overflow-x-auto pb-2">
                 {CATEGORIES.map((cat) => (
                   <motion.button
                     key={cat.id}
                     type="button"
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body whitespace-nowrap transition-all ${
+                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 font-body text-xs transition-all ${
                       activeCategory === cat.id
                         ? 'bg-imperial-gold text-void'
-                        : 'bg-void border border-bone/10 text-bone/60 hover:border-bone/30 hover:text-bone'
+                        : 'border border-bone/10 bg-void text-bone/60 hover:border-bone/30 hover:text-bone'
                     }`}
                     whileTap={{ scale: 0.95 }}
                   >
                     {cat.icon && (
-                      <div className="w-4 h-4 relative">
+                      <div className="relative h-4 w-4">
                         <Image
                           src={cat.icon}
                           alt={cat.label}
@@ -786,28 +773,28 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
 
               {/* Faction search */}
               <div className="relative mb-3">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/40" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-bone/40" />
                 <input
                   type="text"
                   placeholder="Buscar faccion..."
                   value={factionSearch}
                   onChange={(e) => setFactionSearch(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-void border border-bone/10 rounded-lg font-body text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50"
+                  className="w-full rounded-lg border border-bone/10 bg-void py-2 pl-9 pr-4 font-body text-sm text-bone placeholder:text-bone/30 focus:border-imperial-gold/50 focus:outline-none"
                 />
               </div>
 
               {/* Faction grid */}
               {factionsLoading ? (
-                <div className="h-[200px] flex items-center justify-center">
+                <div className="flex h-[200px] items-center justify-center">
                   <motion.div
-                    className="w-6 h-6 border-2 border-bone/20 border-t-imperial-gold rounded-full"
+                    className="h-6 w-6 rounded-full border-2 border-bone/20 border-t-imperial-gold"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   />
                 </div>
               ) : (
-                <div className="h-[220px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-bone/20">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="scrollbar-thin scrollbar-thumb-bone/20 h-[220px] overflow-y-auto pr-1">
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {filteredFactions.map((faction) => {
                       const isSelected = selectedFaction === faction.id
                       const iconPath = FACTION_ICONS[faction.slug]
@@ -819,7 +806,7 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                           onClick={() =>
                             setValue('faction_id', isSelected ? undefined : faction.id)
                           }
-                          className={`relative p-3 rounded-xl border text-left transition-all ${
+                          className={`relative rounded-xl border p-3 text-left transition-all ${
                             isSelected
                               ? 'border-imperial-gold'
                               : 'border-bone/10 hover:border-bone/30'
@@ -834,7 +821,7 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                         >
                           <div className="flex items-center gap-2">
                             <div
-                              className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
                               style={{
                                 background: `linear-gradient(135deg, ${faction.primary_color || '#666'}, ${faction.secondary_color || '#333'})`,
                               }}
@@ -848,24 +835,23 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                                   className="invert"
                                 />
                               ) : (
-                                <div className="w-4 h-4 rounded-full bg-white/30" />
+                                <div className="h-4 w-4 rounded-full bg-white/30" />
                               )}
                             </div>
 
-                            <div className="flex-1 min-w-0">
-                              <p className={`text-xs font-body font-medium truncate ${
-                                isSelected ? 'text-imperial-gold' : 'text-bone/80'
-                              }`}>
+                            <div className="min-w-0 flex-1">
+                              <p
+                                className={`truncate font-body text-xs font-medium ${
+                                  isSelected ? 'text-imperial-gold' : 'text-bone/80'
+                                }`}
+                              >
                                 {faction.name}
                               </p>
                             </div>
 
                             {isSelected && (
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                              >
-                                <Check className="w-4 h-4 text-imperial-gold" />
+                              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                                <Check className="h-4 w-4 text-imperial-gold" />
                               </motion.div>
                             )}
                           </div>
@@ -875,15 +861,15 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                   </div>
 
                   {filteredFactions.length === 0 && (
-                    <div className="h-full flex flex-col items-center justify-center py-8">
-                      <p className="text-bone/50 font-body text-sm">No se encontraron facciones</p>
+                    <div className="flex h-full flex-col items-center justify-center py-8">
+                      <p className="font-body text-sm text-bone/50">No se encontraron facciones</p>
                       <button
                         type="button"
                         onClick={() => {
                           setFactionSearch('')
                           setActiveCategory('all')
                         }}
-                        className="text-imperial-gold text-xs mt-2 hover:underline"
+                        className="mt-2 text-xs text-imperial-gold hover:underline"
                       >
                         Limpiar filtros
                       </button>
@@ -897,16 +883,20 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
             <motion.button
               type="submit"
               disabled={isSubmitting || images.length === 0}
-              className="relative w-full py-4 bg-gradient-to-r from-imperial-gold via-yellow-500 to-imperial-gold text-void font-display font-bold tracking-wider uppercase text-sm overflow-hidden rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-imperial-gold via-yellow-500 to-imperial-gold py-4 font-display text-sm font-bold uppercase tracking-wider text-void disabled:cursor-not-allowed disabled:opacity-50"
               style={{ backgroundSize: '200% 100%' }}
-              whileHover={!isSubmitting && images.length > 0 ? { scale: 1.01, backgroundPosition: '100% 0' } : {}}
+              whileHover={
+                !isSubmitting && images.length > 0
+                  ? { scale: 1.01, backgroundPosition: '100% 0' }
+                  : {}
+              }
               whileTap={!isSubmitting && images.length > 0 ? { scale: 0.99 } : {}}
             >
               <span className="relative flex items-center justify-center gap-2">
                 {isSubmitting ? (
                   <>
                     <motion.div
-                      className="w-5 h-5 border-2 border-void/30 border-t-void rounded-full"
+                      className="h-5 w-5 rounded-full border-2 border-void/30 border-t-void"
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                     />
@@ -914,7 +904,7 @@ export default function EditMiniaturePage({ params }: { params: Promise<{ id: st
                   </>
                 ) : (
                   <>
-                    <Save className="w-5 h-5" />
+                    <Save className="h-5 w-5" />
                     Guardar Cambios
                   </>
                 )}

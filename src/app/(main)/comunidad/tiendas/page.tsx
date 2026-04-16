@@ -9,7 +9,7 @@ import {
   ScrollText,
   Shield,
   ChevronRight,
-  Sparkles
+  Sparkles,
 } from 'lucide-react'
 import StoreGrid from '@/components/community/StoreGrid'
 import CommunityFilters from '@/components/community/CommunityFilters'
@@ -34,24 +34,34 @@ interface SearchParams {
 
 // Mapping de CCAA a provincias (para validar filtros)
 const CCAA_PROVINCES: Record<string, string[]> = {
-  'Andalucía': ['Almería', 'Cádiz', 'Córdoba', 'Granada', 'Huelva', 'Jaén', 'Málaga', 'Sevilla'],
-  'Aragón': ['Huesca', 'Teruel', 'Zaragoza'],
-  'Asturias': ['Asturias'],
-  'Baleares': ['Baleares'],
-  'Canarias': ['Las Palmas', 'Santa Cruz de Tenerife'],
-  'Cantabria': ['Cantabria'],
+  Andalucía: ['Almería', 'Cádiz', 'Córdoba', 'Granada', 'Huelva', 'Jaén', 'Málaga', 'Sevilla'],
+  Aragón: ['Huesca', 'Teruel', 'Zaragoza'],
+  Asturias: ['Asturias'],
+  Baleares: ['Baleares'],
+  Canarias: ['Las Palmas', 'Santa Cruz de Tenerife'],
+  Cantabria: ['Cantabria'],
   'Castilla-La Mancha': ['Albacete', 'Ciudad Real', 'Cuenca', 'Guadalajara', 'Toledo'],
-  'Castilla y León': ['Ávila', 'Burgos', 'León', 'Palencia', 'Salamanca', 'Segovia', 'Soria', 'Valladolid', 'Zamora'],
-  'Cataluña': ['Barcelona', 'Girona', 'Lleida', 'Tarragona'],
-  'Ceuta': ['Ceuta'],
+  'Castilla y León': [
+    'Ávila',
+    'Burgos',
+    'León',
+    'Palencia',
+    'Salamanca',
+    'Segovia',
+    'Soria',
+    'Valladolid',
+    'Zamora',
+  ],
+  Cataluña: ['Barcelona', 'Girona', 'Lleida', 'Tarragona'],
+  Ceuta: ['Ceuta'],
   'Comunidad Valenciana': ['Alicante', 'Castellón', 'Valencia'],
-  'Extremadura': ['Badajoz', 'Cáceres'],
-  'Galicia': ['A Coruña', 'Lugo', 'Ourense', 'Pontevedra'],
+  Extremadura: ['Badajoz', 'Cáceres'],
+  Galicia: ['A Coruña', 'Lugo', 'Ourense', 'Pontevedra'],
   'La Rioja': ['La Rioja'],
-  'Madrid': ['Madrid'],
-  'Melilla': ['Melilla'],
-  'Murcia': ['Murcia'],
-  'Navarra': ['Navarra'],
+  Madrid: ['Madrid'],
+  Melilla: ['Melilla'],
+  Murcia: ['Murcia'],
+  Navarra: ['Navarra'],
   'País Vasco': ['Álava', 'Gipuzkoa', 'Vizcaya'],
 }
 
@@ -60,10 +70,12 @@ async function getStores(searchParams: SearchParams) {
 
   let query = supabase
     .from('stores')
-    .select(`
+    .select(
+      `
       *,
       profiles:submitted_by(id, username, display_name, avatar_url)
-    `)
+    `
+    )
     .eq('status', 'approved')
     .order('avg_rating', { ascending: false })
 
@@ -80,7 +92,7 @@ async function getStores(searchParams: SearchParams) {
   else if (searchParams.ccaa && CCAA_PROVINCES[searchParams.ccaa]) {
     const provinces = CCAA_PROVINCES[searchParams.ccaa]
     // Use OR filter for all provinces in the CCAA
-    query = query.or(provinces.map(p => `province.ilike.%${p}%`).join(','))
+    query = query.or(provinces.map((p) => `province.ilike.%${p}%`).join(','))
   }
 
   // Filter by city
@@ -105,7 +117,7 @@ async function getStores(searchParams: SearchParams) {
 
 // Get unique provinces count
 function getUniqueProvinces(stores: StoreWithSubmitter[]): number {
-  const provinces = new Set(stores.map(s => s.province).filter(Boolean))
+  const provinces = new Set(stores.map((s) => s.province).filter(Boolean))
   return provinces.size
 }
 
@@ -148,7 +160,7 @@ export default async function TiendasPage({
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section - Rogue Trader / Cartographia Style */}
-      <section className="relative py-20 sm:py-28 lg:py-32 overflow-hidden">
+      <section className="relative overflow-hidden py-20 sm:py-28 lg:py-32">
         {/* Background layers */}
         <div className="absolute inset-0 bg-gradient-to-b from-void via-void-light/30 to-void" />
 
@@ -165,112 +177,120 @@ export default async function TiendasPage({
         />
 
         {/* Compass decorations */}
-        <div className="absolute top-8 left-8 text-imperial-gold/20 hidden lg:block">
-          <CompassRose className="w-24 h-24" />
+        <div className="absolute left-8 top-8 hidden text-imperial-gold/20 lg:block">
+          <CompassRose className="h-24 w-24" />
         </div>
-        <div className="absolute bottom-8 right-8 text-imperial-gold/10 hidden lg:block">
-          <CompassRose className="w-32 h-32" />
+        <div className="absolute bottom-8 right-8 hidden text-imperial-gold/10 lg:block">
+          <CompassRose className="h-32 w-32" />
         </div>
 
         {/* Floating coordinate markers */}
-        <div className="absolute top-16 right-1/4 text-[10px] font-mono text-imperial-gold/20 tracking-wider hidden md:block">
+        <div className="absolute right-1/4 top-16 hidden font-mono text-[10px] tracking-wider text-imperial-gold/20 md:block">
           40.4168° N
         </div>
-        <div className="absolute bottom-16 left-1/4 text-[10px] font-mono text-imperial-gold/20 tracking-wider hidden md:block">
+        <div className="absolute bottom-16 left-1/4 hidden font-mono text-[10px] tracking-wider text-imperial-gold/20 md:block">
           3.7038° W
         </div>
 
-        <div className="relative max-w-5xl mx-auto px-6 text-center">
+        <div className="relative mx-auto max-w-5xl px-6 text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-lg bg-void-light/80 border border-imperial-gold/30 mb-6">
-            <Compass className="w-4 h-4 text-imperial-gold" />
-            <span className="text-xs font-mono text-imperial-gold/80 tracking-[0.2em] uppercase">
+          <div className="mb-6 inline-flex items-center gap-3 rounded-lg border border-imperial-gold/30 bg-void-light/80 px-4 py-2">
+            <Compass className="h-4 w-4 text-imperial-gold" />
+            <span className="font-mono text-xs uppercase tracking-[0.2em] text-imperial-gold/80">
               Cartographia Commercialis
             </span>
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-bone mb-4 tracking-wide">
+          <h1 className="mb-4 font-display text-4xl font-bold tracking-wide text-bone sm:text-5xl lg:text-6xl">
             Puestos de Comercio
           </h1>
-          <p className="text-bone/60 font-body text-lg max-w-2xl mx-auto mb-8">
-            Registro Imperial de establecimientos autorizados para el comercio de
-            pertrechos, miniaturas y suministros del Adeptus Ministrorum.
+          <p className="mx-auto mb-8 max-w-2xl font-body text-lg text-bone/60">
+            Registro Imperial de establecimientos autorizados para el comercio de pertrechos,
+            miniaturas y suministros del Adeptus Ministrorum.
           </p>
 
           {/* Stats row */}
-          <div className="flex items-center justify-center gap-6 sm:gap-10 mb-8">
+          <div className="mb-8 flex items-center justify-center gap-6 sm:gap-10">
             <div className="text-center">
-              <div className="flex items-center justify-center gap-2 text-3xl font-display font-bold text-imperial-gold">
-                <Store className="w-6 h-6" />
+              <div className="flex items-center justify-center gap-2 font-display text-3xl font-bold text-imperial-gold">
+                <Store className="h-6 w-6" />
                 {stores.length}
               </div>
-              <div className="text-xs font-mono text-bone/50 tracking-wider uppercase mt-1">Puestos</div>
+              <div className="mt-1 font-mono text-xs uppercase tracking-wider text-bone/50">
+                Puestos
+              </div>
             </div>
-            <div className="w-px h-12 bg-imperial-gold/20" />
+            <div className="h-12 w-px bg-imperial-gold/20" />
             <div className="text-center">
-              <div className="flex items-center justify-center gap-2 text-3xl font-display font-bold text-bone/80">
-                <MapPin className="w-6 h-6 text-imperial-gold/60" />
+              <div className="flex items-center justify-center gap-2 font-display text-3xl font-bold text-bone/80">
+                <MapPin className="h-6 w-6 text-imperial-gold/60" />
                 {uniqueProvinces}
               </div>
-              <div className="text-xs font-mono text-bone/50 tracking-wider uppercase mt-1">Provincias</div>
+              <div className="mt-1 font-mono text-xs uppercase tracking-wider text-bone/50">
+                Provincias
+              </div>
             </div>
-            <div className="w-px h-12 bg-imperial-gold/20" />
+            <div className="h-12 w-px bg-imperial-gold/20" />
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 text-emerald-400">
-                <Shield className="w-5 h-5" />
-                <Sparkles className="w-4 h-4" />
+                <Shield className="h-5 w-5" />
+                <Sparkles className="h-4 w-4" />
               </div>
-              <div className="text-xs font-mono text-bone/50 tracking-wider uppercase mt-1">Verificados</div>
+              <div className="mt-1 font-mono text-xs uppercase tracking-wider text-bone/50">
+                Verificados
+              </div>
             </div>
           </div>
 
           {/* CTA */}
           <Link
             href="/comunidad/tiendas/nueva"
-            className="group inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-b from-imperial-gold/20 to-imperial-gold/10 border border-imperial-gold/40 hover:border-imperial-gold/60 hover:from-imperial-gold/30 hover:to-imperial-gold/15 transition-all duration-300"
+            className="group inline-flex items-center gap-3 rounded-xl border border-imperial-gold/40 bg-gradient-to-b from-imperial-gold/20 to-imperial-gold/10 px-6 py-3 transition-all duration-300 hover:border-imperial-gold/60 hover:from-imperial-gold/30 hover:to-imperial-gold/15"
           >
-            <Plus className="w-5 h-5 text-imperial-gold" />
-            <span className="font-display font-semibold text-imperial-gold tracking-wide">
+            <Plus className="h-5 w-5 text-imperial-gold" />
+            <span className="font-display font-semibold tracking-wide text-imperial-gold">
               Registrar Puesto Comercial
             </span>
-            <ChevronRight className="w-4 h-4 text-imperial-gold/60 group-hover:translate-x-1 transition-transform" />
+            <ChevronRight className="h-4 w-4 text-imperial-gold/60 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
       </section>
 
       {/* Divider */}
-      <div className="flex items-center gap-4 max-w-7xl mx-auto px-6">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent" />
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-6">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent" />
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rotate-45 bg-imperial-gold/40" />
-          <ScrollText className="w-4 h-4 text-imperial-gold/40" />
-          <div className="w-1.5 h-1.5 rotate-45 bg-imperial-gold/40" />
+          <div className="h-1.5 w-1.5 rotate-45 bg-imperial-gold/40" />
+          <ScrollText className="h-4 w-4 text-imperial-gold/40" />
+          <div className="h-1.5 w-1.5 rotate-45 bg-imperial-gold/40" />
         </div>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent" />
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-imperial-gold/20 to-transparent" />
       </div>
 
       {/* Main Content */}
       <section className="py-8 sm:py-12">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="mx-auto max-w-7xl px-6">
           {/* Section header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-imperial-gold/10 border border-imperial-gold/30">
-                <Store className="w-5 h-5 text-imperial-gold" />
+              <div className="rounded-lg border border-imperial-gold/30 bg-imperial-gold/10 p-2">
+                <Store className="h-5 w-5 text-imperial-gold" />
               </div>
               <div>
-                <h2 className="font-display font-bold text-bone text-lg">Directorio de Tiendas</h2>
-                <p className="text-xs font-mono text-bone/40 tracking-wider">ESTABLECIMIENTOS AUTORIZADOS</p>
+                <h2 className="font-display text-lg font-bold text-bone">Directorio de Tiendas</h2>
+                <p className="font-mono text-xs tracking-wider text-bone/40">
+                  ESTABLECIMIENTOS AUTORIZADOS
+                </p>
               </div>
             </div>
 
             {/* Map link */}
             <Link
               href="/comunidad"
-              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg bg-void-light/60 border border-bone/10 text-bone/60 hover:text-imperial-gold hover:border-imperial-gold/30 transition-all text-sm font-mono"
+              className="hidden items-center gap-2 rounded-lg border border-bone/10 bg-void-light/60 px-4 py-2 font-mono text-sm text-bone/60 transition-all hover:border-imperial-gold/30 hover:text-imperial-gold sm:flex"
             >
-              <Compass className="w-4 h-4" />
+              <Compass className="h-4 w-4" />
               Ver Mapa
             </Link>
           </div>
@@ -283,11 +303,11 @@ export default async function TiendasPage({
           </div>
 
           {/* Results indicator */}
-          <div className="flex items-center gap-3 mb-6 p-3 rounded-lg bg-void-light/50 border border-bone/10">
-            <MapPin className="w-4 h-4 text-imperial-gold/60" />
-            <p className="text-sm text-bone/60 font-mono">
-              <span className="text-imperial-gold font-semibold">{stores.length}</span>
-              {' '}{stores.length === 1 ? 'puesto registrado' : 'puestos registrados'} en el Sector
+          <div className="mb-6 flex items-center gap-3 rounded-lg border border-bone/10 bg-void-light/50 p-3">
+            <MapPin className="h-4 w-4 text-imperial-gold/60" />
+            <p className="font-mono text-sm text-bone/60">
+              <span className="font-semibold text-imperial-gold">{stores.length}</span>{' '}
+              {stores.length === 1 ? 'puesto registrado' : 'puestos registrados'} en el Sector
             </p>
           </div>
 
@@ -299,24 +319,24 @@ export default async function TiendasPage({
 
           {/* Bottom decoration */}
           <div className="mt-12 flex items-center justify-center">
-            <div className="flex items-center gap-4 px-6 py-3 rounded-lg bg-void-light/30 border border-bone/10">
-              <Compass className="w-4 h-4 text-imperial-gold/40" />
-              <span className="text-xs font-mono text-bone/40 tracking-wider">
+            <div className="flex items-center gap-4 rounded-lg border border-bone/10 bg-void-light/30 px-6 py-3">
+              <Compass className="h-4 w-4 text-imperial-gold/40" />
+              <span className="font-mono text-xs tracking-wider text-bone/40">
                 REGISTRO IMPERIAL • SECTOR HISPANIA • COMMERCIA IMPERIALIS
               </span>
-              <Compass className="w-4 h-4 text-imperial-gold/40 scale-x-[-1]" />
+              <Compass className="h-4 w-4 scale-x-[-1] text-imperial-gold/40" />
             </div>
           </div>
         </div>
       </section>
 
       {/* Mobile CTA */}
-      <div className="sm:hidden fixed bottom-6 right-6 z-40">
+      <div className="fixed bottom-6 right-6 z-40 sm:hidden">
         <Link
           href="/comunidad/tiendas/nueva"
-          className="flex items-center justify-center w-14 h-14 bg-imperial-gold text-void rounded-full shadow-lg shadow-imperial-gold/30 hover:scale-105 transition-transform"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-imperial-gold text-void shadow-lg shadow-imperial-gold/30 transition-transform hover:scale-105"
         >
-          <Plus className="w-6 h-6" />
+          <Plus className="h-6 w-6" />
         </Link>
       </div>
     </div>
@@ -327,8 +347,8 @@ function FiltersSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-12 bg-void-light/50 rounded-xl animate-pulse" />
-        <div className="w-28 h-12 bg-void-light/30 rounded-xl animate-pulse" />
+        <div className="h-12 flex-1 animate-pulse rounded-xl bg-void-light/50" />
+        <div className="h-12 w-28 animate-pulse rounded-xl bg-void-light/30" />
       </div>
     </div>
   )

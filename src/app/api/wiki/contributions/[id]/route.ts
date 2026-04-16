@@ -15,7 +15,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const supabase = await createClient()
 
     // Check auth
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -32,12 +34,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // Get contribution
     const { data, error } = await supabase
       .from('wiki_contributions')
-      .select(`
+      .select(
+        `
         *,
         contributor:profiles!wiki_contributions_contributor_id_fkey(username, display_name),
         page:faction_wiki_pages(id, title, slug, faction_id, content, excerpt),
         reviewer:profiles!wiki_contributions_reviewer_id_fkey(username, display_name)
-      `)
+      `
+      )
       .eq('id', id)
       .single()
 
@@ -67,7 +71,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const supabase = await createClient()
 
     // Check auth
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -156,12 +162,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         reviewed_at: new Date().toISOString(),
       })
       .eq('id', id)
-      .select(`
+      .select(
+        `
         *,
         contributor:profiles!wiki_contributions_contributor_id_fkey(username, display_name),
         page:faction_wiki_pages(title, slug, faction_id),
         reviewer:profiles!wiki_contributions_reviewer_id_fkey(username, display_name)
-      `)
+      `
+      )
       .single()
 
     if (error) {

@@ -7,20 +7,26 @@ export interface FactionTheme {
 
   // Colors
   colors: {
-    primary: string      // Main accent color
-    secondary: string    // Secondary accent
-    tertiary: string     // Third accent (for gradients)
-    background: string   // Dark background tint
-    glow: string         // Glow/bloom color
-    text: string         // Text on dark backgrounds
+    primary: string // Main accent color
+    secondary: string // Secondary accent
+    tertiary: string // Third accent (for gradients)
+    background: string // Dark background tint
+    glow: string // Glow/bloom color
+    text: string // Text on dark backgrounds
   }
 
   // Visual Effects
   effects: {
     particleType: 'sparks' | 'energy' | 'warp' | 'organic' | 'runes' | 'hologram' | 'flames'
     backgroundPattern: 'grid' | 'circuitry' | 'organic' | 'runes' | 'cogs' | 'hexagons' | 'none'
-    glowIntensity: number  // 0-1
-    animationStyle: 'aggressive' | 'elegant' | 'mechanical' | 'chaotic' | 'organic' | 'technological'
+    glowIntensity: number // 0-1
+    animationStyle:
+      | 'aggressive'
+      | 'elegant'
+      | 'mechanical'
+      | 'chaotic'
+      | 'organic'
+      | 'technological'
   }
 
   // CSS Variables
@@ -50,12 +56,12 @@ export const factionThemes: Record<string, FactionTheme> = {
     name: 'Imperium of Man',
     shortName: 'Imperium',
     colors: {
-      primary: '#C9A227',      // Imperial Gold
-      secondary: '#8B0000',    // Blood Red
-      tertiary: '#D4AF37',     // Bright Gold
-      background: '#0D0A05',   // Dark warm void
-      glow: '#FFD700',         // Pure Gold glow
-      text: '#F5E6C8',         // Parchment
+      primary: '#C9A227', // Imperial Gold
+      secondary: '#8B0000', // Blood Red
+      tertiary: '#D4AF37', // Bright Gold
+      background: '#0D0A05', // Dark warm void
+      glow: '#FFD700', // Pure Gold glow
+      text: '#F5E6C8', // Parchment
     },
     effects: {
       particleType: 'sparks',
@@ -84,12 +90,12 @@ export const factionThemes: Record<string, FactionTheme> = {
     name: 'Chaos Space Marines',
     shortName: 'Chaos',
     colors: {
-      primary: '#DC143C',      // Crimson
-      secondary: '#6B1C5F',    // Warp Purple
-      tertiary: '#FF4500',     // Daemon Orange
-      background: '#0A0508',   // Dark blood void
-      glow: '#FF0040',         // Neon red glow
-      text: '#FFE4E1',         // Pale flesh
+      primary: '#DC143C', // Crimson
+      secondary: '#6B1C5F', // Warp Purple
+      tertiary: '#FF4500', // Daemon Orange
+      background: '#0A0508', // Dark blood void
+      glow: '#FF0040', // Neon red glow
+      text: '#FFE4E1', // Pale flesh
     },
     effects: {
       particleType: 'flames',
@@ -118,12 +124,12 @@ export const factionThemes: Record<string, FactionTheme> = {
     name: 'Necrons',
     shortName: 'Necrons',
     colors: {
-      primary: '#00FF87',      // Gauss Green
-      secondary: '#0D9B8A',    // Teal
-      tertiary: '#00FFFF',     // Cyan
-      background: '#020A08',   // Dark void green
-      glow: '#00FF87',         // Gauss glow
-      text: '#E0FFF4',         // Pale green-white
+      primary: '#00FF87', // Gauss Green
+      secondary: '#0D9B8A', // Teal
+      tertiary: '#00FFFF', // Cyan
+      background: '#020A08', // Dark void green
+      glow: '#00FF87', // Gauss glow
+      text: '#E0FFF4', // Pale green-white
     },
     effects: {
       particleType: 'energy',
@@ -152,12 +158,12 @@ export const factionThemes: Record<string, FactionTheme> = {
     name: 'Aeldari',
     shortName: 'Aeldari',
     colors: {
-      primary: '#4169E1',      // Royal Blue
-      secondary: '#E6E6FA',    // Lavender White
-      tertiary: '#9370DB',     // Medium Purple
-      background: '#050510',   // Deep space blue
-      glow: '#87CEEB',         // Sky blue glow
-      text: '#F0F8FF',         // Alice blue
+      primary: '#4169E1', // Royal Blue
+      secondary: '#E6E6FA', // Lavender White
+      tertiary: '#9370DB', // Medium Purple
+      background: '#050510', // Deep space blue
+      glow: '#87CEEB', // Sky blue glow
+      text: '#F0F8FF', // Alice blue
     },
     effects: {
       particleType: 'runes',
@@ -186,12 +192,12 @@ export const factionThemes: Record<string, FactionTheme> = {
     name: 'Orks',
     shortName: 'Orks',
     colors: {
-      primary: '#228B22',      // Forest Green
-      secondary: '#FF8C00',    // Dark Orange
-      tertiary: '#FFD700',     // Gold (teef!)
-      background: '#080A05',   // Murky green-brown
-      glow: '#32CD32',         // Lime green glow
-      text: '#FFFACD',         // Lemon chiffon
+      primary: '#228B22', // Forest Green
+      secondary: '#FF8C00', // Dark Orange
+      tertiary: '#FFD700', // Gold (teef!)
+      background: '#080A05', // Murky green-brown
+      glow: '#32CD32', // Lime green glow
+      text: '#FFFACD', // Lemon chiffon
     },
     effects: {
       particleType: 'sparks',
@@ -220,12 +226,12 @@ export const factionThemes: Record<string, FactionTheme> = {
     name: "T'au Empire",
     shortName: "T'au",
     colors: {
-      primary: '#00CED1',      // Dark Turquoise
-      secondary: '#F5F5F5',    // White Smoke
-      tertiary: '#FF6347',     // Tomato (for accents)
-      background: '#030810',   // Deep blue void
-      glow: '#00FFFF',         // Cyan glow
-      text: '#E0FFFF',         // Light cyan
+      primary: '#00CED1', // Dark Turquoise
+      secondary: '#F5F5F5', // White Smoke
+      tertiary: '#FF6347', // Tomato (for accents)
+      background: '#030810', // Deep blue void
+      glow: '#00FFFF', // Cyan glow
+      text: '#E0FFFF', // Light cyan
     },
     effects: {
       particleType: 'hologram',
@@ -254,12 +260,12 @@ export const factionThemes: Record<string, FactionTheme> = {
     name: 'Tyranids',
     shortName: 'Tyranids',
     colors: {
-      primary: '#8B008B',      // Dark Magenta
-      secondary: '#FF1493',    // Deep Pink
-      tertiary: '#4B0082',     // Indigo
-      background: '#080308',   // Dark organic purple
-      glow: '#FF00FF',         // Magenta glow
-      text: '#FFE4FF',         // Pale pink
+      primary: '#8B008B', // Dark Magenta
+      secondary: '#FF1493', // Deep Pink
+      tertiary: '#4B0082', // Indigo
+      background: '#080308', // Dark organic purple
+      glow: '#FF00FF', // Magenta glow
+      text: '#FFE4FF', // Pale pink
     },
     effects: {
       particleType: 'organic',

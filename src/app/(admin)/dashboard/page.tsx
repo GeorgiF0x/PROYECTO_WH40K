@@ -116,7 +116,20 @@ interface DashboardStatsPayload {
 // HELPERS
 // ══════════════════════════════════════════════════════════════
 
-const MONTH_NAMES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+const MONTH_NAMES = [
+  'Ene',
+  'Feb',
+  'Mar',
+  'Abr',
+  'May',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dic',
+]
 
 function calcGrowthPct(current: number, previous: number): string | null {
   if (previous === 0) return current > 0 ? '+100%' : null
@@ -134,16 +147,18 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
-  }
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+  },
 }
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
   visible: {
-    opacity: 1, y: 0, scale: 1,
-    transition: { type: 'spring', stiffness: 100 }
-  }
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: 'spring', stiffness: 100 },
+  },
 }
 
 function QuickActionCard({
@@ -174,26 +189,26 @@ function QuickActionCard({
     >
       <Link
         href={href}
-        className="group relative overflow-hidden rounded-xl bg-void-light/50 backdrop-blur-sm border border-imperial-gold/10 p-5 block transition-all duration-300 hover:border-imperial-gold/30"
+        className="group relative block overflow-hidden rounded-xl border border-imperial-gold/10 bg-void-light/50 p-5 backdrop-blur-sm transition-all duration-300 hover:border-imperial-gold/30"
       >
         {/* Corner brackets */}
-        <span className="absolute top-2 left-2 w-3 h-3 border-l-2 border-t-2 border-imperial-gold/20 group-hover:border-imperial-gold/50 transition-colors" />
-        <span className="absolute top-2 right-2 w-3 h-3 border-r-2 border-t-2 border-imperial-gold/20 group-hover:border-imperial-gold/50 transition-colors" />
-        <span className="absolute bottom-2 left-2 w-3 h-3 border-l-2 border-b-2 border-imperial-gold/20 group-hover:border-imperial-gold/50 transition-colors" />
-        <span className="absolute bottom-2 right-2 w-3 h-3 border-r-2 border-b-2 border-imperial-gold/20 group-hover:border-imperial-gold/50 transition-colors" />
+        <span className="absolute left-2 top-2 h-3 w-3 border-l-2 border-t-2 border-imperial-gold/20 transition-colors group-hover:border-imperial-gold/50" />
+        <span className="absolute right-2 top-2 h-3 w-3 border-r-2 border-t-2 border-imperial-gold/20 transition-colors group-hover:border-imperial-gold/50" />
+        <span className="absolute bottom-2 left-2 h-3 w-3 border-b-2 border-l-2 border-imperial-gold/20 transition-colors group-hover:border-imperial-gold/50" />
+        <span className="absolute bottom-2 right-2 h-3 w-3 border-b-2 border-r-2 border-imperial-gold/20 transition-colors group-hover:border-imperial-gold/50" />
 
         {/* Glow line */}
         <motion.div
-          className="absolute top-0 left-0 right-0 h-[2px]"
+          className="absolute left-0 right-0 top-0 h-[2px]"
           style={{ background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)` }}
           initial={{ opacity: 0 }}
           whileHover={{ opacity: 1 }}
         />
 
         <div className="relative">
-          <div className="flex items-start justify-between mb-4">
+          <div className="mb-4 flex items-start justify-between">
             <motion.div
-              className="p-2.5 rounded-lg"
+              className="rounded-lg p-2.5"
               style={{
                 background: `linear-gradient(135deg, ${accentColor}30, ${accentColor}10)`,
                 border: `1px solid ${accentColor}40`,
@@ -208,7 +223,7 @@ function QuickActionCard({
             </motion.div>
             {count !== undefined && count > 0 && (
               <motion.span
-                className="flex items-center gap-1 px-2 py-1 rounded-full bg-blood-red/20 text-blood-red border border-blood-red/30 text-xs font-mono"
+                className="bg-blood-red/20 text-blood-red border-blood-red/30 flex items-center gap-1 rounded-full border px-2 py-1 font-mono text-xs"
                 animate={{
                   scale: [1, 1.05, 1],
                 }}
@@ -220,17 +235,17 @@ function QuickActionCard({
             )}
           </div>
 
-          <h3 className="text-bone font-semibold mb-1 group-hover:text-imperial-gold transition-colors">
+          <h3 className="mb-1 font-semibold text-bone transition-colors group-hover:text-imperial-gold">
             {title}
           </h3>
-          <p className="text-sm text-bone/40 group-hover:text-bone/60 transition-colors">
+          <p className="text-sm text-bone/40 transition-colors group-hover:text-bone/60">
             {description}
           </p>
 
-          <div className="mt-4 flex items-center gap-2 text-sm text-bone/30 group-hover:text-imperial-gold/70 transition-colors">
+          <div className="mt-4 flex items-center gap-2 text-sm text-bone/30 transition-colors group-hover:text-imperial-gold/70">
             <Target className="h-3 w-3" />
             <span className="font-mono text-xs tracking-wider">ACCEDER</span>
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </div>
         </div>
       </Link>
@@ -260,7 +275,7 @@ function DataSlateCard({
   const content = (
     <motion.div
       variants={itemVariants}
-      className="stat-card relative overflow-hidden rounded-xl bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 p-5"
+      className="stat-card relative overflow-hidden rounded-xl border border-imperial-gold/15 bg-void-light/50 p-5 backdrop-blur-sm"
       style={{ '--accent-color': color } as React.CSSProperties}
       whileHover={{
         scale: 1.02,
@@ -269,16 +284,21 @@ function DataSlateCard({
       }}
     >
       {/* Glow line */}
-      <div className="glow-line" style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }} />
+      <div
+        className="glow-line"
+        style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+      />
 
       <div className="flex items-start justify-between">
         <div>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <Cpu className="h-3 w-3 text-imperial-gold/40" />
-            <p className="text-[10px] font-mono text-imperial-gold/50 tracking-widest uppercase">{title}</p>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-imperial-gold/50">
+              {title}
+            </p>
           </div>
           <motion.p
-            className="text-3xl font-display font-bold text-bone tracking-tight"
+            className="font-display text-3xl font-bold tracking-tight text-bone"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 + index * 0.1, type: 'spring' }}
@@ -286,19 +306,19 @@ function DataSlateCard({
             {typeof value === 'number' ? value.toLocaleString() : value}
           </motion.p>
           {change && (
-            <div className="flex items-center gap-1 mt-2">
+            <div className="mt-2 flex items-center gap-1">
               {changeType === 'positive' ? (
                 <TrendingUp className="h-3.5 w-3.5 text-necron-teal" />
               ) : changeType === 'negative' ? (
-                <TrendingDown className="h-3.5 w-3.5 text-blood-red" />
+                <TrendingDown className="text-blood-red h-3.5 w-3.5" />
               ) : null}
               <span
-                className={`text-xs font-mono ${
+                className={`font-mono text-xs ${
                   changeType === 'positive'
                     ? 'text-necron-teal'
                     : changeType === 'negative'
-                    ? 'text-blood-red'
-                    : 'text-bone/40'
+                      ? 'text-blood-red'
+                      : 'text-bone/40'
                 }`}
               >
                 {change}
@@ -307,17 +327,13 @@ function DataSlateCard({
           )}
         </div>
         <motion.div
-          className="p-3 rounded-lg relative"
+          className="relative rounded-lg p-3"
           style={{
             background: `linear-gradient(135deg, ${color}30, ${color}10)`,
             border: `1px solid ${color}40`,
           }}
           animate={{
-            boxShadow: [
-              `0 0 10px ${color}20`,
-              `0 0 20px ${color}40`,
-              `0 0 10px ${color}20`,
-            ],
+            boxShadow: [`0 0 10px ${color}20`, `0 0 20px ${color}40`, `0 0 10px ${color}20`],
           }}
           transition={{ duration: 3, repeat: Infinity, delay: index * 0.5 }}
         >
@@ -357,9 +373,7 @@ export default function DashboardPage() {
         // series, top factions and recent activity inside Postgres via CTEs.
         // The RPC name is cast because database.types.ts is regenerated after
         // the migration is deployed.
-        const { data, error } = await supabase.rpc(
-          'get_dashboard_stats' as never
-        )
+        const { data, error } = await supabase.rpc('get_dashboard_stats' as never)
 
         if (error || !data) {
           console.error('Error fetching dashboard data:', error)
@@ -454,8 +468,8 @@ export default function DashboardPage() {
       <div className="space-y-8">
         {/* Header skeleton */}
         <div>
-          <div className="h-8 w-48 bg-imperial-gold/10 rounded-lg animate-pulse mb-2" />
-          <div className="h-4 w-64 bg-imperial-gold/5 rounded animate-pulse" />
+          <div className="mb-2 h-8 w-48 animate-pulse rounded-lg bg-imperial-gold/10" />
+          <div className="h-4 w-64 animate-pulse rounded bg-imperial-gold/5" />
         </div>
 
         {/* Stats skeleton */}
@@ -463,7 +477,7 @@ export default function DashboardPage() {
           {[1, 2, 3, 4].map((i) => (
             <motion.div
               key={i}
-              className="h-32 bg-void-light/50 border border-imperial-gold/10 rounded-xl"
+              className="h-32 rounded-xl border border-imperial-gold/10 bg-void-light/50"
               animate={{ opacity: [0.3, 0.6, 0.3] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
             />
@@ -473,12 +487,12 @@ export default function DashboardPage() {
         {/* Charts skeleton */}
         <div className="grid gap-4 lg:grid-cols-3">
           <motion.div
-            className="lg:col-span-2 h-80 bg-void-light/50 border border-imperial-gold/10 rounded-xl"
+            className="h-80 rounded-xl border border-imperial-gold/10 bg-void-light/50 lg:col-span-2"
             animate={{ opacity: [0.3, 0.6, 0.3] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />
           <motion.div
-            className="h-80 bg-void-light/50 border border-imperial-gold/10 rounded-xl"
+            className="h-80 rounded-xl border border-imperial-gold/10 bg-void-light/50"
             animate={{ opacity: [0.3, 0.6, 0.3] }}
             transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
           />
@@ -487,7 +501,8 @@ export default function DashboardPage() {
     )
   }
 
-  const pendingTotal = (stats?.pendingStores || 0) + (stats?.pendingCreators || 0) + (stats?.pendingReports || 0)
+  const pendingTotal =
+    (stats?.pendingStores || 0) + (stats?.pendingCreators || 0) + (stats?.pendingReports || 0)
 
   return (
     <motion.div
@@ -498,40 +513,38 @@ export default function DashboardPage() {
     >
       {/* Header - Strategium Display */}
       <motion.div
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         variants={itemVariants}
       >
         <div>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <Crosshair className="h-4 w-4 text-imperial-gold/60" />
-            <span className="text-[10px] font-mono text-imperial-gold/60 tracking-[0.3em]">
+            <span className="font-mono text-[10px] tracking-[0.3em] text-imperial-gold/60">
               STRATEGIUM IMPERIAL // CENTRO DE COMANDO
             </span>
           </div>
-          <h1 className="text-2xl font-display font-bold text-bone tracking-wide">
+          <h1 className="font-display text-2xl font-bold tracking-wide text-bone">
             Panel de Control
           </h1>
-          <p className="text-bone/40 mt-1 font-mono text-sm">
-            Estado operacional de la plataforma
-          </p>
+          <p className="mt-1 font-mono text-sm text-bone/40">Estado operacional de la plataforma</p>
         </div>
         {pendingTotal > 0 && (
           <motion.div
-            className="flex items-center gap-3 px-4 py-2 bg-blood-red/10 border border-blood-red/30 rounded-lg"
+            className="bg-blood-red/10 border-blood-red/30 flex items-center gap-3 rounded-lg border px-4 py-2"
             animate={{
               borderColor: ['rgba(139, 0, 0, 0.3)', 'rgba(139, 0, 0, 0.6)', 'rgba(139, 0, 0, 0.3)'],
             }}
             transition={{ duration: 2, repeat: Infinity }}
           >
             <div className="relative">
-              <Radio className="w-4 h-4 text-blood-red" />
+              <Radio className="text-blood-red h-4 w-4" />
               <motion.span
-                className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-blood-red"
+                className="bg-blood-red absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full"
                 animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}
               />
             </div>
-            <span className="text-sm font-mono text-blood-red">
+            <span className="text-blood-red font-mono text-sm">
               {pendingTotal} ALERTAS PENDIENTES
             </span>
           </motion.div>
@@ -540,9 +553,9 @@ export default function DashboardPage() {
 
       {/* KPI Cards - Data Slates */}
       <motion.div variants={containerVariants}>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="mb-4 flex items-center gap-2">
           <Cpu className="h-4 w-4 text-necron-teal/60" />
-          <span className="text-[10px] font-mono text-necron-teal/60 tracking-widest">
+          <span className="font-mono text-[10px] tracking-widest text-necron-teal/60">
             LECTURAS DE AUSPEX
           </span>
         </div>
@@ -551,7 +564,13 @@ export default function DashboardPage() {
             title="Efectivos"
             value={stats?.totalUsers || 0}
             change={stats?.usersGrowth || undefined}
-            changeType={stats?.usersGrowth?.startsWith('+') ? 'positive' : stats?.usersGrowth ? 'negative' : undefined}
+            changeType={
+              stats?.usersGrowth?.startsWith('+')
+                ? 'positive'
+                : stats?.usersGrowth
+                  ? 'negative'
+                  : undefined
+            }
             icon={Users}
             href="/dashboard/usuarios"
             color="#0D9B8A"
@@ -561,7 +580,13 @@ export default function DashboardPage() {
             title="Reliquias"
             value={stats?.totalMiniatures || 0}
             change={stats?.miniaturesGrowth || undefined}
-            changeType={stats?.miniaturesGrowth?.startsWith('+') ? 'positive' : stats?.miniaturesGrowth ? 'negative' : undefined}
+            changeType={
+              stats?.miniaturesGrowth?.startsWith('+')
+                ? 'positive'
+                : stats?.miniaturesGrowth
+                  ? 'negative'
+                  : undefined
+            }
             icon={Image}
             color="#C9A227"
             index={1}
@@ -588,9 +613,9 @@ export default function DashboardPage() {
 
       {/* Quick Actions - Tactical Options */}
       <motion.div variants={containerVariants}>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="mb-4 flex items-center gap-2">
           <Target className="h-4 w-4 text-imperial-gold/60" />
-          <span className="text-[10px] font-mono text-imperial-gold/60 tracking-widest">
+          <span className="font-mono text-[10px] tracking-widest text-imperial-gold/60">
             OPCIONES TACTICAS
           </span>
         </div>
@@ -639,7 +664,7 @@ export default function DashboardPage() {
           <ChartCard
             title="Crecimiento de la Legion"
             description="Tendencias por ciclo temporal"
-            className="bg-void-light/50 backdrop-blur-sm border-imperial-gold/15 hover:border-imperial-gold/30 transition-colors"
+            className="border-imperial-gold/15 bg-void-light/50 backdrop-blur-sm transition-colors hover:border-imperial-gold/30"
           >
             <MultiLineChart
               data={growthData}
@@ -656,19 +681,19 @@ export default function DashboardPage() {
         <motion.div variants={itemVariants}>
           <ChartCard
             title="Estado Operacional"
-            className="bg-void-light/50 backdrop-blur-sm border-imperial-gold/15 hover:border-imperial-gold/30 transition-colors"
+            className="border-imperial-gold/15 bg-void-light/50 backdrop-blur-sm transition-colors hover:border-imperial-gold/30"
           >
             <DonutChart data={contentStatus} height={220} showLegend={false} />
-            <div className="flex justify-center gap-4 mt-4">
+            <div className="mt-4 flex justify-center gap-4">
               {contentStatus.map((item) => (
                 <div key={item.name} className="flex items-center gap-2 text-xs">
                   <motion.span
-                    className="w-2.5 h-2.5 rounded-full"
+                    className="h-2.5 w-2.5 rounded-full"
                     style={{ backgroundColor: item.fill }}
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity, delay: Math.random() }}
                   />
-                  <span className="text-bone/60 font-mono">{item.name}</span>
+                  <span className="font-mono text-bone/60">{item.name}</span>
                   <span className="text-bone/30">({item.value})</span>
                 </div>
               ))}
@@ -684,30 +709,34 @@ export default function DashboardPage() {
           <ChartCard
             title="Lealtades Declaradas"
             description="Distribucion por faccion"
-            className="bg-void-light/50 backdrop-blur-sm border-imperial-gold/15 hover:border-imperial-gold/30 transition-colors"
+            className="border-imperial-gold/15 bg-void-light/50 backdrop-blur-sm transition-colors hover:border-imperial-gold/30"
           >
-            <SimpleBarChart data={factionData.length > 0 ? factionData : [{ name: 'Sin datos', value: 0 }]} height={220} layout="horizontal" />
+            <SimpleBarChart
+              data={factionData.length > 0 ? factionData : [{ name: 'Sin datos', value: 0 }]}
+              height={220}
+              layout="horizontal"
+            />
           </ChartCard>
         </motion.div>
 
         {/* Recent Activity - Transmission Log */}
         <motion.div
           variants={itemVariants}
-          className="lg:col-span-2 rounded-xl bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 p-6 hover:border-imperial-gold/30 transition-colors"
+          className="rounded-xl border border-imperial-gold/15 bg-void-light/50 p-6 backdrop-blur-sm transition-colors hover:border-imperial-gold/30 lg:col-span-2"
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-1">
+              <div className="mb-1 flex items-center gap-2">
                 <Radio className="h-3 w-3 text-necron-teal/60" />
-                <span className="text-[10px] font-mono text-necron-teal/60 tracking-widest">
+                <span className="font-mono text-[10px] tracking-widest text-necron-teal/60">
                   REGISTRO VOX
                 </span>
               </div>
-              <h3 className="text-bone font-semibold">Transmisiones Recientes</h3>
+              <h3 className="font-semibold text-bone">Transmisiones Recientes</h3>
             </div>
             <Link
               href="/dashboard/usuarios"
-              className="text-sm text-imperial-gold hover:text-imperial-gold/80 flex items-center gap-1 font-mono"
+              className="flex items-center gap-1 font-mono text-sm text-imperial-gold hover:text-imperial-gold/80"
             >
               <span className="text-xs tracking-wider">VER TODO</span>
               <ArrowUpRight className="h-3.5 w-3.5" />
@@ -718,42 +747,48 @@ export default function DashboardPage() {
             {activities.map((activity, index) => (
               <motion.div
                 key={activity.id}
-                className="flex items-center gap-4 p-3 rounded-lg bg-void/50 border border-transparent hover:border-imperial-gold/20 transition-all"
+                className="flex items-center gap-4 rounded-lg border border-transparent bg-void/50 p-3 transition-all hover:border-imperial-gold/20"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 + index * 0.1 }}
                 whileHover={{ x: 4 }}
               >
                 <motion.div
-                  className={`p-2 rounded-lg ${
+                  className={`rounded-lg p-2 ${
                     activity.status === 'pending'
-                      ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                      ? 'border border-amber-500/30 bg-amber-500/10 text-amber-400'
                       : activity.status === 'approved'
-                      ? 'bg-necron-teal/10 text-necron-teal border border-necron-teal/30'
-                      : 'bg-void-light text-bone/40 border border-bone/10'
+                        ? 'border border-necron-teal/30 bg-necron-teal/10 text-necron-teal'
+                        : 'border border-bone/10 bg-void-light text-bone/40'
                   }`}
-                  animate={activity.status === 'pending' ? {
-                    boxShadow: ['0 0 5px rgba(245, 158, 11, 0.2)', '0 0 15px rgba(245, 158, 11, 0.4)', '0 0 5px rgba(245, 158, 11, 0.2)'],
-                  } : {}}
+                  animate={
+                    activity.status === 'pending'
+                      ? {
+                          boxShadow: [
+                            '0 0 5px rgba(245, 158, 11, 0.2)',
+                            '0 0 15px rgba(245, 158, 11, 0.4)',
+                            '0 0 5px rgba(245, 158, 11, 0.2)',
+                          ],
+                        }
+                      : {}
+                  }
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  {activity.type === 'user' && <Users className="w-4 h-4" />}
-                  {activity.type === 'store' && <Store className="w-4 h-4" />}
-                  {activity.type === 'miniature' && <Image className="w-4 h-4" />}
+                  {activity.type === 'user' && <Users className="h-4 w-4" />}
+                  {activity.type === 'store' && <Store className="h-4 w-4" />}
+                  {activity.type === 'miniature' && <Image className="h-4 w-4" />}
                 </motion.div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-bone truncate">
-                    {activity.title}
-                  </p>
-                  <p className="text-xs text-bone/40 font-mono">{activity.description}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-bone">{activity.title}</p>
+                  <p className="font-mono text-xs text-bone/40">{activity.description}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   {activity.status === 'pending' && (
-                    <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[10px] font-mono uppercase border border-amber-500/20">
+                    <span className="rounded border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] uppercase text-amber-400">
                       En Espera
                     </span>
                   )}
-                  <span className="text-xs text-bone/30 font-mono whitespace-nowrap">
+                  <span className="whitespace-nowrap font-mono text-xs text-bone/30">
                     {new Date(activity.timestamp).toLocaleDateString('es-ES', {
                       day: 'numeric',
                       month: 'short',
@@ -766,16 +801,20 @@ export default function DashboardPage() {
             {activities.length === 0 && (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <motion.div
-                  className="p-4 rounded-full bg-void border border-imperial-gold/20 mb-4"
+                  className="mb-4 rounded-full border border-imperial-gold/20 bg-void p-4"
                   animate={{
-                    boxShadow: ['0 0 10px rgba(201, 162, 39, 0.1)', '0 0 20px rgba(201, 162, 39, 0.2)', '0 0 10px rgba(201, 162, 39, 0.1)'],
+                    boxShadow: [
+                      '0 0 10px rgba(201, 162, 39, 0.1)',
+                      '0 0 20px rgba(201, 162, 39, 0.2)',
+                      '0 0 10px rgba(201, 162, 39, 0.1)',
+                    ],
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
                 >
-                  <Eye className="w-8 h-8 text-imperial-gold/40" />
+                  <Eye className="h-8 w-8 text-imperial-gold/40" />
                 </motion.div>
-                <p className="text-bone/60 font-medium">Canal silencioso</p>
-                <p className="text-sm text-bone/30 mt-1 font-mono">
+                <p className="font-medium text-bone/60">Canal silencioso</p>
+                <p className="mt-1 font-mono text-sm text-bone/30">
                   Las transmisiones apareceran aqui
                 </p>
               </div>

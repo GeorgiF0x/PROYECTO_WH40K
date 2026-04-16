@@ -3,10 +3,7 @@
 import { useRef, useEffect, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Mesh, ShaderMaterial, TextureLoader, MathUtils, Texture, SRGBColorSpace } from 'three'
-import {
-  holographicVertexShader,
-  holographicFragmentShader,
-} from './holographicShader'
+import { holographicVertexShader, holographicFragmentShader } from './holographicShader'
 
 interface HolographicImagePlaneProps {
   imageUrl: string
@@ -93,16 +90,8 @@ export default function HolographicImagePlane({
     if (meshRef.current) {
       const targetRotY = pointer.x * 0.08
       const targetRotX = -pointer.y * 0.08
-      meshRef.current.rotation.y = MathUtils.lerp(
-        meshRef.current.rotation.y,
-        targetRotY,
-        0.05
-      )
-      meshRef.current.rotation.x = MathUtils.lerp(
-        meshRef.current.rotation.x,
-        targetRotX,
-        0.05
-      )
+      meshRef.current.rotation.y = MathUtils.lerp(meshRef.current.rotation.y, targetRotY, 0.05)
+      meshRef.current.rotation.x = MathUtils.lerp(meshRef.current.rotation.x, targetRotX, 0.05)
     }
   })
 

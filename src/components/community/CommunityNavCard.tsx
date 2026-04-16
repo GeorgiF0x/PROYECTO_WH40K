@@ -93,7 +93,7 @@ export function CommunityNavCard({
         whileHover={disabled ? {} : { scale: 1.02, y: -4 }}
         whileTap={disabled ? {} : { scale: 0.98 }}
         className={cn(
-          'relative overflow-hidden rounded-2xl border bg-void-900/50 backdrop-blur-sm transition-all group',
+          'bg-void-900/50 group relative overflow-hidden rounded-2xl border backdrop-blur-sm transition-all',
           styles.border,
           !disabled && `shadow-lg ${styles.glow} group-hover:shadow-xl`,
           disabled && 'opacity-60',
@@ -101,10 +101,10 @@ export function CommunityNavCard({
         )}
       >
         {/* Corner brackets */}
-        <div className="absolute top-0 left-0 w-5 h-5 border-l-2 border-t-2 border-imperial-gold/40 rounded-tl-2xl" />
-        <div className="absolute top-0 right-0 w-5 h-5 border-r-2 border-t-2 border-imperial-gold/40 rounded-tr-2xl" />
-        <div className="absolute bottom-0 left-0 w-5 h-5 border-l-2 border-b-2 border-imperial-gold/40 rounded-bl-2xl" />
-        <div className="absolute bottom-0 right-0 w-5 h-5 border-r-2 border-b-2 border-imperial-gold/40 rounded-br-2xl" />
+        <div className="absolute left-0 top-0 h-5 w-5 rounded-tl-2xl border-l-2 border-t-2 border-imperial-gold/40" />
+        <div className="absolute right-0 top-0 h-5 w-5 rounded-tr-2xl border-r-2 border-t-2 border-imperial-gold/40" />
+        <div className="absolute bottom-0 left-0 h-5 w-5 rounded-bl-2xl border-b-2 border-l-2 border-imperial-gold/40" />
+        <div className="absolute bottom-0 right-0 h-5 w-5 rounded-br-2xl border-b-2 border-r-2 border-imperial-gold/40" />
 
         {/* Background gradient */}
         <div className={cn('absolute inset-0 bg-gradient-to-br opacity-50', styles.gradient)} />
@@ -125,8 +125,8 @@ export function CommunityNavCard({
         <div className="relative p-6">
           {/* Coming Soon Badge */}
           {comingSoon && (
-            <div className="absolute top-4 right-4">
-              <span className="px-2 py-1 text-[10px] font-mono font-bold text-amber-400 bg-amber-500/20 border border-amber-500/30 rounded-full tracking-wider">
+            <div className="absolute right-4 top-4">
+              <span className="rounded-full border border-amber-500/30 bg-amber-500/20 px-2 py-1 font-mono text-[10px] font-bold tracking-wider text-amber-400">
                 PRÓXIMAMENTE
               </span>
             </div>
@@ -135,50 +135,46 @@ export function CommunityNavCard({
           {/* Icon */}
           <motion.div
             className={cn(
-              'w-14 h-14 rounded-xl flex items-center justify-center mb-4',
+              'mb-4 flex h-14 w-14 items-center justify-center rounded-xl',
               styles.iconBg
             )}
             whileHover={{ rotate: [0, -5, 5, 0] }}
             transition={{ duration: 0.5 }}
           >
-            <Icon className={cn('w-7 h-7', styles.iconColor)} />
+            <Icon className={cn('h-7 w-7', styles.iconColor)} />
           </motion.div>
 
           {/* Subtitle */}
-          <p className={cn('text-[10px] font-mono tracking-widest mb-1', styles.iconColor)}>
+          <p className={cn('mb-1 font-mono text-[10px] tracking-widest', styles.iconColor)}>
             {subtitle}
           </p>
 
           {/* Title */}
-          <h3 className="text-xl font-heading font-bold text-bone-100 mb-2">
-            {title}
-          </h3>
+          <h3 className="font-heading text-bone-100 mb-2 text-xl font-bold">{title}</h3>
 
           {/* Description */}
-          <p className="text-sm text-bone-500 mb-4 leading-relaxed">
-            {description}
-          </p>
+          <p className="text-bone-500 mb-4 text-sm leading-relaxed">{description}</p>
 
           {/* Footer: Count + Arrow */}
           <div className="flex items-center justify-between">
             {count !== undefined && countLabel && (
               <div className="flex items-center gap-2">
-                <span className={cn('w-1.5 h-1.5 rounded-full', styles.accent)} />
-                <span className="text-xs font-mono text-bone-400">
+                <span className={cn('h-1.5 w-1.5 rounded-full', styles.accent)} />
+                <span className="text-bone-400 font-mono text-xs">
                   <span className={cn('font-bold', styles.iconColor)}>{count}</span> {countLabel}
                 </span>
               </div>
             )}
             {comingSoon && !count && (
-              <span className="text-xs font-mono text-bone-600">En desarrollo</span>
+              <span className="text-bone-600 font-mono text-xs">En desarrollo</span>
             )}
             {!disabled && (
               <motion.div
-                className={cn('flex items-center gap-1 text-sm font-mono', styles.iconColor)}
+                className={cn('flex items-center gap-1 font-mono text-sm', styles.iconColor)}
                 whileHover={{ x: 5 }}
               >
                 <span className="text-xs">EXPLORAR</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="h-4 w-4" />
               </motion.div>
             )}
           </div>

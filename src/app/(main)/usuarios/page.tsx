@@ -48,7 +48,11 @@ interface UserProfile {
 // --- Decorative components: Registros del Administratum ---
 
 // Gothic corner filigree — pointed junction with gothic cross motif
-function AdministratumCorner({ position }: { position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' }) {
+function AdministratumCorner({
+  position,
+}: {
+  position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+}) {
   const flip = {
     'top-left': '',
     'top-right': 'scaleX(-1)',
@@ -64,7 +68,10 @@ function AdministratumCorner({ position }: { position: 'top-left' | 'top-right' 
   }[position]
 
   return (
-    <div className={`absolute ${posClass} w-[60px] h-[60px] pointer-events-none`} style={{ transform: flip }}>
+    <div
+      className={`absolute ${posClass} pointer-events-none h-[60px] w-[60px]`}
+      style={{ transform: flip }}
+    >
       <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
         {/* Main angular path — pointed gothic junction */}
         <path
@@ -87,8 +94,22 @@ function AdministratumCorner({ position }: { position: 'top-left' | 'top-right' 
         <line x1="56" y1="-2" x2="56" y2="4" stroke="rgba(201,162,39,0.3)" strokeWidth="0.8" />
         <line x1="-2" y1="56" x2="4" y2="56" stroke="rgba(201,162,39,0.3)" strokeWidth="0.8" />
         {/* Diamond accent nodes (rotated rect) */}
-        <rect x="27" y="-2" width="4" height="4" transform="rotate(45 29 0)" fill="rgba(201,162,39,0.3)" />
-        <rect x="-2" y="27" width="4" height="4" transform="rotate(45 0 29)" fill="rgba(201,162,39,0.3)" />
+        <rect
+          x="27"
+          y="-2"
+          width="4"
+          height="4"
+          transform="rotate(45 29 0)"
+          fill="rgba(201,162,39,0.3)"
+        />
+        <rect
+          x="-2"
+          y="27"
+          width="4"
+          height="4"
+          transform="rotate(45 0 29)"
+          fill="rgba(201,162,39,0.3)"
+        />
       </svg>
     </div>
   )
@@ -97,13 +118,14 @@ function AdministratumCorner({ position }: { position: 'top-left' | 'top-right' 
 // Ink motes — archive dust & ink droplets floating
 const INK_MOTES = Array.from({ length: 5 }, (_, i) => ({
   id: i,
-  left: `${(i * 8.3 + 5) % 88 + 6}%`,
-  top: `${(i * 11 + 7) % 78 + 11}%`,
-  color: i % 3 === 0
-    ? 'rgba(201,162,39,0.35)'   // golden ink drops
-    : i % 3 === 1
-      ? 'rgba(180,130,30,0.3)'  // amber dust
-      : 'rgba(139,0,0,0.25)',   // dark ink stain
+  left: `${((i * 8.3 + 5) % 88) + 6}%`,
+  top: `${((i * 11 + 7) % 78) + 11}%`,
+  color:
+    i % 3 === 0
+      ? 'rgba(201,162,39,0.35)' // golden ink drops
+      : i % 3 === 1
+        ? 'rgba(180,130,30,0.3)' // amber dust
+        : 'rgba(139,0,0,0.25)', // dark ink stain
   size: 4 + (i % 4) * 2,
   drift: 12 + (i % 5) * 4,
   dur: 8 + (i % 7),
@@ -113,7 +135,7 @@ const INK_MOTES = Array.from({ length: 5 }, (_, i) => ({
 
 function InkMotes() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {INK_MOTES.map((m) => (
         <motion.div
           key={m.id}
@@ -145,23 +167,59 @@ function InkMotes() {
 // Aquila Imperial watermark — simplified double-headed eagle
 function AquilaWatermark() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
       <motion.div
         animate={{ opacity: [0.03, 0.06, 0.03] }}
         transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
       >
-        <svg width="500" height="350" viewBox="0 0 300 200" fill="none" className="text-imperial-gold">
+        <svg
+          width="500"
+          height="350"
+          viewBox="0 0 300 200"
+          fill="none"
+          className="text-imperial-gold"
+        >
           {/* Left wing — 3 feather layers */}
-          <path d="M150 100 Q110 60 40 30 Q70 55 60 80 Q50 60 20 50 Q50 75 45 95 Q35 80 10 75 Q40 95 55 110 Z" stroke="currentColor" strokeWidth="0.6" fill="none" />
+          <path
+            d="M150 100 Q110 60 40 30 Q70 55 60 80 Q50 60 20 50 Q50 75 45 95 Q35 80 10 75 Q40 95 55 110 Z"
+            stroke="currentColor"
+            strokeWidth="0.6"
+            fill="none"
+          />
           {/* Right wing — mirrored */}
-          <path d="M150 100 Q190 60 260 30 Q230 55 240 80 Q250 60 280 50 Q250 75 255 95 Q265 80 290 75 Q260 95 245 110 Z" stroke="currentColor" strokeWidth="0.6" fill="none" />
+          <path
+            d="M150 100 Q190 60 260 30 Q230 55 240 80 Q250 60 280 50 Q250 75 255 95 Q265 80 290 75 Q260 95 245 110 Z"
+            stroke="currentColor"
+            strokeWidth="0.6"
+            fill="none"
+          />
           {/* Left head */}
-          <path d="M120 80 Q110 65 100 60 Q108 62 115 70 Q112 68 105 70" stroke="currentColor" strokeWidth="0.5" fill="none" />
+          <path
+            d="M120 80 Q110 65 100 60 Q108 62 115 70 Q112 68 105 70"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            fill="none"
+          />
           {/* Right head */}
-          <path d="M180 80 Q190 65 200 60 Q192 62 185 70 Q188 68 195 70" stroke="currentColor" strokeWidth="0.5" fill="none" />
+          <path
+            d="M180 80 Q190 65 200 60 Q192 62 185 70 Q188 68 195 70"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            fill="none"
+          />
           {/* Central body / tail */}
-          <path d="M140 110 L150 170 L160 110" stroke="currentColor" strokeWidth="0.6" fill="none" />
-          <path d="M135 115 L150 180 L165 115" stroke="currentColor" strokeWidth="0.4" fill="none" />
+          <path
+            d="M140 110 L150 170 L160 110"
+            stroke="currentColor"
+            strokeWidth="0.6"
+            fill="none"
+          />
+          <path
+            d="M135 115 L150 180 L165 115"
+            stroke="currentColor"
+            strokeWidth="0.4"
+            fill="none"
+          />
           {/* Central skull */}
           <circle cx="150" cy="95" r="8" stroke="currentColor" strokeWidth="0.6" fill="none" />
           <circle cx="147" cy="93" r="1.5" fill="currentColor" opacity="0.4" />
@@ -178,10 +236,10 @@ function AdministratumDivider() {
   return (
     <div className="relative flex items-center justify-center py-6">
       {/* Left line */}
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-imperial-gold/20" />
+      <div className="h-px flex-1 bg-gradient-to-r from-transparent to-imperial-gold/20" />
       {/* Left diamond */}
       <motion.div
-        className="w-1.5 h-1.5 bg-imperial-gold mx-2"
+        className="mx-2 h-1.5 w-1.5 bg-imperial-gold"
         style={{ transform: 'rotate(45deg)' }}
         animate={{ opacity: [0.3, 0.7, 0.3] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
@@ -190,21 +248,53 @@ function AdministratumDivider() {
       <div className="mx-3">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-imperial-gold">
           <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="0.8" opacity="0.4" />
-          <line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" strokeWidth="1" opacity="0.5" />
-          <line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" strokeWidth="1" opacity="0.5" />
-          <line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
-          <line x1="19" y1="5" x2="5" y2="19" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+          <line
+            x1="12"
+            y1="2"
+            x2="12"
+            y2="22"
+            stroke="currentColor"
+            strokeWidth="1"
+            opacity="0.5"
+          />
+          <line
+            x1="2"
+            y1="12"
+            x2="22"
+            y2="12"
+            stroke="currentColor"
+            strokeWidth="1"
+            opacity="0.5"
+          />
+          <line
+            x1="5"
+            y1="5"
+            x2="19"
+            y2="19"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            opacity="0.3"
+          />
+          <line
+            x1="19"
+            y1="5"
+            x2="5"
+            y2="19"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            opacity="0.3"
+          />
         </svg>
       </div>
       {/* Right diamond */}
       <motion.div
-        className="w-1.5 h-1.5 bg-imperial-gold mx-2"
+        className="mx-2 h-1.5 w-1.5 bg-imperial-gold"
         style={{ transform: 'rotate(45deg)' }}
         animate={{ opacity: [0.3, 0.7, 0.3] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
       />
       {/* Right line */}
-      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-imperial-gold/20" />
+      <div className="h-px flex-1 bg-gradient-to-l from-transparent to-imperial-gold/20" />
     </div>
   )
 }
@@ -212,20 +302,17 @@ function AdministratumDivider() {
 // Ledger lines — ruled background like an accountant's book
 function LedgerLines() {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {/* Horizontal ruled lines */}
       {Array.from({ length: 8 }, (_, i) => (
         <div
           key={i}
-          className="absolute w-full h-px bg-imperial-gold/[0.06]"
+          className="absolute h-px w-full bg-imperial-gold/[0.06]"
           style={{ top: `${(i + 1) * 11.1}%` }}
         />
       ))}
       {/* Red margin line */}
-      <div
-        className="absolute top-0 bottom-0 w-px bg-blood-red/[0.08]"
-        style={{ left: '8%' }}
-      />
+      <div className="bg-blood-red/[0.08] absolute bottom-0 top-0 w-px" style={{ left: '8%' }} />
     </div>
   )
 }
@@ -266,11 +353,13 @@ export default function UsersPage() {
     // Base query - get profiles with counts
     let query = supabase
       .from('profiles')
-      .select(`
+      .select(
+        `
         id, username, display_name, avatar_url, bio, location, created_at, favorite_factions,
         miniatures:miniatures(count),
         followers:follows!follows_following_id_fkey(count)
-      `)
+      `
+      )
       .not('username', 'is', null)
 
     // Apply search filter
@@ -309,7 +398,10 @@ export default function UsersPage() {
       // Set featured (most followers/miniatures) - only on initial load
       if (!searchQuery && !selectedFaction) {
         const featured = [...formatted]
-          .sort((a, b) => (b.followers_count + b.miniatures_count) - (a.followers_count + a.miniatures_count))
+          .sort(
+            (a, b) =>
+              b.followers_count + b.miniatures_count - (a.followers_count + a.miniatures_count)
+          )
           .slice(0, 4)
         setFeaturedUsers(featured)
 
@@ -348,12 +440,16 @@ export default function UsersPage() {
   const hasFilters = searchQuery || selectedFaction
 
   const currentYear = new Date().getFullYear()
-  const currentDate = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  const currentDate = new Date().toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
 
   return (
-    <div className="min-h-screen bg-void pt-20 pb-16 relative">
+    <div className="relative min-h-screen bg-void pb-16 pt-20">
       {/* === Atmospheric Background === */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div className="pointer-events-none fixed inset-0 z-0">
         {/* Amber aurora */}
         <div
           className="absolute inset-0"
@@ -366,7 +462,7 @@ export default function UsersPage() {
         />
         {/* Candlelight breathing 1 */}
         <motion.div
-          className="absolute top-[15%] left-[25%] w-[500px] h-[500px]"
+          className="absolute left-[25%] top-[15%] h-[500px] w-[500px]"
           style={{
             background: 'radial-gradient(circle, rgba(201,162,39,0.06) 0%, transparent 70%)',
           }}
@@ -375,7 +471,7 @@ export default function UsersPage() {
         />
         {/* Candlelight breathing 2 */}
         <motion.div
-          className="absolute bottom-[20%] right-[20%] w-[400px] h-[400px]"
+          className="absolute bottom-[20%] right-[20%] h-[400px] w-[400px]"
           style={{
             background: 'radial-gradient(circle, rgba(139,0,0,0.04) 0%, transparent 70%)',
           }}
@@ -390,26 +486,28 @@ export default function UsersPage() {
         <div
           className="absolute inset-0"
           style={{
-            background: 'repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(201,162,39,0.04) 79px, rgba(201,162,39,0.04) 80px)',
+            background:
+              'repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(201,162,39,0.04) 79px, rgba(201,162,39,0.04) 80px)',
           }}
         />
         {/* Scan line */}
         <motion.div
           className="absolute left-0 right-0 h-px"
           style={{
-            background: 'linear-gradient(90deg, transparent 0%, rgba(201,162,39,0.15) 50%, transparent 100%)',
+            background:
+              'linear-gradient(90deg, transparent 0%, rgba(201,162,39,0.15) 50%, transparent 100%)',
           }}
           animate={{ top: ['0%', '100%'] }}
           transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
         />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 md:px-6 relative z-10">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6">
         {/* === Header Bar === */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative rounded-xl border border-imperial-gold/20 bg-void-light/80 backdrop-blur-sm overflow-hidden mb-8"
+          className="relative mb-8 overflow-hidden rounded-xl border border-imperial-gold/20 bg-void-light/80 backdrop-blur-sm"
         >
           {/* Corner filigrees */}
           <AdministratumCorner position="top-left" />
@@ -420,22 +518,24 @@ export default function UsersPage() {
           <LedgerLines />
           {/* Vignette */}
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="pointer-events-none absolute inset-0"
             style={{
-              background: 'radial-gradient(ellipse at center, transparent 40%, rgba(201,162,39,0.04) 100%)',
+              background:
+                'radial-gradient(ellipse at center, transparent 40%, rgba(201,162,39,0.04) 100%)',
             }}
           />
           {/* Shimmer */}
           <motion.div
-            className="absolute inset-0 pointer-events-none"
+            className="pointer-events-none absolute inset-0"
             style={{
-              background: 'linear-gradient(105deg, transparent 40%, rgba(201,162,39,0.06) 50%, transparent 60%)',
+              background:
+                'linear-gradient(105deg, transparent 40%, rgba(201,162,39,0.06) 50%, transparent 60%)',
             }}
             animate={{ x: ['-100%', '200%'] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           />
 
-          <div className="relative z-10 px-6 py-5 flex items-center gap-4">
+          <div className="relative z-10 flex items-center gap-4 px-6 py-5">
             {/* Icon with halo */}
             <motion.div
               className="relative"
@@ -448,22 +548,25 @@ export default function UsersPage() {
               }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <ScrollText className="w-6 h-6 text-imperial-gold" />
+              <ScrollText className="h-6 w-6 text-imperial-gold" />
             </motion.div>
 
-            <div className="flex-1 min-w-0">
-              <div className="font-mono text-xs tracking-[0.3em] text-imperial-gold/80 font-semibold">
-                ADMINISTRATUM <span className="text-imperial-gold/40">&#9670;</span> REGISTRO IMPERIAL
+            <div className="min-w-0 flex-1">
+              <div className="font-mono text-xs font-semibold tracking-[0.3em] text-imperial-gold/80">
+                ADMINISTRATUM <span className="text-imperial-gold/40">&#9670;</span> REGISTRO
+                IMPERIAL
               </div>
-              <div className="font-mono text-[10px] text-bone/30 tracking-wider mt-0.5">
+              <div className="mt-0.5 font-mono text-[10px] tracking-wider text-bone/30">
                 REF: ADM/{currentYear}/USR-DIR — ULTIMA REVISION: {currentDate}
               </div>
             </div>
 
             {/* Census badge */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-imperial-gold/20 bg-imperial-gold/5">
-              <div className="w-1.5 h-1.5 rounded-full bg-imperial-gold animate-pulse" />
-              <span className="font-mono text-[10px] text-imperial-gold/70 tracking-widest">CENSADOS</span>
+            <div className="hidden items-center gap-2 rounded-lg border border-imperial-gold/20 bg-imperial-gold/5 px-3 py-1.5 sm:flex">
+              <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-imperial-gold" />
+              <span className="font-mono text-[10px] tracking-widest text-imperial-gold/70">
+                CENSADOS
+              </span>
             </div>
           </div>
         </motion.div>
@@ -476,31 +579,32 @@ export default function UsersPage() {
           className="mb-8"
         >
           {/* Badge */}
-          <div className="flex items-center gap-2 mb-3">
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-imperial-gold/10 border border-imperial-gold/30">
-              <ScrollText className="w-3.5 h-3.5 text-imperial-gold" />
-              <span className="text-xs font-mono text-imperial-gold/80 tracking-wider">
+          <div className="mb-3 flex items-center gap-2">
+            <div className="flex items-center gap-2 rounded-full border border-imperial-gold/30 bg-imperial-gold/10 px-3 py-1">
+              <ScrollText className="h-3.5 w-3.5 text-imperial-gold" />
+              <span className="font-mono text-xs tracking-wider text-imperial-gold/80">
                 Archivos del Administratum
               </span>
             </div>
           </div>
           {/* Title */}
-          <h1 className="text-3xl md:text-4xl font-display font-bold tracking-wide">
+          <h1 className="font-display text-3xl font-bold tracking-wide md:text-4xl">
             <span className="text-bone">Registro </span>
             <span className="bg-gradient-to-r from-imperial-gold via-yellow-500 to-imperial-gold bg-clip-text text-transparent">
               Imperial
             </span>
           </h1>
-          <p className="text-bone/50 mt-2 font-body">
-            Consulta los expedientes del Administratum. Cada miembro, un archivo en las bovedas del Imperium.
+          <p className="mt-2 font-body text-bone/50">
+            Consulta los expedientes del Administratum. Cada miembro, un archivo en las bovedas del
+            Imperium.
           </p>
           {/* Ornament: 3 diamonds flanked by gradient lines */}
-          <div className="flex items-center gap-3 mt-4">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent to-imperial-gold/20" />
-            <div className="w-1.5 h-1.5 bg-imperial-gold/40 rotate-45" />
-            <div className="w-2 h-2 bg-imperial-gold/60 rotate-45" />
-            <div className="w-1.5 h-1.5 bg-imperial-gold/40 rotate-45" />
-            <div className="flex-1 h-px bg-gradient-to-l from-transparent to-imperial-gold/20" />
+          <div className="mt-4 flex items-center gap-3">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-imperial-gold/20" />
+            <div className="h-1.5 w-1.5 rotate-45 bg-imperial-gold/40" />
+            <div className="h-2 w-2 rotate-45 bg-imperial-gold/60" />
+            <div className="h-1.5 w-1.5 rotate-45 bg-imperial-gold/40" />
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-imperial-gold/20" />
           </div>
         </motion.div>
 
@@ -511,7 +615,7 @@ export default function UsersPage() {
           transition={{ delay: 0.1 }}
           className="mb-8"
         >
-          <div className="relative rounded-xl border border-imperial-gold/10 bg-void/50 backdrop-blur-sm p-4 overflow-hidden">
+          <div className="relative overflow-hidden rounded-xl border border-imperial-gold/10 bg-void/50 p-4 backdrop-blur-sm">
             {/* Corner filigrees */}
             <AdministratumCorner position="top-left" />
             <AdministratumCorner position="top-right" />
@@ -519,23 +623,23 @@ export default function UsersPage() {
             <AdministratumCorner position="bottom-right" />
 
             <div className="relative z-10">
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row">
                 {/* Search Input */}
-                <div className="flex-1 relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-bone/30" />
+                <div className="relative flex-1">
+                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-bone/30" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Buscar por nombre o usuario..."
-                    className="w-full pl-12 pr-4 py-3 bg-void-light/50 backdrop-blur-sm border border-bone/10 rounded-xl text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 focus:shadow-[0_0_0_3px_rgba(201,162,39,0.06)] transition-all font-mono"
+                    className="w-full rounded-xl border border-bone/10 bg-void-light/50 py-3 pl-12 pr-4 font-mono text-bone backdrop-blur-sm transition-all placeholder:text-bone/30 focus:border-imperial-gold/50 focus:shadow-[0_0_0_3px_rgba(201,162,39,0.06)] focus:outline-none"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-bone/40 hover:text-bone transition-colors"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-bone/40 transition-colors hover:text-bone"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="h-4 w-4" />
                     </button>
                   )}
                 </div>
@@ -543,18 +647,16 @@ export default function UsersPage() {
                 {/* Filter Toggle */}
                 <motion.button
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-colors ${
+                  className={`flex items-center gap-2 rounded-xl border px-4 py-3 transition-colors ${
                     showFilters || selectedFaction
-                      ? 'bg-imperial-gold/10 border-imperial-gold/30 text-imperial-gold'
-                      : 'bg-void-light/50 border-bone/10 text-bone/60 hover:text-bone'
+                      ? 'border-imperial-gold/30 bg-imperial-gold/10 text-imperial-gold'
+                      : 'border-bone/10 bg-void-light/50 text-bone/60 hover:text-bone'
                   }`}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Filter className="w-5 h-5" />
+                  <Filter className="h-5 w-5" />
                   <span className="font-mono text-sm">Filtros</span>
-                  {selectedFaction && (
-                    <span className="w-2 h-2 rounded-full bg-imperial-gold" />
-                  )}
+                  {selectedFaction && <span className="h-2 w-2 rounded-full bg-imperial-gold" />}
                 </motion.button>
               </div>
 
@@ -569,7 +671,7 @@ export default function UsersPage() {
                     className="overflow-hidden"
                   >
                     <div className="pt-4">
-                      <p className="text-xs font-mono text-bone/50 mb-3 tracking-wider">
+                      <p className="mb-3 font-mono text-xs tracking-wider text-bone/50">
                         FILTRAR POR FACCION
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -580,7 +682,7 @@ export default function UsersPage() {
                             <motion.button
                               key={faction.id}
                               onClick={() => setSelectedFaction(isSelected ? null : faction.id)}
-                              className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${
+                              className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-all ${
                                 isSelected
                                   ? 'border-imperial-gold/50 bg-imperial-gold/10'
                                   : 'border-bone/10 bg-void-light/30 hover:border-bone/30'
@@ -589,18 +691,29 @@ export default function UsersPage() {
                               whileTap={{ scale: 0.98 }}
                             >
                               <div
-                                className="w-6 h-6 rounded flex items-center justify-center"
+                                className="flex h-6 w-6 items-center justify-center rounded"
                                 style={{
                                   background: `linear-gradient(135deg, ${faction.primary_color}40, ${faction.secondary_color}20)`,
                                 }}
                               >
                                 {iconPath ? (
-                                  <Image src={iconPath} alt="" width={14} height={14} className="invert opacity-80" />
+                                  <Image
+                                    src={iconPath}
+                                    alt=""
+                                    width={14}
+                                    height={14}
+                                    className="opacity-80 invert"
+                                  />
                                 ) : (
-                                  <Shield className="w-3 h-3" style={{ color: faction.primary_color || '#c9a227' }} />
+                                  <Shield
+                                    className="h-3 w-3"
+                                    style={{ color: faction.primary_color || '#c9a227' }}
+                                  />
                                 )}
                               </div>
-                              <span className={`text-sm ${isSelected ? 'text-imperial-gold' : 'text-bone/70'}`}>
+                              <span
+                                className={`text-sm ${isSelected ? 'text-imperial-gold' : 'text-bone/70'}`}
+                              >
                                 {faction.name}
                               </span>
                             </motion.button>
@@ -617,14 +730,14 @@ export default function UsersPage() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex items-center gap-2 mt-4"
+                  className="mt-4 flex items-center gap-2"
                 >
                   <span className="text-sm text-bone/50">
                     {users.length} resultado{users.length !== 1 ? 's' : ''}
                   </span>
                   <button
                     onClick={clearFilters}
-                    className="text-sm text-imperial-gold hover:text-imperial-gold/80 transition-colors"
+                    className="text-sm text-imperial-gold transition-colors hover:text-imperial-gold/80"
                   >
                     Limpiar filtros
                   </button>
@@ -640,7 +753,7 @@ export default function UsersPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex gap-1 p-1 bg-void-light/30 backdrop-blur-sm border border-bone/10 rounded-xl mb-8"
+            className="mb-8 flex gap-1 rounded-xl border border-bone/10 bg-void-light/30 p-1 backdrop-blur-sm"
           >
             {[
               { id: 'all' as const, label: 'Todos', icon: Grid3X3 },
@@ -653,14 +766,14 @@ export default function UsersPage() {
                 <motion.button
                   key={tab.id}
                   onClick={() => setActiveSection(tab.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-mono text-sm transition-all ${
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 font-mono text-sm transition-all ${
                     isActive
                       ? 'bg-imperial-gold text-void'
-                      : 'text-bone/60 hover:text-bone hover:bg-bone/5'
+                      : 'text-bone/60 hover:bg-bone/5 hover:text-bone'
                   }`}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="h-4 w-4" />
                   <span className="hidden sm:inline">{tab.label}</span>
                 </motion.button>
               )
@@ -673,7 +786,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-center py-20">
             <div className="flex flex-col items-center gap-4">
               <Spinner size="lg" />
-              <p className="text-bone/50 font-mono text-sm">BUSCANDO EN ARCHIVOS...</p>
+              <p className="font-mono text-sm text-bone/50">BUSCANDO EN ARCHIVOS...</p>
             </div>
           </div>
         ) : (
@@ -698,24 +811,23 @@ export default function UsersPage() {
               ) : (
                 <>
                   {/* All Users */}
-                  {activeSection === 'all' && (
-                    users.length > 0 ? (
+                  {activeSection === 'all' &&
+                    (users.length > 0 ? (
                       <UserGrid users={users} currentUserId={user?.id} />
                     ) : (
                       <EmptyState
                         title="Archivos vacios"
                         description="Aun no hay ciudadanos registrados en el Administratum"
                       />
-                    )
-                  )}
+                    ))}
 
                   {/* Featured Users */}
-                  {activeSection === 'featured' && (
-                    featuredUsers.length > 0 ? (
+                  {activeSection === 'featured' &&
+                    (featuredUsers.length > 0 ? (
                       <div className="space-y-6">
                         <div className="flex items-center gap-2">
-                          <Sparkles className="w-5 h-5 text-imperial-gold" />
-                          <h2 className="text-lg font-display font-bold text-bone">
+                          <Sparkles className="h-5 w-5 text-imperial-gold" />
+                          <h2 className="font-display text-lg font-bold text-bone">
                             Usuarios Destacados
                           </h2>
                         </div>
@@ -726,16 +838,15 @@ export default function UsersPage() {
                         title="Sin destacados"
                         description="Aun no hay usuarios destacados en los registros"
                       />
-                    )
-                  )}
+                    ))}
 
                   {/* New Users */}
-                  {activeSection === 'new' && (
-                    newUsers.length > 0 ? (
+                  {activeSection === 'new' &&
+                    (newUsers.length > 0 ? (
                       <div className="space-y-6">
                         <div className="flex items-center gap-2">
-                          <Clock className="w-5 h-5 text-imperial-gold" />
-                          <h2 className="text-lg font-display font-bold text-bone">
+                          <Clock className="h-5 w-5 text-imperial-gold" />
+                          <h2 className="font-display text-lg font-bold text-bone">
                             Nuevos Miembros
                           </h2>
                         </div>
@@ -746,8 +857,7 @@ export default function UsersPage() {
                         title="Sin nuevos miembros"
                         description="No hay nuevos ciudadanos censados recientemente"
                       />
-                    )
-                  )}
+                    ))}
                 </>
               )}
             </motion.div>
@@ -769,9 +879,17 @@ function UserGrid({
   featured?: boolean
 }) {
   return (
-    <div className={`grid gap-4 ${featured ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
+    <div
+      className={`grid gap-4 ${featured ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}
+    >
       {users.map((user, idx) => (
-        <UserCard key={user.id} user={user} index={idx} currentUserId={currentUserId} featured={featured} />
+        <UserCard
+          key={user.id}
+          user={user}
+          index={idx}
+          currentUserId={currentUserId}
+          featured={featured}
+        />
       ))}
     </div>
   )
@@ -801,8 +919,8 @@ function UserCard({
           .select('id, name, slug, primary_color, secondary_color')
           .in('id', user.favorite_factions!)
         if (data) {
-          const ordered = user.favorite_factions!
-            .map((id) => data.find((f) => f.id === id))
+          const ordered = user
+            .favorite_factions!.map((id) => data.find((f) => f.id === id))
             .filter(Boolean) as Faction[]
           setFactionDetails(ordered)
         }
@@ -813,7 +931,8 @@ function UserCard({
 
   const getGradient = () => {
     if (factionDetails.length === 0) return 'linear-gradient(135deg, #c9a227 0%, #8b0000 100%)'
-    if (factionDetails.length === 1) return `linear-gradient(135deg, ${factionDetails[0].primary_color} 0%, ${factionDetails[0].secondary_color} 100%)`
+    if (factionDetails.length === 1)
+      return `linear-gradient(135deg, ${factionDetails[0].primary_color} 0%, ${factionDetails[0].secondary_color} 100%)`
     return `linear-gradient(135deg, ${factionDetails[0].primary_color} 0%, ${factionDetails[factionDetails.length - 1].primary_color} 100%)`
   }
 
@@ -828,9 +947,10 @@ function UserCard({
     >
       {/* Animated border glow */}
       <motion.div
-        className="absolute -inset-[1px] rounded-xl pointer-events-none"
+        className="pointer-events-none absolute -inset-[1px] rounded-xl"
         style={{
-          background: 'linear-gradient(135deg, rgba(201,162,39,0.4), rgba(139,0,0,0.3), rgba(201,162,39,0.4))',
+          background:
+            'linear-gradient(135deg, rgba(201,162,39,0.4), rgba(139,0,0,0.3), rgba(201,162,39,0.4))',
         }}
         animate={{ opacity: isHovered ? 0.5 : 0 }}
         transition={{ duration: 0.3 }}
@@ -838,20 +958,21 @@ function UserCard({
 
       <Link href={`/usuarios/${user.username}`}>
         <motion.div
-          className="relative bg-void-light/50 backdrop-blur-sm border border-bone/10 rounded-xl overflow-hidden hover:border-imperial-gold/30 transition-colors"
+          className="relative overflow-hidden rounded-xl border border-bone/10 bg-void-light/50 backdrop-blur-sm transition-colors hover:border-imperial-gold/30"
           whileHover={{ y: -6 }}
         >
           {/* Inner warm glow */}
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="pointer-events-none absolute inset-0"
             style={{
-              background: 'radial-gradient(ellipse at bottom, rgba(201,162,39,0.04), transparent 70%)',
+              background:
+                'radial-gradient(ellipse at bottom, rgba(201,162,39,0.04), transparent 70%)',
             }}
           />
 
           {/* Mini Banner */}
           <div
-            className="h-16 relative overflow-hidden"
+            className="relative h-16 overflow-hidden"
             style={{ background: getGradient(), opacity: 0.6 }}
           >
             {/* Grid pattern */}
@@ -868,13 +989,13 @@ function UserCard({
 
             {/* Faction badges */}
             {factionDetails.length > 0 && (
-              <div className="absolute top-2 right-2 flex gap-1">
+              <div className="absolute right-2 top-2 flex gap-1">
                 {factionDetails.slice(0, 3).map((faction) => {
                   const iconPath = FACTION_ICONS[faction.slug]
                   return (
                     <div
                       key={faction.id}
-                      className="w-5 h-5 rounded flex items-center justify-center backdrop-blur-sm"
+                      className="flex h-5 w-5 items-center justify-center rounded backdrop-blur-sm"
                       style={{
                         background: `linear-gradient(135deg, ${faction.primary_color}CC, ${faction.secondary_color}99)`,
                         border: '1px solid rgba(255,255,255,0.2)',
@@ -882,9 +1003,15 @@ function UserCard({
                       title={faction.name}
                     >
                       {iconPath ? (
-                        <Image src={iconPath} alt="" width={10} height={10} className="invert opacity-90" />
+                        <Image
+                          src={iconPath}
+                          alt=""
+                          width={10}
+                          height={10}
+                          className="opacity-90 invert"
+                        />
                       ) : (
-                        <Shield className="w-2.5 h-2.5 text-white/90" />
+                        <Shield className="h-2.5 w-2.5 text-white/90" />
                       )}
                     </div>
                   )
@@ -894,54 +1021,51 @@ function UserCard({
           </div>
 
           {/* Content */}
-          <div className="p-4 -mt-8 relative">
+          <div className="relative -mt-8 p-4">
             {/* Avatar */}
-            <div className="relative w-fit mb-3">
+            <div className="relative mb-3 w-fit">
               <motion.div
                 className="absolute -inset-1 rounded-full opacity-30"
                 style={{
-                  background: factionDetails.length > 0
-                    ? `conic-gradient(from 0deg, ${factionDetails[0].primary_color}, ${factionDetails[factionDetails.length-1]?.secondary_color || factionDetails[0].secondary_color}, ${factionDetails[0].primary_color})`
-                    : 'conic-gradient(from 0deg, #c9a227, #8b0000, #c9a227)',
+                  background:
+                    factionDetails.length > 0
+                      ? `conic-gradient(from 0deg, ${factionDetails[0].primary_color}, ${factionDetails[factionDetails.length - 1]?.secondary_color || factionDetails[0].secondary_color}, ${factionDetails[0].primary_color})`
+                      : 'conic-gradient(from 0deg, #c9a227, #8b0000, #c9a227)',
                 }}
               />
               <Avatar
                 src={user.avatar_url}
                 alt={user.display_name || user.username}
                 size="md"
-                className="w-14 h-14 ring-2 ring-void-light relative"
+                className="relative h-14 w-14 ring-2 ring-void-light"
               />
             </div>
 
             {/* Name */}
-            <h3 className="font-display font-bold text-bone text-lg leading-tight group-hover:text-imperial-gold transition-colors">
+            <h3 className="font-display text-lg font-bold leading-tight text-bone transition-colors group-hover:text-imperial-gold">
               {user.display_name || user.username}
             </h3>
-            <p className="text-xs text-bone/50 font-mono mb-2">@{user.username}</p>
+            <p className="mb-2 font-mono text-xs text-bone/50">@{user.username}</p>
 
             {/* Bio */}
-            {user.bio && (
-              <p className="text-sm text-bone/60 line-clamp-2 mb-3">
-                {user.bio}
-              </p>
-            )}
+            {user.bio && <p className="mb-3 line-clamp-2 text-sm text-bone/60">{user.bio}</p>}
 
             {/* Location */}
             {user.location && (
-              <div className="flex items-center gap-1 text-xs text-bone/40 mb-3">
-                <MapPin className="w-3 h-3" />
+              <div className="mb-3 flex items-center gap-1 text-xs text-bone/40">
+                <MapPin className="h-3 w-3" />
                 {user.location}
               </div>
             )}
 
             {/* Stats */}
-            <div className="flex items-center gap-4 text-xs text-bone/50 pt-3 border-t border-bone/5">
+            <div className="flex items-center gap-4 border-t border-bone/5 pt-3 text-xs text-bone/50">
               <span className="flex items-center gap-1">
-                <ImageIcon className="w-3 h-3" />
+                <ImageIcon className="h-3 w-3" />
                 {user.miniatures_count} miniaturas
               </span>
               <span className="flex items-center gap-1">
-                <Users className="w-3 h-3" />
+                <Users className="h-3 w-3" />
                 {user.followers_count} seguidores
               </span>
             </div>
@@ -951,7 +1075,8 @@ function UserCard({
           <motion.div
             className="absolute bottom-0 left-0 h-[2px]"
             style={{
-              background: 'linear-gradient(90deg, rgba(201,162,39,0.8), rgba(234,179,8,0.6), rgba(201,162,39,0.8))',
+              background:
+                'linear-gradient(90deg, rgba(201,162,39,0.8), rgba(234,179,8,0.6), rgba(201,162,39,0.8))',
             }}
             animate={{ width: isHovered ? '100%' : '0%' }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -961,7 +1086,7 @@ function UserCard({
 
       {/* Follow button (outside link to prevent navigation) */}
       {currentUserId && currentUserId !== user.id && (
-        <div className="absolute top-20 right-4" onClick={(e) => e.stopPropagation()}>
+        <div className="absolute right-4 top-20" onClick={(e) => e.stopPropagation()}>
           <FollowButton userId={user.id} />
         </div>
       )}
@@ -972,9 +1097,9 @@ function UserCard({
 // Empty State Component — Administratum themed
 function EmptyState({ title, description }: { title: string; description: string }) {
   return (
-    <div className="text-center py-20">
+    <div className="py-20 text-center">
       <motion.div
-        className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-imperial-gold/10 border border-imperial-gold/30 mb-6"
+        className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full border border-imperial-gold/30 bg-imperial-gold/10"
         animate={{
           boxShadow: [
             '0 0 20px rgba(201, 162, 39, 0.2)',
@@ -984,9 +1109,9 @@ function EmptyState({ title, description }: { title: string; description: string
         }}
         transition={{ duration: 3, repeat: Infinity }}
       >
-        <ScrollText className="w-10 h-10 text-imperial-gold" />
+        <ScrollText className="h-10 w-10 text-imperial-gold" />
       </motion.div>
-      <h3 className="text-xl font-display font-bold text-imperial-gold/40 mb-2">{title}</h3>
+      <h3 className="mb-2 font-display text-xl font-bold text-imperial-gold/40">{title}</h3>
       <p className="text-bone/50">{description}</p>
     </div>
   )

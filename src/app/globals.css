@@ -8,7 +8,8 @@
   box-sizing: border-box;
 }
 
-html.lenis, html.lenis body {
+html.lenis,
+html.lenis body {
   height: auto;
 }
 
@@ -27,7 +28,7 @@ html.lenis, html.lenis body {
 body {
   font-family: var(--font-body);
   background: #030308;
-  color: #E8E8F0;
+  color: #e8e8f0;
   overflow-x: hidden;
 }
 
@@ -41,12 +42,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #C9A227 0%, #8B0000 100%);
+  background: linear-gradient(180deg, #c9a227 0%, #8b0000 100%);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #FFD700 0%, #DC143C 100%);
+  background: linear-gradient(180deg, #ffd700 0%, #dc143c 100%);
 }
 
 /* Selection */
@@ -110,10 +111,17 @@ body {
 
 /* Modern Button */
 .btn-modern {
-  @apply relative overflow-hidden px-8 py-4 font-semibold tracking-wider uppercase text-sm;
+  @apply relative overflow-hidden px-8 py-4 text-sm font-semibold uppercase tracking-wider;
   @apply bg-gradient-to-r from-imperial-gold to-yellow-600 text-black;
   @apply transition-all duration-300 ease-out;
-  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  clip-path: polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    12px 100%,
+    0 calc(100% - 12px)
+  );
 }
 
 .btn-modern::before {
@@ -131,8 +139,8 @@ body {
 }
 
 .btn-outline {
-  @apply relative px-8 py-4 font-semibold tracking-wider uppercase text-sm;
-  @apply border border-white/20 text-white bg-transparent;
+  @apply relative px-8 py-4 text-sm font-semibold uppercase tracking-wider;
+  @apply border border-white/20 bg-transparent text-white;
   @apply transition-all duration-300 ease-out;
   @apply hover:border-imperial-gold hover:text-imperial-gold;
   @apply hover:bg-imperial-gold/5;
@@ -162,17 +170,17 @@ body {
 /* Text gradient */
 .text-gradient {
   @apply bg-clip-text text-transparent;
-  background-image: linear-gradient(135deg, #C9A227 0%, #FFD700 50%, #C9A227 100%);
+  background-image: linear-gradient(135deg, #c9a227 0%, #ffd700 50%, #c9a227 100%);
 }
 
 .text-gradient-red {
   @apply bg-clip-text text-transparent;
-  background-image: linear-gradient(135deg, #DC143C 0%, #FF4500 50%, #DC143C 100%);
+  background-image: linear-gradient(135deg, #dc143c 0%, #ff4500 50%, #dc143c 100%);
 }
 
 .text-gradient-green {
   @apply bg-clip-text text-transparent;
-  background-image: linear-gradient(135deg, #00FF87 0%, #00D4AA 50%, #00FF87 100%);
+  background-image: linear-gradient(135deg, #00ff87 0%, #00d4aa 50%, #00ff87 100%);
 }
 
 /* Animated gradient border */
@@ -185,9 +193,13 @@ body {
   position: absolute;
   inset: 0;
   padding: 1px;
-  background: linear-gradient(135deg, #C9A227, transparent, #C9A227);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  background: linear-gradient(135deg, #c9a227, transparent, #c9a227);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
@@ -200,22 +212,22 @@ body {
 
 .line-decoration::after {
   content: '';
-  @apply absolute bottom-0 left-0 w-20 h-0.5 bg-gradient-to-r from-imperial-gold to-transparent;
+  @apply absolute bottom-0 left-0 h-0.5 w-20 bg-gradient-to-r from-imperial-gold to-transparent;
 }
 
 /* Faction specific colors */
 .faction-imperium {
-  --faction-color: #C9A227;
+  --faction-color: #c9a227;
   --faction-bg: rgba(201, 162, 39, 0.1);
 }
 
 .faction-chaos {
-  --faction-color: #DC143C;
+  --faction-color: #dc143c;
   --faction-bg: rgba(220, 20, 60, 0.1);
 }
 
 .faction-necrons {
-  --faction-color: #00FF87;
+  --faction-color: #00ff87;
   --faction-bg: rgba(0, 255, 135, 0.1);
 }
 
@@ -235,66 +247,150 @@ body {
 
 /* Hero orb animations (CSS replaces framer-motion infinite loops) */
 @keyframes heroOrbGold {
-  0%, 100% { transform: scale(1); opacity: 0.3; }
-  50% { transform: scale(1.2); opacity: 0.5; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
 }
 
 @keyframes heroOrbRed {
-  0%, 100% { transform: scale(1.2); opacity: 0.2; }
-  50% { transform: scale(1); opacity: 0.4; }
+  0%,
+  100% {
+    transform: scale(1.2);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
 }
 
 @keyframes scrollBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
 }
 
 @keyframes scrollDot {
-  0%, 100% { transform: translateY(0); opacity: 1; }
-  50% { transform: translateY(12px); opacity: 0.3; }
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(12px);
+    opacity: 0.3;
+  }
 }
 
 /* FactionHeroBackground particle animations */
 @keyframes factionPulse {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes factionFloat {
-  0% { transform: translateY(0) translateX(0); opacity: 0; }
-  30% { opacity: 0.8; }
-  100% { transform: translateY(calc(-150px - var(--float-extra, 0px))) translateX(var(--float-x, 0px)); opacity: 0; }
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(calc(-150px - var(--float-extra, 0px))) translateX(var(--float-x, 0px));
+    opacity: 0;
+  }
 }
 
 @keyframes factionEmber {
-  0% { transform: translateY(0) translateX(0); opacity: 0; }
-  20% { opacity: 1; }
-  100% { transform: translateY(calc(-400px - var(--float-extra, 0px))) translateX(var(--float-x, 0px)); opacity: 0; scale: 0.5; }
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(-400px - var(--float-extra, 0px))) translateX(var(--float-x, 0px));
+    opacity: 0;
+    scale: 0.5;
+  }
 }
 
 @keyframes factionSpiritFloat {
-  0%, 100% { opacity: 0; transform: scale(0.5) translateY(0); }
-  50% { opacity: 0.8; transform: scale(1.5) translateY(-50px); }
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.5) translateY(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.5) translateY(-50px);
+  }
 }
 
 @keyframes factionScan {
-  0% { top: 0%; opacity: 0; }
-  10% { opacity: 0.6; }
-  90% { opacity: 0.6; }
-  100% { top: 100%; opacity: 0; }
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
 }
 
 @keyframes factionSpore {
-  0%, 100% { transform: translateY(0) translateX(var(--spore-x1, 0px)); opacity: 0; scale: 0.5; }
-  50% { transform: translateY(calc(-40px - var(--float-extra, 0px))) translateX(var(--spore-x2, 0px)); opacity: 0.7; scale: 1; }
+  0%,
+  100% {
+    transform: translateY(0) translateX(var(--spore-x1, 0px));
+    opacity: 0;
+    scale: 0.5;
+  }
+  50% {
+    transform: translateY(calc(-40px - var(--float-extra, 0px))) translateX(var(--spore-x2, 0px));
+    opacity: 0.7;
+    scale: 1;
+  }
 }
 
 @keyframes approvedGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
-  50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.3); }
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
+  }
 }
 
 @keyframes pendingGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
-  50% { box-shadow: 0 0 40px rgba(245, 158, 11, 0.3); }
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(245, 158, 11, 0.3);
+  }
 }

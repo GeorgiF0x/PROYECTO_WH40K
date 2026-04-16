@@ -11,7 +11,7 @@ import {
   Share2,
   Loader2,
   ArrowRight,
-  LinkIcon
+  LinkIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -38,22 +38,22 @@ const checkItems = [
     label: 'Avatar de perfil',
     description: 'Sube una foto de perfil',
     icon: User,
-    link: '/perfil'
+    link: '/perfil',
   },
   {
     key: 'has_bio' as const,
     label: 'Biografía completa',
     description: 'Escribe al menos 10 caracteres',
     icon: FileText,
-    link: '/perfil'
+    link: '/perfil',
   },
   {
     key: 'has_social' as const,
     label: 'Red social vinculada',
     description: 'Conecta al menos una red social',
     icon: Share2,
-    link: '/perfil'
-  }
+    link: '/perfil',
+  },
 ]
 
 export function CreatorEligibility({ userId, onEligible }: CreatorEligibilityProps) {
@@ -66,7 +66,7 @@ export function CreatorEligibility({ userId, onEligible }: CreatorEligibilityPro
       try {
         const supabase = createClient()
         const { data, error } = await supabase.rpc('check_creator_eligibility', {
-          user_uuid: userId
+          user_uuid: userId,
         })
 
         if (error) throw error
@@ -91,7 +91,7 @@ export function CreatorEligibility({ userId, onEligible }: CreatorEligibilityPro
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-imperial-gold" />
+        <Loader2 className="h-6 w-6 animate-spin text-imperial-gold" />
         <span className="ml-2 text-bone/50">Verificando requisitos...</span>
       </div>
     )
@@ -99,45 +99,47 @@ export function CreatorEligibility({ userId, onEligible }: CreatorEligibilityPro
 
   if (error || !eligibility) {
     return (
-      <div className="p-4 rounded-lg bg-blood-red/10 border border-blood-red/30 text-blood-red">
+      <div className="bg-blood-red/10 border-blood-red/30 text-blood-red rounded-lg border p-4">
         {error || 'Error desconocido'}
       </div>
     )
   }
 
   const { checks } = eligibility
-  const completedCount = [checks.has_avatar, checks.has_bio, checks.has_social].filter(Boolean).length
+  const completedCount = [checks.has_avatar, checks.has_bio, checks.has_social].filter(
+    Boolean
+  ).length
 
   return (
     <div className="space-y-4">
       {/* Status header */}
-      <div className={cn(
-        'p-4 rounded-lg border',
-        eligibility.eligible
-          ? 'bg-emerald-500/10 border-emerald-500/30'
-          : 'bg-void/50 border-bone/10'
-      )}>
+      <div
+        className={cn(
+          'rounded-lg border p-4',
+          eligibility.eligible
+            ? 'border-emerald-500/30 bg-emerald-500/10'
+            : 'border-bone/10 bg-void/50'
+        )}
+      >
         <div className="flex items-center gap-3">
           {eligibility.eligible ? (
-            <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+            <CheckCircle2 className="h-6 w-6 text-emerald-400" />
           ) : (
-            <div className="w-6 h-6 rounded-full border-2 border-bone/30" />
+            <div className="h-6 w-6 rounded-full border-2 border-bone/30" />
           )}
           <div>
-            <h4 className={cn(
-              'font-medium',
-              eligibility.eligible ? 'text-emerald-400' : 'text-bone/80'
-            )}>
-              {eligibility.eligible
-                ? 'Perfil completo'
-                : 'Completa tu perfil para solicitar'
-              }
+            <h4
+              className={cn(
+                'font-medium',
+                eligibility.eligible ? 'text-emerald-400' : 'text-bone/80'
+              )}
+            >
+              {eligibility.eligible ? 'Perfil completo' : 'Completa tu perfil para solicitar'}
             </h4>
             <p className="text-sm text-bone/50">
               {eligibility.eligible
                 ? 'Ahora necesitas añadir 5 enlaces a tu contenido'
-                : 'Completa estos requisitos básicos primero'
-              }
+                : 'Completa estos requisitos básicos primero'}
             </p>
           </div>
         </div>
@@ -156,27 +158,26 @@ export function CreatorEligibility({ userId, onEligible }: CreatorEligibilityPro
               animate={{ opacity: 1 }}
               transition={{ delay: index * 0.1 }}
               className={cn(
-                'flex items-center justify-between p-3 rounded-lg border transition-colors',
+                'flex items-center justify-between rounded-lg border p-3 transition-colors',
                 isComplete
-                  ? 'bg-emerald-500/5 border-emerald-500/20'
-                  : 'bg-void/50 border-bone/10 hover:border-bone/20'
+                  ? 'border-emerald-500/20 bg-emerald-500/5'
+                  : 'border-bone/10 bg-void/50 hover:border-bone/20'
               )}
             >
               <div className="flex items-center gap-3">
                 {isComplete ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  <CheckCircle2 className="h-5 w-5 text-emerald-400" />
                 ) : (
-                  <XCircle className="w-5 h-5 text-bone/30" />
+                  <XCircle className="h-5 w-5 text-bone/30" />
                 )}
-                <Icon className={cn(
-                  'w-4 h-4',
-                  isComplete ? 'text-emerald-400' : 'text-bone/50'
-                )} />
+                <Icon className={cn('h-4 w-4', isComplete ? 'text-emerald-400' : 'text-bone/50')} />
                 <div>
-                  <p className={cn(
-                    'text-sm font-medium',
-                    isComplete ? 'text-bone/90' : 'text-bone/60'
-                  )}>
+                  <p
+                    className={cn(
+                      'text-sm font-medium',
+                      isComplete ? 'text-bone/90' : 'text-bone/60'
+                    )}
+                  >
                     {item.label}
                   </p>
                   <p className="text-xs text-bone/40">{item.description}</p>
@@ -185,10 +186,10 @@ export function CreatorEligibility({ userId, onEligible }: CreatorEligibilityPro
               {!isComplete && (
                 <Link
                   href={item.link}
-                  className="text-xs text-imperial-gold hover:underline flex items-center gap-1"
+                  className="flex items-center gap-1 text-xs text-imperial-gold hover:underline"
                 >
                   Completar
-                  <ArrowRight className="w-3 h-3" />
+                  <ArrowRight className="h-3 w-3" />
                 </Link>
               )}
             </motion.div>
@@ -201,20 +202,16 @@ export function CreatorEligibility({ userId, onEligible }: CreatorEligibilityPro
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex items-center justify-between p-3 rounded-lg border bg-purple-500/5 border-purple-500/20"
+            className="flex items-center justify-between rounded-lg border border-purple-500/20 bg-purple-500/5 p-3"
           >
             <div className="flex items-center gap-3">
-              <LinkIcon className="w-5 h-5 text-purple-400" />
+              <LinkIcon className="h-5 w-5 text-purple-400" />
               <div>
-                <p className="text-sm font-medium text-bone/90">
-                  5 enlaces de contenido
-                </p>
-                <p className="text-xs text-bone/40">
-                  Se solicitan en el formulario siguiente
-                </p>
+                <p className="text-sm font-medium text-bone/90">5 enlaces de contenido</p>
+                <p className="text-xs text-bone/40">Se solicitan en el formulario siguiente</p>
               </div>
             </div>
-            <span className="text-xs text-purple-400 font-medium">Requerido</span>
+            <span className="text-xs font-medium text-purple-400">Requerido</span>
           </motion.div>
         )}
       </div>
@@ -225,7 +222,7 @@ export function CreatorEligibility({ userId, onEligible }: CreatorEligibilityPro
           <span>Progreso del perfil</span>
           <span>{completedCount} / 3</span>
         </div>
-        <div className="h-2 rounded-full bg-bone/10 overflow-hidden">
+        <div className="h-2 overflow-hidden rounded-full bg-bone/10">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${(completedCount / 3) * 100}%` }}

@@ -1,16 +1,10 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: '14.1'
   }
   public: {
     Tables: {
@@ -41,32 +35,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "article_comments_article_id_fkey"
-            columns: ["article_id"]
+            foreignKeyName: 'article_comments_article_id_fkey'
+            columns: ['article_id']
             isOneToOne: false
-            referencedRelation: "articles"
-            referencedColumns: ["id"]
+            referencedRelation: 'articles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "article_comments_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'article_comments_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "article_comments_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'article_comments_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
       articles: {
         Row: {
           author_id: string
-          category: Database["public"]["Enums"]["article_category"]
+          category: Database['public']['Enums']['article_category']
           content: string
           cover_image: string | null
           created_at: string
@@ -82,7 +76,7 @@ export type Database = {
         }
         Insert: {
           author_id: string
-          category?: Database["public"]["Enums"]["article_category"]
+          category?: Database['public']['Enums']['article_category']
           content: string
           cover_image?: string | null
           created_at?: string
@@ -98,7 +92,7 @@ export type Database = {
         }
         Update: {
           author_id?: string
-          category?: Database["public"]["Enums"]["article_category"]
+          category?: Database['public']['Enums']['article_category']
           content?: string
           cover_image?: string | null
           created_at?: string
@@ -114,18 +108,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "articles_author_id_fkey"
-            columns: ["author_id"]
+            foreignKeyName: 'articles_author_id_fkey'
+            columns: ['author_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "articles_author_id_fkey"
-            columns: ["author_id"]
+            foreignKeyName: 'articles_author_id_fkey'
+            columns: ['author_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -174,25 +168,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "conversation_participants_conversation_id_fkey"
-            columns: ["conversation_id"]
+            foreignKeyName: 'conversation_participants_conversation_id_fkey'
+            columns: ['conversation_id']
             isOneToOne: false
-            referencedRelation: "conversations"
-            referencedColumns: ["id"]
+            referencedRelation: 'conversations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "conversation_participants_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'conversation_participants_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "conversation_participants_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'conversation_participants_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -217,18 +211,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "conversations_listing_id_fkey"
-            columns: ["listing_id"]
+            foreignKeyName: 'conversations_listing_id_fkey'
+            columns: ['listing_id']
             isOneToOne: false
-            referencedRelation: "listings"
-            referencedColumns: ["id"]
+            referencedRelation: 'listings'
+            referencedColumns: ['id']
           },
         ]
       }
       creator_applications: {
         Row: {
           created_at: string | null
-          creator_type: Database["public"]["Enums"]["creator_type"]
+          creator_type: Database['public']['Enums']['creator_type']
           id: string
           motivation: string
           portfolio_links: string[] | null
@@ -236,13 +230,13 @@ export type Database = {
           reviewed_at: string | null
           reviewed_by: string | null
           social_links: Json | null
-          status: Database["public"]["Enums"]["creator_status"] | null
+          status: Database['public']['Enums']['creator_status'] | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
-          creator_type: Database["public"]["Enums"]["creator_type"]
+          creator_type: Database['public']['Enums']['creator_type']
           id?: string
           motivation: string
           portfolio_links?: string[] | null
@@ -250,13 +244,13 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           social_links?: Json | null
-          status?: Database["public"]["Enums"]["creator_status"] | null
+          status?: Database['public']['Enums']['creator_status'] | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
           created_at?: string | null
-          creator_type?: Database["public"]["Enums"]["creator_type"]
+          creator_type?: Database['public']['Enums']['creator_type']
           id?: string
           motivation?: string
           portfolio_links?: string[] | null
@@ -264,38 +258,38 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           social_links?: Json | null
-          status?: Database["public"]["Enums"]["creator_status"] | null
+          status?: Database['public']['Enums']['creator_status'] | null
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "creator_applications_reviewed_by_fkey"
-            columns: ["reviewed_by"]
+            foreignKeyName: 'creator_applications_reviewed_by_fkey'
+            columns: ['reviewed_by']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "creator_applications_reviewed_by_fkey"
-            columns: ["reviewed_by"]
+            foreignKeyName: 'creator_applications_reviewed_by_fkey'
+            columns: ['reviewed_by']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "creator_applications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'creator_applications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "creator_applications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'creator_applications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -326,25 +320,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "event_registrations_event_id_fkey"
-            columns: ["event_id"]
+            foreignKeyName: 'event_registrations_event_id_fkey'
+            columns: ['event_id']
             isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
+            referencedRelation: 'events'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "event_registrations_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'event_registrations_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "event_registrations_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'event_registrations_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -361,7 +355,7 @@ export type Database = {
           description: string | null
           end_date: string | null
           entry_fee: number | null
-          event_type: Database["public"]["Enums"]["event_type"]
+          event_type: Database['public']['Enums']['event_type']
           external_url: string | null
           format: string | null
           game_system: string | null
@@ -379,7 +373,7 @@ export type Database = {
           registration_deadline: string | null
           slug: string
           start_date: string
-          status: Database["public"]["Enums"]["event_status"]
+          status: Database['public']['Enums']['event_status']
           store_id: string | null
           tags: string[] | null
           updated_at: string | null
@@ -397,7 +391,7 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           entry_fee?: number | null
-          event_type?: Database["public"]["Enums"]["event_type"]
+          event_type?: Database['public']['Enums']['event_type']
           external_url?: string | null
           format?: string | null
           game_system?: string | null
@@ -415,7 +409,7 @@ export type Database = {
           registration_deadline?: string | null
           slug: string
           start_date: string
-          status?: Database["public"]["Enums"]["event_status"]
+          status?: Database['public']['Enums']['event_status']
           store_id?: string | null
           tags?: string[] | null
           updated_at?: string | null
@@ -433,7 +427,7 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           entry_fee?: number | null
-          event_type?: Database["public"]["Enums"]["event_type"]
+          event_type?: Database['public']['Enums']['event_type']
           external_url?: string | null
           format?: string | null
           game_system?: string | null
@@ -451,7 +445,7 @@ export type Database = {
           registration_deadline?: string | null
           slug?: string
           start_date?: string
-          status?: Database["public"]["Enums"]["event_status"]
+          status?: Database['public']['Enums']['event_status']
           store_id?: string | null
           tags?: string[] | null
           updated_at?: string | null
@@ -459,25 +453,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "events_organizer_id_fkey"
-            columns: ["organizer_id"]
+            foreignKeyName: 'events_organizer_id_fkey'
+            columns: ['organizer_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "events_organizer_id_fkey"
-            columns: ["organizer_id"]
+            foreignKeyName: 'events_organizer_id_fkey'
+            columns: ['organizer_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "events_store_id_fkey"
-            columns: ["store_id"]
+            foreignKeyName: 'events_store_id_fkey'
+            columns: ['store_id']
             isOneToOne: false
-            referencedRelation: "stores"
-            referencedColumns: ["id"]
+            referencedRelation: 'stores'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -502,32 +496,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "follows_follower_id_fkey"
-            columns: ["follower_id"]
+            foreignKeyName: 'follows_follower_id_fkey'
+            columns: ['follower_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "follows_follower_id_fkey"
-            columns: ["follower_id"]
+            foreignKeyName: 'follows_follower_id_fkey'
+            columns: ['follower_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "follows_following_id_fkey"
-            columns: ["following_id"]
+            foreignKeyName: 'follows_following_id_fkey'
+            columns: ['following_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "follows_following_id_fkey"
-            columns: ["following_id"]
+            foreignKeyName: 'follows_following_id_fkey'
+            columns: ['following_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -552,32 +546,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "listing_favorites_listing_id_fkey"
-            columns: ["listing_id"]
+            foreignKeyName: 'listing_favorites_listing_id_fkey'
+            columns: ['listing_id']
             isOneToOne: false
-            referencedRelation: "listings"
-            referencedColumns: ["id"]
+            referencedRelation: 'listings'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "listing_favorites_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'listing_favorites_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "listing_favorites_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'listing_favorites_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
       listings: {
         Row: {
-          category: Database["public"]["Enums"]["listing_category"]
-          condition: Database["public"]["Enums"]["listing_condition"]
+          category: Database['public']['Enums']['listing_category']
+          condition: Database['public']['Enums']['listing_condition']
           created_at: string
           currency: string
           description: string
@@ -586,19 +580,19 @@ export type Database = {
           id: string
           images: string[]
           latitude: number | null
-          listing_type: Database["public"]["Enums"]["listing_type"]
+          listing_type: Database['public']['Enums']['listing_type']
           location: string | null
           longitude: number | null
           price: number
           seller_id: string
-          status: Database["public"]["Enums"]["listing_status"]
+          status: Database['public']['Enums']['listing_status']
           title: string
           updated_at: string
           views_count: number
         }
         Insert: {
-          category?: Database["public"]["Enums"]["listing_category"]
-          condition: Database["public"]["Enums"]["listing_condition"]
+          category?: Database['public']['Enums']['listing_category']
+          condition: Database['public']['Enums']['listing_condition']
           created_at?: string
           currency?: string
           description: string
@@ -607,19 +601,19 @@ export type Database = {
           id?: string
           images?: string[]
           latitude?: number | null
-          listing_type?: Database["public"]["Enums"]["listing_type"]
+          listing_type?: Database['public']['Enums']['listing_type']
           location?: string | null
           longitude?: number | null
           price: number
           seller_id: string
-          status?: Database["public"]["Enums"]["listing_status"]
+          status?: Database['public']['Enums']['listing_status']
           title: string
           updated_at?: string
           views_count?: number
         }
         Update: {
-          category?: Database["public"]["Enums"]["listing_category"]
-          condition?: Database["public"]["Enums"]["listing_condition"]
+          category?: Database['public']['Enums']['listing_category']
+          condition?: Database['public']['Enums']['listing_condition']
           created_at?: string
           currency?: string
           description?: string
@@ -628,37 +622,37 @@ export type Database = {
           id?: string
           images?: string[]
           latitude?: number | null
-          listing_type?: Database["public"]["Enums"]["listing_type"]
+          listing_type?: Database['public']['Enums']['listing_type']
           location?: string | null
           longitude?: number | null
           price?: number
           seller_id?: string
-          status?: Database["public"]["Enums"]["listing_status"]
+          status?: Database['public']['Enums']['listing_status']
           title?: string
           updated_at?: string
           views_count?: number
         }
         Relationships: [
           {
-            foreignKeyName: "listings_faction_id_fkey"
-            columns: ["faction_id"]
+            foreignKeyName: 'listings_faction_id_fkey'
+            columns: ['faction_id']
             isOneToOne: false
-            referencedRelation: "tags"
-            referencedColumns: ["id"]
+            referencedRelation: 'tags'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "listings_seller_id_fkey"
-            columns: ["seller_id"]
+            foreignKeyName: 'listings_seller_id_fkey'
+            columns: ['seller_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "listings_seller_id_fkey"
-            columns: ["seller_id"]
+            foreignKeyName: 'listings_seller_id_fkey'
+            columns: ['seller_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -686,25 +680,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "messages_conversation_id_fkey"
-            columns: ["conversation_id"]
+            foreignKeyName: 'messages_conversation_id_fkey'
+            columns: ['conversation_id']
             isOneToOne: false
-            referencedRelation: "conversations"
-            referencedColumns: ["id"]
+            referencedRelation: 'conversations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "messages_sender_id_fkey"
-            columns: ["sender_id"]
+            foreignKeyName: 'messages_sender_id_fkey'
+            columns: ['sender_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "messages_sender_id_fkey"
-            columns: ["sender_id"]
+            foreignKeyName: 'messages_sender_id_fkey'
+            columns: ['sender_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -735,25 +729,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "miniature_comments_miniature_id_fkey"
-            columns: ["miniature_id"]
+            foreignKeyName: 'miniature_comments_miniature_id_fkey'
+            columns: ['miniature_id']
             isOneToOne: false
-            referencedRelation: "miniatures"
-            referencedColumns: ["id"]
+            referencedRelation: 'miniatures'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "miniature_comments_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'miniature_comments_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "miniature_comments_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'miniature_comments_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -778,25 +772,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "miniature_likes_miniature_id_fkey"
-            columns: ["miniature_id"]
+            foreignKeyName: 'miniature_likes_miniature_id_fkey'
+            columns: ['miniature_id']
             isOneToOne: false
-            referencedRelation: "miniatures"
-            referencedColumns: ["id"]
+            referencedRelation: 'miniatures'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "miniature_likes_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'miniature_likes_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "miniature_likes_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'miniature_likes_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -815,18 +809,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "miniature_tags_miniature_id_fkey"
-            columns: ["miniature_id"]
+            foreignKeyName: 'miniature_tags_miniature_id_fkey'
+            columns: ['miniature_id']
             isOneToOne: false
-            referencedRelation: "miniatures"
-            referencedColumns: ["id"]
+            referencedRelation: 'miniatures'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "miniature_tags_tag_id_fkey"
-            columns: ["tag_id"]
+            foreignKeyName: 'miniature_tags_tag_id_fkey'
+            columns: ['tag_id']
             isOneToOne: false
-            referencedRelation: "tags"
-            referencedColumns: ["id"]
+            referencedRelation: 'tags'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -878,25 +872,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "miniatures_faction_id_fkey"
-            columns: ["faction_id"]
+            foreignKeyName: 'miniatures_faction_id_fkey'
+            columns: ['faction_id']
             isOneToOne: false
-            referencedRelation: "tags"
-            referencedColumns: ["id"]
+            referencedRelation: 'tags'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "miniatures_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'miniatures_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "miniatures_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'miniatures_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -908,7 +902,7 @@ export type Database = {
           id: string
           read: boolean
           title: string
-          type: Database["public"]["Enums"]["notification_type"]
+          type: Database['public']['Enums']['notification_type']
           user_id: string
         }
         Insert: {
@@ -918,7 +912,7 @@ export type Database = {
           id?: string
           read?: boolean
           title: string
-          type: Database["public"]["Enums"]["notification_type"]
+          type: Database['public']['Enums']['notification_type']
           user_id: string
         }
         Update: {
@@ -928,23 +922,23 @@ export type Database = {
           id?: string
           read?: boolean
           title?: string
-          type?: Database["public"]["Enums"]["notification_type"]
+          type?: Database['public']['Enums']['notification_type']
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'notifications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'notifications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -959,8 +953,8 @@ export type Database = {
           creator_bio: string | null
           creator_rejection_reason: string | null
           creator_services: string[] | null
-          creator_status: Database["public"]["Enums"]["creator_status"] | null
-          creator_type: Database["public"]["Enums"]["creator_type"] | null
+          creator_status: Database['public']['Enums']['creator_status'] | null
+          creator_type: Database['public']['Enums']['creator_type'] | null
           creator_verified_at: string | null
           display_name: string | null
           favorite_factions: string[] | null
@@ -973,7 +967,7 @@ export type Database = {
           location: string | null
           pinned_miniatures: string[] | null
           portfolio_url: string | null
-          role: Database["public"]["Enums"]["user_role"]
+          role: Database['public']['Enums']['user_role']
           twitter: string | null
           updated_at: string
           username: string
@@ -990,8 +984,8 @@ export type Database = {
           creator_bio?: string | null
           creator_rejection_reason?: string | null
           creator_services?: string[] | null
-          creator_status?: Database["public"]["Enums"]["creator_status"] | null
-          creator_type?: Database["public"]["Enums"]["creator_type"] | null
+          creator_status?: Database['public']['Enums']['creator_status'] | null
+          creator_type?: Database['public']['Enums']['creator_type'] | null
           creator_verified_at?: string | null
           display_name?: string | null
           favorite_factions?: string[] | null
@@ -1004,7 +998,7 @@ export type Database = {
           location?: string | null
           pinned_miniatures?: string[] | null
           portfolio_url?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
+          role?: Database['public']['Enums']['user_role']
           twitter?: string | null
           updated_at?: string
           username: string
@@ -1021,8 +1015,8 @@ export type Database = {
           creator_bio?: string | null
           creator_rejection_reason?: string | null
           creator_services?: string[] | null
-          creator_status?: Database["public"]["Enums"]["creator_status"] | null
-          creator_type?: Database["public"]["Enums"]["creator_type"] | null
+          creator_status?: Database['public']['Enums']['creator_status'] | null
+          creator_type?: Database['public']['Enums']['creator_type'] | null
           creator_verified_at?: string | null
           display_name?: string | null
           favorite_factions?: string[] | null
@@ -1035,7 +1029,7 @@ export type Database = {
           location?: string | null
           pinned_miniatures?: string[] | null
           portfolio_url?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
+          role?: Database['public']['Enums']['user_role']
           twitter?: string | null
           updated_at?: string
           username?: string
@@ -1047,7 +1041,7 @@ export type Database = {
       reports: {
         Row: {
           content_id: string
-          content_type: Database["public"]["Enums"]["content_type"]
+          content_type: Database['public']['Enums']['content_type']
           created_at: string
           description: string | null
           id: string
@@ -1056,11 +1050,11 @@ export type Database = {
           reporter_id: string
           resolved_at: string | null
           resolved_by: string | null
-          status: Database["public"]["Enums"]["report_status"]
+          status: Database['public']['Enums']['report_status']
         }
         Insert: {
           content_id: string
-          content_type: Database["public"]["Enums"]["content_type"]
+          content_type: Database['public']['Enums']['content_type']
           created_at?: string
           description?: string | null
           id?: string
@@ -1069,11 +1063,11 @@ export type Database = {
           reporter_id: string
           resolved_at?: string | null
           resolved_by?: string | null
-          status?: Database["public"]["Enums"]["report_status"]
+          status?: Database['public']['Enums']['report_status']
         }
         Update: {
           content_id?: string
-          content_type?: Database["public"]["Enums"]["content_type"]
+          content_type?: Database['public']['Enums']['content_type']
           created_at?: string
           description?: string | null
           id?: string
@@ -1082,50 +1076,50 @@ export type Database = {
           reporter_id?: string
           resolved_at?: string | null
           resolved_by?: string | null
-          status?: Database["public"]["Enums"]["report_status"]
+          status?: Database['public']['Enums']['report_status']
         }
         Relationships: [
           {
-            foreignKeyName: "reports_reported_user_id_fkey"
-            columns: ["reported_user_id"]
+            foreignKeyName: 'reports_reported_user_id_fkey'
+            columns: ['reported_user_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "reports_reported_user_id_fkey"
-            columns: ["reported_user_id"]
+            foreignKeyName: 'reports_reported_user_id_fkey'
+            columns: ['reported_user_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "reports_reporter_id_fkey"
-            columns: ["reporter_id"]
+            foreignKeyName: 'reports_reporter_id_fkey'
+            columns: ['reporter_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "reports_reporter_id_fkey"
-            columns: ["reporter_id"]
+            foreignKeyName: 'reports_reporter_id_fkey'
+            columns: ['reporter_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "reports_resolved_by_fkey"
-            columns: ["resolved_by"]
+            foreignKeyName: 'reports_resolved_by_fkey'
+            columns: ['resolved_by']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "reports_resolved_by_fkey"
-            columns: ["resolved_by"]
+            foreignKeyName: 'reports_resolved_by_fkey'
+            columns: ['resolved_by']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1159,39 +1153,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "seller_reviews_listing_id_fkey"
-            columns: ["listing_id"]
+            foreignKeyName: 'seller_reviews_listing_id_fkey'
+            columns: ['listing_id']
             isOneToOne: false
-            referencedRelation: "listings"
-            referencedColumns: ["id"]
+            referencedRelation: 'listings'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "seller_reviews_reviewer_id_fkey"
-            columns: ["reviewer_id"]
+            foreignKeyName: 'seller_reviews_reviewer_id_fkey'
+            columns: ['reviewer_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "seller_reviews_reviewer_id_fkey"
-            columns: ["reviewer_id"]
+            foreignKeyName: 'seller_reviews_reviewer_id_fkey'
+            columns: ['reviewer_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "seller_reviews_seller_id_fkey"
-            columns: ["seller_id"]
+            foreignKeyName: 'seller_reviews_seller_id_fkey'
+            columns: ['seller_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "seller_reviews_seller_id_fkey"
-            columns: ["seller_id"]
+            foreignKeyName: 'seller_reviews_seller_id_fkey'
+            columns: ['seller_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1222,25 +1216,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "store_reviews_reviewer_id_fkey"
-            columns: ["reviewer_id"]
+            foreignKeyName: 'store_reviews_reviewer_id_fkey'
+            columns: ['reviewer_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "store_reviews_reviewer_id_fkey"
-            columns: ["reviewer_id"]
+            foreignKeyName: 'store_reviews_reviewer_id_fkey'
+            columns: ['reviewer_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "store_reviews_store_id_fkey"
-            columns: ["store_id"]
+            foreignKeyName: 'store_reviews_store_id_fkey'
+            columns: ['store_id']
             isOneToOne: false
-            referencedRelation: "stores"
-            referencedColumns: ["id"]
+            referencedRelation: 'stores'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1270,8 +1264,8 @@ export type Database = {
           reviewed_by: string | null
           services: string[] | null
           slug: string
-          status: Database["public"]["Enums"]["store_status"]
-          store_type: Database["public"]["Enums"]["store_type"]
+          status: Database['public']['Enums']['store_status']
+          store_type: Database['public']['Enums']['store_type']
           submitted_by: string
           updated_at: string | null
           website: string | null
@@ -1301,8 +1295,8 @@ export type Database = {
           reviewed_by?: string | null
           services?: string[] | null
           slug: string
-          status?: Database["public"]["Enums"]["store_status"]
-          store_type?: Database["public"]["Enums"]["store_type"]
+          status?: Database['public']['Enums']['store_status']
+          store_type?: Database['public']['Enums']['store_type']
           submitted_by: string
           updated_at?: string | null
           website?: string | null
@@ -1332,46 +1326,46 @@ export type Database = {
           reviewed_by?: string | null
           services?: string[] | null
           slug?: string
-          status?: Database["public"]["Enums"]["store_status"]
-          store_type?: Database["public"]["Enums"]["store_type"]
+          status?: Database['public']['Enums']['store_status']
+          store_type?: Database['public']['Enums']['store_type']
           submitted_by?: string
           updated_at?: string | null
           website?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "stores_reviewed_by_fkey"
-            columns: ["reviewed_by"]
+            foreignKeyName: 'stores_reviewed_by_fkey'
+            columns: ['reviewed_by']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "stores_reviewed_by_fkey"
-            columns: ["reviewed_by"]
+            foreignKeyName: 'stores_reviewed_by_fkey'
+            columns: ['reviewed_by']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "stores_submitted_by_fkey"
-            columns: ["submitted_by"]
+            foreignKeyName: 'stores_submitted_by_fkey'
+            columns: ['submitted_by']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "stores_submitted_by_fkey"
-            columns: ["submitted_by"]
+            foreignKeyName: 'stores_submitted_by_fkey'
+            columns: ['submitted_by']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
       tags: {
         Row: {
-          category: Database["public"]["Enums"]["tag_category"]
+          category: Database['public']['Enums']['tag_category']
           created_at: string
           icon_url: string | null
           id: string
@@ -1381,7 +1375,7 @@ export type Database = {
           slug: string
         }
         Insert: {
-          category?: Database["public"]["Enums"]["tag_category"]
+          category?: Database['public']['Enums']['tag_category']
           created_at?: string
           icon_url?: string | null
           id?: string
@@ -1391,7 +1385,7 @@ export type Database = {
           slug: string
         }
         Update: {
-          category?: Database["public"]["Enums"]["tag_category"]
+          category?: Database['public']['Enums']['tag_category']
           created_at?: string
           icon_url?: string | null
           id?: string
@@ -1423,25 +1417,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "user_badges_badge_id_fkey"
-            columns: ["badge_id"]
+            foreignKeyName: 'user_badges_badge_id_fkey'
+            columns: ['badge_id']
             isOneToOne: false
-            referencedRelation: "badges"
-            referencedColumns: ["id"]
+            referencedRelation: 'badges'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "user_badges_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_badges_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "user_badges_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_badges_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "public_creators"
-            referencedColumns: ["id"]
+            referencedRelation: 'public_creators'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1454,7 +1448,7 @@ export type Database = {
           bio: string | null
           creator_bio: string | null
           creator_services: string[] | null
-          creator_type: Database["public"]["Enums"]["creator_type"] | null
+          creator_type: Database['public']['Enums']['creator_type'] | null
           creator_verified_at: string | null
           display_name: string | null
           favorite_factions: string[] | null
@@ -1475,7 +1469,7 @@ export type Database = {
           bio?: string | null
           creator_bio?: string | null
           creator_services?: string[] | null
-          creator_type?: Database["public"]["Enums"]["creator_type"] | null
+          creator_type?: Database['public']['Enums']['creator_type'] | null
           creator_verified_at?: string | null
           display_name?: string | null
           favorite_factions?: string[] | null
@@ -1496,7 +1490,7 @@ export type Database = {
           bio?: string | null
           creator_bio?: string | null
           creator_services?: string[] | null
-          creator_type?: Database["public"]["Enums"]["creator_type"] | null
+          creator_type?: Database['public']['Enums']['creator_type'] | null
           creator_verified_at?: string | null
           display_name?: string | null
           favorite_factions?: string[] | null
@@ -1517,7 +1511,7 @@ export type Database = {
     Functions: {
       apply_for_creator: {
         Args: {
-          p_creator_type: Database["public"]["Enums"]["creator_type"]
+          p_creator_type: Database['public']['Enums']['creator_type']
           p_motivation: string
           p_portfolio_links?: string[]
           p_social_links?: Json
@@ -1581,55 +1575,40 @@ export type Database = {
         }[]
       }
       show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { "": string }; Returns: string[] }
+      show_trgm: { Args: { '': string }; Returns: string[] }
     }
     Enums: {
-      article_category:
-        | "warhammer_40k"
-        | "age_of_sigmar"
-        | "painting"
-        | "tournaments"
-        | "news"
-      content_type: "miniature" | "listing" | "comment" | "message" | "profile"
-      creator_status: "none" | "pending" | "approved" | "rejected"
-      creator_type: "painter" | "youtuber" | "artist" | "blogger" | "instructor"
-      event_status: "draft" | "upcoming" | "ongoing" | "completed" | "cancelled"
+      article_category: 'warhammer_40k' | 'age_of_sigmar' | 'painting' | 'tournaments' | 'news'
+      content_type: 'miniature' | 'listing' | 'comment' | 'message' | 'profile'
+      creator_status: 'none' | 'pending' | 'approved' | 'rejected'
+      creator_type: 'painter' | 'youtuber' | 'artist' | 'blogger' | 'instructor'
+      event_status: 'draft' | 'upcoming' | 'ongoing' | 'completed' | 'cancelled'
       event_type:
-        | "tournament"
-        | "painting_workshop"
-        | "casual_play"
-        | "campaign"
-        | "release_event"
-        | "meetup"
-        | "other"
+        | 'tournament'
+        | 'painting_workshop'
+        | 'casual_play'
+        | 'campaign'
+        | 'release_event'
+        | 'meetup'
+        | 'other'
       listing_category:
-        | "miniatures"
-        | "novels"
-        | "codex"
-        | "paints"
-        | "tools"
-        | "terrain"
-        | "accessories"
-        | "other"
-      listing_condition: "nib" | "nos" | "assembled" | "painted" | "pro_painted"
-      listing_status: "active" | "reserved" | "sold" | "inactive"
-      listing_type: "sale" | "trade" | "both"
-      notification_type:
-        | "like"
-        | "comment"
-        | "follow"
-        | "message"
-        | "mention"
-        | "system"
-      report_status: "pending" | "reviewed" | "resolved" | "dismissed"
-      store_status: "pending" | "approved" | "rejected" | "closed"
-      store_type:
-        | "specialist"
-        | "comics_games"
-        | "general_hobby"
-        | "online_only"
-      tag_category: "faction" | "technique" | "game_system" | "other"
-      user_role: "user" | "moderator" | "admin"
+        | 'miniatures'
+        | 'novels'
+        | 'codex'
+        | 'paints'
+        | 'tools'
+        | 'terrain'
+        | 'accessories'
+        | 'other'
+      listing_condition: 'nib' | 'nos' | 'assembled' | 'painted' | 'pro_painted'
+      listing_status: 'active' | 'reserved' | 'sold' | 'inactive'
+      listing_type: 'sale' | 'trade' | 'both'
+      notification_type: 'like' | 'comment' | 'follow' | 'message' | 'mention' | 'system'
+      report_status: 'pending' | 'reviewed' | 'resolved' | 'dismissed'
+      store_status: 'pending' | 'approved' | 'rejected' | 'closed'
+      store_type: 'specialist' | 'comics_games' | 'general_hobby' | 'online_only'
+      tag_category: 'faction' | 'technique' | 'game_system' | 'other'
+      user_role: 'user' | 'moderator' | 'admin'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1637,33 +1616,31 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -1672,23 +1649,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -1697,23 +1674,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -1722,92 +1699,74 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
+    | keyof DefaultSchema['Enums']
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
+    | keyof DefaultSchema['CompositeTypes']
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
   public: {
     Enums: {
-      article_category: [
-        "warhammer_40k",
-        "age_of_sigmar",
-        "painting",
-        "tournaments",
-        "news",
-      ],
-      content_type: ["miniature", "listing", "comment", "message", "profile"],
-      creator_status: ["none", "pending", "approved", "rejected"],
-      creator_type: ["painter", "youtuber", "artist", "blogger", "instructor"],
-      event_status: ["draft", "upcoming", "ongoing", "completed", "cancelled"],
+      article_category: ['warhammer_40k', 'age_of_sigmar', 'painting', 'tournaments', 'news'],
+      content_type: ['miniature', 'listing', 'comment', 'message', 'profile'],
+      creator_status: ['none', 'pending', 'approved', 'rejected'],
+      creator_type: ['painter', 'youtuber', 'artist', 'blogger', 'instructor'],
+      event_status: ['draft', 'upcoming', 'ongoing', 'completed', 'cancelled'],
       event_type: [
-        "tournament",
-        "painting_workshop",
-        "casual_play",
-        "campaign",
-        "release_event",
-        "meetup",
-        "other",
+        'tournament',
+        'painting_workshop',
+        'casual_play',
+        'campaign',
+        'release_event',
+        'meetup',
+        'other',
       ],
       listing_category: [
-        "miniatures",
-        "novels",
-        "codex",
-        "paints",
-        "tools",
-        "terrain",
-        "accessories",
-        "other",
+        'miniatures',
+        'novels',
+        'codex',
+        'paints',
+        'tools',
+        'terrain',
+        'accessories',
+        'other',
       ],
-      listing_condition: ["nib", "nos", "assembled", "painted", "pro_painted"],
-      listing_status: ["active", "reserved", "sold", "inactive"],
-      listing_type: ["sale", "trade", "both"],
-      notification_type: [
-        "like",
-        "comment",
-        "follow",
-        "message",
-        "mention",
-        "system",
-      ],
-      report_status: ["pending", "reviewed", "resolved", "dismissed"],
-      store_status: ["pending", "approved", "rejected", "closed"],
-      store_type: [
-        "specialist",
-        "comics_games",
-        "general_hobby",
-        "online_only",
-      ],
-      tag_category: ["faction", "technique", "game_system", "other"],
-      user_role: ["user", "moderator", "admin"],
+      listing_condition: ['nib', 'nos', 'assembled', 'painted', 'pro_painted'],
+      listing_status: ['active', 'reserved', 'sold', 'inactive'],
+      listing_type: ['sale', 'trade', 'both'],
+      notification_type: ['like', 'comment', 'follow', 'message', 'mention', 'system'],
+      report_status: ['pending', 'reviewed', 'resolved', 'dismissed'],
+      store_status: ['pending', 'approved', 'rejected', 'closed'],
+      store_type: ['specialist', 'comics_games', 'general_hobby', 'online_only'],
+      tag_category: ['faction', 'technique', 'game_system', 'other'],
+      user_role: ['user', 'moderator', 'admin'],
     },
   },
 } as const

@@ -16,14 +16,14 @@ import {
   ExternalLink,
   User,
   Mail,
-  Feather
+  Feather,
 } from 'lucide-react'
 import {
   ServitorBootSequence,
   DataslateContainer,
   CreatorEligibility,
   CreatorApplicationForm,
-  CreatorBadge
+  CreatorBadge,
 } from '@/components/creator'
 import type { CreatorType } from '@/lib/types/database.types'
 
@@ -48,7 +48,7 @@ export function CreatorApplicationPageClient({
   creatorType,
   verifiedAt,
   applicationDate,
-  rejectionReason
+  rejectionReason,
 }: CreatorApplicationPageClientProps) {
   const [pageState, setPageState] = useState<PageState>('boot')
   const [hasSeenBoot, setHasSeenBoot] = useState(false)
@@ -74,7 +74,12 @@ export function CreatorApplicationPageClient({
   }
 
   // Show boot sequence for first-time visitors (not for approved or pending)
-  if (pageState === 'boot' && !hasSeenBoot && creatorStatus !== 'pending' && creatorStatus !== 'approved') {
+  if (
+    pageState === 'boot' &&
+    !hasSeenBoot &&
+    creatorStatus !== 'pending' &&
+    creatorStatus !== 'approved'
+  ) {
     return <ServitorBootSequence onComplete={handleBootComplete} />
   }
 
@@ -82,13 +87,13 @@ export function CreatorApplicationPageClient({
   if (creatorStatus === 'approved') {
     return (
       <div className="min-h-screen py-8 sm:py-12">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           {/* Back link */}
           <Link
             href="/comunidad/creadores"
-            className="inline-flex items-center gap-2 text-bone/40 hover:text-bone/70 transition-colors mb-8 font-mono text-sm"
+            className="mb-8 inline-flex items-center gap-2 font-mono text-sm text-bone/40 transition-colors hover:text-bone/70"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="h-4 w-4" />
             RETORNAR AL DIRECTORIO
           </Link>
 
@@ -105,35 +110,34 @@ export function CreatorApplicationPageClient({
 
   return (
     <div className="min-h-screen py-8 sm:py-12">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Back link */}
         <Link
           href="/comunidad/creadores"
-          className="inline-flex items-center gap-2 text-bone/40 hover:text-bone/70 transition-colors mb-8 font-mono text-sm"
+          className="mb-8 inline-flex items-center gap-2 font-mono text-sm text-bone/40 transition-colors hover:text-bone/70"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="h-4 w-4" />
           RETORNAR AL DIRECTORIO
         </Link>
 
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center mb-8"
-        >
-          <div className="relative inline-flex items-center justify-center w-20 h-20 mb-4">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8 text-center">
+          <div className="relative mb-4 inline-flex h-20 w-20 items-center justify-center">
             {/* Animated rings — CSS animation to avoid JS RAF loops */}
-            <div className="absolute inset-0 rounded-full border-2 border-imperial-gold/30 animate-[factionPulse_3s_ease-in-out_infinite]" />
-            <div className="absolute inset-2 rounded-full border border-imperial-gold/20 animate-[factionPulse_2.5s_ease-in-out_infinite]" style={{ animationDelay: '0.5s' }} />
-            <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-imperial-gold/20 to-imperial-gold/5 border border-imperial-gold/50 flex items-center justify-center">
-              <Scroll className="w-8 h-8 text-imperial-gold" />
+            <div className="absolute inset-0 animate-[factionPulse_3s_ease-in-out_infinite] rounded-full border-2 border-imperial-gold/30" />
+            <div
+              className="absolute inset-2 animate-[factionPulse_2.5s_ease-in-out_infinite] rounded-full border border-imperial-gold/20"
+              style={{ animationDelay: '0.5s' }}
+            />
+            <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-imperial-gold/50 bg-gradient-to-br from-imperial-gold/20 to-imperial-gold/5">
+              <Scroll className="h-8 w-8 text-imperial-gold" />
             </div>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-display font-bold text-bone mb-2">
+          <h1 className="mb-2 font-display text-2xl font-bold text-bone sm:text-3xl">
             PETICION AL ADMINISTRATUM
           </h1>
-          <p className="text-bone/50 font-mono text-sm tracking-wide">
+          <p className="font-mono text-sm tracking-wide text-bone/50">
             PROTOCOLO DE VERIFICACION DE CREADOR
           </p>
         </motion.div>
@@ -161,7 +165,11 @@ export function CreatorApplicationPageClient({
                 className="space-y-6"
               >
                 <RejectedStatus reason={rejectionReason} />
-                <ApplicationContent userId={userId} isEligible={isEligible} onEligible={handleEligible} />
+                <ApplicationContent
+                  userId={userId}
+                  isEligible={isEligible}
+                  onEligible={handleEligible}
+                />
               </motion.div>
             ) : (
               <motion.div
@@ -171,7 +179,11 @@ export function CreatorApplicationPageClient({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <ApplicationContent userId={userId} isEligible={isEligible} onEligible={handleEligible} />
+                <ApplicationContent
+                  userId={userId}
+                  isEligible={isEligible}
+                  onEligible={handleEligible}
+                />
               </motion.div>
             )}
           </AnimatePresence>
@@ -185,7 +197,7 @@ function ApprovedStatus({
   username,
   displayName,
   creatorType,
-  verifiedAt
+  verifiedAt,
 }: {
   username?: string | null
   displayName?: string | null
@@ -193,34 +205,28 @@ function ApprovedStatus({
   verifiedAt?: string | null
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-6"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       {/* Main approved card */}
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-b from-void-light/90 to-void/80 border border-emerald-500/30">
+      <div className="relative overflow-hidden rounded-xl border border-emerald-500/30 bg-gradient-to-b from-void-light/90 to-void/80">
         {/* Corner decorations */}
-        <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-emerald-500/40" />
-        <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-emerald-500/40" />
-        <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-emerald-500/40" />
-        <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-emerald-500/40" />
+        <div className="absolute left-3 top-3 h-6 w-6 border-l-2 border-t-2 border-emerald-500/40" />
+        <div className="absolute right-3 top-3 h-6 w-6 border-r-2 border-t-2 border-emerald-500/40" />
+        <div className="absolute bottom-3 left-3 h-6 w-6 border-b-2 border-l-2 border-emerald-500/40" />
+        <div className="absolute bottom-3 right-3 h-6 w-6 border-b-2 border-r-2 border-emerald-500/40" />
 
         {/* Glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent pointer-events-none" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent" />
 
         <div className="relative p-8 text-center">
           {/* Success icon with seal */}
-          <div className="relative inline-block mb-6">
-            <div
-              className="w-24 h-24 rounded-full bg-emerald-500/10 border-2 border-emerald-500/40 flex items-center justify-center animate-[approvedGlow_3s_ease-in-out_infinite]"
-            >
-              <CheckCircle2 className="w-12 h-12 text-emerald-400" />
+          <div className="relative mb-6 inline-block">
+            <div className="flex h-24 w-24 animate-[approvedGlow_3s_ease-in-out_infinite] items-center justify-center rounded-full border-2 border-emerald-500/40 bg-emerald-500/10">
+              <CheckCircle2 className="h-12 w-12 text-emerald-400" />
             </div>
 
             {/* Purity seal overlay */}
             <motion.div
-              className="absolute -top-2 -right-2"
+              className="absolute -right-2 -top-2"
               initial={{ scale: 0, rotate: -20 }}
               animate={{ scale: 1, rotate: 8 }}
               transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
@@ -236,98 +242,99 @@ function ApprovedStatus({
           </div>
 
           {/* Title */}
-          <h1 className="text-2xl sm:text-3xl font-display font-bold text-bone mb-2">
+          <h1 className="mb-2 font-display text-2xl font-bold text-bone sm:text-3xl">
             YA ERES REMEMORIZADOR
           </h1>
-          <p className="text-bone/60 font-body mb-6 max-w-md mx-auto">
-            Tu expediente ha sido aprobado por el Administratum. Portas el sello
-            de verificacion que te acredita como cronista del Imperium.
+          <p className="mx-auto mb-6 max-w-md font-body text-bone/60">
+            Tu expediente ha sido aprobado por el Administratum. Portas el sello de verificacion que
+            te acredita como cronista del Imperium.
           </p>
 
           {/* Creator badge */}
           {creatorType && (
-            <div className="flex justify-center mb-6">
+            <div className="mb-6 flex justify-center">
               <CreatorBadge type={creatorType} variant="title-ribbon" />
             </div>
           )}
 
           {/* Verification date */}
           {verifiedAt && (
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-void/50 border border-emerald-500/20 text-emerald-400/80 text-xs font-mono">
-              <Shield className="w-4 h-4" />
-              VERIFICADO: {new Date(verifiedAt).toLocaleDateString('es-ES', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-              }).toUpperCase()}
+            <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-void/50 px-4 py-2 font-mono text-xs text-emerald-400/80">
+              <Shield className="h-4 w-4" />
+              VERIFICADO:{' '}
+              {new Date(verifiedAt)
+                .toLocaleDateString('es-ES', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })
+                .toUpperCase()}
             </div>
           )}
         </div>
       </div>
 
       {/* Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* View profile */}
         <Link
           href={username ? `/usuarios/${username}` : '/perfil'}
-          className="group flex items-center gap-4 p-4 rounded-xl bg-void-light/60 border border-imperial-gold/20 hover:border-imperial-gold/50 transition-all"
+          className="group flex items-center gap-4 rounded-xl border border-imperial-gold/20 bg-void-light/60 p-4 transition-all hover:border-imperial-gold/50"
         >
-          <div className="w-12 h-12 rounded-lg bg-imperial-gold/10 border border-imperial-gold/30 flex items-center justify-center group-hover:bg-imperial-gold/20 transition-colors">
-            <User className="w-6 h-6 text-imperial-gold" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-imperial-gold/30 bg-imperial-gold/10 transition-colors group-hover:bg-imperial-gold/20">
+            <User className="h-6 w-6 text-imperial-gold" />
           </div>
           <div className="flex-1">
-            <h3 className="font-display font-semibold text-bone group-hover:text-imperial-gold transition-colors">
+            <h3 className="font-display font-semibold text-bone transition-colors group-hover:text-imperial-gold">
               Ver mi perfil
             </h3>
-            <p className="text-xs text-bone/40 font-mono">
+            <p className="font-mono text-xs text-bone/40">
               {displayName || username || 'Tu expediente'}
             </p>
           </div>
-          <ExternalLink className="w-4 h-4 text-bone/30 group-hover:text-imperial-gold/60 transition-colors" />
+          <ExternalLink className="h-4 w-4 text-bone/30 transition-colors group-hover:text-imperial-gold/60" />
         </Link>
 
         {/* View directory */}
         <Link
           href="/comunidad/creadores"
-          className="group flex items-center gap-4 p-4 rounded-xl bg-void-light/60 border border-imperial-gold/20 hover:border-imperial-gold/50 transition-all"
+          className="group flex items-center gap-4 rounded-xl border border-imperial-gold/20 bg-void-light/60 p-4 transition-all hover:border-imperial-gold/50"
         >
-          <div className="w-12 h-12 rounded-lg bg-imperial-gold/10 border border-imperial-gold/30 flex items-center justify-center group-hover:bg-imperial-gold/20 transition-colors">
-            <Scroll className="w-6 h-6 text-imperial-gold" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-imperial-gold/30 bg-imperial-gold/10 transition-colors group-hover:bg-imperial-gold/20">
+            <Scroll className="h-6 w-6 text-imperial-gold" />
           </div>
           <div className="flex-1">
-            <h3 className="font-display font-semibold text-bone group-hover:text-imperial-gold transition-colors">
+            <h3 className="font-display font-semibold text-bone transition-colors group-hover:text-imperial-gold">
               Directorio de Creadores
             </h3>
-            <p className="text-xs text-bone/40 font-mono">
-              Orden de Rememoradores
-            </p>
+            <p className="font-mono text-xs text-bone/40">Orden de Rememoradores</p>
           </div>
-          <ExternalLink className="w-4 h-4 text-bone/30 group-hover:text-imperial-gold/60 transition-colors" />
+          <ExternalLink className="h-4 w-4 text-bone/30 transition-colors group-hover:text-imperial-gold/60" />
         </Link>
       </div>
 
       {/* Help section */}
-      <div className="relative p-5 rounded-xl bg-void-light/40 border border-bone/10">
+      <div className="relative rounded-xl border border-bone/10 bg-void-light/40 p-5">
         {/* Decorative feather */}
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <div className="px-3 py-1 bg-void-light rounded-full border border-bone/10">
-            <Feather className="w-4 h-4 text-imperial-gold/40" />
+          <div className="rounded-full border border-bone/10 bg-void-light px-3 py-1">
+            <Feather className="h-4 w-4 text-imperial-gold/40" />
           </div>
         </div>
 
-        <div className="text-center pt-2">
-          <h3 className="text-sm font-display font-semibold text-bone/70 mb-2">
+        <div className="pt-2 text-center">
+          <h3 className="mb-2 font-display text-sm font-semibold text-bone/70">
             ¿Necesitas modificar tu estado de creador?
           </h3>
-          <p className="text-xs text-bone/40 font-body mb-3">
+          <p className="mb-3 font-body text-xs text-bone/40">
             Si deseas actualizar tu tipo de creador, servicios, o darte de baja del programa,
             contacta con el Administratum.
           </p>
           <a
             href="mailto:soporte@grimdarklegion.com?subject=Consulta%20Programa%20Creadores"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-void/50 border border-bone/10 text-bone/50 hover:text-bone/80 hover:border-bone/30 transition-all text-sm font-mono"
+            className="inline-flex items-center gap-2 rounded-lg border border-bone/10 bg-void/50 px-4 py-2 font-mono text-sm text-bone/50 transition-all hover:border-bone/30 hover:text-bone/80"
           >
-            <Mail className="w-4 h-4" />
+            <Mail className="h-4 w-4" />
             CONTACTAR ADMINISTRATUM
           </a>
         </div>
@@ -343,29 +350,28 @@ function PendingStatus({ applicationDate }: { applicationDate?: string | null })
       subtitle="Aguardando revision del Inquisitorium"
       variant="warning"
     >
-      <div className="text-center py-8">
-        <div
-          className="w-20 h-20 mx-auto mb-6 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center animate-[pendingGlow_2s_ease-in-out_infinite]"
-        >
-          <Clock className="w-10 h-10 text-amber-400" />
+      <div className="py-8 text-center">
+        <div className="mx-auto mb-6 flex h-20 w-20 animate-[pendingGlow_2s_ease-in-out_infinite] items-center justify-center rounded-full border border-amber-500/30 bg-amber-500/10">
+          <Clock className="h-10 w-10 text-amber-400" />
         </div>
 
-        <h2 className="text-xl font-display font-bold text-bone mb-3">
-          Solicitud en Revision
-        </h2>
-        <p className="text-bone/60 mb-6 max-w-md mx-auto">
-          Tu peticion ha sido recibida por el Administratum. Un Inquisidor
-          revisara tu expediente y te notificara el veredicto via Vox.
+        <h2 className="mb-3 font-display text-xl font-bold text-bone">Solicitud en Revision</h2>
+        <p className="mx-auto mb-6 max-w-md text-bone/60">
+          Tu peticion ha sido recibida por el Administratum. Un Inquisidor revisara tu expediente y
+          te notificara el veredicto via Vox.
         </p>
 
         {applicationDate && (
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-void/50 border border-void-light text-bone/50 text-xs font-mono">
-            <FileText className="w-4 h-4" />
-            REGISTRADA: {new Date(applicationDate).toLocaleDateString('es-ES', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric'
-            }).toUpperCase()}
+          <div className="inline-flex items-center gap-2 rounded-lg border border-void-light bg-void/50 px-4 py-2 font-mono text-xs text-bone/50">
+            <FileText className="h-4 w-4" />
+            REGISTRADA:{' '}
+            {new Date(applicationDate)
+              .toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })
+              .toUpperCase()}
           </div>
         )}
       </div>
@@ -377,15 +383,16 @@ function RejectedStatus({ reason }: { reason?: string | null }) {
   return (
     <DataslateContainer variant="warning">
       <div className="flex items-start gap-4">
-        <div className="w-12 h-12 rounded-full bg-blood-red/20 border border-blood-red/30 flex items-center justify-center flex-shrink-0">
-          <AlertCircle className="w-6 h-6 text-blood-red" />
+        <div className="bg-blood-red/20 border-blood-red/30 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border">
+          <AlertCircle className="text-blood-red h-6 w-6" />
         </div>
         <div>
-          <h2 className="text-lg font-display font-bold text-bone mb-1">
+          <h2 className="mb-1 font-display text-lg font-bold text-bone">
             Peticion Anterior Denegada
           </h2>
-          <p className="text-bone/60 text-sm font-body">
-            {reason || 'El Inquisitorium ha determinado que no cumples los requisitos actuales. Puedes presentar una nueva peticion cuando hayas rectificado las deficiencias.'}
+          <p className="font-body text-sm text-bone/60">
+            {reason ||
+              'El Inquisitorium ha determinado que no cumples los requisitos actuales. Puedes presentar una nueva peticion cuando hayas rectificado las deficiencias.'}
           </p>
         </div>
       </div>
@@ -393,7 +400,15 @@ function RejectedStatus({ reason }: { reason?: string | null }) {
   )
 }
 
-function ApplicationContent({ userId, isEligible, onEligible }: { userId: string, isEligible: boolean, onEligible: () => void }) {
+function ApplicationContent({
+  userId,
+  isEligible,
+  onEligible,
+}: {
+  userId: string
+  isEligible: boolean
+  onEligible: () => void
+}) {
   return (
     <div className="space-y-6">
       {/* Benefits */}
@@ -407,7 +422,7 @@ function ApplicationContent({ userId, isEligible, onEligible }: { userId: string
             { icon: Sparkles, text: 'Visibilidad elevada en el Directorio Imperial' },
             { icon: Scroll, text: 'Seccion dedicada para exhibir tus servicios' },
             { icon: CheckCircle2, text: 'Posibilidad de destacar como Creador Ejemplar' },
-            { icon: FileText, text: 'Indicador de "Acepta encargos" si ofreces servicios' }
+            { icon: FileText, text: 'Indicador de "Acepta encargos" si ofreces servicios' },
           ].map((benefit, index) => (
             <motion.li
               key={index}
@@ -416,18 +431,15 @@ function ApplicationContent({ userId, isEligible, onEligible }: { userId: string
               transition={{ delay: index * 0.1 }}
               className="flex items-start gap-3"
             >
-              <benefit.icon className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-              <span className="text-bone/70 text-sm">{benefit.text}</span>
+              <benefit.icon className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-400" />
+              <span className="text-sm text-bone/70">{benefit.text}</span>
             </motion.li>
           ))}
         </ul>
       </DataslateContainer>
 
       {/* Eligibility check */}
-      <DataslateContainer
-        title="VERIFICACION DE REQUISITOS"
-        subtitle="Estado del expediente"
-      >
+      <DataslateContainer title="VERIFICACION DE REQUISITOS" subtitle="Estado del expediente">
         <CreatorEligibility userId={userId} onEligible={onEligible} />
       </DataslateContainer>
 

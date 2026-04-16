@@ -11,7 +11,7 @@ import {
   Shield,
   Users,
   Sparkles,
-  Trophy
+  Trophy,
 } from 'lucide-react'
 import { EventGrid, EventFilters } from '@/components/events'
 import EventsMapWrapper from '@/components/events/EventsMapWrapper'
@@ -19,7 +19,8 @@ import type { EventWithOrganizer, EventType } from '@/lib/types/database.types'
 
 export const metadata: Metadata = {
   title: 'Eventos | Chronus Eventus',
-  description: 'Calendario de eventos de Warhammer 40K. Torneos, talleres de pintura, campañas y quedadas de la comunidad.'
+  description:
+    'Calendario de eventos de Warhammer 40K. Torneos, talleres de pintura, campañas y quedadas de la comunidad.',
 }
 
 // Events change a few times a day. 5 minutes keeps the CDN warm without
@@ -38,11 +39,13 @@ async function getEvents(searchParams: SearchParams): Promise<EventWithOrganizer
 
   let query = supabase
     .from('events')
-    .select(`
+    .select(
+      `
       *,
       organizer:organizer_id(id, username, display_name, avatar_url, creator_status),
       store:store_id(id, name, slug)
-    `)
+    `
+    )
     .in('status', ['upcoming', 'ongoing'])
     .order('start_date', { ascending: true })
 
@@ -50,11 +53,13 @@ async function getEvents(searchParams: SearchParams): Promise<EventWithOrganizer
   if (searchParams.past === 'true') {
     query = supabase
       .from('events')
-      .select(`
+      .select(
+        `
         *,
         organizer:organizer_id(id, username, display_name, avatar_url, creator_status),
         store:store_id(id, name, slug)
-      `)
+      `
+      )
       .in('status', ['upcoming', 'ongoing', 'completed'])
       .order('start_date', { ascending: false })
   }
@@ -98,19 +103,25 @@ async function getEventStats() {
       .from('events')
       .select('id', { count: 'exact', head: true })
       .in('status', ['upcoming', 'ongoing'])
-      .eq('is_official', true)
+      .eq('is_official', true),
   ])
 
   return {
     upcoming: upcomingResult.count || 0,
-    official: officialResult.count || 0
+    official: officialResult.count || 0,
   }
 }
 
 // Hourglass SVG decoration
 function Hourglass({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
       <path d="M5 4h14M5 20h14M7 4v2a5 5 0 005 5 5 5 0 005-5V4M7 20v-2a5 5 0 015-5 5 5 0 015 5v2" />
       <path d="M12 11v2" strokeLinecap="round" />
     </svg>
@@ -123,18 +134,15 @@ export default async function EventosPage({
   searchParams: Promise<SearchParams>
 }) {
   const params = await searchParams
-  const [events, stats] = await Promise.all([
-    getEvents(params),
-    getEventStats()
-  ])
+  const [events, stats] = await Promise.all([getEvents(params), getEventStats()])
 
   // Get events with coordinates for the map
-  const mapEvents = events.filter(e => e.latitude && e.longitude)
+  const mapEvents = events.filter((e) => e.latitude && e.longitude)
 
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section - Chronus Eventus Theme */}
-      <section className="relative py-20 sm:py-28 lg:py-32 overflow-hidden">
+      <section className="relative overflow-hidden py-20 sm:py-28 lg:py-32">
         {/* Background layers */}
         <div className="absolute inset-0 bg-gradient-to-b from-void via-void-light/30 to-void" />
 
@@ -149,102 +157,110 @@ export default async function EventosPage({
         />
 
         {/* Animated hourglass decorations */}
-        <div className="absolute top-12 left-12 text-amber-500/10 hidden lg:block">
-          <Hourglass className="w-20 h-20" />
+        <div className="absolute left-12 top-12 hidden text-amber-500/10 lg:block">
+          <Hourglass className="h-20 w-20" />
         </div>
-        <div className="absolute bottom-12 right-12 text-amber-500/10 hidden lg:block rotate-180">
-          <Hourglass className="w-16 h-16" />
+        <div className="absolute bottom-12 right-12 hidden rotate-180 text-amber-500/10 lg:block">
+          <Hourglass className="h-16 w-16" />
         </div>
 
         {/* Time markers */}
-        <div className="absolute top-20 right-1/4 text-[10px] font-mono text-amber-500/20 tracking-wider hidden md:block">
+        <div className="absolute right-1/4 top-20 hidden font-mono text-[10px] tracking-wider text-amber-500/20 md:block">
           M41.126
         </div>
-        <div className="absolute bottom-20 left-1/4 text-[10px] font-mono text-amber-500/20 tracking-wider hidden md:block">
+        <div className="absolute bottom-20 left-1/4 hidden font-mono text-[10px] tracking-wider text-amber-500/20 md:block">
           ++CHRONUS ACTIVE++
         </div>
 
-        <div className="relative max-w-5xl mx-auto px-6 text-center">
+        <div className="relative mx-auto max-w-5xl px-6 text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-lg bg-void-light/80 border border-amber-500/30 mb-6">
-            <Clock className="w-4 h-4 text-amber-500" />
-            <span className="text-xs font-mono text-amber-500/80 tracking-[0.2em] uppercase">
+          <div className="mb-6 inline-flex items-center gap-3 rounded-lg border border-amber-500/30 bg-void-light/80 px-4 py-2">
+            <Clock className="h-4 w-4 text-amber-500" />
+            <span className="font-mono text-xs uppercase tracking-[0.2em] text-amber-500/80">
               Chronus Eventus
             </span>
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-bone mb-4 tracking-wide">
+          <h1 className="mb-4 font-display text-4xl font-bold tracking-wide text-bone sm:text-5xl lg:text-6xl">
             Calendario Imperial
           </h1>
-          <p className="text-bone/60 font-body text-lg max-w-2xl mx-auto mb-8">
-            Registro temporal de acontecimientos. Torneos, talleres de pintura,
-            campañas narrativas y encuentros de la comunidad del Imperium.
+          <p className="mx-auto mb-8 max-w-2xl font-body text-lg text-bone/60">
+            Registro temporal de acontecimientos. Torneos, talleres de pintura, campañas narrativas
+            y encuentros de la comunidad del Imperium.
           </p>
 
           {/* Stats row */}
-          <div className="flex items-center justify-center gap-6 sm:gap-10 mb-8">
+          <div className="mb-8 flex items-center justify-center gap-6 sm:gap-10">
             <div className="text-center">
-              <div className="flex items-center justify-center gap-2 text-3xl font-display font-bold text-amber-400">
-                <Calendar className="w-6 h-6" />
+              <div className="flex items-center justify-center gap-2 font-display text-3xl font-bold text-amber-400">
+                <Calendar className="h-6 w-6" />
                 {stats.upcoming}
               </div>
-              <div className="text-xs font-mono text-bone/50 tracking-wider uppercase mt-1">Proximos</div>
+              <div className="mt-1 font-mono text-xs uppercase tracking-wider text-bone/50">
+                Proximos
+              </div>
             </div>
-            <div className="w-px h-12 bg-amber-500/20" />
+            <div className="h-12 w-px bg-amber-500/20" />
             <div className="text-center">
-              <div className="flex items-center justify-center gap-2 text-3xl font-display font-bold text-imperial-gold">
-                <Shield className="w-6 h-6" />
+              <div className="flex items-center justify-center gap-2 font-display text-3xl font-bold text-imperial-gold">
+                <Shield className="h-6 w-6" />
                 {stats.official}
               </div>
-              <div className="text-xs font-mono text-bone/50 tracking-wider uppercase mt-1">Oficiales</div>
+              <div className="mt-1 font-mono text-xs uppercase tracking-wider text-bone/50">
+                Oficiales
+              </div>
             </div>
-            <div className="w-px h-12 bg-amber-500/20" />
+            <div className="h-12 w-px bg-amber-500/20" />
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 text-emerald-400">
-                <Sparkles className="w-5 h-5" />
-                <Trophy className="w-5 h-5" />
+                <Sparkles className="h-5 w-5" />
+                <Trophy className="h-5 w-5" />
               </div>
-              <div className="text-xs font-mono text-bone/50 tracking-wider uppercase mt-1">En Vivo</div>
+              <div className="mt-1 font-mono text-xs uppercase tracking-wider text-bone/50">
+                En Vivo
+              </div>
             </div>
           </div>
 
           {/* CTA */}
           <Link
             href="/comunidad/eventos/nuevo"
-            className="group inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-b from-amber-500/20 to-amber-500/10 border border-amber-500/40 hover:border-amber-500/60 hover:from-amber-500/30 hover:to-amber-500/15 transition-all duration-300"
+            className="group inline-flex items-center gap-3 rounded-xl border border-amber-500/40 bg-gradient-to-b from-amber-500/20 to-amber-500/10 px-6 py-3 transition-all duration-300 hover:border-amber-500/60 hover:from-amber-500/30 hover:to-amber-500/15"
           >
-            <Plus className="w-5 h-5 text-amber-400" />
-            <span className="font-display font-semibold text-amber-400 tracking-wide">
+            <Plus className="h-5 w-5 text-amber-400" />
+            <span className="font-display font-semibold tracking-wide text-amber-400">
               Crear Evento
             </span>
-            <ChevronRight className="w-4 h-4 text-amber-400/60 group-hover:translate-x-1 transition-transform" />
+            <ChevronRight className="h-4 w-4 text-amber-400/60 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
       </section>
 
       {/* Divider */}
-      <div className="flex items-center gap-4 max-w-7xl mx-auto px-6">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-6">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rotate-45 bg-amber-500/40" />
-          <Clock className="w-4 h-4 text-amber-500/40" />
-          <div className="w-1.5 h-1.5 rotate-45 bg-amber-500/40" />
+          <div className="h-1.5 w-1.5 rotate-45 bg-amber-500/40" />
+          <Clock className="h-4 w-4 text-amber-500/40" />
+          <div className="h-1.5 w-1.5 rotate-45 bg-amber-500/40" />
         </div>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
       </div>
 
       {/* Map Section */}
       {mapEvents.length > 0 && (
         <section className="py-8 sm:py-12">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                <MapPin className="w-5 h-5 text-amber-500" />
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-2">
+                <MapPin className="h-5 w-5 text-amber-500" />
               </div>
               <div>
-                <h2 className="font-display font-bold text-bone text-lg">Mapa de Eventos</h2>
-                <p className="text-xs font-mono text-bone/40 tracking-wider">LOCALIZACION TEMPORAL</p>
+                <h2 className="font-display text-lg font-bold text-bone">Mapa de Eventos</h2>
+                <p className="font-mono text-xs tracking-wider text-bone/40">
+                  LOCALIZACION TEMPORAL
+                </p>
               </div>
             </div>
 
@@ -256,30 +272,30 @@ export default async function EventosPage({
             </Suspense>
 
             {/* Map legend */}
-            <div className="flex flex-wrap items-center justify-center gap-4 mt-4 p-3 rounded-lg bg-void-light/50 border border-bone/10">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-4 rounded-lg border border-bone/10 bg-void-light/50 p-3">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-amber-400" />
-                <span className="text-xs text-bone/50 font-mono">Torneo</span>
+                <div className="h-3 w-3 rounded-full bg-amber-400" />
+                <span className="font-mono text-xs text-bone/50">Torneo</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-purple-400" />
-                <span className="text-xs text-bone/50 font-mono">Taller</span>
+                <div className="h-3 w-3 rounded-full bg-purple-400" />
+                <span className="font-mono text-xs text-bone/50">Taller</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-blue-400" />
-                <span className="text-xs text-bone/50 font-mono">Casual</span>
+                <div className="h-3 w-3 rounded-full bg-blue-400" />
+                <span className="font-mono text-xs text-bone/50">Casual</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-emerald-400" />
-                <span className="text-xs text-bone/50 font-mono">Campaña</span>
+                <div className="h-3 w-3 rounded-full bg-emerald-400" />
+                <span className="font-mono text-xs text-bone/50">Campaña</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-400" />
-                <span className="text-xs text-bone/50 font-mono">Lanzamiento</span>
+                <div className="h-3 w-3 rounded-full bg-red-400" />
+                <span className="font-mono text-xs text-bone/50">Lanzamiento</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-cyan-400" />
-                <span className="text-xs text-bone/50 font-mono">Quedada</span>
+                <div className="h-3 w-3 rounded-full bg-cyan-400" />
+                <span className="font-mono text-xs text-bone/50">Quedada</span>
               </div>
             </div>
           </div>
@@ -288,16 +304,16 @@ export default async function EventosPage({
 
       {/* Main Content */}
       <section className="py-8 sm:py-12">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="mx-auto max-w-7xl px-6">
           {/* Section header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                <Calendar className="w-5 h-5 text-amber-500" />
+              <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-2">
+                <Calendar className="h-5 w-5 text-amber-500" />
               </div>
               <div>
-                <h2 className="font-display font-bold text-bone text-lg">Proximos Eventos</h2>
-                <p className="text-xs font-mono text-bone/40 tracking-wider">REGISTRO CHRONUS</p>
+                <h2 className="font-display text-lg font-bold text-bone">Proximos Eventos</h2>
+                <p className="font-mono text-xs tracking-wider text-bone/40">REGISTRO CHRONUS</p>
               </div>
             </div>
           </div>
@@ -308,11 +324,11 @@ export default async function EventosPage({
           </Suspense>
 
           {/* Results indicator */}
-          <div className="flex items-center gap-3 mb-6 p-3 rounded-lg bg-void-light/50 border border-bone/10">
-            <Clock className="w-4 h-4 text-amber-500/60" />
-            <p className="text-sm text-bone/60 font-mono">
-              <span className="text-amber-400 font-semibold">{events.length}</span>
-              {' '}{events.length === 1 ? 'evento registrado' : 'eventos registrados'} en el Chronus
+          <div className="mb-6 flex items-center gap-3 rounded-lg border border-bone/10 bg-void-light/50 p-3">
+            <Clock className="h-4 w-4 text-amber-500/60" />
+            <p className="font-mono text-sm text-bone/60">
+              <span className="font-semibold text-amber-400">{events.length}</span>{' '}
+              {events.length === 1 ? 'evento registrado' : 'eventos registrados'} en el Chronus
             </p>
           </div>
 
@@ -324,24 +340,24 @@ export default async function EventosPage({
 
           {/* Bottom decoration */}
           <div className="mt-12 flex items-center justify-center">
-            <div className="flex items-center gap-4 px-6 py-3 rounded-lg bg-void-light/30 border border-bone/10">
-              <Clock className="w-4 h-4 text-amber-500/40" />
-              <span className="text-xs font-mono text-bone/40 tracking-wider">
+            <div className="flex items-center gap-4 rounded-lg border border-bone/10 bg-void-light/30 px-6 py-3">
+              <Clock className="h-4 w-4 text-amber-500/40" />
+              <span className="font-mono text-xs tracking-wider text-bone/40">
                 CHRONUS EVENTUS • REGISTRO TEMPORAL • ADMINISTRATUM
               </span>
-              <Clock className="w-4 h-4 text-amber-500/40 scale-x-[-1]" />
+              <Clock className="h-4 w-4 scale-x-[-1] text-amber-500/40" />
             </div>
           </div>
         </div>
       </section>
 
       {/* Mobile CTA */}
-      <div className="sm:hidden fixed bottom-6 right-6 z-40">
+      <div className="fixed bottom-6 right-6 z-40 sm:hidden">
         <Link
           href="/comunidad/eventos/nuevo"
-          className="flex items-center justify-center w-14 h-14 bg-amber-500 text-void rounded-full shadow-lg shadow-amber-500/30 hover:scale-105 transition-transform"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-500 text-void shadow-lg shadow-amber-500/30 transition-transform hover:scale-105"
         >
-          <Plus className="w-6 h-6" />
+          <Plus className="h-6 w-6" />
         </Link>
       </div>
     </div>
@@ -350,8 +366,8 @@ export default async function EventosPage({
 
 function MapSkeleton() {
   return (
-    <div className="w-full h-[400px] bg-void-light rounded-2xl animate-pulse border border-amber-500/20 flex items-center justify-center">
-      <MapPin className="w-12 h-12 text-bone/20" />
+    <div className="flex h-[400px] w-full animate-pulse items-center justify-center rounded-2xl border border-amber-500/20 bg-void-light">
+      <MapPin className="h-12 w-12 text-bone/20" />
     </div>
   )
 }
@@ -360,8 +376,8 @@ function FiltersSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-12 bg-void-light/50 rounded-xl animate-pulse" />
-        <div className="w-28 h-12 bg-void-light/30 rounded-xl animate-pulse" />
+        <div className="h-12 flex-1 animate-pulse rounded-xl bg-void-light/50" />
+        <div className="h-12 w-28 animate-pulse rounded-xl bg-void-light/30" />
       </div>
     </div>
   )

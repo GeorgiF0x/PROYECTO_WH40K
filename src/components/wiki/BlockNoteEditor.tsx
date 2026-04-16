@@ -21,11 +21,11 @@ export interface WikiEditorRef {
 }
 
 const BlockNoteEditorLazy = dynamic(
-  () => import('./BlockNoteEditorInner').then(mod => mod.BlockNoteEditorInner),
+  () => import('./BlockNoteEditorInner').then((mod) => mod.BlockNoteEditorInner),
   {
     ssr: false,
     loading: () => (
-      <div className="min-h-[300px] p-4 flex items-center justify-center text-bone/30 font-mono text-sm">
+      <div className="flex min-h-[300px] items-center justify-center p-4 font-mono text-sm text-bone/30">
         Cargando editor...
       </div>
     ),

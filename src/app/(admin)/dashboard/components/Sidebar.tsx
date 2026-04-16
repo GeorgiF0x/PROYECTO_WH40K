@@ -29,17 +29,8 @@ import {
   ScrollText,
 } from 'lucide-react'
 import { Button } from './ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from './ui/tooltip'
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from './ui/avatar'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,8 +61,18 @@ const mainNavItems: NavItem[] = [
 ]
 
 const secondaryNavItems: NavItem[] = [
-  { title: 'Analiticas', href: '/dashboard/analiticas', icon: BarChart3, color: 'text-necron-teal' },
-  { title: 'Configuracion', href: '/dashboard/configuracion', icon: Settings, color: 'text-bone/60' },
+  {
+    title: 'Analiticas',
+    href: '/dashboard/analiticas',
+    icon: BarChart3,
+    color: 'text-necron-teal',
+  },
+  {
+    title: 'Configuracion',
+    href: '/dashboard/configuracion',
+    icon: Settings,
+    color: 'text-bone/60',
+  },
 ]
 
 const quickLinks = [
@@ -92,18 +93,16 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
   const { profile, signOut } = useAuth()
 
   const NavLink = ({ item }: { item: NavItem }) => {
-    const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
+    const isActive =
+      pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
     const Icon = item.icon
 
     const linkContent = (
-      <motion.div
-        whileHover={{ x: collapsed ? 0 : 4 }}
-        transition={{ duration: 0.2 }}
-      >
+      <motion.div whileHover={{ x: collapsed ? 0 : 4 }} transition={{ duration: 0.2 }}>
         <Link
           href={item.href}
           className={cn(
-            'nav-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all relative',
+            'nav-item relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
             isActive
               ? 'bg-imperial-gold/10 text-bone'
               : 'text-bone/50 hover:bg-imperial-gold/5 hover:text-bone',
@@ -122,16 +121,20 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
             </motion.span>
           )}
           <motion.div
-            animate={isActive ? {
-              filter: 'drop-shadow(0 0 4px rgba(201, 162, 39, 0.5))',
-            } : {}}
+            animate={
+              isActive
+                ? {
+                    filter: 'drop-shadow(0 0 4px rgba(201, 162, 39, 0.5))',
+                  }
+                : {}
+            }
           >
             <Icon className={cn('h-[18px] w-[18px] shrink-0', isActive ? item.color : '')} />
           </motion.div>
           {!collapsed && <span>{item.title}</span>}
           {!collapsed && item.badge && item.badge > 0 && (
             <motion.span
-              className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-blood-red px-1.5 text-[10px] font-bold text-bone"
+              className="bg-blood-red ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold text-bone"
               animate={{
                 scale: [1, 1.1, 1],
               }}
@@ -148,10 +151,13 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
-          <TooltipContent side="right" className="flex items-center gap-2 bg-void-light border-imperial-gold/20 text-bone">
+          <TooltipContent
+            side="right"
+            className="flex items-center gap-2 border-imperial-gold/20 bg-void-light text-bone"
+          >
             {item.title}
             {item.badge && item.badge > 0 && (
-              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-blood-red px-1.5 text-[10px] font-bold text-bone">
+              <span className="bg-blood-red flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold text-bone">
                 {item.badge}
               </span>
             )}
@@ -173,12 +179,14 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
         style={{ zIndex: 50 }}
       >
         {/* Logo Header - Imperial Command */}
-        <div className={cn(
-          'flex h-16 items-center border-b border-imperial-gold/10 px-4',
-          collapsed && 'justify-center px-2'
-        )}>
+        <div
+          className={cn(
+            'flex h-16 items-center border-b border-imperial-gold/10 px-4',
+            collapsed && 'justify-center px-2'
+          )}
+        >
           {!collapsed ? (
-            <Link href="/dashboard" className="flex items-center gap-3 group">
+            <Link href="/dashboard" className="group flex items-center gap-3">
               <motion.div
                 className="relative flex h-10 w-10 items-center justify-center"
                 animate={{
@@ -191,13 +199,17 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
                 transition={{ duration: 3, repeat: Infinity }}
               >
                 {/* Hexagonal frame */}
-                <div className="absolute inset-0 bg-gradient-to-br from-imperial-gold to-imperial-gold/60 clip-hexagon" />
-                <div className="absolute inset-[2px] bg-void-dark clip-hexagon" />
-                <Shield className="h-5 w-5 text-imperial-gold relative z-10" />
+                <div className="clip-hexagon absolute inset-0 bg-gradient-to-br from-imperial-gold to-imperial-gold/60" />
+                <div className="clip-hexagon absolute inset-[2px] bg-void-dark" />
+                <Shield className="relative z-10 h-5 w-5 text-imperial-gold" />
               </motion.div>
               <div className="flex flex-col">
-                <span className="text-sm font-display font-bold text-bone tracking-wide">STRATEGIUM</span>
-                <span className="text-[10px] text-imperial-gold/60 font-mono tracking-widest">CENTRO DE COMANDO</span>
+                <span className="font-display text-sm font-bold tracking-wide text-bone">
+                  STRATEGIUM
+                </span>
+                <span className="font-mono text-[10px] tracking-widest text-imperial-gold/60">
+                  CENTRO DE COMANDO
+                </span>
               </div>
             </Link>
           ) : (
@@ -213,9 +225,9 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
                 }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-imperial-gold to-imperial-gold/60 rounded-lg" />
-                <div className="absolute inset-[2px] bg-void-dark rounded-md" />
-                <Shield className="h-5 w-5 text-imperial-gold relative z-10" />
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-imperial-gold to-imperial-gold/60" />
+                <div className="absolute inset-[2px] rounded-md bg-void-dark" />
+                <Shield className="relative z-10 h-5 w-5 text-imperial-gold" />
               </motion.div>
             </Link>
           )}
@@ -223,7 +235,7 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
 
         {/* Quick Actions (only when expanded) */}
         {!collapsed && (
-          <div className="px-3 py-4 border-b border-imperial-gold/10">
+          <div className="border-b border-imperial-gold/10 px-3 py-4">
             <div className="flex gap-2">
               <motion.button
                 className="quick-action flex-1 justify-center"
@@ -249,9 +261,9 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           <div className="space-y-1">
             {!collapsed && (
-              <div className="flex items-center gap-2 mb-3 px-3">
+              <div className="mb-3 flex items-center gap-2 px-3">
                 <Cpu className="h-3 w-3 text-imperial-gold/40" />
-                <h4 className="text-[10px] font-mono uppercase tracking-widest text-imperial-gold/40">
+                <h4 className="font-mono text-[10px] uppercase tracking-widest text-imperial-gold/40">
                   Modulos
                 </h4>
               </div>
@@ -269,13 +281,13 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
           </div>
 
           {/* Energy separator */}
-          <div className="my-4 energy-separator" />
+          <div className="energy-separator my-4" />
 
           <div className="space-y-1">
             {!collapsed && (
-              <div className="flex items-center gap-2 mb-3 px-3">
+              <div className="mb-3 flex items-center gap-2 px-3">
                 <Settings className="h-3 w-3 text-imperial-gold/40" />
-                <h4 className="text-[10px] font-mono uppercase tracking-widest text-imperial-gold/40">
+                <h4 className="font-mono text-[10px] uppercase tracking-widest text-imperial-gold/40">
                   Sistema
                 </h4>
               </div>
@@ -295,11 +307,11 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
           {/* Quick Links (only when expanded) */}
           {!collapsed && (
             <>
-              <div className="my-4 energy-separator" />
+              <div className="energy-separator my-4" />
               <div className="space-y-1">
-                <div className="flex items-center gap-2 mb-3 px-3">
+                <div className="mb-3 flex items-center gap-2 px-3">
                   <Globe className="h-3 w-3 text-necron-teal/40" />
-                  <h4 className="text-[10px] font-mono uppercase tracking-widest text-necron-teal/40">
+                  <h4 className="font-mono text-[10px] uppercase tracking-widest text-necron-teal/40">
                     Portal
                   </h4>
                 </div>
@@ -313,11 +325,11 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
                     <Link
                       href={item.href}
                       target={item.external ? '_blank' : undefined}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-bone/40 hover:bg-necron-teal/5 hover:text-necron-teal transition-colors"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-bone/40 transition-colors hover:bg-necron-teal/5 hover:text-necron-teal"
                     >
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
-                      <ExternalLink className="h-3 w-3 ml-auto opacity-50" />
+                      <ExternalLink className="ml-auto h-3 w-3 opacity-50" />
                     </Link>
                   </motion.div>
                 ))}
@@ -333,14 +345,11 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
             size="sm"
             onClick={onToggle}
             className={cn(
-              'w-full justify-center text-bone/40 hover:text-imperial-gold hover:bg-imperial-gold/5',
+              'w-full justify-center text-bone/40 hover:bg-imperial-gold/5 hover:text-imperial-gold',
               !collapsed && 'justify-start'
             )}
           >
-            <motion.div
-              animate={{ rotate: collapsed ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
+            <motion.div animate={{ rotate: collapsed ? 180 : 0 }} transition={{ duration: 0.3 }}>
               <ChevronLeft className="h-4 w-4" />
             </motion.div>
             {!collapsed && <span className="ml-2 text-sm">Minimizar</span>}
@@ -362,7 +371,7 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
                 <div className="relative">
                   <Avatar className="h-9 w-9 border-2 border-imperial-gold/30">
                     <AvatarImage src={profile?.avatar_url || undefined} />
-                    <AvatarFallback className="bg-gradient-to-br from-imperial-gold to-imperial-gold/60 text-void-dark text-sm font-bold">
+                    <AvatarFallback className="bg-gradient-to-br from-imperial-gold to-imperial-gold/60 text-sm font-bold text-void-dark">
                       {profile?.username?.slice(0, 2).toUpperCase() || 'AD'}
                     </AvatarFallback>
                   </Avatar>
@@ -379,11 +388,11 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
                   />
                 </div>
                 {!collapsed && (
-                  <div className="flex flex-1 flex-col items-start text-left min-w-0">
-                    <span className="text-sm font-medium text-bone truncate w-full">
+                  <div className="flex min-w-0 flex-1 flex-col items-start text-left">
+                    <span className="w-full truncate text-sm font-medium text-bone">
                       {profile?.display_name || profile?.username || 'Comandante'}
                     </span>
-                    <span className="text-[10px] text-imperial-gold/60 font-mono uppercase tracking-wider">
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-imperial-gold/60">
                       {profile?.role === 'admin' ? 'ALTO MANDO' : 'OFICIAL'}
                     </span>
                   </div>
@@ -394,33 +403,42 @@ export function Sidebar({ collapsed, onToggle, onSearchOpen }: SidebarProps) {
               side="right"
               align="end"
               sideOffset={8}
-              className="w-56 bg-void-light/95 backdrop-blur-xl border-imperial-gold/20"
+              className="w-56 border-imperial-gold/20 bg-void-light/95 backdrop-blur-xl"
             >
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium text-bone">
                     {profile?.display_name || profile?.username}
                   </p>
-                  <p className="text-[10px] text-imperial-gold/60 font-mono">
+                  <p className="font-mono text-[10px] text-imperial-gold/60">
                     {profile?.role === 'admin' ? 'ADMINISTRADOR IMPERIAL' : 'MODERADOR'}
                   </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-imperial-gold/10" />
-              <DropdownMenuItem asChild className="text-bone/70 focus:text-bone focus:bg-imperial-gold/5">
+              <DropdownMenuItem
+                asChild
+                className="text-bone/70 focus:bg-imperial-gold/5 focus:text-bone"
+              >
                 <Link href={`/usuarios/${profile?.username}`} className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
                   Ver mi perfil
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="text-bone/70 focus:text-bone focus:bg-imperial-gold/5">
+              <DropdownMenuItem
+                asChild
+                className="text-bone/70 focus:bg-imperial-gold/5 focus:text-bone"
+              >
                 <Link href="/perfil" className="flex items-center gap-2">
                   <Settings className="h-4 w-4" />
                   Configuracion
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-imperial-gold/10" />
-              <DropdownMenuItem asChild className="text-bone/70 focus:text-bone focus:bg-imperial-gold/5">
+              <DropdownMenuItem
+                asChild
+                className="text-bone/70 focus:bg-imperial-gold/5 focus:text-bone"
+              >
                 <Link href="/" className="flex items-center gap-2">
                   <ExternalLink className="h-4 w-4" />
                   Volver al portal

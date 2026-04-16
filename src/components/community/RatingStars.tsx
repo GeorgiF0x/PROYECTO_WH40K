@@ -52,9 +52,7 @@ export default function RatingStars({
             >
               <Star
                 className={`${sizeMap[size]} transition-colors ${
-                  filled
-                    ? 'text-imperial-gold fill-imperial-gold'
-                    : 'text-bone/20'
+                  filled ? 'fill-imperial-gold text-imperial-gold' : 'text-bone/20'
                 }`}
               />
             </motion.button>
@@ -63,19 +61,17 @@ export default function RatingStars({
               key={i}
               className={`${sizeMap[size]} ${
                 filled
-                  ? 'text-imperial-gold fill-imperial-gold'
+                  ? 'fill-imperial-gold text-imperial-gold'
                   : halfFilled
-                  ? 'text-imperial-gold fill-imperial-gold/50'
-                  : 'text-bone/20'
+                    ? 'fill-imperial-gold/50 text-imperial-gold'
+                    : 'text-bone/20'
               }`}
             />
           )
         })}
       </div>
       {showValue && (
-        <span className="text-sm font-body text-bone/60 ml-1">
-          {rating.toFixed(1)}
-        </span>
+        <span className="ml-1 font-body text-sm text-bone/60">{rating.toFixed(1)}</span>
       )}
     </div>
   )

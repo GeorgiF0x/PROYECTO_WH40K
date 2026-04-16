@@ -3,16 +3,7 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import {
-  BookOpen,
-  Users,
-  Swords,
-  Building,
-  Shield,
-  MapPin,
-  Eye,
-  Calendar,
-} from 'lucide-react'
+import { BookOpen, Users, Swords, Building, Shield, MapPin, Eye, Calendar } from 'lucide-react'
 import { optimizeImageUrl } from '@/lib/utils'
 import type { WikiPage } from '@/lib/supabase/wiki.types'
 
@@ -54,7 +45,7 @@ export function WikiArticleCard({
     >
       <Link href={`/wiki/${factionId}/${page.slug}`}>
         <div
-          className="group relative h-72 rounded-xl overflow-hidden card-hover"
+          className="card-hover group relative h-72 overflow-hidden rounded-xl"
           style={{
             background: `linear-gradient(135deg, ${factionColor}15 0%, transparent 100%)`,
             border: `1px solid ${factionColor}20`,
@@ -74,12 +65,16 @@ export function WikiArticleCard({
           )}
 
           {/* Content */}
-          <div className="absolute inset-0 p-6 flex flex-col justify-end">
+          <div className="absolute inset-0 flex flex-col justify-end p-6">
             {/* Faction badge */}
             {showFactionBadge && factionName && (
               <div
-                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono font-semibold uppercase tracking-wider mb-2 w-fit"
-                style={{ background: `${factionColor}25`, color: factionColor, border: `1px solid ${factionColor}30` }}
+                className="mb-2 inline-flex w-fit items-center gap-1.5 rounded px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider"
+                style={{
+                  background: `${factionColor}25`,
+                  color: factionColor,
+                  border: `1px solid ${factionColor}30`,
+                }}
               >
                 {factionName}
               </div>
@@ -88,33 +83,31 @@ export function WikiArticleCard({
             {/* Category badge */}
             {page.category && (
               <div
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-body font-semibold mb-3 w-fit"
+                className="mb-3 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 font-body text-xs font-semibold"
                 style={{ background: `${factionColor}30`, color: factionColor }}
               >
-                <CategoryIcon className="w-3 h-3" />
+                <CategoryIcon className="h-3 w-3" />
                 {page.category.name}
               </div>
             )}
 
-            <h3 className="font-display text-xl font-bold text-white mb-2 group-hover:text-opacity-90 transition-colors">
+            <h3 className="mb-2 font-display text-xl font-bold text-white transition-colors group-hover:text-opacity-90">
               {page.title}
             </h3>
 
             {page.excerpt && (
-              <p className="font-body text-sm text-bone/60 line-clamp-2 mb-4">
-                {page.excerpt}
-              </p>
+              <p className="mb-4 line-clamp-2 font-body text-sm text-bone/60">{page.excerpt}</p>
             )}
 
             {/* Meta */}
-            <div className="flex items-center gap-4 text-xs text-bone/40 font-body">
+            <div className="flex items-center gap-4 font-body text-xs text-bone/40">
               <span className="flex items-center gap-1">
-                <Eye className="w-3 h-3" />
+                <Eye className="h-3 w-3" />
                 {page.views_count}
               </span>
               {page.published_at && (
                 <span className="flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
+                  <Calendar className="h-3 w-3" />
                   {new Date(page.published_at).toLocaleDateString('es-ES', {
                     day: 'numeric',
                     month: 'short',
@@ -126,7 +119,7 @@ export function WikiArticleCard({
 
           {/* Hover overlay */}
           <div
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"
             style={{
               background: `linear-gradient(135deg, ${factionColor}10 0%, transparent 50%)`,
             }}

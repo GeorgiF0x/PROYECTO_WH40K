@@ -37,29 +37,34 @@ interface StoreDetailProps {
 
 export default function StoreDetail({ store, userId }: StoreDetailProps) {
   const [currentImage, setCurrentImage] = useState(0)
-  const images = store.images && store.images.length > 0 ? store.images : ['/placeholder-miniature.jpg']
+  const images =
+    store.images && store.images.length > 0 ? store.images : ['/placeholder-miniature.jpg']
 
   const socialLinks = [
-    store.instagram && { label: 'Instagram', url: `https://instagram.com/${store.instagram}`, icon: '📷' },
+    store.instagram && {
+      label: 'Instagram',
+      url: `https://instagram.com/${store.instagram}`,
+      icon: '📷',
+    },
     store.facebook && { label: 'Facebook', url: store.facebook, icon: '📘' },
   ].filter(Boolean) as { label: string; url: string; icon: string }[]
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="mx-auto max-w-5xl">
       {/* Back button */}
       <Link
         href="/comunidad/tiendas"
-        className="inline-flex items-center gap-2 text-bone/60 hover:text-imperial-gold transition-colors font-body mb-6"
+        className="mb-6 inline-flex items-center gap-2 font-body text-bone/60 transition-colors hover:text-imperial-gold"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="h-4 w-4" />
         Volver a tiendas
       </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Left column: Images + Info */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6 lg:col-span-2">
           {/* Image gallery */}
-          <div className="relative rounded-2xl overflow-hidden bg-void-light border border-bone/10">
+          <div className="relative overflow-hidden rounded-2xl border border-bone/10 bg-void-light">
             <div className="relative aspect-[16/9]">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -84,23 +89,25 @@ export default function StoreDetail({ store, userId }: StoreDetailProps) {
               {images.length > 1 && (
                 <>
                   <button
-                    onClick={() => setCurrentImage((prev) => (prev - 1 + images.length) % images.length)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-void/80 backdrop-blur-sm rounded-full text-bone hover:text-imperial-gold transition-colors"
+                    onClick={() =>
+                      setCurrentImage((prev) => (prev - 1 + images.length) % images.length)
+                    }
+                    className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-void/80 p-2 text-bone backdrop-blur-sm transition-colors hover:text-imperial-gold"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="h-5 w-5" />
                   </button>
                   <button
                     onClick={() => setCurrentImage((prev) => (prev + 1) % images.length)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-void/80 backdrop-blur-sm rounded-full text-bone hover:text-imperial-gold transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-void/80 p-2 text-bone backdrop-blur-sm transition-colors hover:text-imperial-gold"
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="h-5 w-5" />
                   </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
                     {images.map((_, i) => (
                       <button
                         key={i}
                         onClick={() => setCurrentImage(i)}
-                        className={`w-2 h-2 rounded-full transition-colors ${
+                        className={`h-2 w-2 rounded-full transition-colors ${
                           i === currentImage ? 'bg-imperial-gold' : 'bg-bone/30'
                         }`}
                       />
@@ -112,21 +119,19 @@ export default function StoreDetail({ store, userId }: StoreDetailProps) {
           </div>
 
           {/* Store info */}
-          <div className="p-6 bg-void-light rounded-2xl border border-bone/10">
+          <div className="rounded-2xl border border-bone/10 bg-void-light p-6">
             {/* Type badge */}
-            <span className="inline-block px-3 py-1 text-xs font-medium rounded-md bg-imperial-gold/20 text-imperial-gold border border-imperial-gold/30 mb-4">
+            <span className="mb-4 inline-block rounded-md border border-imperial-gold/30 bg-imperial-gold/20 px-3 py-1 text-xs font-medium text-imperial-gold">
               {storeTypeLabels[store.store_type] || store.store_type}
             </span>
 
-            <h1 className="text-3xl font-display font-bold text-bone mb-2">
-              {store.name}
-            </h1>
+            <h1 className="mb-2 font-display text-3xl font-bold text-bone">{store.name}</h1>
 
             {/* Rating */}
             {(store.review_count ?? 0) > 0 && (
-              <div className="flex items-center gap-2 mb-4">
+              <div className="mb-4 flex items-center gap-2">
                 <RatingStars rating={Number(store.avg_rating)} showValue />
-                <span className="text-sm text-bone/40 font-body">
+                <span className="font-body text-sm text-bone/40">
                   ({store.review_count} {store.review_count === 1 ? 'valoracion' : 'valoraciones'})
                 </span>
               </div>
@@ -134,35 +139,33 @@ export default function StoreDetail({ store, userId }: StoreDetailProps) {
 
             {/* Description */}
             {store.description && (
-              <p className="text-bone/70 font-body leading-relaxed mb-6">
-                {store.description}
-              </p>
+              <p className="mb-6 font-body leading-relaxed text-bone/70">{store.description}</p>
             )}
 
             {/* Services */}
             {store.services && store.services.length > 0 && (
               <div className="mb-6">
-                <h3 className="font-display font-semibold text-bone mb-3">Servicios</h3>
+                <h3 className="mb-3 font-display font-semibold text-bone">Servicios</h3>
                 <StoreServiceBadges services={store.services} />
               </div>
             )}
 
             {/* Location Card */}
-            <div className="p-4 bg-void/50 rounded-xl border border-imperial-gold/20">
+            <div className="rounded-xl border border-imperial-gold/20 bg-void/50 p-4">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-imperial-gold/20 rounded-lg">
-                  <MapPin className="w-5 h-5 text-imperial-gold" />
+                <div className="rounded-lg bg-imperial-gold/20 p-2">
+                  <MapPin className="h-5 w-5 text-imperial-gold" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-display font-semibold text-bone text-sm mb-1">Ubicación</h4>
-                  <p className="text-bone/80 font-body">{store.address}</p>
-                  <p className="text-bone/60 font-body text-sm">
+                  <h4 className="mb-1 font-display text-sm font-semibold text-bone">Ubicación</h4>
+                  <p className="font-body text-bone/80">{store.address}</p>
+                  <p className="font-body text-sm text-bone/60">
                     {store.postal_code && `${store.postal_code} - `}
                     {store.city}
                     {store.province && store.province !== store.city ? `, ${store.province}` : ''}
                   </p>
                   {store.country && store.country !== 'ES' && (
-                    <p className="text-bone/40 font-body text-sm">{store.country}</p>
+                    <p className="font-body text-sm text-bone/40">{store.country}</p>
                   )}
 
                   {/* Google Maps link */}
@@ -170,38 +173,43 @@ export default function StoreDetail({ store, userId }: StoreDetailProps) {
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${store.name}, ${store.address}, ${store.city}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 bg-imperial-gold/10 hover:bg-imperial-gold/20 border border-imperial-gold/30 rounded-lg text-imperial-gold text-sm font-mono transition-colors"
+                    className="mt-3 inline-flex items-center gap-2 rounded-lg border border-imperial-gold/30 bg-imperial-gold/10 px-3 py-1.5 font-mono text-sm text-imperial-gold transition-colors hover:bg-imperial-gold/20"
                   >
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <ExternalLink className="h-3.5 w-3.5" />
                     Cómo llegar
                   </a>
                 </div>
               </div>
 
               {/* Coordinates (for the curious) */}
-              <div className="mt-3 pt-3 border-t border-bone/10 flex items-center justify-between">
-                <span className="text-[10px] font-mono text-bone/30 tracking-wider">COORDENADAS</span>
-                <span className="text-[10px] font-mono text-bone/40">
-                  {store.latitude.toFixed(4)}°N, {Math.abs(store.longitude).toFixed(4)}°{store.longitude < 0 ? 'W' : 'E'}
+              <div className="mt-3 flex items-center justify-between border-t border-bone/10 pt-3">
+                <span className="font-mono text-[10px] tracking-wider text-bone/30">
+                  COORDENADAS
+                </span>
+                <span className="font-mono text-[10px] text-bone/40">
+                  {store.latitude.toFixed(4)}°N, {Math.abs(store.longitude).toFixed(4)}°
+                  {store.longitude < 0 ? 'W' : 'E'}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Mini map - non expandable */}
-          <div className="rounded-2xl overflow-hidden border border-bone/10">
+          <div className="overflow-hidden rounded-2xl border border-bone/10">
             <CommunityMap
-              stores={[{
-                id: store.id,
-                name: store.name,
-                slug: store.slug,
-                latitude: store.latitude,
-                longitude: store.longitude,
-                city: store.city,
-                store_type: store.store_type,
-                avg_rating: store.avg_rating,
-                review_count: store.review_count,
-              }]}
+              stores={[
+                {
+                  id: store.id,
+                  name: store.name,
+                  slug: store.slug,
+                  latitude: store.latitude,
+                  longitude: store.longitude,
+                  city: store.city,
+                  store_type: store.store_type,
+                  avg_rating: store.avg_rating,
+                  review_count: store.review_count,
+                },
+              ]}
               center={[store.longitude, store.latitude]}
               zoom={15}
               interactive={true}
@@ -217,15 +225,15 @@ export default function StoreDetail({ store, userId }: StoreDetailProps) {
         {/* Right column: Contact + Hours */}
         <div className="space-y-6">
           {/* Contact info */}
-          <div className="p-6 bg-void-light rounded-2xl border border-bone/10 space-y-4">
+          <div className="space-y-4 rounded-2xl border border-bone/10 bg-void-light p-6">
             <h3 className="font-display font-semibold text-bone">Contacto</h3>
 
             {store.phone && (
               <a
                 href={`tel:${store.phone}`}
-                className="flex items-center gap-3 text-bone/60 hover:text-imperial-gold transition-colors"
+                className="flex items-center gap-3 text-bone/60 transition-colors hover:text-imperial-gold"
               >
-                <Phone className="w-4 h-4" />
+                <Phone className="h-4 w-4" />
                 <span className="font-body text-sm">{store.phone}</span>
               </a>
             )}
@@ -233,10 +241,10 @@ export default function StoreDetail({ store, userId }: StoreDetailProps) {
             {store.email && (
               <a
                 href={`mailto:${store.email}`}
-                className="flex items-center gap-3 text-bone/60 hover:text-imperial-gold transition-colors"
+                className="flex items-center gap-3 text-bone/60 transition-colors hover:text-imperial-gold"
               >
-                <Mail className="w-4 h-4" />
-                <span className="font-body text-sm truncate">{store.email}</span>
+                <Mail className="h-4 w-4" />
+                <span className="truncate font-body text-sm">{store.email}</span>
               </a>
             )}
 
@@ -245,39 +253,39 @@ export default function StoreDetail({ store, userId }: StoreDetailProps) {
                 href={store.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-bone/60 hover:text-imperial-gold transition-colors"
+                className="flex items-center gap-3 text-bone/60 transition-colors hover:text-imperial-gold"
               >
-                <Globe className="w-4 h-4" />
-                <span className="font-body text-sm truncate">{store.website}</span>
-                <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                <Globe className="h-4 w-4" />
+                <span className="truncate font-body text-sm">{store.website}</span>
+                <ExternalLink className="h-3 w-3 flex-shrink-0" />
               </a>
             )}
 
             {socialLinks.length > 0 && (
-              <div className="pt-3 border-t border-bone/10 space-y-3">
+              <div className="space-y-3 border-t border-bone/10 pt-3">
                 {socialLinks.map((link) => (
                   <a
                     key={link.label}
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-bone/60 hover:text-imperial-gold transition-colors"
+                    className="flex items-center gap-3 text-bone/60 transition-colors hover:text-imperial-gold"
                   >
                     <span>{link.icon}</span>
                     <span className="font-body text-sm">{link.label}</span>
-                    <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                    <ExternalLink className="h-3 w-3 flex-shrink-0" />
                   </a>
                 ))}
               </div>
             )}
 
             {!store.phone && !store.email && !store.website && socialLinks.length === 0 && (
-              <p className="text-sm text-bone/40 font-body">Sin informacion de contacto</p>
+              <p className="font-body text-sm text-bone/40">Sin informacion de contacto</p>
             )}
           </div>
 
           {/* Opening hours */}
-          <div className="p-6 bg-void-light rounded-2xl border border-bone/10">
+          <div className="rounded-2xl border border-bone/10 bg-void-light p-6">
             <StoreHours hours={store.opening_hours} />
           </div>
         </div>

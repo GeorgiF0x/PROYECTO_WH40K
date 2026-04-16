@@ -25,13 +25,13 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="relative bg-void-light/50 border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+    <footer className="relative border-t border-white/5 bg-void-light/50">
+      <div className="mx-auto max-w-7xl px-6 py-16">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="inline-flex items-center gap-3 mb-6">
-              <div className="relative w-10 h-10">
+            <Link href="/" className="mb-6 inline-flex items-center gap-3">
+              <div className="relative h-10 w-10">
                 <div
                   className="absolute inset-0 bg-gradient-to-br from-imperial-gold to-yellow-600"
                   style={{
@@ -55,9 +55,9 @@ export default function Footer() {
                 FORGE <span className="text-imperial-gold">OF WAR</span>
               </span>
             </Link>
-            <p className="font-body text-bone/60 leading-relaxed mb-6">
-              Tu tienda de confianza para Warhammer 40,000. Miniaturas, pinturas
-              y todo lo que necesitas para el hobby.
+            <p className="mb-6 font-body leading-relaxed text-bone/60">
+              Tu tienda de confianza para Warhammer 40,000. Miniaturas, pinturas y todo lo que
+              necesitas para el hobby.
             </p>
             {/* Social Links */}
             <div className="flex gap-4">
@@ -66,10 +66,15 @@ export default function Footer() {
                   key={social}
                   href="#"
                   whileHover={{ scale: 1.1, color: '#C9A227' }}
-                  className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-bone/60 hover:bg-white/10 transition-colors"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 text-bone/60 transition-colors hover:bg-white/10"
                 >
                   <span className="sr-only">{social}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     {social === 'twitter' && (
                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                     )}
@@ -87,7 +92,7 @@ export default function Footer() {
 
           {/* Links */}
           <div>
-            <h4 className="font-display text-sm font-bold text-white tracking-wider uppercase mb-6">
+            <h4 className="mb-6 font-display text-sm font-bold uppercase tracking-wider text-white">
               Tienda
             </h4>
             <ul className="space-y-3">
@@ -95,7 +100,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="font-body text-bone/60 hover:text-imperial-gold transition-colors"
+                    className="font-body text-bone/60 transition-colors hover:text-imperial-gold"
                   >
                     {link.label}
                   </Link>
@@ -105,7 +110,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-display text-sm font-bold text-white tracking-wider uppercase mb-6">
+            <h4 className="mb-6 font-display text-sm font-bold uppercase tracking-wider text-white">
               Facciones
             </h4>
             <ul className="space-y-3">
@@ -113,7 +118,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="font-body text-bone/60 hover:text-imperial-gold transition-colors"
+                    className="font-body text-bone/60 transition-colors hover:text-imperial-gold"
                   >
                     {link.label}
                   </Link>
@@ -123,7 +128,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-display text-sm font-bold text-white tracking-wider uppercase mb-6">
+            <h4 className="mb-6 font-display text-sm font-bold uppercase tracking-wider text-white">
               Información
             </h4>
             <ul className="space-y-3">
@@ -131,7 +136,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="font-body text-bone/60 hover:text-imperial-gold transition-colors"
+                    className="font-body text-bone/60 transition-colors hover:text-imperial-gold"
                   >
                     {link.label}
                   </Link>
@@ -142,16 +147,16 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-8 md:flex-row">
           <div className="flex items-center gap-6">
             <p className="font-body text-sm text-bone/40">
               © 2025 Forge of War. Todos los derechos reservados.
             </p>
             {/* Status Indicator */}
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full">
+            <div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1.5">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
               </span>
               <span className="font-body text-xs text-bone/50">Sistema Online</span>
             </div>

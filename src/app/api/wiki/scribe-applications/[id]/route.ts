@@ -4,16 +4,16 @@ import { parseJsonBody } from '@/lib/validation/http'
 import { scribeApplicationReviewSchema } from '@/lib/validation/schemas'
 
 // PATCH - Approve or reject application
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const supabase = await createClient()
 
     // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
     }
@@ -48,17 +48,11 @@ export async function PATCH(
       .single()
 
     if (fetchError || !application) {
-      return NextResponse.json(
-        { error: 'Solicitud no encontrada' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Solicitud no encontrada' }, { status: 404 })
     }
 
     if (application.status !== 'pending') {
-      return NextResponse.json(
-        { error: 'Esta solicitud ya ha sido procesada' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Esta solicitud ya ha sido procesada' }, { status: 400 })
     }
 
     // Update application
@@ -74,10 +68,7 @@ export async function PATCH(
 
     if (updateAppError) {
       console.error('Error updating application:', updateAppError)
-      return NextResponse.json(
-        { error: 'Error al actualizar la solicitud' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Error al actualizar la solicitud' }, { status: 500 })
     }
 
     // If approved, grant scribe role
@@ -95,38 +86,33 @@ export async function PATCH(
           .update({ status: 'pending', reviewer_id: null, reviewer_notes: null, reviewed_at: null })
           .eq('id', id)
 
-        return NextResponse.json(
-          { error: 'Error al otorgar el rol de escriba' },
-          { status: 500 }
-        )
+        return NextResponse.json({ error: 'Error al otorgar el rol de escriba' }, { status: 500 })
       }
     }
 
     return NextResponse.json({
-      message: action === 'approve'
-        ? 'Solicitud aprobada. El usuario ahora es Lexicanum Scribe.'
-        : 'Solicitud rechazada.',
+      message:
+        action === 'approve'
+          ? 'Solicitud aprobada. El usuario ahora es Lexicanum Scribe.'
+          : 'Solicitud rechazada.',
     })
   } catch (error) {
     console.error('Error in scribe application PATCH:', error)
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
 
 // GET - Get single application
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const supabase = await createClient()
 
     // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
     }
@@ -134,19 +120,18 @@ export async function GET(
     // Fetch application with relations
     const { data: application, error: fetchError } = await supabase
       .from('scribe_applications')
-      .select(`
+      .select(
+        `
         *,
         user:profiles!scribe_applications_user_id_fkey(username, display_name, avatar_url),
         reviewer:profiles!scribe_applications_reviewer_id_fkey(username, display_name)
-      `)
+      `
+      )
       .eq('id', id)
       .single()
 
     if (fetchError || !application) {
-      return NextResponse.json(
-        { error: 'Solicitud no encontrada' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Solicitud no encontrada' }, { status: 404 })
     }
 
     // Check permissions - user can see their own, admins can see all
@@ -170,9 +155,6 @@ export async function GET(
     return NextResponse.json({ data: application })
   } catch (error) {
     console.error('Error in scribe application GET:', error)
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

@@ -21,26 +21,26 @@ const bootPhases: BootPhase[] = [
     text: 'INICIALIZANDO COGITADOR...',
     subtext: 'Activando circuitos lógicos',
     duration: 1200,
-    color: '#22c55e' // green
+    color: '#22c55e', // green
   },
   {
     text: 'ESPÍRITU MÁQUINA DESPERTANDO...',
     subtext: 'Recitando letanías de activación',
     duration: 1500,
-    color: '#eab308' // yellow
+    color: '#eab308', // yellow
   },
   {
     text: 'ENLACE ADMINISTRATUM ESTABLECIDO',
     subtext: 'Conexión segura verificada',
     duration: 1200,
-    color: '#06b6d4' // cyan
+    color: '#06b6d4', // cyan
   },
   {
     text: 'PROTOCOLO: VERIFICACIÓN DE CREADOR',
     subtext: 'Sistema listo para registro',
     duration: 1600,
-    color: '#a855f7' // purple
-  }
+    color: '#a855f7', // purple
+  },
 ]
 
 export function ServitorBootSequence({ onComplete, duration = 5500 }: ServitorBootSequenceProps) {
@@ -58,7 +58,7 @@ export function ServitorBootSequence({ onComplete, duration = 5500 }: ServitorBo
   // Scanline animation
   useEffect(() => {
     const interval = setInterval(() => {
-      setScanLine(prev => (prev + 1) % 100)
+      setScanLine((prev) => (prev + 1) % 100)
     }, 50)
     return () => clearInterval(interval)
   }, [])
@@ -91,7 +91,7 @@ export function ServitorBootSequence({ onComplete, duration = 5500 }: ServitorBo
 
     // Move to next phase
     const phaseTimeout = setTimeout(() => {
-      setCurrentPhase(prev => prev + 1)
+      setCurrentPhase((prev) => prev + 1)
     }, phase.duration)
 
     return () => {
@@ -109,11 +109,11 @@ export function ServitorBootSequence({ onComplete, duration = 5500 }: ServitorBo
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="fixed inset-0 z-50 bg-void flex items-center justify-center overflow-hidden"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-void"
         >
           {/* CRT scanline effect */}
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="pointer-events-none absolute inset-0"
             style={{
               background: `repeating-linear-gradient(
                 0deg,
@@ -127,7 +127,7 @@ export function ServitorBootSequence({ onComplete, duration = 5500 }: ServitorBo
 
           {/* Moving scanline */}
           <motion.div
-            className="absolute left-0 right-0 h-1 pointer-events-none"
+            className="pointer-events-none absolute left-0 right-0 h-1"
             style={{
               top: `${scanLine}%`,
               background: `linear-gradient(90deg, transparent, ${phase.color}20, transparent)`,
@@ -136,9 +136,10 @@ export function ServitorBootSequence({ onComplete, duration = 5500 }: ServitorBo
 
           {/* Vignette */}
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="pointer-events-none absolute inset-0"
             style={{
-              background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.5) 100%)',
+              background:
+                'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.5) 100%)',
             }}
           />
 
@@ -155,15 +156,15 @@ export function ServitorBootSequence({ onComplete, duration = 5500 }: ServitorBo
           />
 
           {/* Content */}
-          <div className="relative max-w-2xl w-full px-8">
+          <div className="relative w-full max-w-2xl px-8">
             {/* Cogitator icon */}
             <motion.div
-              className="flex justify-center mb-8"
+              className="mb-8 flex justify-center"
               animate={{ rotate: 360 }}
               transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
             >
               <div className="relative">
-                <Cog className="w-16 h-16" style={{ color: phase.color }} />
+                <Cog className="h-16 w-16" style={{ color: phase.color }} />
                 <motion.div
                   className="absolute inset-0 rounded-full"
                   animate={{
@@ -181,24 +182,38 @@ export function ServitorBootSequence({ onComplete, duration = 5500 }: ServitorBo
             {/* Terminal window */}
             <div className="relative">
               {/* Corner brackets */}
-              <div className="absolute -top-2 -left-2 w-4 h-4 border-l-2 border-t-2" style={{ borderColor: phase.color }} />
-              <div className="absolute -top-2 -right-2 w-4 h-4 border-r-2 border-t-2" style={{ borderColor: phase.color }} />
-              <div className="absolute -bottom-2 -left-2 w-4 h-4 border-l-2 border-b-2" style={{ borderColor: phase.color }} />
-              <div className="absolute -bottom-2 -right-2 w-4 h-4 border-r-2 border-b-2" style={{ borderColor: phase.color }} />
+              <div
+                className="absolute -left-2 -top-2 h-4 w-4 border-l-2 border-t-2"
+                style={{ borderColor: phase.color }}
+              />
+              <div
+                className="absolute -right-2 -top-2 h-4 w-4 border-r-2 border-t-2"
+                style={{ borderColor: phase.color }}
+              />
+              <div
+                className="absolute -bottom-2 -left-2 h-4 w-4 border-b-2 border-l-2"
+                style={{ borderColor: phase.color }}
+              />
+              <div
+                className="absolute -bottom-2 -right-2 h-4 w-4 border-b-2 border-r-2"
+                style={{ borderColor: phase.color }}
+              />
 
-              <div className="bg-void-900/80 border border-void-700 rounded-lg p-6 backdrop-blur-sm">
+              <div className="bg-void-900/80 border-void-700 rounded-lg border p-6 backdrop-blur-sm">
                 {/* Header */}
-                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-void-700">
+                <div className="border-void-700 mb-4 flex items-center gap-2 border-b pb-3">
                   <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500/50" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/50" />
+                    <div className="h-2.5 w-2.5 rounded-full bg-red-500/50" />
+                    <div className="h-2.5 w-2.5 rounded-full bg-amber-500/50" />
+                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/50" />
                   </div>
-                  <span className="text-xs font-mono text-bone-600 ml-2">COGITATOR TERMINAL v.M41</span>
+                  <span className="text-bone-600 ml-2 font-mono text-xs">
+                    COGITATOR TERMINAL v.M41
+                  </span>
                 </div>
 
                 {/* Main text */}
-                <div className="font-mono text-lg mb-2" style={{ color: phase.color }}>
+                <div className="mb-2 font-mono text-lg" style={{ color: phase.color }}>
                   <span>{displayText}</span>
                   <motion.span
                     animate={{ opacity: [1, 0] }}
@@ -215,7 +230,7 @@ export function ServitorBootSequence({ onComplete, duration = 5500 }: ServitorBo
                     <motion.p
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-sm text-bone-500 font-mono"
+                      className="text-bone-500 font-mono text-sm"
                     >
                       {'>'} {phase.subtext}
                     </motion.p>
@@ -227,7 +242,7 @@ export function ServitorBootSequence({ onComplete, duration = 5500 }: ServitorBo
                   {bootPhases.map((_, idx) => (
                     <motion.div
                       key={idx}
-                      className="h-1 flex-1 rounded-full overflow-hidden bg-void-700"
+                      className="bg-void-700 h-1 flex-1 overflow-hidden rounded-full"
                     >
                       <motion.div
                         className="h-full"
@@ -250,15 +265,15 @@ export function ServitorBootSequence({ onComplete, duration = 5500 }: ServitorBo
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
               onClick={skipSequence}
-              className="mt-6 mx-auto flex items-center gap-2 px-4 py-2 text-sm font-mono text-bone-500 hover:text-bone-300 transition-colors"
+              className="text-bone-500 hover:text-bone-300 mx-auto mt-6 flex items-center gap-2 px-4 py-2 font-mono text-sm transition-colors"
             >
-              <SkipForward className="w-4 h-4" />
+              <SkipForward className="h-4 w-4" />
               Saltar secuencia
             </motion.button>
           </div>
 
           {/* Random data noise effect */}
-          <div className="absolute bottom-4 left-4 right-4 flex justify-between text-[10px] font-mono text-bone-700 opacity-50">
+          <div className="text-bone-700 absolute bottom-4 left-4 right-4 flex justify-between font-mono text-[10px] opacity-50">
             <span>MEM: 0x{Math.random().toString(16).slice(2, 10).toUpperCase()}</span>
             <span>PROC: ACTIVO</span>
             <span>SEC: NIVEL-{currentPhase + 1}</span>

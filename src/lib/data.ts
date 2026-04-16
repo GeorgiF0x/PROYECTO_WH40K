@@ -2,7 +2,14 @@
 
 export interface FactionUnit {
   name: string
-  type: 'Personaje' | 'Tropas' | 'Elite' | 'Ataque Rapido' | 'Apoyo Pesado' | 'Lord of War' | 'Transporte'
+  type:
+    | 'Personaje'
+    | 'Tropas'
+    | 'Elite'
+    | 'Ataque Rapido'
+    | 'Apoyo Pesado'
+    | 'Lord of War'
+    | 'Transporte'
   description: string
   lore: string
   points: number
@@ -70,14 +77,16 @@ export const factions: Faction[] = [
     name: 'Imperium of Man',
     shortName: 'Imperium',
     tagline: 'El Emperador Protege',
-    description: 'La humanidad unida bajo el Trono Dorado. Space Marines, la Guardia Imperial y el Adeptus Mechanicus defienden un imperio de un millon de mundos contra las tinieblas.',
+    description:
+      'La humanidad unida bajo el Trono Dorado. Space Marines, la Guardia Imperial y el Adeptus Mechanicus defienden un imperio de un millon de mundos contra las tinieblas.',
     longDescription: `El Imperium of Man es la civilizacion humana mas grande de la galaxia, abarcando mas de un millon de mundos unidos bajo el dominio del Dios-Emperador de la Humanidad. Durante mas de diez milenios, el Imperium ha resistido contra xenos, herejes y los horrores del Warp.
 
 Los Space Marines, los guerreros geneticamente modificados conocidos como los Adeptus Astartes, son el martillo del Emperador. La Guardia Imperial, con sus incontables billones de soldados, es el escudo. El Adeptus Mechanicus preserva el conocimiento sagrado de las maquinas.`,
 
     color: '#C9A227',
     accentColor: '#1a1a2e',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/impeirum.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9pbXBlaXJ1bS5qcGciLCJpYXQiOjE3Njk5MTExMTQsImV4cCI6MTgwMTQ0NzExNH0.RcZlHMgh91pwr-an9Ilx7-E_9FhcGCK8SVlOTKLqr8A',
+    image:
+      'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/impeirum.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9pbXBlaXJ1bS5qcGciLCJpYXQiOjE3Njk5MTExMTQsImV4cCI6MTgwMTQ0NzExNH0.RcZlHMgh91pwr-an9Ilx7-E_9FhcGCK8SVlOTKLqr8A',
     // Gothic cathedral with dramatic golden light - the religious grandeur of the Imperium
     heroImage: 'https://images.unsplash.com/photo-1490730141103-6cac27abb37f?w=1920&q=80',
     galleryImages: [
@@ -104,8 +113,8 @@ El Emperador fue una vez el ser humano mas poderoso que jamas existio. Durante l
         quote: {
           text: 'Es mejor morir por el Emperador que vivir para uno mismo.',
           author: 'Catecismo Imperial',
-          source: 'Libro de los Rezos'
-        }
+          source: 'Libro de los Rezos',
+        },
       },
       {
         title: 'Los Adeptus Astartes',
@@ -115,8 +124,8 @@ Organizados en Capitulos de aproximadamente mil guerreros cada uno, los Adeptus 
         quote: {
           text: 'Y no conoceran el miedo.',
           author: 'Codex Astartes',
-          source: 'Prologo'
-        }
+          source: 'Prologo',
+        },
       },
       {
         title: 'La Guardia Imperial',
@@ -130,38 +139,62 @@ Los regimientos famosos como los Cadians, Catachans, Death Korps de Krieg y los 
       {
         name: 'Primaris Intercessors',
         type: 'Tropas',
-        description: 'La columna vertebral de los ejercitos Space Marine. Guerreros versatiles equipados con rifles bolt de patron Mk II.',
+        description:
+          'La columna vertebral de los ejercitos Space Marine. Guerreros versatiles equipados con rifles bolt de patron Mk II.',
         lore: 'Creados por Belisarius Cawl durante diez milenios de trabajo secreto, los Primaris representan la nueva generacion de Adeptus Astartes. Mas altos, mas fuertes y mas resistentes que sus predecesores.',
         points: 90,
         image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
-        stats: { M: '6"', WS: '3+', BS: '3+', S: '4', T: '4', W: '2', A: '2', Ld: '6+', Sv: '3+' }
+        stats: { M: '6"', WS: '3+', BS: '3+', S: '4', T: '4', W: '2', A: '2', Ld: '6+', Sv: '3+' },
       },
       {
         name: 'Adeptus Custodes',
         type: 'Elite',
-        description: 'Los guardianes personales del Emperador. Cada uno es una legion por si mismo.',
+        description:
+          'Los guardianes personales del Emperador. Cada uno es una legion por si mismo.',
         lore: 'Los Custodios son los guerreros mas perfectos jamas creados. Donde los Space Marines fueron hechos en masa, cada Custodio fue artesanalmente forjado por el propio Emperador.',
         points: 135,
         image: 'https://images.unsplash.com/photo-1569003339405-ea396a5a8a90?w=600&q=80',
-        stats: { M: '6"', WS: '2+', BS: '2+', S: '5', T: '5', W: '3', A: '4', Ld: '5+', Sv: '2+' }
+        stats: { M: '6"', WS: '2+', BS: '2+', S: '5', T: '5', W: '3', A: '4', Ld: '5+', Sv: '2+' },
       },
       {
         name: 'Imperial Knight Paladin',
         type: 'Lord of War',
-        description: 'Maquinas de guerra colosales pilotadas por nobles caballeros. Devastacion andante.',
+        description:
+          'Maquinas de guerra colosales pilotadas por nobles caballeros. Devastacion andante.',
         lore: 'Los Knights son reliquias de la Era Oscura de la Tecnologia, maquinas de guerra bipedas que son pilotadas por nobles de casas caballerescas que han jurado lealtad al Emperador.',
         points: 425,
         image: 'https://images.unsplash.com/photo-1597424216809-3ba9864aeb18?w=600&q=80',
-        stats: { M: '10"', WS: '3+', BS: '3+', S: '8', T: '12', W: '22', A: '4', Ld: '6+', Sv: '3+' }
+        stats: {
+          M: '10"',
+          WS: '3+',
+          BS: '3+',
+          S: '8',
+          T: '12',
+          W: '22',
+          A: '4',
+          Ld: '6+',
+          Sv: '3+',
+        },
       },
       {
         name: 'Leman Russ Battle Tank',
         type: 'Apoyo Pesado',
-        description: 'El tanque de batalla principal del Astra Militarum. Robusto, versatil y mortal.',
+        description:
+          'El tanque de batalla principal del Astra Militarum. Robusto, versatil y mortal.',
         lore: 'Nombrado en honor al Primarca de los Space Wolves, el Leman Russ ha servido al Imperium durante diez mil años. Su diseño simple pero efectivo lo convierte en la columna vertebral de las fuerzas acorazadas imperiales.',
         points: 195,
         image: 'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=600&q=80',
-        stats: { M: '10"', WS: '4+', BS: '4+', S: '6', T: '11', W: '13', A: '3', Ld: '7+', Sv: '2+' }
+        stats: {
+          M: '10"',
+          WS: '4+',
+          BS: '4+',
+          S: '6',
+          T: '11',
+          W: '13',
+          A: '3',
+          Ld: '7+',
+          Sv: '2+',
+        },
       },
     ],
 
@@ -169,20 +202,20 @@ Los regimientos famosos como los Cadians, Catachans, Death Korps de Krieg y los 
       'Roboute Guilliman - Primarca de los Ultramarines',
       'Marneus Calgar - Señor Capitular de los Ultramarines',
       'Commander Dante - Señor Capitular de los Blood Angels',
-      'Trajann Valoris - Capitan-General de los Custodes'
+      'Trajann Valoris - Capitan-General de los Custodes',
     ],
 
     strengths: [
       'Gran variedad de unidades y subfacciones',
       'Fuerte sinergia entre diferentes elementos',
       'Acceso a la mejor artilleria de la galaxia',
-      'Capacidad de adaptacion a cualquier enemigo'
+      'Capacidad de adaptacion a cualquier enemigo',
     ],
 
     weaknesses: [
       'Puede ser costoso en puntos',
       'Requiere buena gestion de recursos',
-      'Algunas unidades son muy especializadas'
+      'Algunas unidades son muy especializadas',
     ],
   },
 
@@ -194,14 +227,16 @@ Los regimientos famosos como los Cadians, Catachans, Death Korps de Krieg y los 
     name: 'Chaos Space Marines',
     shortName: 'Chaos',
     tagline: 'Muerte al Falso Emperador',
-    description: 'Los Marines Traidores que vendieron sus almas a los Dioses del Caos. Diez mil años de guerra eterna contra el Imperium que una vez juraron proteger.',
+    description:
+      'Los Marines Traidores que vendieron sus almas a los Dioses del Caos. Diez mil años de guerra eterna contra el Imperium que una vez juraron proteger.',
     longDescription: `Los Chaos Space Marines son los descendientes corruptos de las Legiones Traidoras que se rebelaron contra el Emperador durante la Herejia de Horus hace diez milenios. Empoderados por los Dioses Oscuros del Warp, estos guerreros inmortales libran una guerra eterna contra el Imperium.
 
 Khorne, Tzeentch, Nurgle y Slaanesh otorgan terribles dones a sus seguidores. Mutaciones, poderes psiquicos prohibidos y una sed insaciable de destruccion impulsan a las hordas del Caos en su cruzada negra.`,
 
     color: '#DC143C',
     accentColor: '#1a0a0a',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/Waves_of_the_Warp.webp?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9XYXZlc19vZl90aGVfV2FycC53ZWJwIiwiaWF0IjoxNzY5OTEwMjY2LCJleHAiOjE4MDE0NDYyNjZ9.awMbPkWyDtYI_eLmNavwA_okXFmStYY9cU_SWhtLqAs',
+    image:
+      'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/Waves_of_the_Warp.webp?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9XYXZlc19vZl90aGVfV2FycC53ZWJwIiwiaWF0IjoxNzY5OTEwMjY2LCJleHAiOjE4MDE0NDYyNjZ9.awMbPkWyDtYI_eLmNavwA_okXFmStYY9cU_SWhtLqAs',
     // Volcanic lava and fire - hellish inferno for the forces of Chaos
     heroImage: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=1920&q=80',
     galleryImages: [
@@ -228,8 +263,8 @@ La batalla final se libro en Terra misma. El Emperador derroto a Horus, pero fue
         quote: {
           text: 'Fui leal durante diez mil años. Solo necesite un momento de duda para caer.',
           author: 'Horus Lupercal',
-          source: 'Antes de la Caida'
-        }
+          source: 'Antes de la Caida',
+        },
       },
       {
         title: 'Los Cuatro Dioses',
@@ -239,8 +274,8 @@ Algunos Marines del Caos sirven a un solo dios, transformandose en champions ded
         quote: {
           text: 'Los dioses son caprichosos, pero sus dones son eternos.',
           author: 'Erebus',
-          source: 'Portadores de la Palabra'
-        }
+          source: 'Portadores de la Palabra',
+        },
       },
       {
         title: 'Las Cruzadas Negras',
@@ -258,7 +293,7 @@ La Decimotercera Cruzada Negra resulto en la caida de Cadia, el mundo fortaleza 
         lore: 'Estos veteranos han luchado durante diez milenios, sus armaduras fusionadas con sus cuerpos, adornadas con trofeos de incontables matanzas.',
         points: 185,
         image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=600&q=80',
-        stats: { M: '5"', WS: '3+', BS: '3+', S: '4', T: '5', W: '3', A: '3', Ld: '6+', Sv: '2+' }
+        stats: { M: '5"', WS: '3+', BS: '3+', S: '4', T: '5', W: '3', A: '3', Ld: '6+', Sv: '2+' },
       },
       {
         name: 'Abaddon the Despoiler',
@@ -267,7 +302,7 @@ La Decimotercera Cruzada Negra resulto en la caida de Cadia, el mundo fortaleza 
         lore: 'Ezekyle Abaddon fue el Primer Capitan de los Sons of Horus. Tras la muerte de Horus, reclamo el manto de Señor de la Guerra y juro destruir el Imperium.',
         points: 295,
         image: 'https://images.unsplash.com/photo-1563207153-f403bf289096?w=600&q=80',
-        stats: { M: '6"', WS: '2+', BS: '2+', S: '5', T: '5', W: '9', A: '6', Ld: '5+', Sv: '2+' }
+        stats: { M: '6"', WS: '2+', BS: '2+', S: '5', T: '5', W: '9', A: '6', Ld: '5+', Sv: '2+' },
       },
       {
         name: 'Daemon Prince',
@@ -276,7 +311,7 @@ La Decimotercera Cruzada Negra resulto en la caida de Cadia, el mundo fortaleza 
         lore: 'Los Principes Daemon son champions del Caos que han complacido tanto a los Dioses que fueron transformados en entidades inmortales del Warp.',
         points: 200,
         image: 'https://images.unsplash.com/photo-1571757767119-68b8dbed8c97?w=600&q=80',
-        stats: { M: '8"', WS: '2+', BS: '2+', S: '7', T: '7', W: '10', A: '5', Ld: '6+', Sv: '4+' }
+        stats: { M: '8"', WS: '2+', BS: '2+', S: '7', T: '7', W: '10', A: '5', Ld: '6+', Sv: '4+' },
       },
       {
         name: 'Khorne Berzerkers',
@@ -285,7 +320,7 @@ La Decimotercera Cruzada Negra resulto en la caida de Cadia, el mundo fortaleza 
         lore: 'Los Berzerkers se sometieron a la cirugia psiquica que elimina todo excepto la rabia asesina. Solo viven para matar en nombre del Dios de la Sangre.',
         points: 105,
         image: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&q=80',
-        stats: { M: '6"', WS: '3+', BS: '3+', S: '5', T: '4', W: '2', A: '3', Ld: '6+', Sv: '3+' }
+        stats: { M: '6"', WS: '3+', BS: '3+', S: '5', T: '4', W: '2', A: '3', Ld: '6+', Sv: '3+' },
       },
     ],
 
@@ -293,20 +328,20 @@ La Decimotercera Cruzada Negra resulto en la caida de Cadia, el mundo fortaleza 
       'Abaddon el Saqueador - Señor de la Guerra del Caos',
       'Kharn el Traidor - Champion de Khorne',
       'Ahriman - Hechicero Jefe de los Thousand Sons',
-      'Typhus - Heraldo de Nurgle'
+      'Typhus - Heraldo de Nurgle',
     ],
 
     strengths: [
       'Unidades de combate cuerpo a cuerpo devastadoras',
       'Poderes psiquicos poderosos',
       'Marcas del Caos otorgan bonificaciones unicas',
-      'Acceso a demonios como aliados'
+      'Acceso a demonios como aliados',
     ],
 
     weaknesses: [
       'Menor cantidad de disparos a distancia',
       'Puede ser vulnerable a ejercitos de hordas',
-      'Requiere llegar al combate para ser efectivo'
+      'Requiere llegar al combate para ser efectivo',
     ],
   },
 
@@ -318,14 +353,16 @@ La Decimotercera Cruzada Negra resulto en la caida de Cadia, el mundo fortaleza 
     name: 'Necrons',
     shortName: 'Necrons',
     tagline: 'Los Antiguos Despiertan',
-    description: 'Una raza ancestral que vendio sus almas por la inmortalidad. Ahora despiertan de su sueño de sesenta millones de años para reclamar la galaxia.',
+    description:
+      'Una raza ancestral que vendio sus almas por la inmortalidad. Ahora despiertan de su sueño de sesenta millones de años para reclamar la galaxia.',
     longDescription: `Los Necrons son los remanentes de la antigua civilizacion Necrontyr, que hace eones transfirieron sus consciencias a cuerpos de metal viviente en un pacto con los C'tan, los Dioses Estelares. Durante sesenta millones de años han dormido en mundos tumba dispersos por la galaxia.
 
 Ahora despiertan. Sus falanges de guerreros inmortales, sus constructos arcanos y sus señores dinasticos reclaman lo que una vez fue suyo. La galaxia conocera el dominio de los Necrons una vez mas.`,
 
     color: '#00FF87',
     accentColor: '#0a1a0a',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/necrons.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9uZWNyb25zLmpwZyIsImlhdCI6MTc2OTkxMDE5MywiZXhwIjoxODAxNDQ2MTkzfQ.M2jgujr5auVnzNRHjFZyRi6GgOzrkDR0mG-iprVHdpQ',
+    image:
+      'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/necrons.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9uZWNyb25zLmpwZyIsImlhdCI6MTc2OTkxMDE5MywiZXhwIjoxODAxNDQ2MTkzfQ.M2jgujr5auVnzNRHjFZyRi6GgOzrkDR0mG-iprVHdpQ',
     // Green glowing tech/matrix code - ancient technology awakening
     heroImage: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1920&q=80',
     galleryImages: [
@@ -352,8 +389,8 @@ Los C'tan les ofrecieron la inmortalidad a traves de la Biotransferencia: sus cu
         quote: {
           text: 'Fuimos dioses una vez. Volveremos a serlo.',
           author: 'Szarekh, el Rey Silente',
-          source: 'Cronicas de la Triarca'
-        }
+          source: 'Cronicas de la Triarca',
+        },
       },
       {
         title: 'La Guerra en el Cielo',
@@ -363,8 +400,8 @@ Los Necrons finalmente se volvieron contra sus amos C'tan, fragmentandolos en in
         quote: {
           text: 'Incluso los dioses pueden morir. Lo demostramos.',
           author: 'Orikan el Adivino',
-          source: 'Profecias del Despertar'
-        }
+          source: 'Profecias del Despertar',
+        },
       },
       {
         title: 'El Despertar',
@@ -378,20 +415,22 @@ El Rey Silente, Szarekh, ha regresado de su exilio autoimpuesto con una adverten
       {
         name: 'Necron Warriors',
         type: 'Tropas',
-        description: 'La espina dorsal de las legiones Necron. Implacables, incansables, inmortales.',
+        description:
+          'La espina dorsal de las legiones Necron. Implacables, incansables, inmortales.',
         lore: 'Los Guerreros son los restos de los plebeyos Necrontyr, despojados de toda individualidad. Avanzan en falanges silenciosas, sus armas gauss desintegrando a los enemigos atomo por atomo.',
         points: 130,
         image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&q=80',
-        stats: { M: '5"', WS: '4+', BS: '4+', S: '4', T: '4', W: '1', A: '1', Ld: '7+', Sv: '4+' }
+        stats: { M: '5"', WS: '4+', BS: '4+', S: '4', T: '4', W: '1', A: '1', Ld: '7+', Sv: '4+' },
       },
       {
         name: 'Canoptek Wraiths',
         type: 'Ataque Rapido',
-        description: 'Constructos fantasmales que atraviesan la materia solida para destruir a sus presas.',
+        description:
+          'Constructos fantasmales que atraviesan la materia solida para destruir a sus presas.',
         lore: 'Los Espectros Canoptek fueron diseñados para el mantenimiento de las tumbas, pero sus capacidades de cambio de fase los convierten en asesinos letales.',
         points: 145,
         image: 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=600&q=80',
-        stats: { M: '10"', WS: '4+', BS: '4+', S: '6', T: '5', W: '3', A: '4', Ld: '7+', Sv: '4+' }
+        stats: { M: '10"', WS: '4+', BS: '4+', S: '6', T: '5', W: '3', A: '4', Ld: '7+', Sv: '4+' },
       },
       {
         name: 'The Silent King',
@@ -400,7 +439,7 @@ El Rey Silente, Szarekh, ha regresado de su exilio autoimpuesto con una adverten
         lore: 'Szarekh ordeno la Biotransferencia y luego se exilio en verguenza. Ahora regresa para liderar a su pueblo contra una amenaza que podria destruir toda la vida en la galaxia.',
         points: 450,
         image: 'https://images.unsplash.com/photo-1534996858221-380b92700493?w=600&q=80',
-        stats: { M: '8"', WS: '2+', BS: '2+', S: '6', T: '7', W: '16', A: '6', Ld: '5+', Sv: '2+' }
+        stats: { M: '8"', WS: '2+', BS: '2+', S: '6', T: '7', W: '16', A: '6', Ld: '5+', Sv: '2+' },
       },
       {
         name: 'Triarch Praetorians',
@@ -409,7 +448,7 @@ El Rey Silente, Szarekh, ha regresado de su exilio autoimpuesto con una adverten
         lore: 'Los Pretorianos nunca durmieron. Han vigilado los mundos tumba durante sesenta millones de años, manteniendo el orden y castigando a los que despiertan antes de tiempo.',
         points: 140,
         image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
-        stats: { M: '10"', WS: '3+', BS: '3+', S: '5', T: '5', W: '2', A: '3', Ld: '6+', Sv: '3+' }
+        stats: { M: '10"', WS: '3+', BS: '3+', S: '5', T: '5', W: '2', A: '3', Ld: '6+', Sv: '3+' },
       },
     ],
 
@@ -417,20 +456,20 @@ El Rey Silente, Szarekh, ha regresado de su exilio autoimpuesto con una adverten
       'Szarekh, el Rey Silente - Gobernante de los Necrons',
       'Imotekh el Señor de la Tormenta - Faaraón de la Dinastia Sautekh',
       'Trazyn el Infinito - Coleccionista Obsesivo',
-      'Orikan el Adivino - Criptoarquitecto del Tiempo'
+      'Orikan el Adivino - Criptoarquitecto del Tiempo',
     ],
 
     strengths: [
       'Protocolos de Reanimacion restauran unidades caidas',
       'Armas gauss ignoran armaduras',
       'Comandos y habilidades dinasticas poderosas',
-      'Extremadamente dificiles de destruir permanentemente'
+      'Extremadamente dificiles de destruir permanentemente',
     ],
 
     weaknesses: [
       'Movimiento generalmente lento',
       'Pocas unidades de ataque rapido',
-      'Vulnerables a ataques que ignoran Reanimacion'
+      'Vulnerables a ataques que ignoran Reanimacion',
     ],
   },
 
@@ -442,14 +481,16 @@ El Rey Silente, Szarekh, ha regresado de su exilio autoimpuesto con una adverten
     name: 'Aeldari',
     shortName: 'Aeldari',
     tagline: 'Los Hijos de las Estrellas',
-    description: 'Una raza antigua que una vez goberno la galaxia. Ahora luchan para evitar la extincion mientras huyen de la entidad que su decadencia creo.',
+    description:
+      'Una raza antigua que una vez goberno la galaxia. Ahora luchan para evitar la extincion mientras huyen de la entidad que su decadencia creo.',
     longDescription: `Los Aeldari son una raza psiquicamente dotada cuya civilizacion dominaba la galaxia cuando la humanidad aun vivia en cuevas. Su imperio cayo cuando sus excesos dieron nacimiento a Slaanesh, el Dios del Placer, cuya creacion destruyo sus mundos y devoro sus almas.
 
 Los supervivientes se dividieron: los Asuryani viven en colosales naves espaciales llamadas Mundos Astronave, los Drukhari se esconden en la dimension paralela de Commorragh, y los Ynnari siguen al Dios de la Muerte renacido.`,
 
     color: '#4169E1',
     accentColor: '#050510',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/eldar.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9lbGRhci5qcGciLCJpYXQiOjE3Njk5MTAxMzUsImV4cCI6MzY4MDY0MDYxMzV9.3fjxMjhJeWS5VeJT_TrpxbSqIgQ6TYx2j-n1pzmhMNg',
+    image:
+      'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/eldar.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9lbGRhci5qcGciLCJpYXQiOjE3Njk5MTAxMzUsImV4cCI6MzY4MDY0MDYxMzV9.3fjxMjhJeWS5VeJT_TrpxbSqIgQ6TYx2j-n1pzmhMNg',
     // Vibrant purple and blue cosmic nebula - mystical and ethereal like the Aeldari
     heroImage: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&q=80',
     galleryImages: [
@@ -476,8 +517,8 @@ Durante milenios, sus emociones colectivas se acumularon en el Warp hasta que cr
         quote: {
           text: 'Nosotros, que creamos dioses, creamos tambien a nuestro destructor.',
           author: 'Eldrad Ulthran',
-          source: 'Lamento de Ulthwe'
-        }
+          source: 'Lamento de Ulthwe',
+        },
       },
       {
         title: 'Los Senderos',
@@ -487,8 +528,8 @@ El Sendero del Guerrero es seguido por los Guerreros Aspecto, cada santuario ded
         quote: {
           text: 'El Sendero es estrecho. Un paso en falso y caemos.',
           author: 'Asurmen',
-          source: 'La Mano de Asuryan'
-        }
+          source: 'La Mano de Asuryan',
+        },
       },
       {
         title: 'Piedras Espiritu',
@@ -506,16 +547,17 @@ En tiempos desesperados, los espiritus pueden ser despertados y colocados en con
         lore: 'Aunque no son guerreros profesionales, los Guardianes son mas habiles que los mejores soldados de razas menores. Defienden sus hogares con catapultas shuriken.',
         points: 110,
         image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&q=80',
-        stats: { M: '7"', WS: '3+', BS: '3+', S: '3', T: '3', W: '1', A: '1', Ld: '6+', Sv: '4+' }
+        stats: { M: '7"', WS: '3+', BS: '3+', S: '3', T: '3', W: '1', A: '1', Ld: '6+', Sv: '4+' },
       },
       {
         name: 'Howling Banshees',
         type: 'Elite',
-        description: 'Guerreras Aspecto que atacan con gritos psiquicos que paralizan a sus enemigos.',
+        description:
+          'Guerreras Aspecto que atacan con gritos psiquicos que paralizan a sus enemigos.',
         lore: 'Las Banshees Aullantes canalizan el aspecto del lamento de Morai-Heg. Sus mascaras amplifican gritos psiquicos que aterran a los enemigos antes de que las espadas los despedacen.',
         points: 75,
         image: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=600&q=80',
-        stats: { M: '8"', WS: '3+', BS: '3+', S: '3', T: '3', W: '1', A: '3', Ld: '6+', Sv: '4+' }
+        stats: { M: '8"', WS: '3+', BS: '3+', S: '3', T: '3', W: '1', A: '3', Ld: '6+', Sv: '4+' },
       },
       {
         name: 'Wraithknight',
@@ -524,7 +566,17 @@ En tiempos desesperados, los espiritus pueden ser despertados y colocados en con
         lore: 'Los Wraithknights son pilotados por Aeldari cuyos gemelos murieron en batalla. El lazo entre gemelos permite controlar estos titanes con precision sobrenatural.',
         points: 470,
         image: 'https://images.unsplash.com/photo-1464802686167-b939a6910659?w=600&q=80',
-        stats: { M: '10"', WS: '3+', BS: '3+', S: '8', T: '11', W: '22', A: '4', Ld: '6+', Sv: '2+' }
+        stats: {
+          M: '10"',
+          WS: '3+',
+          BS: '3+',
+          S: '8',
+          T: '11',
+          W: '22',
+          A: '4',
+          Ld: '6+',
+          Sv: '2+',
+        },
       },
       {
         name: 'Fire Dragons',
@@ -533,7 +585,7 @@ En tiempos desesperados, los espiritus pueden ser despertados y colocados en con
         lore: 'Los Dragones de Fuego son maestros de la destruccion. Sus fusiles de fusion reducen blindaje y carne a escoria con igual facilidad.',
         points: 90,
         image: 'https://images.unsplash.com/photo-1465101162946-4377e57745c3?w=600&q=80',
-        stats: { M: '7"', WS: '3+', BS: '3+', S: '3', T: '3', W: '1', A: '1', Ld: '6+', Sv: '3+' }
+        stats: { M: '7"', WS: '3+', BS: '3+', S: '3', T: '3', W: '1', A: '1', Ld: '6+', Sv: '3+' },
       },
     ],
 
@@ -541,21 +593,21 @@ En tiempos desesperados, los espiritus pueden ser despertados y colocados en con
       'Eldrad Ulthran - Vidente Supremo de Ulthwe',
       'Yvraine - Emisaria de Ynnead',
       'Asurmen - El Primero de los Fenix',
-      'Jain Zar - La Tormenta del Silencio'
+      'Jain Zar - La Tormenta del Silencio',
     ],
 
     strengths: [
       'Velocidad y maniobrabilidad excepcionales',
       'Poderes psiquicos devastadores',
       'Unidades especializadas muy efectivas',
-      'Habilidad Batalla: Golpe de Dardos permite reposicionar unidades'
+      'Habilidad Batalla: Golpe de Dardos permite reposicionar unidades',
     ],
 
     weaknesses: [
       'Baja resistencia - mueren facilmente',
       'Costosos en puntos por modelo',
       'Requiere planificacion tactica precisa',
-      'Errores se castigan severamente'
+      'Errores se castigan severamente',
     ],
   },
 
@@ -567,14 +619,16 @@ En tiempos desesperados, los espiritus pueden ser despertados y colocados en con
     name: 'Orks',
     shortName: 'Orks',
     tagline: 'WAAAGH!',
-    description: 'Una raza de barbaros verdes que viven solo para la guerra. Donde los Orks van, la destruccion sigue. Y los Orks van a todas partes.',
+    description:
+      'Una raza de barbaros verdes que viven solo para la guerra. Donde los Orks van, la destruccion sigue. Y los Orks van a todas partes.',
     longDescription: `Los Orks son una plaga verde que infesta cada rincon de la galaxia. Creados como armas biologicas por los Antiguos, han sobrevivido y prosperado mucho despues de que sus creadores desaparecieran. Son hongos simbioticos que liberan esporas al morir, asegurando que donde haya habido un Ork, siempre habra mas.
 
 Su unica motivacion es la guerra. Los Orks creen que el rojo hace las cosas mas rapidas, el azul trae suerte, y el amarillo produce mejores explosiones. Y debido a su campo psiquico colectivo, estas creencias se vuelven realidad.`,
 
     color: '#228B22',
     accentColor: '#080A05',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/orks.webp?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9vcmtzLndlYnAiLCJpYXQiOjE3Njk5MTAyMTgsImV4cCI6MTgwMTQ0NjIxOH0.nR26uJJ4wLdKPxVlez210SRwg5ax5T323YA_X5XBvYo',
+    image:
+      'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/orks.webp?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9vcmtzLndlYnAiLCJpYXQiOjE3Njk5MTAyMTgsImV4cCI6MTgwMTQ0NjIxOH0.nR26uJJ4wLdKPxVlez210SRwg5ax5T323YA_X5XBvYo',
     // Industrial scrap metal and rust - brutal junkyard warfare of the WAAAGH!
     heroImage: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=1920&q=80',
     galleryImages: [
@@ -601,8 +655,8 @@ Un WAAAGH! es tanto una cruzada como una migracion. Millones de Orks avanzan, de
         quote: {
           text: 'WAAAGH!',
           author: 'Todos los Orks',
-          source: 'Siempre'
-        }
+          source: 'Siempre',
+        },
       },
       {
         title: 'Kultur Orko',
@@ -612,8 +666,8 @@ Los Mekboys construyen vehiculos y armas imposibles. Los Painboyz practican una 
         quote: {
           text: 'Red wunz go fasta!',
           author: 'Proverbio Orko',
-          source: 'Sabiduria Mekanika'
-        }
+          source: 'Sabiduria Mekanika',
+        },
       },
       {
         title: 'Ghazghkull Mag Uruk Thraka',
@@ -631,7 +685,7 @@ Ya ha lanzado tres guerras de Armageddon contra el Imperium, cada una mayor que 
         lore: 'Los Boyz son el Ork promedio: brutales, escandalosos y siempre listos para una buena pelea. En grupos grandes, su entusiasmo es contagioso y mortal.',
         points: 90,
         image: 'https://images.unsplash.com/photo-1614854262318-831574f15f1f?w=600&q=80',
-        stats: { M: '6"', WS: '3+', BS: '5+', S: '4', T: '5', W: '1', A: '2', Ld: '7+', Sv: '6+' }
+        stats: { M: '6"', WS: '3+', BS: '5+', S: '4', T: '5', W: '1', A: '2', Ld: '7+', Sv: '6+' },
       },
       {
         name: 'Ghazghkull Thraka',
@@ -640,7 +694,7 @@ Ya ha lanzado tres guerras de Armageddon contra el Imperium, cada una mayor que 
         lore: 'Ghazghkull fue un simple Nob hasta que un disparo en la cabeza lo llevo a un Painboy. Desperto con una placa de metal en el craneo y visiones de Gork y Mork.',
         points: 235,
         image: 'https://images.unsplash.com/photo-1590479773265-7464e5d48118?w=600&q=80',
-        stats: { M: '6"', WS: '2+', BS: '5+', S: '7', T: '8', W: '12', A: '6', Ld: '6+', Sv: '2+' }
+        stats: { M: '6"', WS: '2+', BS: '5+', S: '7', T: '8', W: '12', A: '6', Ld: '6+', Sv: '2+' },
       },
       {
         name: 'Gorkanaut',
@@ -649,7 +703,17 @@ Ya ha lanzado tres guerras de Armageddon contra el Imperium, cada una mayor que 
         lore: 'Los Gorkanauts son construidos para parecerse a Gork, el dios Orko de la fuerza brutal. Estan armados con mas dakka de la que parece fisicamente posible.',
         points: 300,
         image: 'https://images.unsplash.com/photo-1580982324076-d95e5a41f499?w=600&q=80',
-        stats: { M: '8"', WS: '3+', BS: '5+', S: '8', T: '12', W: '24', A: '5', Ld: '6+', Sv: '3+' }
+        stats: {
+          M: '8"',
+          WS: '3+',
+          BS: '5+',
+          S: '8',
+          T: '12',
+          W: '24',
+          A: '5',
+          Ld: '6+',
+          Sv: '3+',
+        },
       },
       {
         name: 'Warbikers',
@@ -658,7 +722,7 @@ Ya ha lanzado tres guerras de Armageddon contra el Imperium, cada una mayor que 
         lore: 'Los Warbikers son Evil Sunz por excelencia. Sus motos estan equipadas con motores sobrealimentados y mas armas de las que deberian poder montar.',
         points: 80,
         image: 'https://images.unsplash.com/photo-1573497620053-ea5300f94f21?w=600&q=80',
-        stats: { M: '12"', WS: '3+', BS: '5+', S: '4', T: '6', W: '3', A: '2', Ld: '7+', Sv: '4+' }
+        stats: { M: '12"', WS: '3+', BS: '5+', S: '4', T: '6', W: '3', A: '2', Ld: '7+', Sv: '4+' },
       },
     ],
 
@@ -666,21 +730,21 @@ Ya ha lanzado tres guerras de Armageddon contra el Imperium, cada una mayor que 
       'Ghazghkull Mag Uruk Thraka - Profeta del WAAAGH!',
       'Makari - El Grot Mas Afortunado',
       'Boss Snikrot - Kommando Legendario',
-      'Mad Dok Grotsnik - El Painboy Mas Loco'
+      'Mad Dok Grotsnik - El Painboy Mas Loco',
     ],
 
     strengths: [
       'Gran cantidad de modelos por bajo coste',
       'Extremadamente resistentes en combate',
       'Campo psiquico WAAAGH! otorga beneficios',
-      'Muy divertidos de jugar'
+      'Muy divertidos de jugar',
     ],
 
     weaknesses: [
       'Precision de disparo terrible',
       'Tacticas limitadas - basicamente cargar',
       'Vulnerables a ejercitos de disparo',
-      'Requieren pintar MUCHOS modelos'
+      'Requieren pintar MUCHOS modelos',
     ],
   },
 
@@ -692,14 +756,16 @@ Ya ha lanzado tres guerras de Armageddon contra el Imperium, cada una mayor que 
     name: "T'au Empire",
     shortName: "T'au",
     tagline: 'Por el Bien Mayor',
-    description: 'Un imperio joven y expansionista que busca unir a todas las razas bajo su filosofia del Bien Mayor. Su tecnologia avanzada compensa su inexperiencia en combate.',
+    description:
+      'Un imperio joven y expansionista que busca unir a todas las razas bajo su filosofia del Bien Mayor. Su tecnologia avanzada compensa su inexperiencia en combate.',
     longDescription: `Los T'au son recien llegados a la escena galactica. Hace apenas seis mil años eran primitivos, pero han avanzado a una velocidad sin precedentes. Su sociedad esta organizada en castas: los Guerreros de Fuego luchan, los Eteros gobiernan, los de la Tierra construyen, los del Agua negocian y los del Aire vuelan.
 
 Su filosofia del Tau'va, el Bien Mayor, predica la cooperacion entre especies. Muchas razas se han unido voluntariamente al Imperio T'au. Otras... menos voluntariamente.`,
 
     color: '#00CED1',
     accentColor: '#030810',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/tau.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy90YXUuanBnIiwiaWF0IjoxNzY5OTEwMjM2LCJleHAiOjE4MDE0NDYyMzZ9.PuDUPu3uSXg9EpJI5W5qm6_KX8FZBFnlj8zs9RUtn_0',
+    image:
+      'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/tau.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy90YXUuanBnIiwiaWF0IjoxNzY5OTEwMjM2LCJleHAiOjE4MDE0NDYyMzZ9.PuDUPu3uSXg9EpJI5W5qm6_KX8FZBFnlj8zs9RUtn_0',
     // Futuristic blue city skyline - advanced tech civilization of the T'au Empire
     heroImage: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1920&q=80',
     galleryImages: [
@@ -726,19 +792,19 @@ Los Etereos aparecieron misteriosamente durante un periodo de guerra civil, unif
         quote: {
           text: 'El individuo no importa. Solo el Bien Mayor perdura.',
           author: "Aun'va",
-          source: 'Meditaciones del Bien Mayor'
-        }
+          source: 'Meditaciones del Bien Mayor',
+        },
       },
       {
-        title: 'Tecnologia T\'au',
+        title: "Tecnologia T'au",
         content: `Los T'au compensan su debilidad fisica con la tecnologia mas avanzada de la galaxia despues de los Necrons. Sus armaduras de combate Crisis y Riptide son portadas por guerreros de elite, equipados con sistemas de armas modulares y campos de proteccion.
 
 Sus naves emplean motores de impulso exoticos que, aunque mas lentos que el viaje Warp, son infinitamente mas seguros. Sus drones IA apoyan a las tropas en todas las funciones, desde exploracion hasta combate directo.`,
         quote: {
           text: 'No necesitamos ser fuertes. Nuestras armas lo son por nosotros.',
           author: "O'Shovah",
-          source: 'Tacticas del Comandante'
-        }
+          source: 'Tacticas del Comandante',
+        },
       },
       {
         title: 'Las Esferas de Expansion',
@@ -752,38 +818,48 @@ Los Kroot son carnivoros que absorben rasgos geneticos de lo que comen. Los Vesp
       {
         name: 'Fire Warriors',
         type: 'Tropas',
-        description: 'La infanteria estandar T\'au, armada con rifles de pulso de largo alcance.',
+        description: "La infanteria estandar T'au, armada con rifles de pulso de largo alcance.",
         lore: 'Los Guerreros de Fuego son la casta Shas en accion. Entrenados desde el nacimiento para el combate, son tiradores expertos pero evitan el cuerpo a cuerpo.',
         points: 80,
         image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&q=80',
-        stats: { M: '6"', WS: '5+', BS: '4+', S: '3', T: '3', W: '1', A: '1', Ld: '7+', Sv: '4+' }
+        stats: { M: '6"', WS: '5+', BS: '4+', S: '3', T: '3', W: '1', A: '1', Ld: '7+', Sv: '4+' },
       },
       {
         name: 'Commander Farsight',
         type: 'Personaje',
         description: "O'Shovah, el Comandante renegado que lidera los Enclaves Farsight.",
-        lore: "Farsight descubrio verdades sobre los Etereos que lo llevaron a separarse del Imperio. Su espada, la Hoja del Alba, es un artefacto de origen desconocido que drena la vida de sus victimas.",
+        lore: 'Farsight descubrio verdades sobre los Etereos que lo llevaron a separarse del Imperio. Su espada, la Hoja del Alba, es un artefacto de origen desconocido que drena la vida de sus victimas.',
         points: 120,
         image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&q=80',
-        stats: { M: '10"', WS: '2+', BS: '2+', S: '5', T: '5', W: '7', A: '5', Ld: '6+', Sv: '3+' }
+        stats: { M: '10"', WS: '2+', BS: '2+', S: '5', T: '5', W: '7', A: '5', Ld: '6+', Sv: '3+' },
       },
       {
         name: 'Riptide Battlesuit',
         type: 'Apoyo Pesado',
         description: 'Armadura de combate pesada con sistemas de armas devastadores.',
-        lore: 'El Riptide es el pinàculo de la tecnologia de armaduras T\'au. Su piloto esta conectado neuralmente al traje, permitiendo reflejos sobrehumanos.',
+        lore: "El Riptide es el pinàculo de la tecnologia de armaduras T'au. Su piloto esta conectado neuralmente al traje, permitiendo reflejos sobrehumanos.",
         points: 190,
         image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
-        stats: { M: '10"', WS: '5+', BS: '4+', S: '6', T: '8', W: '14', A: '3', Ld: '7+', Sv: '2+' }
+        stats: {
+          M: '10"',
+          WS: '5+',
+          BS: '4+',
+          S: '6',
+          T: '8',
+          W: '14',
+          A: '3',
+          Ld: '7+',
+          Sv: '2+',
+        },
       },
       {
         name: 'Crisis Battlesuits',
         type: 'Elite',
         description: 'Armaduras de combate versatiles que pueden equiparse para cualquier rol.',
-        lore: 'Los trajes Crisis son el icono del poderio militar T\'au. Cada piloto elige su configuracion de armas, desde lanzamisiles hasta lanzallamas de fusion.',
+        lore: "Los trajes Crisis son el icono del poderio militar T'au. Cada piloto elige su configuracion de armas, desde lanzamisiles hasta lanzallamas de fusion.",
         points: 155,
         image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&q=80',
-        stats: { M: '10"', WS: '5+', BS: '4+', S: '5', T: '5', W: '4', A: '2', Ld: '7+', Sv: '3+' }
+        stats: { M: '10"', WS: '5+', BS: '4+', S: '5', T: '5', W: '4', A: '2', Ld: '7+', Sv: '3+' },
       },
     ],
 
@@ -791,21 +867,21 @@ Los Kroot son carnivoros que absorben rasgos geneticos de lo que comen. Los Vesp
       "O'Shovah (Comandante Farsight) - El Renegado",
       "Aun'va - Maestro Etereo Supremo",
       "O'Shassera (Comandante Shadowsun) - Campeona del Bien Mayor",
-      "Longstrike - As de los Tanques"
+      'Longstrike - As de los Tanques',
     ],
 
     strengths: [
       'El mejor ejercito de disparo del juego',
       'Armaduras de combate extremadamente versatiles',
       'Excelente alcance y precision',
-      'Drones proporcionan apoyo y proteccion'
+      'Drones proporcionan apoyo y proteccion',
     ],
 
     weaknesses: [
       'Terribles en combate cuerpo a cuerpo',
       'Sin psiquicos propios',
       'Infanteria fragil',
-      'Dependientes de lineas de vision'
+      'Dependientes de lineas de vision',
     ],
   },
 
@@ -817,14 +893,16 @@ Los Kroot son carnivoros que absorben rasgos geneticos de lo que comen. Los Vesp
     name: 'Tyranids',
     shortName: 'Tyranids',
     tagline: 'La Gran Devoradora',
-    description: 'Una amenaza extragalactica que consume toda vida organica. Enjambres sin fin de monstruosidades biologicas avanzan hacia la galaxia, y no pueden ser razonados, sobornados o detenidos.',
+    description:
+      'Una amenaza extragalactica que consume toda vida organica. Enjambres sin fin de monstruosidades biologicas avanzan hacia la galaxia, y no pueden ser razonados, sobornados o detenidos.',
     longDescription: `Los Tiranidos no son nativos de esta galaxia. Vienen del vacio intergalactico, atraidos por el faro psiquico del Astronomican. Son una superinteligencia colectiva llamada la Mente Enjambre, dividida en flotas enjambre que contienen billones de bio-organismos diseñados para un unico proposito: consumir.
 
 Cada mundo que cae ante los Tiranidos es despojado de toda biomasa, desde la atmosfera hasta el nucleo. Esta materia es procesada en las naves colmena para crear mas Tiranidos. Son la entropia biologica encarnada.`,
 
     color: '#8B008B',
     accentColor: '#080308',
-    image: 'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/Tyranids.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9UeXJhbmlkcy5qcGciLCJpYXQiOjE3Njk5MTAyNTUsImV4cCI6MTgwMTQ0NjI1NX0.NOPQZoItOtI7-71SlNhu7YJeS_8jS9TT25gibrPsWII',
+    image:
+      'https://yvjflhvbtjjmdwkgqqfs.supabase.co/storage/v1/object/sign/factions/Tyranids.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wNjNjMWY1ZC1lZTVlLTQ3YWEtYmFiYi1jNjMxNzIzYWYwY2EiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmYWN0aW9ucy9UeXJhbmlkcy5qcGciLCJpYXQiOjE3Njk5MTAyNTUsImV4cCI6MTgwMTQ0NjI1NX0.NOPQZoItOtI7-71SlNhu7YJeS_8jS9TT25gibrPsWII',
     // Dark alien organic texture - the horrific biomass of the Great Devourer
     heroImage: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=1920&q=80',
     galleryImages: [
@@ -851,8 +929,8 @@ Las criaturas sinápticas como los Hive Tyrants y Warriors actuan como nodos de 
         quote: {
           text: 'No puedes negociar con el hambre.',
           author: 'Inquisidor Kryptman',
-          source: 'Archivos del Ordo Xenos'
-        }
+          source: 'Archivos del Ordo Xenos',
+        },
       },
       {
         title: 'Adaptacion Biologica',
@@ -862,8 +940,8 @@ Y lo mas aterrador: aprenden. Cada encuentro con un enemigo es analizado, y las 
         quote: {
           text: 'La evolucion no tiene meta. Solo hambre.',
           author: 'Magos Biologis Xenex',
-          source: 'Estudio Taxonomico'
-        }
+          source: 'Estudio Taxonomico',
+        },
       },
       {
         title: 'Las Flotas Enjambre',
@@ -881,7 +959,7 @@ Estas flotas son solo tentaculos de algo mucho mas grande que se acerca desde el
         lore: 'Los Termagants son producidos en masa en las naves colmena. Cada uno lleva un devorador, spinefist u otra arma simbionte que dispara proyectiles vivientes.',
         points: 80,
         image: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&q=80',
-        stats: { M: '6"', WS: '4+', BS: '4+', S: '3', T: '3', W: '1', A: '1', Ld: '8+', Sv: '5+' }
+        stats: { M: '6"', WS: '4+', BS: '4+', S: '3', T: '3', W: '1', A: '1', Ld: '8+', Sv: '5+' },
       },
       {
         name: 'Hive Tyrant',
@@ -890,7 +968,7 @@ Estas flotas son solo tentaculos de algo mucho mas grande que se acerca desde el
         lore: 'Los Hive Tyrants son los generales de la Mente Enjambre. Cada uno contiene un fragmento significativo de la consciencia colectiva, capaz de dirigir oleadas de criaturas menores.',
         points: 235,
         image: 'https://images.unsplash.com/photo-1571757767119-68b8dbed8c97?w=600&q=80',
-        stats: { M: '8"', WS: '2+', BS: '3+', S: '7', T: '7', W: '11', A: '5', Ld: '5+', Sv: '2+' }
+        stats: { M: '8"', WS: '2+', BS: '3+', S: '7', T: '7', W: '11', A: '5', Ld: '5+', Sv: '2+' },
       },
       {
         name: 'Carnifex',
@@ -899,7 +977,7 @@ Estas flotas son solo tentaculos de algo mucho mas grande que se acerca desde el
         lore: 'Los Carnifex son armas de asedio biologicas. Sus garras pueden atravesar el blindaje de un tanque, y su caparazon desvía la mayoría de los disparos.',
         points: 135,
         image: 'https://images.unsplash.com/photo-1535957998253-26ae1ef29506?w=600&q=80',
-        stats: { M: '8"', WS: '3+', BS: '4+', S: '7', T: '9', W: '10', A: '4', Ld: '8+', Sv: '2+' }
+        stats: { M: '8"', WS: '3+', BS: '4+', S: '7', T: '9', W: '10', A: '4', Ld: '8+', Sv: '2+' },
       },
       {
         name: 'Genestealers',
@@ -908,7 +986,7 @@ Estas flotas son solo tentaculos de algo mucho mas grande que se acerca desde el
         lore: 'Los Genestealers se adelantan a las flotas, infiltrandose en poblaciones y creando cultos. Cuando la flota llega, los cultistas dan la bienvenida a sus "salvadores".',
         points: 145,
         image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
-        stats: { M: '8"', WS: '2+', BS: '5+', S: '4', T: '4', W: '2', A: '4', Ld: '7+', Sv: '5+' }
+        stats: { M: '8"', WS: '2+', BS: '5+', S: '4', T: '4', W: '2', A: '4', Ld: '7+', Sv: '5+' },
       },
     ],
 
@@ -916,21 +994,21 @@ Estas flotas son solo tentaculos de algo mucho mas grande que se acerca desde el
       'The Swarmlord - Avatar de la Mente Enjambre',
       'Old One Eye - Carnifex Legendario',
       'Deathleaper - El Lictor Supremo',
-      'The Red Terror - Terror de los Tuneles'
+      'The Red Terror - Terror de los Tuneles',
     ],
 
     strengths: [
       'Numeros abrumadores de unidades',
       'Adaptaciones biologicas contra cualquier amenaza',
       'La Sombra en el Warp anula psiquicos enemigos',
-      'Monstruos extremadamente poderosos'
+      'Monstruos extremadamente poderosos',
     ],
 
     weaknesses: [
       'Dependientes de criaturas sinápticas',
       'Pocas opciones de disparo de largo alcance',
       'Vulnerables a ataques que eliminen sinápticos',
-      'Requieren pintar MUCHOS modelos (de nuevo)'
+      'Requieren pintar MUCHOS modelos (de nuevo)',
     ],
   },
 ]
@@ -941,7 +1019,8 @@ export const featuredProducts = [
     id: 1,
     faction: 'Imperium',
     name: 'Combat Patrol: Space Marines',
-    description: 'Todo lo necesario para comenzar tu ejercito Space Marine. Incluye Primaris Captain, Intercessors y mas.',
+    description:
+      'Todo lo necesario para comenzar tu ejercito Space Marine. Incluye Primaris Captain, Intercessors y mas.',
     price: 150,
     badge: 'Nuevo',
     image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
@@ -950,7 +1029,8 @@ export const featuredProducts = [
     id: 2,
     faction: 'Chaos',
     name: 'Abaddon the Despoiler',
-    description: 'El Señor de la Guerra del Caos en toda su gloria oscura. Miniatura central para cualquier ejercito del Caos.',
+    description:
+      'El Señor de la Guerra del Caos en toda su gloria oscura. Miniatura central para cualquier ejercito del Caos.',
     price: 45,
     badge: 'Popular',
     image: 'https://images.unsplash.com/photo-1563207153-f403bf289096?w=600&q=80',
@@ -959,7 +1039,8 @@ export const featuredProducts = [
     id: 3,
     faction: 'Necrons',
     name: 'Necron Warriors + Scarabs',
-    description: 'Veinte guerreros inmortales y enjambres de escarabajos Canoptek. La base de toda legion Necron.',
+    description:
+      'Veinte guerreros inmortales y enjambres de escarabajos Canoptek. La base de toda legion Necron.',
     price: 50,
     image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&q=80',
   },
@@ -967,7 +1048,8 @@ export const featuredProducts = [
     id: 4,
     faction: 'Imperium',
     name: 'Imperial Knight Paladin',
-    description: 'Una maquina de guerra colosal. Domina el campo de batalla con su potencia de fuego devastadora.',
+    description:
+      'Una maquina de guerra colosal. Domina el campo de batalla con su potencia de fuego devastadora.',
     price: 140,
     badge: 'Elite',
     image: 'https://images.unsplash.com/photo-1597424216809-3ba9864aeb18?w=600&q=80',
@@ -976,7 +1058,8 @@ export const featuredProducts = [
     id: 5,
     faction: 'Chaos',
     name: 'Daemon Prince',
-    description: 'Un mortal ascendido por los Dioses Oscuros. Versatil y letal en cualquier ejercito del Caos.',
+    description:
+      'Un mortal ascendido por los Dioses Oscuros. Versatil y letal en cualquier ejercito del Caos.',
     price: 40,
     image: 'https://images.unsplash.com/photo-1571757767119-68b8dbed8c97?w=600&q=80',
   },
@@ -984,11 +1067,12 @@ export const featuredProducts = [
     id: 6,
     faction: 'Necrons',
     name: 'Canoptek Doomstalker',
-    description: 'Plataforma de armas ambulante con el devastador cañon doomsday. Terror a distancia.',
+    description:
+      'Plataforma de armas ambulante con el devastador cañon doomsday. Terror a distancia.',
     price: 40,
     badge: 'Limitado',
     image: 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=600&q=80',
   },
 ]
 
-export const getFactionById = (id: string) => factions.find(f => f.id === id)
+export const getFactionById = (id: string) => factions.find((f) => f.id === id)

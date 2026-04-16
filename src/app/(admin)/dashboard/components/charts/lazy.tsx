@@ -13,9 +13,7 @@ import dynamic from 'next/dynamic'
 // breaks tree-shaking / chunk-splitting detection and throws at compile.
 // That's why each call below repeats `{ ssr: false, loading: ... }`.
 
-const ChartSkeleton = () => (
-  <div className="h-[280px] animate-pulse rounded bg-void-light/30" />
-)
+const ChartSkeleton = () => <div className="h-[280px] animate-pulse rounded bg-void-light/30" />
 
 export const MultiLineChart = dynamic(
   () => import('./CogitatorChart').then((m) => ({ default: m.MultiLineChart })),

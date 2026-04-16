@@ -54,7 +54,11 @@ const itemVariants = {
   },
 }
 
-export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: WikiDashboardClientProps) {
+export function WikiDashboardClient({
+  isAdmin,
+  isLexicanum,
+  currentUserId,
+}: WikiDashboardClientProps) {
   const [pages, setPages] = useState<WikiPage[]>([])
   const [categories, setCategories] = useState<WikiCategory[]>([])
   const [loading, setLoading] = useState(true)
@@ -107,11 +111,11 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
   }
 
   const filteredPages = search
-    ? pages.filter(p => p.title.toLowerCase().includes(search.toLowerCase()))
+    ? pages.filter((p) => p.title.toLowerCase().includes(search.toLowerCase()))
     : pages
 
-  const publishedCount = pages.filter(p => p.status === 'published').length
-  const draftCount = pages.filter(p => p.status === 'draft').length
+  const publishedCount = pages.filter((p) => p.status === 'published').length
+  const draftCount = pages.filter((p) => p.status === 'draft').length
 
   const statusColors: Record<string, string> = {
     draft: 'bg-amber-500/15 text-amber-400 border border-amber-500/30',
@@ -131,7 +135,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
     try {
       const res = await fetch(`/api/wiki/${pageId}`, { method: 'DELETE' })
       if (res.ok) {
-        setPages(pages.filter(p => p.id !== pageId))
+        setPages(pages.filter((p) => p.id !== pageId))
       }
     } catch (error) {
       console.error('Error deleting page:', error)
@@ -171,19 +175,19 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
           <GothicCorners className="text-imperial-gold/25" size={44} />
 
           {/* Radial glow */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_center,rgba(201,162,39,0.08)_0%,transparent_60%)] pointer-events-none" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_center,rgba(201,162,39,0.08)_0%,transparent_60%)]" />
 
-          <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
             <div>
               <SectionLabel icon={Crosshair} className="mb-3">
                 ARCHIVO LEXICANUM // GESTION IMPERIAL
               </SectionLabel>
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-2xl sm:text-3xl font-display font-bold text-bone tracking-wide">
+              <div className="mb-2 flex items-center gap-3">
+                <h1 className="font-display text-2xl font-bold tracking-wide text-bone sm:text-3xl">
                   Archivo Lexicanum
                 </h1>
                 <span
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono tracking-wider border"
+                  className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] tracking-wider"
                   style={{
                     background: isAdmin
                       ? 'rgba(201,162,39,0.15)'
@@ -195,11 +199,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
                       : isLexicanum
                         ? 'rgba(13,155,138,0.4)'
                         : 'rgba(232,232,240,0.2)',
-                    color: isAdmin
-                      ? '#C9A227'
-                      : isLexicanum
-                        ? '#0D9B8A'
-                        : 'rgba(232,232,240,0.7)',
+                    color: isAdmin ? '#C9A227' : isLexicanum ? '#0D9B8A' : 'rgba(232,232,240,0.7)',
                     boxShadow: isAdmin
                       ? '0 0 12px rgba(201,162,39,0.2)'
                       : isLexicanum
@@ -207,26 +207,26 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
                         : 'none',
                   }}
                 >
-                  <Feather className="w-3 h-3" />
+                  <Feather className="h-3 w-3" />
                   {isAdmin ? 'ARCHIVISTA' : isLexicanum ? 'LEXICANUM' : 'SCRIBE'}
                 </span>
               </div>
-              <p className="text-bone/40 font-mono text-sm">
+              <p className="font-mono text-sm text-bone/40">
                 Gestion Imperial del Conocimiento Sagrado
               </p>
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex flex-wrap items-center gap-2">
               {(isAdmin || isLexicanum) && pendingScribeApps > 0 && (
                 <Link href="/wiki-panel/escribas">
                   <motion.button
-                    className="relative inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-imperial-gold/20 text-bone/80 hover:bg-imperial-gold/10 hover:border-imperial-gold/40 hover:text-bone transition-all duration-200"
+                    className="relative inline-flex items-center gap-2 rounded-lg border border-imperial-gold/20 bg-void-light/60 px-4 py-2 text-sm font-medium text-bone/80 transition-all duration-200 hover:border-imperial-gold/40 hover:bg-imperial-gold/10 hover:text-bone"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                   >
-                    <Users className="w-4 h-4 text-amber-400" />
+                    <Users className="h-4 w-4 text-amber-400" />
                     Solicitudes
-                    <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-amber-500 text-void text-[10px] flex items-center justify-center font-bold shadow-[0_0_8px_rgba(245,158,11,0.5)]">
+                    <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-void shadow-[0_0_8px_rgba(245,158,11,0.5)]">
                       {pendingScribeApps}
                     </span>
                   </motion.button>
@@ -236,13 +236,13 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
               {(isAdmin || isLexicanum) && pendingContributions > 0 && (
                 <Link href="/wiki-panel/contribuciones">
                   <motion.button
-                    className="relative inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-imperial-gold/20 text-bone/80 hover:bg-imperial-gold/10 hover:border-imperial-gold/40 hover:text-bone transition-all duration-200"
+                    className="relative inline-flex items-center gap-2 rounded-lg border border-imperial-gold/20 bg-void-light/60 px-4 py-2 text-sm font-medium text-bone/80 transition-all duration-200 hover:border-imperial-gold/40 hover:bg-imperial-gold/10 hover:text-bone"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                   >
-                    <AlertTriangle className="w-4 h-4 text-yellow-400" />
+                    <AlertTriangle className="h-4 w-4 text-yellow-400" />
                     Contribuciones
-                    <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-blood text-white text-[10px] flex items-center justify-center font-bold shadow-[0_0_8px_rgba(139,0,0,0.5)]">
+                    <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-blood text-[10px] font-bold text-white shadow-[0_0_8px_rgba(139,0,0,0.5)]">
                       {pendingContributions}
                     </span>
                   </motion.button>
@@ -251,11 +251,11 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
 
               <Link href="/wiki-panel/nuevo">
                 <motion.button
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200"
+                  className="inline-flex items-center gap-2 rounded-lg border border-imperial-gold/30 bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 px-5 py-2 text-sm font-semibold text-void shadow-[0_0_20px_rgba(201,162,39,0.2)] transition-all duration-200 hover:from-imperial-gold hover:to-imperial-gold/80 hover:shadow-[0_0_30px_rgba(201,162,39,0.4)]"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="h-4 w-4" />
                   Nuevo Articulo
                 </motion.button>
               </Link>
@@ -265,7 +265,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
 
         {/* ── Stats Row ── */}
         <motion.div
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3"
+          className="grid grid-cols-2 gap-3 lg:grid-cols-4"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -273,30 +273,31 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
           {/* Total Articles */}
           <motion.div
             variants={itemVariants}
-            className="relative overflow-hidden rounded-xl bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 p-4 group"
+            className="group relative overflow-hidden rounded-xl border border-imperial-gold/15 bg-void-light/50 p-4 backdrop-blur-sm"
             whileHover={{ scale: 1.02, borderColor: 'rgba(201,162,39,0.4)' }}
           >
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <span className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-l border-t border-imperial-gold/20 group-hover:border-imperial-gold/50 transition-colors" />
-            <span className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-r border-b border-imperial-gold/20 group-hover:border-imperial-gold/50 transition-colors" />
+            <div className="absolute left-0 right-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-imperial-gold to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+            <span className="absolute left-1.5 top-1.5 h-2.5 w-2.5 border-l border-t border-imperial-gold/20 transition-colors group-hover:border-imperial-gold/50" />
+            <span className="absolute bottom-1.5 right-1.5 h-2.5 w-2.5 border-b border-r border-imperial-gold/20 transition-colors group-hover:border-imperial-gold/50" />
             {/* Watermark icon */}
-            <BookOpen className="absolute bottom-2 right-2 w-10 h-10 text-imperial-gold/[0.04]" />
+            <BookOpen className="absolute bottom-2 right-2 h-10 w-10 text-imperial-gold/[0.04]" />
             <div className="flex items-start justify-between">
               <div>
-                <div className="flex items-center gap-1.5 mb-1">
+                <div className="mb-1 flex items-center gap-1.5">
                   <Cpu className="h-3 w-3 text-imperial-gold/40" />
-                  <span className="text-[10px] font-mono text-imperial-gold/50 tracking-widest uppercase">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-imperial-gold/50">
                     TOTAL
                   </span>
                 </div>
-                <p className="text-2xl font-display font-bold text-bone tracking-tight">
+                <p className="font-display text-2xl font-bold tracking-tight text-bone">
                   {pages.length}
                 </p>
               </div>
               <div
-                className="p-2 rounded-lg"
+                className="rounded-lg p-2"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(201,162,39,0.2), rgba(201,162,39,0.08))',
+                  background:
+                    'linear-gradient(135deg, rgba(201,162,39,0.2), rgba(201,162,39,0.08))',
                   border: '1px solid rgba(201,162,39,0.3)',
                 }}
               >
@@ -308,29 +309,30 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
           {/* Published */}
           <motion.div
             variants={itemVariants}
-            className="relative overflow-hidden rounded-xl bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 p-4 group"
+            className="group relative overflow-hidden rounded-xl border border-imperial-gold/15 bg-void-light/50 p-4 backdrop-blur-sm"
             whileHover={{ scale: 1.02, borderColor: 'rgba(13,155,138,0.4)' }}
           >
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-necron-teal to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <span className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-l border-t border-imperial-gold/20 group-hover:border-necron-teal/50 transition-colors" />
-            <span className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-r border-b border-imperial-gold/20 group-hover:border-necron-teal/50 transition-colors" />
-            <Globe className="absolute bottom-2 right-2 w-10 h-10 text-necron-teal/[0.04]" />
+            <div className="absolute left-0 right-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-necron-teal to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+            <span className="absolute left-1.5 top-1.5 h-2.5 w-2.5 border-l border-t border-imperial-gold/20 transition-colors group-hover:border-necron-teal/50" />
+            <span className="absolute bottom-1.5 right-1.5 h-2.5 w-2.5 border-b border-r border-imperial-gold/20 transition-colors group-hover:border-necron-teal/50" />
+            <Globe className="absolute bottom-2 right-2 h-10 w-10 text-necron-teal/[0.04]" />
             <div className="flex items-start justify-between">
               <div>
-                <div className="flex items-center gap-1.5 mb-1">
+                <div className="mb-1 flex items-center gap-1.5">
                   <Cpu className="h-3 w-3 text-necron-teal/40" />
-                  <span className="text-[10px] font-mono text-necron-teal/50 tracking-widest uppercase">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-necron-teal/50">
                     PUBLICADOS
                   </span>
                 </div>
-                <p className="text-2xl font-display font-bold text-bone tracking-tight">
+                <p className="font-display text-2xl font-bold tracking-tight text-bone">
                   {publishedCount}
                 </p>
               </div>
               <div
-                className="p-2 rounded-lg"
+                className="rounded-lg p-2"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(13,155,138,0.2), rgba(13,155,138,0.08))',
+                  background:
+                    'linear-gradient(135deg, rgba(13,155,138,0.2), rgba(13,155,138,0.08))',
                   border: '1px solid rgba(13,155,138,0.3)',
                 }}
               >
@@ -342,29 +344,30 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
           {/* Drafts */}
           <motion.div
             variants={itemVariants}
-            className="relative overflow-hidden rounded-xl bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 p-4 group"
+            className="group relative overflow-hidden rounded-xl border border-imperial-gold/15 bg-void-light/50 p-4 backdrop-blur-sm"
             whileHover={{ scale: 1.02, borderColor: 'rgba(245,158,11,0.4)' }}
           >
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <span className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-l border-t border-imperial-gold/20 group-hover:border-amber-500/50 transition-colors" />
-            <span className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-r border-b border-imperial-gold/20 group-hover:border-amber-500/50 transition-colors" />
-            <FileText className="absolute bottom-2 right-2 w-10 h-10 text-amber-500/[0.04]" />
+            <div className="absolute left-0 right-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+            <span className="absolute left-1.5 top-1.5 h-2.5 w-2.5 border-l border-t border-imperial-gold/20 transition-colors group-hover:border-amber-500/50" />
+            <span className="absolute bottom-1.5 right-1.5 h-2.5 w-2.5 border-b border-r border-imperial-gold/20 transition-colors group-hover:border-amber-500/50" />
+            <FileText className="absolute bottom-2 right-2 h-10 w-10 text-amber-500/[0.04]" />
             <div className="flex items-start justify-between">
               <div>
-                <div className="flex items-center gap-1.5 mb-1">
+                <div className="mb-1 flex items-center gap-1.5">
                   <Cpu className="h-3 w-3 text-amber-500/40" />
-                  <span className="text-[10px] font-mono text-amber-500/50 tracking-widest uppercase">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-amber-500/50">
                     BORRADORES
                   </span>
                 </div>
-                <p className="text-2xl font-display font-bold text-bone tracking-tight">
+                <p className="font-display text-2xl font-bold tracking-tight text-bone">
                   {draftCount}
                 </p>
               </div>
               <div
-                className="p-2 rounded-lg"
+                className="rounded-lg p-2"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.08))',
+                  background:
+                    'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.08))',
                   border: '1px solid rgba(245,158,11,0.3)',
                 }}
               >
@@ -377,27 +380,27 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
           {(isAdmin || isLexicanum) && (
             <motion.div
               variants={itemVariants}
-              className="relative overflow-hidden rounded-xl bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 p-4 group"
+              className="group relative overflow-hidden rounded-xl border border-imperial-gold/15 bg-void-light/50 p-4 backdrop-blur-sm"
               whileHover={{ scale: 1.02, borderColor: 'rgba(139,0,0,0.4)' }}
             >
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blood to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-l border-t border-imperial-gold/20 group-hover:border-blood/50 transition-colors" />
-              <span className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-r border-b border-imperial-gold/20 group-hover:border-blood/50 transition-colors" />
-              <AlertTriangle className="absolute bottom-2 right-2 w-10 h-10 text-blood/[0.04]" />
+              <div className="absolute left-0 right-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-blood to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <span className="absolute left-1.5 top-1.5 h-2.5 w-2.5 border-l border-t border-imperial-gold/20 transition-colors group-hover:border-blood/50" />
+              <span className="absolute bottom-1.5 right-1.5 h-2.5 w-2.5 border-b border-r border-imperial-gold/20 transition-colors group-hover:border-blood/50" />
+              <AlertTriangle className="absolute bottom-2 right-2 h-10 w-10 text-blood/[0.04]" />
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="flex items-center gap-1.5 mb-1">
+                  <div className="mb-1 flex items-center gap-1.5">
                     <Cpu className="h-3 w-3 text-blood/40" />
-                    <span className="text-[10px] font-mono text-blood/50 tracking-widest uppercase">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-blood/50">
                       PENDIENTES
                     </span>
                   </div>
-                  <p className="text-2xl font-display font-bold text-bone tracking-tight">
+                  <p className="font-display text-2xl font-bold tracking-tight text-bone">
                     {pendingContributions}
                   </p>
                 </div>
                 <div
-                  className="p-2 rounded-lg"
+                  className="rounded-lg p-2"
                   style={{
                     background: 'linear-gradient(135deg, rgba(139,0,0,0.2), rgba(139,0,0,0.08))',
                     border: '1px solid rgba(139,0,0,0.3)',
@@ -413,23 +416,23 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
         <ImperialDivider />
 
         {/* ── Filters ── */}
-        <div className="relative overflow-hidden rounded-xl bg-void-light/30 backdrop-blur-sm border border-imperial-gold/10 p-4">
+        <div className="relative overflow-hidden rounded-xl border border-imperial-gold/10 bg-void-light/30 p-4 backdrop-blur-sm">
           <GothicCorners className="text-imperial-gold/15" size={20} />
-          <div className="relative flex flex-col md:flex-row gap-3">
+          <div className="relative flex flex-col gap-3 md:flex-row">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-imperial-gold/40" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-imperial-gold/40" />
               <Input
                 type="text"
                 placeholder="Buscar articulos..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 bg-void border-imperial-gold/20 focus:border-imperial-gold/50 focus:ring-imperial-gold/30 text-bone placeholder:text-bone/30"
+                className="border-imperial-gold/20 bg-void pl-10 text-bone placeholder:text-bone/30 focus:border-imperial-gold/50 focus:ring-imperial-gold/30"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 rounded-lg bg-void-light border border-imperial-gold/20 text-bone font-mono text-sm focus:outline-none focus:ring-2 focus:ring-imperial-gold/30 focus:border-imperial-gold/50 transition-colors"
+              className="rounded-lg border border-imperial-gold/20 bg-void-light px-4 py-2 font-mono text-sm text-bone transition-colors focus:border-imperial-gold/50 focus:outline-none focus:ring-2 focus:ring-imperial-gold/30"
             >
               <option value="">Todos los estados</option>
               <option value="draft">Borrador</option>
@@ -439,11 +442,13 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
             <select
               value={factionFilter}
               onChange={(e) => setFactionFilter(e.target.value)}
-              className="px-4 py-2 rounded-lg bg-void-light border border-imperial-gold/20 text-bone font-mono text-sm focus:outline-none focus:ring-2 focus:ring-imperial-gold/30 focus:border-imperial-gold/50 transition-colors"
+              className="rounded-lg border border-imperial-gold/20 bg-void-light px-4 py-2 font-mono text-sm text-bone transition-colors focus:border-imperial-gold/50 focus:outline-none focus:ring-2 focus:ring-imperial-gold/30"
             >
               <option value="">Todas las facciones</option>
-              {factions.map(f => (
-                <option key={f.id} value={f.id}>{f.shortName}</option>
+              {factions.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.shortName}
+                </option>
               ))}
             </select>
           </div>
@@ -460,18 +465,19 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
             [...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="h-24 rounded-xl bg-void-light/50 border border-imperial-gold/10 animate-pulse"
+                className="h-24 animate-pulse rounded-xl border border-imperial-gold/10 bg-void-light/50"
               />
             ))
           ) : filteredPages.length === 0 ? (
             /* ── Empty state ── */
-            <div className="relative text-center py-20 rounded-2xl bg-void-light/30 border border-imperial-gold/10 overflow-hidden">
+            <div className="relative overflow-hidden rounded-2xl border border-imperial-gold/10 bg-void-light/30 py-20 text-center">
               <GothicCorners className="text-imperial-gold/15" size={36} />
 
               <motion.div
-                className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
+                className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(201,162,39,0.1), rgba(201,162,39,0.03))',
+                  background:
+                    'linear-gradient(135deg, rgba(201,162,39,0.1), rgba(201,162,39,0.03))',
                   border: '1px solid rgba(201,162,39,0.2)',
                 }}
                 animate={{
@@ -483,13 +489,13 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
                 }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <BookOpen className="w-9 h-9 text-imperial-gold/50" />
+                <BookOpen className="h-9 w-9 text-imperial-gold/50" />
               </motion.div>
 
-              <h3 className="font-display text-xl font-bold text-bone mb-2">
+              <h3 className="mb-2 font-display text-xl font-bold text-bone">
                 El archivo esta vacio
               </h3>
-              <p className="font-mono text-sm text-bone/40 mb-8">
+              <p className="mb-8 font-mono text-sm text-bone/40">
                 {search
                   ? 'No se encontraron resultados para tu busqueda.'
                   : 'Las paginas del Lexicanum apareceran aqui.'}
@@ -497,11 +503,11 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
               {!search && (
                 <Link href="/wiki-panel/nuevo">
                   <motion.button
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200"
+                    className="inline-flex items-center gap-2 rounded-lg border border-imperial-gold/30 bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 px-5 py-2.5 text-sm font-semibold text-void shadow-[0_0_20px_rgba(201,162,39,0.2)] transition-all duration-200 hover:from-imperial-gold hover:to-imperial-gold/80 hover:shadow-[0_0_30px_rgba(201,162,39,0.4)]"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="h-4 w-4" />
                     Crear Articulo
                   </motion.button>
                 </Link>
@@ -509,7 +515,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
             </div>
           ) : (
             filteredPages.map((page) => {
-              const faction = factions.find(f => f.id === page.faction_id)
+              const faction = factions.find((f) => f.id === page.faction_id)
               const StatusIcon = statusIcons[page.status]
               const factionColor = faction?.color ?? '#C9A227'
 
@@ -517,7 +523,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
                 <motion.div
                   key={page.id}
                   variants={itemVariants}
-                  className="relative overflow-hidden rounded-xl bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 group hover:border-imperial-gold/30 transition-all duration-300"
+                  className="group relative overflow-hidden rounded-xl border border-imperial-gold/15 bg-void-light/50 backdrop-blur-sm transition-all duration-300 hover:border-imperial-gold/30"
                   whileHover={{
                     scale: 1.005,
                     y: -2,
@@ -526,28 +532,33 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
                 >
                   {/* Faction color accent stripe */}
                   <div
-                    className="absolute top-0 bottom-0 left-0 w-[3px]"
-                    style={{ background: `linear-gradient(180deg, ${factionColor}, ${factionColor}40)` }}
+                    className="absolute bottom-0 left-0 top-0 w-[3px]"
+                    style={{
+                      background: `linear-gradient(180deg, ${factionColor}, ${factionColor}40)`,
+                    }}
                   />
 
                   {/* Top glow line (faction color) */}
                   <div
-                    className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    className="absolute left-0 right-0 top-0 h-[2px] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                     style={{
                       background: `linear-gradient(90deg, transparent, ${factionColor}, transparent)`,
                     }}
                   />
 
-                  <GothicCorners className="text-imperial-gold/10 group-hover:text-imperial-gold/25 transition-colors" size={18} />
+                  <GothicCorners
+                    className="text-imperial-gold/10 transition-colors group-hover:text-imperial-gold/25"
+                    size={18}
+                  />
 
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 pl-5">
-                    <div className="flex-1 min-w-0">
+                  <div className="flex flex-col gap-4 p-4 pl-5 sm:flex-row sm:items-center">
+                    <div className="min-w-0 flex-1">
                       {/* Badges row */}
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
                         <span
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono ${statusColors[page.status]}`}
+                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[11px] ${statusColors[page.status]}`}
                         >
-                          <StatusIcon className="w-3 h-3" />
+                          <StatusIcon className="h-3 w-3" />
                           {page.status === 'draft'
                             ? 'Borrador'
                             : page.status === 'published'
@@ -556,7 +567,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
                         </span>
                         {faction && (
                           <span
-                            className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono border"
+                            className="inline-flex items-center rounded-full border px-2 py-0.5 font-mono text-[11px]"
                             style={{
                               background: `${factionColor}15`,
                               color: factionColor,
@@ -567,82 +578,82 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
                           </span>
                         )}
                         {page.category && (
-                          <span className="text-[11px] text-bone/40 font-mono">
+                          <span className="font-mono text-[11px] text-bone/40">
                             {page.category.name}
                           </span>
                         )}
                       </div>
 
                       {/* Title + excerpt */}
-                      <h3 className="font-display text-lg font-bold text-bone truncate group-hover:text-white transition-colors">
+                      <h3 className="truncate font-display text-lg font-bold text-bone transition-colors group-hover:text-white">
                         {page.title}
                       </h3>
                       {page.excerpt && (
-                        <p className="text-sm text-bone/40 font-body mt-1 line-clamp-2">
+                        <p className="mt-1 line-clamp-2 font-body text-sm text-bone/40">
                           {page.excerpt}
                         </p>
                       )}
 
                       {/* Meta */}
-                      <div className="flex items-center gap-4 mt-2 text-[11px] text-bone/40 font-mono">
+                      <div className="mt-2 flex items-center gap-4 font-mono text-[11px] text-bone/40">
                         <span className="flex items-center gap-1">
-                          <Eye className="w-3 h-3" />
+                          <Eye className="h-3 w-3" />
                           {page.views_count}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
+                          <Clock className="h-3 w-3" />
                           {new Date(page.updated_at).toLocaleDateString('es-ES')}
                         </span>
                       </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 sm:translate-x-2 sm:group-hover:translate-x-0 transition-all duration-200">
+                    <div className="flex items-center gap-1 transition-all duration-200 sm:translate-x-2 sm:opacity-0 sm:group-hover:translate-x-0 sm:group-hover:opacity-100">
                       {page.status === 'published' && (
                         <Link href={`/wiki/${page.faction_id}/${page.slug}`} target="_blank">
                           <button
-                            className="p-2 rounded-lg text-bone/50 hover:text-bone hover:bg-imperial-gold/10 transition-all duration-200"
+                            className="rounded-lg p-2 text-bone/50 transition-all duration-200 hover:bg-imperial-gold/10 hover:text-bone"
                             title="Ver publicado"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4" />
                           </button>
                         </Link>
                       )}
                       {(isAdmin || isLexicanum || page.author_id === currentUserId) && (
                         <Link href={`/wiki-panel/${page.id}`}>
                           <button
-                            className="p-2 rounded-lg text-bone/50 hover:text-bone hover:bg-imperial-gold/10 transition-all duration-200"
+                            className="rounded-lg p-2 text-bone/50 transition-all duration-200 hover:bg-imperial-gold/10 hover:text-bone"
                             title="Editar"
                           >
-                            <Edit3 className="w-4 h-4" />
+                            <Edit3 className="h-4 w-4" />
                           </button>
                         </Link>
                       )}
                       {page.status === 'draft' && (isAdmin || isLexicanum) && (
                         <button
-                          className="p-2 rounded-lg text-bone/50 hover:text-necron-teal hover:bg-necron-teal/10 transition-all duration-200"
+                          className="rounded-lg p-2 text-bone/50 transition-all duration-200 hover:bg-necron-teal/10 hover:text-necron-teal"
                           title="Publicar"
                           onClick={() => handleStatusChange(page.id, 'published')}
                         >
-                          <Globe className="w-4 h-4" />
+                          <Globe className="h-4 w-4" />
                         </button>
                       )}
                       {page.status === 'published' && (isAdmin || isLexicanum) && (
                         <button
-                          className="p-2 rounded-lg text-bone/50 hover:text-amber-400 hover:bg-amber-500/10 transition-all duration-200"
+                          className="rounded-lg p-2 text-bone/50 transition-all duration-200 hover:bg-amber-500/10 hover:text-amber-400"
                           title="Archivar"
                           onClick={() => handleStatusChange(page.id, 'archived')}
                         >
-                          <Archive className="w-4 h-4" />
+                          <Archive className="h-4 w-4" />
                         </button>
                       )}
                       {isAdmin && (
                         <button
-                          className="p-2 rounded-lg text-bone/50 hover:text-blood hover:bg-blood/10 transition-all duration-200"
+                          className="rounded-lg p-2 text-bone/50 transition-all duration-200 hover:bg-blood/10 hover:text-blood"
                           title="Eliminar"
                           onClick={() => handleDelete(page.id)}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       )}
                     </div>

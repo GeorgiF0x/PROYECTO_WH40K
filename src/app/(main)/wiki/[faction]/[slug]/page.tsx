@@ -12,7 +12,6 @@ import {
   User,
   BookOpen,
   Share2,
-
   Clock,
   Hash,
   ExternalLink,
@@ -49,7 +48,12 @@ function extractToc(content: unknown): TocEntry[] {
       const text = block.content.map((c: { text?: string }) => c.text || '').join('')
       if (text.trim()) {
         entries.push({
-          id: block.id || text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+          id:
+            block.id ||
+            text
+              .toLowerCase()
+              .replace(/\s+/g, '-')
+              .replace(/[^a-z0-9-]/g, ''),
           text: text.trim(),
           level: block.props.level,
         })
@@ -66,9 +70,12 @@ function getReadingTime(content: unknown): number {
     if (typeof block === 'object' && block !== null && 'content' in block) {
       const c = block.content
       if (Array.isArray(c)) {
-        return acc + c.reduce((a: number, item: Record<string, unknown>) => {
-          return a + (typeof item.text === 'string' ? item.text.split(/\s+/).length : 0)
-        }, 0)
+        return (
+          acc +
+          c.reduce((a: number, item: Record<string, unknown>) => {
+            return a + (typeof item.text === 'string' ? item.text.split(/\s+/).length : 0)
+          }, 0)
+        )
       }
     }
     return acc + 15
@@ -106,29 +113,35 @@ function GalleryLightbox({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-void/95 backdrop-blur-xl flex items-center justify-center"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-void/95 backdrop-blur-xl"
       onClick={onClose}
     >
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 p-2 rounded-full bg-bone/10 hover:bg-bone/20 transition-colors z-10"
+        className="absolute right-6 top-6 z-10 rounded-full bg-bone/10 p-2 transition-colors hover:bg-bone/20"
       >
-        <X className="w-6 h-6 text-bone/80" />
+        <X className="h-6 w-6 text-bone/80" />
       </button>
 
       {images.length > 1 && (
         <>
           <button
-            onClick={(e) => { e.stopPropagation(); onNav(-1) }}
-            className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-bone/10 hover:bg-bone/20 transition-colors z-10"
+            onClick={(e) => {
+              e.stopPropagation()
+              onNav(-1)
+            }}
+            className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-bone/10 p-3 transition-colors hover:bg-bone/20"
           >
-            <ChevronLeft className="w-6 h-6 text-bone/80" />
+            <ChevronLeft className="h-6 w-6 text-bone/80" />
           </button>
           <button
-            onClick={(e) => { e.stopPropagation(); onNav(1) }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-bone/10 hover:bg-bone/20 transition-colors z-10"
+            onClick={(e) => {
+              e.stopPropagation()
+              onNav(1)
+            }}
+            className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-bone/10 p-3 transition-colors hover:bg-bone/20"
           >
-            <ChevronRight className="w-6 h-6 text-bone/80" />
+            <ChevronRight className="h-6 w-6 text-bone/80" />
           </button>
         </>
       )}
@@ -138,7 +151,7 @@ function GalleryLightbox({
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="relative max-w-[90vw] max-h-[85vh]"
+        className="relative max-h-[85vh] max-w-[90vw]"
         onClick={(e) => e.stopPropagation()}
       >
         <Image
@@ -146,14 +159,14 @@ function GalleryLightbox({
           alt={`Imagen ${activeIndex + 1}`}
           width={1200}
           height={800}
-          className="object-contain max-h-[85vh] rounded-lg"
+          className="max-h-[85vh] rounded-lg object-contain"
           style={{ boxShadow: `0 0 60px ${factionColor}30` }}
         />
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1">
-          <span className="px-3 py-1 rounded-full bg-void/80 text-xs text-bone/60 font-mono">
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1">
+          <span className="rounded-full bg-void/80 px-3 py-1 font-mono text-xs text-bone/60">
             {activeIndex + 1} / {images.length}
           </span>
-          <span className="px-3 py-1 rounded-lg bg-void/70 text-[11px] text-bone/50 font-body max-w-[60vw] truncate">
+          <span className="max-w-[60vw] truncate rounded-lg bg-void/70 px-3 py-1 font-body text-[11px] text-bone/50">
             Imagen {activeIndex + 1} de {images.length}
           </span>
         </div>
@@ -193,26 +206,26 @@ function MobileTocDrawer({
         animate={{ x: 0 }}
         exit={{ x: -280 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="absolute left-0 top-0 bottom-0 w-72 p-6 pt-20 overflow-y-auto"
+        className="absolute bottom-0 left-0 top-0 w-72 overflow-y-auto p-6 pt-20"
         style={{
           background: 'rgba(10,10,18,0.98)',
           borderRight: `1px solid ${factionColor}20`,
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2 mb-6">
-          <Hash className="w-3.5 h-3.5" style={{ color: `${factionColor}80` }} />
+        <div className="mb-6 flex items-center gap-2">
+          <Hash className="h-3.5 w-3.5" style={{ color: `${factionColor}80` }} />
           <span
-            className="text-[10px] font-mono tracking-[0.3em] uppercase"
+            className="font-mono text-[10px] uppercase tracking-[0.3em]"
             style={{ color: `${factionColor}60` }}
           >
             CONTENIDO
           </span>
           <button
             onClick={onClose}
-            className="ml-auto p-1 rounded hover:bg-bone/10 transition-colors"
+            className="ml-auto rounded p-1 transition-colors hover:bg-bone/10"
           >
-            <X className="w-4 h-4 text-bone/40" />
+            <X className="h-4 w-4 text-bone/40" />
           </button>
         </div>
 
@@ -226,14 +239,14 @@ function MobileTocDrawer({
               style={{ paddingLeft: `${(entry.level - 1) * 14}px` }}
             >
               <div
-                className="w-[3px] h-4 rounded-full shrink-0 transition-all duration-200"
+                className="h-4 w-[3px] shrink-0 rounded-full transition-all duration-200"
                 style={{
                   background: activeId === entry.id ? factionColor : `${factionColor}20`,
                   boxShadow: activeId === entry.id ? `0 0 8px ${factionColor}50` : 'none',
                 }}
               />
               <span
-                className="text-sm leading-tight transition-colors duration-200 line-clamp-2"
+                className="line-clamp-2 text-sm leading-tight transition-colors duration-200"
                 style={{
                   color: activeId === entry.id ? factionColor : 'rgba(232,232,240,0.5)',
                 }}
@@ -263,10 +276,13 @@ function DesktopTableOfContents({
 
   return (
     <nav className="space-y-0.5">
-      <div className="flex items-center gap-2 mb-4 pb-3" style={{ borderBottom: `1px solid ${factionColor}15` }}>
-        <Hash className="w-3 h-3" style={{ color: `${factionColor}60` }} />
+      <div
+        className="mb-4 flex items-center gap-2 pb-3"
+        style={{ borderBottom: `1px solid ${factionColor}15` }}
+      >
+        <Hash className="h-3 w-3" style={{ color: `${factionColor}60` }} />
         <span
-          className="text-[9px] font-mono tracking-[0.3em] uppercase"
+          className="font-mono text-[9px] uppercase tracking-[0.3em]"
           style={{ color: `${factionColor}60` }}
         >
           CONTENIDO
@@ -280,14 +296,14 @@ function DesktopTableOfContents({
           style={{ paddingLeft: `${(entry.level - 1) * 12}px` }}
         >
           <div
-            className="w-[3px] h-4 rounded-full shrink-0 transition-all duration-200"
+            className="h-4 w-[3px] shrink-0 rounded-full transition-all duration-200"
             style={{
               background: activeId === entry.id ? factionColor : `${factionColor}15`,
               boxShadow: activeId === entry.id ? `0 0 8px ${factionColor}50` : 'none',
             }}
           />
           <span
-            className="text-xs leading-tight transition-colors duration-200 line-clamp-2"
+            className="line-clamp-2 text-xs leading-tight transition-colors duration-200"
             style={{
               color: activeId === entry.id ? factionColor : 'rgba(232,232,240,0.4)',
             }}
@@ -322,7 +338,7 @@ function FloatingActionBar({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.8 }}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 px-2 py-2 rounded-full"
+      className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-1 rounded-full px-2 py-2"
       style={{
         background: 'rgba(10,10,18,0.9)',
         backdropFilter: 'blur(20px)',
@@ -334,10 +350,10 @@ function FloatingActionBar({
       {tocCount > 0 && (
         <button
           onClick={onOpenToc}
-          className="xl:hidden flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-mono transition-all hover:bg-bone/10"
+          className="flex items-center gap-1.5 rounded-full px-3 py-2 font-mono text-xs transition-all hover:bg-bone/10 xl:hidden"
           style={{ color: `${factionColor}90` }}
         >
-          <List className="w-3.5 h-3.5" />
+          <List className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Indice</span>
         </button>
       )}
@@ -345,22 +361,22 @@ function FloatingActionBar({
       {/* Share */}
       <button
         onClick={onShare}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-mono transition-all hover:bg-bone/10"
+        className="flex items-center gap-1.5 rounded-full px-3 py-2 font-mono text-xs transition-all hover:bg-bone/10"
         style={{ color: copiedLink ? factionColor : 'rgba(232,232,240,0.5)' }}
       >
-        {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
+        {copiedLink ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
         <span className="hidden sm:inline">{copiedLink ? 'Copiado' : 'Compartir'}</span>
       </button>
 
       {/* Separator */}
-      <div className="w-px h-4" style={{ background: `${factionColor}20` }} />
+      <div className="h-4 w-px" style={{ background: `${factionColor}20` }} />
 
       {/* Copy link */}
       <button
         onClick={onShare}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-mono transition-all hover:bg-bone/10 text-bone/40"
+        className="flex items-center gap-1.5 rounded-full px-3 py-2 font-mono text-xs text-bone/40 transition-all hover:bg-bone/10"
       >
-        <Copy className="w-3.5 h-3.5" />
+        <Copy className="h-3.5 w-3.5" />
       </button>
 
       {/* Scroll top */}
@@ -371,10 +387,10 @@ function FloatingActionBar({
             animate={{ width: 'auto', opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-mono transition-all overflow-hidden"
+            className="flex items-center gap-1.5 overflow-hidden rounded-full px-3 py-2 font-mono text-xs transition-all"
             style={{ background: `${factionColor}20`, color: factionColor }}
           >
-            <ArrowUp className="w-3.5 h-3.5" />
+            <ArrowUp className="h-3.5 w-3.5" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -404,7 +420,6 @@ export default function WikiArticlePage() {
 
   const { scrollYProgress } = useScroll()
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1])
-
 
   const toc = useMemo(() => (page ? extractToc(page.content) : []), [page])
 
@@ -458,7 +473,11 @@ export default function WikiArticlePage() {
   async function handleShare() {
     const url = window.location.href
     if (navigator.share) {
-      try { await navigator.share({ title: page?.title, url }) } catch { /* cancelled */ }
+      try {
+        await navigator.share({ title: page?.title, url })
+      } catch {
+        /* cancelled */
+      }
     } else {
       await navigator.clipboard.writeText(url)
       setCopiedLink(true)
@@ -466,11 +485,14 @@ export default function WikiArticlePage() {
     }
   }
 
-  const handleLightboxNav = useCallback((dir: -1 | 1) => {
-    if (lightboxIndex === null || !page?.gallery_images) return
-    const len = page.gallery_images.length
-    setLightboxIndex((lightboxIndex + dir + len) % len)
-  }, [lightboxIndex, page?.gallery_images])
+  const handleLightboxNav = useCallback(
+    (dir: -1 | 1) => {
+      if (lightboxIndex === null || !page?.gallery_images) return
+      const len = page.gallery_images.length
+      setLightboxIndex((lightboxIndex + dir + len) % len)
+    },
+    [lightboxIndex, page?.gallery_images]
+  )
 
   const handleLightboxClose = useCallback(() => setLightboxIndex(null), [])
 
@@ -478,10 +500,10 @@ export default function WikiArticlePage() {
 
   if (!faction) {
     return (
-      <main className="min-h-screen bg-void flex items-center justify-center">
+      <main className="flex min-h-screen items-center justify-center bg-void">
         <div className="noise-overlay" />
         <div className="text-center">
-          <h1 className="font-display text-4xl text-white mb-4">Faccion no encontrada</h1>
+          <h1 className="mb-4 font-display text-4xl text-white">Faccion no encontrada</h1>
           <Link href="/facciones" className="text-imperial-gold hover:underline">
             Volver a facciones
           </Link>
@@ -500,14 +522,14 @@ export default function WikiArticlePage() {
       <main className="relative min-h-screen" style={{ background: bgColor }}>
         <div className="noise-overlay" />
         <Navigation />
-        <div className="pt-28 pb-16">
-          <div className="max-w-3xl mx-auto px-6">
+        <div className="pb-16 pt-28">
+          <div className="mx-auto max-w-3xl px-6">
             <div className="space-y-6">
-              <div className="h-6 w-40 rounded animate-pulse" style={{ background: `${fc}15` }} />
-              <div className="h-12 w-3/4 rounded animate-pulse" style={{ background: `${fc}10` }} />
-              <div className="h-5 w-1/2 rounded animate-pulse" style={{ background: `${fc}08` }} />
+              <div className="h-6 w-40 animate-pulse rounded" style={{ background: `${fc}15` }} />
+              <div className="h-12 w-3/4 animate-pulse rounded" style={{ background: `${fc}10` }} />
+              <div className="h-5 w-1/2 animate-pulse rounded" style={{ background: `${fc}08` }} />
               <div
-                className="h-[35vh] rounded-2xl animate-pulse"
+                className="h-[35vh] animate-pulse rounded-2xl"
                 style={{
                   background: `linear-gradient(135deg, ${fc}08 0%, ${secondaryColor}05 50%, ${fc}08 100%)`,
                   border: `1px solid ${fc}10`,
@@ -517,8 +539,12 @@ export default function WikiArticlePage() {
                 {[1, 0.85, 0.7, 0.9, 0.6, 0.95, 0.75].map((w, i) => (
                   <div
                     key={i}
-                    className="h-4 rounded animate-pulse"
-                    style={{ width: `${w * 100}%`, background: `${fc}08`, animationDelay: `${i * 0.08}s` }}
+                    className="h-4 animate-pulse rounded"
+                    style={{
+                      width: `${w * 100}%`,
+                      background: `${fc}08`,
+                      animationDelay: `${i * 0.08}s`,
+                    }}
                   />
                 ))}
               </div>
@@ -534,20 +560,20 @@ export default function WikiArticlePage() {
       <main className="relative min-h-screen" style={{ background: bgColor }}>
         <div className="noise-overlay" />
         <Navigation />
-        <div className="pt-28 pb-16 flex items-center justify-center min-h-[60vh]">
+        <div className="flex min-h-[60vh] items-center justify-center pb-16 pt-28">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
             <div
-              className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl"
               style={{ background: `${fc}10`, border: `1px solid ${fc}20` }}
             >
-              <BookOpen className="w-10 h-10" style={{ color: `${fc}40` }} />
+              <BookOpen className="h-10 w-10" style={{ color: `${fc}40` }} />
             </div>
-            <h1 className="font-display text-3xl text-white mb-4">{error}</h1>
-            <p className="font-body text-bone/60 mb-8">
+            <h1 className="mb-4 font-display text-3xl text-white">{error}</h1>
+            <p className="mb-8 font-body text-bone/60">
               El articulo que buscas no existe o ha sido eliminado.
             </p>
             <Link href={`/wiki/${factionId}`}>
@@ -568,7 +594,7 @@ export default function WikiArticlePage() {
 
       {/* ── Reading Progress Bar ── */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-[2px] z-50 origin-left"
+        className="fixed left-0 right-0 top-0 z-50 h-[2px] origin-left"
         style={{
           scaleX,
           background: theme?.gradients.border || `linear-gradient(90deg, ${fc}, ${glowColor})`,
@@ -577,13 +603,13 @@ export default function WikiArticlePage() {
       />
 
       {/* ── Ambient Background ── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
-          className="absolute -top-[40%] -left-[30%] w-[80%] h-[80%] rounded-full blur-[150px] opacity-[0.03]"
+          className="absolute -left-[30%] -top-[40%] h-[80%] w-[80%] rounded-full opacity-[0.03] blur-[150px]"
           style={{ background: fc }}
         />
         <div
-          className="absolute -bottom-[40%] -right-[30%] w-[70%] h-[70%] rounded-full blur-[130px] opacity-[0.02]"
+          className="absolute -bottom-[40%] -right-[30%] h-[70%] w-[70%] rounded-full opacity-[0.02] blur-[130px]"
           style={{ background: secondaryColor }}
         />
       </div>
@@ -593,26 +619,26 @@ export default function WikiArticlePage() {
       {/* ══════════════════════════════════════════
           HEADER — Editorial: title block, then feature image
          ══════════════════════════════════════════ */}
-      <section className="relative pt-28 pb-0">
+      <section className="relative pb-0 pt-28">
         {/* Subtle faction glow behind header area */}
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px] opacity-[0.06] pointer-events-none"
+          className="pointer-events-none absolute left-1/2 top-0 h-[300px] w-[600px] -translate-x-1/2 rounded-full opacity-[0.06] blur-[120px]"
           style={{ background: fc }}
         />
 
-        <div className="relative max-w-3xl mx-auto px-6">
+        <div className="relative mx-auto max-w-3xl px-6">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 font-body text-xs text-bone/40 mb-6">
-            <Link href={`/facciones/${factionId}`} className="hover:text-bone/70 transition-colors">
+          <nav className="mb-6 flex items-center gap-2 font-body text-xs text-bone/40">
+            <Link href={`/facciones/${factionId}`} className="transition-colors hover:text-bone/70">
               {faction.shortName}
             </Link>
-            <ChevronRight className="w-3 h-3" style={{ color: `${fc}30` }} />
-            <Link href={`/wiki/${factionId}`} className="hover:text-bone/70 transition-colors">
+            <ChevronRight className="h-3 w-3" style={{ color: `${fc}30` }} />
+            <Link href={`/wiki/${factionId}`} className="transition-colors hover:text-bone/70">
               Wiki
             </Link>
             {page.category && (
               <>
-                <ChevronRight className="w-3 h-3" style={{ color: `${fc}30` }} />
+                <ChevronRight className="h-3 w-3" style={{ color: `${fc}30` }} />
                 <span style={{ color: `${fc}70` }}>{page.category.name}</span>
               </>
             )}
@@ -620,7 +646,7 @@ export default function WikiArticlePage() {
 
           {/* Title */}
           <h1
-            className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-5 leading-[0.95]"
+            className="mb-5 font-display text-3xl font-black leading-[0.95] sm:text-4xl md:text-5xl lg:text-6xl"
             style={{
               background: theme?.gradients.text || `linear-gradient(90deg, ${fc}, ${glowColor})`,
               WebkitBackgroundClip: 'text',
@@ -634,33 +660,37 @@ export default function WikiArticlePage() {
 
           {/* Excerpt */}
           {page.excerpt && (
-            <p className="font-body text-base sm:text-lg text-bone/55 leading-relaxed mb-6 max-w-2xl">
+            <p className="mb-6 max-w-2xl font-body text-base leading-relaxed text-bone/55 sm:text-lg">
               {page.excerpt}
             </p>
           )}
 
           {/* Meta row */}
-          <div className="flex flex-wrap items-center gap-3 mb-8">
+          <div className="mb-8 flex flex-wrap items-center gap-3">
             {page.author && (
               <Link
                 href={page.author.username ? `/usuarios/${page.author.username}` : '#'}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-body transition-all hover:scale-[1.03]"
-                style={{ background: `${fc}15`, border: `1px solid ${fc}20`, color: 'rgba(232,232,240,0.8)' }}
+                className="flex items-center gap-2 rounded-full px-3 py-1.5 font-body text-sm transition-all hover:scale-[1.03]"
+                style={{
+                  background: `${fc}15`,
+                  border: `1px solid ${fc}20`,
+                  color: 'rgba(232,232,240,0.8)',
+                }}
               >
                 <div
-                  className="w-5 h-5 rounded-full flex items-center justify-center"
+                  className="flex h-5 w-5 items-center justify-center rounded-full"
                   style={{ background: `${fc}30` }}
                 >
-                  <User className="w-2.5 h-2.5" style={{ color: fc }} />
+                  <User className="h-2.5 w-2.5" style={{ color: fc }} />
                 </div>
                 {page.author.display_name || page.author.username}
               </Link>
             )}
 
-            <div className="flex items-center gap-3 text-xs text-bone/35 font-mono">
+            <div className="flex items-center gap-3 font-mono text-xs text-bone/35">
               {page.published_at && (
                 <span className="flex items-center gap-1.5">
-                  <Calendar className="w-3 h-3" style={{ color: `${fc}50` }} />
+                  <Calendar className="h-3 w-3" style={{ color: `${fc}50` }} />
                   {new Date(page.published_at).toLocaleDateString('es-ES', {
                     day: 'numeric',
                     month: 'short',
@@ -669,11 +699,11 @@ export default function WikiArticlePage() {
                 </span>
               )}
               <span className="flex items-center gap-1.5">
-                <Clock className="w-3 h-3" style={{ color: `${fc}50` }} />
+                <Clock className="h-3 w-3" style={{ color: `${fc}50` }} />
                 {readingTime} min
               </span>
               <span className="flex items-center gap-1.5">
-                <Eye className="w-3 h-3" style={{ color: `${fc}50` }} />
+                <Eye className="h-3 w-3" style={{ color: `${fc}50` }} />
                 {page.views_count}
               </span>
             </div>
@@ -682,9 +712,9 @@ export default function WikiArticlePage() {
 
         {/* Feature Image — full width, natural aspect ratio */}
         {page.hero_image && (
-          <div className="max-w-5xl mx-auto px-6">
+          <div className="mx-auto max-w-5xl px-6">
             <div
-              className="relative rounded-2xl overflow-hidden"
+              className="relative overflow-hidden rounded-2xl"
               style={{
                 border: `1px solid ${fc}15`,
                 boxShadow: `0 8px 40px rgba(0,0,0,0.4), 0 0 30px ${fc}08`,
@@ -699,10 +729,10 @@ export default function WikiArticlePage() {
                   className="object-cover"
                 />
                 {/* Subtle vignette */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,rgba(3,3,8,0.3)_100%)] pointer-events-none" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,rgba(3,3,8,0.3)_100%)]" />
                 {/* Faction tint — very subtle */}
                 <div
-                  className="absolute inset-0 pointer-events-none"
+                  className="pointer-events-none absolute inset-0"
                   style={{
                     background: `linear-gradient(135deg, ${fc}08 0%, transparent 60%, ${secondaryColor}05 100%)`,
                   }}
@@ -712,7 +742,9 @@ export default function WikiArticlePage() {
               <div
                 className="absolute bottom-0 left-0 right-0 h-[2px]"
                 style={{
-                  background: theme?.gradients.border || `linear-gradient(90deg, transparent, ${fc}, transparent)`,
+                  background:
+                    theme?.gradients.border ||
+                    `linear-gradient(90deg, transparent, ${fc}, transparent)`,
                   boxShadow: `0 0 12px ${fc}20`,
                 }}
               />
@@ -725,14 +757,14 @@ export default function WikiArticlePage() {
           CONTENT SECTION — Clean reading zone with sticky TOC
          ══════════════════════════════════════════ */}
       <section className="relative py-10 sm:py-14">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="mx-auto max-w-7xl px-6">
           <div className="flex gap-10">
             {/* ── Sticky Sidebar TOC (desktop) ── */}
             {toc.length > 0 && (
-              <aside className="hidden xl:block w-52 shrink-0">
+              <aside className="hidden w-52 shrink-0 xl:block">
                 <div className="sticky top-20 space-y-6">
                   <div
-                    className="p-4 rounded-xl"
+                    className="rounded-xl p-4"
                     style={{
                       background: `${fc}04`,
                       border: `1px solid ${fc}08`,
@@ -749,18 +781,20 @@ export default function WikiArticlePage() {
                   {page.author && (
                     <Link
                       href={page.author.username ? `/usuarios/${page.author.username}` : '#'}
-                      className="flex items-center gap-3 p-3 rounded-lg transition-all hover:bg-bone/5"
+                      className="flex items-center gap-3 rounded-lg p-3 transition-all hover:bg-bone/5"
                       style={{ border: `1px solid ${fc}08` }}
                     >
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
                         style={{ background: `${fc}20` }}
                       >
-                        <User className="w-3.5 h-3.5" style={{ color: fc }} />
+                        <User className="h-3.5 w-3.5" style={{ color: fc }} />
                       </div>
                       <div className="min-w-0">
-                        <span className="text-[9px] font-mono text-bone/30 tracking-wider uppercase block">Escrito por</span>
-                        <span className="text-xs text-bone/70 truncate block">
+                        <span className="block font-mono text-[9px] uppercase tracking-wider text-bone/30">
+                          Escrito por
+                        </span>
+                        <span className="block truncate text-xs text-bone/70">
                           {page.author.display_name || page.author.username}
                         </span>
                       </div>
@@ -771,10 +805,10 @@ export default function WikiArticlePage() {
             )}
 
             {/* ── Main Content Column ── */}
-            <div className="flex-1 min-w-0 max-w-3xl mx-auto">
+            <div className="mx-auto min-w-0 max-w-3xl flex-1">
               {/* Content container — clean, high contrast */}
               <div
-                className="relative rounded-2xl overflow-hidden"
+                className="relative overflow-hidden rounded-2xl"
                 style={{ border: `1px solid ${fc}0A` }}
               >
                 {/* Top header bar */}
@@ -785,9 +819,9 @@ export default function WikiArticlePage() {
                     borderBottom: `1px solid ${fc}0D`,
                   }}
                 >
-                  <BookOpen className="w-3.5 h-3.5" style={{ color: `${fc}60` }} />
+                  <BookOpen className="h-3.5 w-3.5" style={{ color: `${fc}60` }} />
                   <span
-                    className="text-[10px] font-mono tracking-[0.3em] uppercase"
+                    className="font-mono text-[10px] uppercase tracking-[0.3em]"
                     style={{ color: `${fc}40` }}
                   >
                     REGISTRO IMPERIAL
@@ -795,7 +829,7 @@ export default function WikiArticlePage() {
                   <div className="flex-1" />
                   {page.category && (
                     <span
-                      className="text-[10px] font-mono px-2 py-0.5 rounded"
+                      className="rounded px-2 py-0.5 font-mono text-[10px]"
                       style={{ background: `${fc}10`, color: `${fc}60` }}
                     >
                       {page.category.name}
@@ -805,7 +839,7 @@ export default function WikiArticlePage() {
 
                 {/* Article body — clean reading surface */}
                 <div
-                  className="px-6 sm:px-10 py-8 sm:py-10"
+                  className="px-6 py-8 sm:px-10 sm:py-10"
                   style={{
                     background: `linear-gradient(180deg, ${fc}03 0%, transparent 20%)`,
                   }}
@@ -817,10 +851,13 @@ export default function WikiArticlePage() {
               </div>
 
               {/* ── Back + Actions Row ── */}
-              <div className="flex flex-wrap items-center justify-between gap-4 mt-8 pt-6" style={{ borderTop: `1px solid ${fc}10` }}>
+              <div
+                className="mt-8 flex flex-wrap items-center justify-between gap-4 pt-6"
+                style={{ borderTop: `1px solid ${fc}10` }}
+              >
                 <Link href={`/wiki/${factionId}`}>
-                  <button className="flex items-center gap-2 text-sm font-body text-bone/40 hover:text-bone/70 transition-colors">
-                    <ChevronLeft className="w-4 h-4" />
+                  <button className="flex items-center gap-2 font-body text-sm text-bone/40 transition-colors hover:text-bone/70">
+                    <ChevronLeft className="h-4 w-4" />
                     Volver a la Wiki
                   </button>
                 </Link>
@@ -828,12 +865,12 @@ export default function WikiArticlePage() {
                 {page.author && page.author.username && (
                   <Link
                     href={`/usuarios/${page.author.username}`}
-                    className="xl:hidden flex items-center gap-2 text-xs font-mono transition-all hover:bg-bone/5 px-3 py-1.5 rounded-lg"
+                    className="flex items-center gap-2 rounded-lg px-3 py-1.5 font-mono text-xs transition-all hover:bg-bone/5 xl:hidden"
                     style={{ color: `${fc}60`, border: `1px solid ${fc}12` }}
                   >
-                    <User className="w-3 h-3" />
+                    <User className="h-3 w-3" />
                     {page.author.display_name || page.author.username}
-                    <ExternalLink className="w-3 h-3" />
+                    <ExternalLink className="h-3 w-3" />
                   </Link>
                 )}
               </div>
@@ -842,29 +879,39 @@ export default function WikiArticlePage() {
               {page.gallery_images && page.gallery_images.length > 0 && (
                 <div className="mt-12">
                   {/* Section divider */}
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${fc}25, transparent)` }} />
+                  <div className="mb-8 flex items-center gap-4">
+                    <div
+                      className="h-px flex-1"
+                      style={{
+                        background: `linear-gradient(to right, transparent, ${fc}25, transparent)`,
+                      }}
+                    />
                     <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rotate-45" style={{ background: `${fc}40` }} />
-                      <Eye className="w-4 h-4" style={{ color: `${fc}40` }} />
-                      <div className="w-1.5 h-1.5 rotate-45" style={{ background: `${fc}40` }} />
+                      <div className="h-1.5 w-1.5 rotate-45" style={{ background: `${fc}40` }} />
+                      <Eye className="h-4 w-4" style={{ color: `${fc}40` }} />
+                      <div className="h-1.5 w-1.5 rotate-45" style={{ background: `${fc}40` }} />
                     </div>
-                    <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${fc}25, transparent)` }} />
+                    <div
+                      className="h-px flex-1"
+                      style={{
+                        background: `linear-gradient(to right, transparent, ${fc}25, transparent)`,
+                      }}
+                    />
                   </div>
 
-                  <div className="flex items-center gap-3 mb-6">
+                  <div className="mb-6 flex items-center gap-3">
                     <span
-                      className="text-[9px] font-mono tracking-[0.3em] uppercase"
+                      className="font-mono text-[9px] uppercase tracking-[0.3em]"
                       style={{ color: `${fc}50` }}
                     >
                       ARCHIVOS PICTOGRAFICOS
                     </span>
-                    <span className="text-[10px] font-mono text-bone/20">
+                    <span className="font-mono text-[10px] text-bone/20">
                       {page.gallery_images.length} imagenes
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                     {page.gallery_images.map((img, i) => (
                       <motion.button
                         key={i}
@@ -873,7 +920,7 @@ export default function WikiArticlePage() {
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
                         transition={{ delay: i * 0.04 }}
-                        className="relative aspect-[4/3] rounded-xl overflow-hidden group cursor-pointer"
+                        className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-xl"
                         style={{ border: `1px solid ${fc}10` }}
                         onClick={() => setLightboxIndex(i)}
                       >
@@ -881,23 +928,23 @@ export default function WikiArticlePage() {
                           src={img}
                           alt={`${page.title} - imagen ${i + 1}`}
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                         {/* Hover overlay */}
                         <div
-                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center"
+                          className="absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100"
                           style={{ background: `${fc}30` }}
                         >
                           <div
-                            className="w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm mb-2"
+                            className="mb-2 flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-sm"
                             style={{ background: `${fc}40`, border: `1px solid ${fc}60` }}
                           >
-                            <Eye className="w-5 h-5 text-white" />
+                            <Eye className="h-5 w-5 text-white" />
                           </div>
                         </div>
                         {/* Label overlay */}
-                        <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-void/90 via-void/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <p className="text-[11px] font-mono text-bone/80 truncate">
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-void/90 via-void/60 to-transparent px-3 py-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                          <p className="truncate font-mono text-[11px] text-bone/80">
                             {page.title} — Img {i + 1}
                           </p>
                         </div>

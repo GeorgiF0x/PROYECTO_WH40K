@@ -22,7 +22,9 @@ export async function GET(request: NextRequest) {
     } = parsedQuery.data
 
     // Check if user is admin or has wiki role
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     let isAdmin = false
     let wikiRole: string | null = null
     if (user) {
@@ -36,9 +38,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query
-    let query = supabase
-      .from('faction_wiki_pages')
-      .select(`
+    let query = supabase.from('faction_wiki_pages').select(
+      `
         id,
         faction_id,
         category_id,
@@ -54,7 +55,9 @@ export async function GET(request: NextRequest) {
         author_id,
         author:profiles!faction_wiki_pages_author_id_fkey(username, display_name),
         category:wiki_categories(id, name, slug, icon)
-      `, { count: 'exact' })
+      `,
+      { count: 'exact' }
+    )
 
     // Filter by status
     // - Admins/lexicanums see all drafts
@@ -137,7 +140,9 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
 
     // Check auth
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

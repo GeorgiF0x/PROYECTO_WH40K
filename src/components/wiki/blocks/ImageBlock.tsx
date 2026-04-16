@@ -59,26 +59,22 @@ export function ImageBlock({
   const optimizable = isOptimizableUrl(src)
 
   return (
-    <figure
-      className={cn(
-        'my-8',
-        sizeClasses[size],
-        alignClasses[align],
-        className
-      )}
-    >
+    <figure className={cn('my-8', sizeClasses[size], alignClasses[align], className)}>
       <div
         className="relative overflow-hidden rounded-lg"
         style={{
           border: `1px solid ${factionColor}30`,
         }}
       >
-        <div className="relative flex items-center justify-center bg-void-950" style={{ maxHeight: '500px' }}>
+        <div
+          className="bg-void-950 relative flex items-center justify-center"
+          style={{ maxHeight: '500px' }}
+        >
           {broken ? (
             <div className="flex flex-col items-center justify-center py-16 text-bone/40">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10 mb-2 opacity-50"
+                className="mb-2 h-10 w-10 opacity-50"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -98,7 +94,7 @@ export function ImageBlock({
               alt={alt}
               width={800}
               height={500}
-              className="w-full h-auto max-h-[500px] object-contain"
+              className="h-auto max-h-[500px] w-full object-contain"
               onError={() => setBroken(true)}
             />
           ) : (
@@ -107,7 +103,7 @@ export function ImageBlock({
               src={src}
               alt={alt}
               loading="lazy"
-              className="w-full h-auto max-h-[500px] object-contain"
+              className="h-auto max-h-[500px] w-full object-contain"
               onError={() => setBroken(true)}
             />
           )}
@@ -116,7 +112,7 @@ export function ImageBlock({
         {/* Overlay gradient */}
         {!broken && (
           <div
-            className="absolute inset-0 pointer-events-none opacity-30"
+            className="pointer-events-none absolute inset-0 opacity-30"
             style={{
               background: `linear-gradient(135deg, ${factionColor}20 0%, transparent 50%, ${factionColor}10 100%)`,
             }}
@@ -126,9 +122,7 @@ export function ImageBlock({
 
       {caption && (
         <figcaption className="mt-3 text-center">
-          <p className="font-body text-sm text-bone/60 italic">
-            {caption}
-          </p>
+          <p className="font-body text-sm italic text-bone/60">{caption}</p>
         </figcaption>
       )}
     </figure>

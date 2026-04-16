@@ -18,7 +18,9 @@ export async function GET(request: NextRequest) {
     const { status, page_id: pageId, limit, offset } = parsedQuery.data
 
     // Check auth
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -33,14 +35,15 @@ export async function GET(request: NextRequest) {
     const isAdmin = profile?.is_admin || ['admin', 'moderator'].includes(profile?.role || '')
 
     // Build query
-    let query = supabase
-      .from('wiki_contributions')
-      .select(`
+    let query = supabase.from('wiki_contributions').select(
+      `
         *,
         contributor:profiles!wiki_contributions_contributor_id_fkey(username, display_name),
         page:faction_wiki_pages(title, slug, faction_id),
         reviewer:profiles!wiki_contributions_reviewer_id_fkey(username, display_name)
-      `, { count: 'exact' })
+      `,
+      { count: 'exact' }
+    )
 
     // Non-admins can only see their own contributions
     if (!isAdmin) {
@@ -58,9 +61,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Order and paginate
-    query = query
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1)
+    query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1)
 
     const { data, error, count } = await query
 
@@ -87,7 +88,9 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
 
     // Check auth
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -121,11 +124,13 @@ export async function POST(request: NextRequest) {
         contributor_id: user.id,
         status: 'pending',
       })
-      .select(`
+      .select(
+        `
         *,
         contributor:profiles!wiki_contributions_contributor_id_fkey(username, display_name),
         page:faction_wiki_pages(title, slug, faction_id)
-      `)
+      `
+      )
       .single()
 
     if (error) {

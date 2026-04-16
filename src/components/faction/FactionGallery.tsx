@@ -29,36 +29,37 @@ export function FactionGallery({ faction }: FactionGalleryProps) {
 
   return (
     <section className="py-16 md:py-24">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="mx-auto max-w-7xl px-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="mb-16 text-center"
         >
           <span
-            className="font-body text-sm font-semibold tracking-widest uppercase mb-4 block"
+            className="mb-4 block font-body text-sm font-semibold uppercase tracking-widest"
             style={{ color: faction.color }}
           >
             Galeria Visual
           </span>
-          <h2 className="font-display text-3xl md:text-4xl font-black text-white mb-4">
+          <h2 className="mb-4 font-display text-3xl font-black text-white md:text-4xl">
             Imagenes de {faction.shortName}
           </h2>
-          <p className="font-body text-lg text-bone/60 max-w-xl mx-auto">
-            Explora la estetica y el arte de esta faccion. Miniaturas, ilustraciones y escenas de batalla.
+          <p className="mx-auto max-w-xl font-body text-lg text-bone/60">
+            Explora la estetica y el arte de esta faccion. Miniaturas, ilustraciones y escenas de
+            batalla.
           </p>
         </motion.div>
 
         {/* Main Gallery Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {/* Hero Image - Large */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="col-span-2 row-span-2 relative group cursor-pointer overflow-hidden rounded-2xl"
+            className="group relative col-span-2 row-span-2 cursor-pointer overflow-hidden rounded-2xl"
             onClick={() => setSelectedIndex(0)}
           >
             <div className="relative h-full min-h-[400px]">
@@ -77,20 +78,20 @@ export function FactionGallery({ faction }: FactionGalleryProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-transparent" />
 
               {/* Hover overlay */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
                 <motion.div
                   whileHover={{ scale: 1.1 }}
-                  className="p-4 rounded-full"
+                  className="rounded-full p-4"
                   style={{ background: `${faction.color}20`, border: `1px solid ${faction.color}` }}
                 >
-                  <Expand className="w-8 h-8" style={{ color: faction.color }} />
+                  <Expand className="h-8 w-8" style={{ color: faction.color }} />
                 </motion.div>
               </div>
 
               {/* Label */}
               <div className="absolute bottom-4 left-4">
                 <span
-                  className="px-3 py-1.5 text-xs font-body font-semibold tracking-wide rounded"
+                  className="rounded px-3 py-1.5 font-body text-xs font-semibold tracking-wide"
                   style={{ background: faction.color, color: '#000' }}
                 >
                   Imagen Principal
@@ -107,7 +108,7 @@ export function FactionGallery({ faction }: FactionGalleryProps) {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="relative group cursor-pointer overflow-hidden rounded-xl aspect-square"
+              className="group relative aspect-square cursor-pointer overflow-hidden rounded-xl"
               onClick={() => setSelectedIndex(index + 1)}
             >
               <Image
@@ -119,20 +120,20 @@ export function FactionGallery({ faction }: FactionGalleryProps) {
 
               {/* Faction color overlay on hover */}
               <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-60 transition-opacity duration-300"
+                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-60"
                 style={{
                   background: `linear-gradient(135deg, ${faction.color}60 0%, transparent 100%)`,
                 }}
               />
 
               {/* Expand icon */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Expand className="w-6 h-6 text-white drop-shadow-lg" />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+                <Expand className="h-6 w-6 text-white drop-shadow-lg" />
               </div>
 
               {/* Number badge */}
               <div
-                className="absolute bottom-2 right-2 w-8 h-8 rounded-full flex items-center justify-center font-display text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full font-display text-sm font-bold opacity-0 transition-opacity group-hover:opacity-100"
                 style={{ background: faction.color, color: '#000' }}
               >
                 {index + 1}
@@ -154,10 +155,7 @@ export function FactionGallery({ faction }: FactionGalleryProps) {
             { label: 'Estilo', value: 'Grimdark' },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <div
-                className="font-display text-2xl font-bold"
-                style={{ color: faction.color }}
-              >
+              <div className="font-display text-2xl font-bold" style={{ color: faction.color }}>
                 {stat.value}
               </div>
               <div className="font-body text-sm text-bone/50">{stat.label}</div>
@@ -184,13 +182,13 @@ export function FactionGallery({ faction }: FactionGalleryProps) {
                   e.stopPropagation()
                   handlePrev()
                 }}
-                className="absolute left-4 z-10 p-3 rounded-full transition-all hover:scale-110"
+                className="absolute left-4 z-10 rounded-full p-3 transition-all hover:scale-110"
                 style={{
                   background: `${faction.color}20`,
                   border: `1px solid ${faction.color}40`,
                 }}
               >
-                <ChevronLeft className="w-6 h-6" style={{ color: faction.color }} />
+                <ChevronLeft className="h-6 w-6" style={{ color: faction.color }} />
               </button>
 
               <button
@@ -198,25 +196,25 @@ export function FactionGallery({ faction }: FactionGalleryProps) {
                   e.stopPropagation()
                   handleNext()
                 }}
-                className="absolute right-4 z-10 p-3 rounded-full transition-all hover:scale-110"
+                className="absolute right-4 z-10 rounded-full p-3 transition-all hover:scale-110"
                 style={{
                   background: `${faction.color}20`,
                   border: `1px solid ${faction.color}40`,
                 }}
               >
-                <ChevronRight className="w-6 h-6" style={{ color: faction.color }} />
+                <ChevronRight className="h-6 w-6" style={{ color: faction.color }} />
               </button>
 
               {/* Close button */}
               <button
                 onClick={() => setSelectedIndex(null)}
-                className="absolute top-4 right-4 z-10 p-3 rounded-full transition-all hover:scale-110"
+                className="absolute right-4 top-4 z-10 rounded-full p-3 transition-all hover:scale-110"
                 style={{
                   background: `${faction.color}20`,
                   border: `1px solid ${faction.color}40`,
                 }}
               >
-                <X className="w-6 h-6" style={{ color: faction.color }} />
+                <X className="h-6 w-6" style={{ color: faction.color }} />
               </button>
 
               {/* Image */}
@@ -225,7 +223,7 @@ export function FactionGallery({ faction }: FactionGalleryProps) {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="relative max-w-5xl max-h-[80vh] w-full h-full mx-4"
+                className="relative mx-4 h-full max-h-[80vh] w-full max-w-5xl"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Image
@@ -238,7 +236,7 @@ export function FactionGallery({ faction }: FactionGalleryProps) {
 
               {/* Counter */}
               <div
-                className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full font-body text-sm"
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full px-4 py-2 font-body text-sm"
                 style={{
                   background: `${faction.color}20`,
                   border: `1px solid ${faction.color}40`,

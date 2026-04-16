@@ -13,23 +13,23 @@ interface FactionTabsProps {
 }
 
 const tabs: { id: FactionTab; label: string; icon: React.ReactNode }[] = [
-  { id: 'lore', label: 'Trasfondo', icon: <BookOpen className="w-5 h-5" /> },
-  { id: 'juego', label: 'Juego', icon: <Gamepad2 className="w-5 h-5" /> },
-  { id: 'gallery', label: 'Galeria', icon: <Images className="w-5 h-5" /> },
+  { id: 'lore', label: 'Trasfondo', icon: <BookOpen className="h-5 w-5" /> },
+  { id: 'juego', label: 'Juego', icon: <Gamepad2 className="h-5 w-5" /> },
+  { id: 'gallery', label: 'Galeria', icon: <Images className="h-5 w-5" /> },
 ]
 
 export function FactionTabs({ factionId, activeTab, onTabChange }: FactionTabsProps) {
   const theme = getFactionTheme(factionId)
 
   return (
-    <div className="sticky top-0 z-40 backdrop-blur-lg border-b border-white/5">
+    <div className="sticky top-0 z-40 border-b border-white/5 backdrop-blur-lg">
       <div
         className="absolute inset-0"
         style={{
           background: `${theme?.cssVars['--faction-bg'] || '#030308'}95`,
         }}
       />
-      <div className="relative max-w-7xl mx-auto px-6">
+      <div className="relative mx-auto max-w-7xl px-6">
         <nav className="flex items-center gap-1 md:gap-2">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id
@@ -37,7 +37,7 @@ export function FactionTabs({ factionId, activeTab, onTabChange }: FactionTabsPr
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className="relative px-4 md:px-8 py-4 md:py-5 font-body text-sm md:text-base font-semibold tracking-wide transition-colors"
+                className="relative px-4 py-4 font-body text-sm font-semibold tracking-wide transition-colors md:px-8 md:py-5 md:text-base"
                 style={{
                   color: isActive ? theme?.colors.primary : '#E8E8F0',
                 }}

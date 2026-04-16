@@ -6,15 +6,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { cn } from '@/lib/utils'
 import { eventTypeConfig } from './EventCard'
 import type { EventWithOrganizer, EventType } from '@/lib/types/database.types'
-import {
-  Expand,
-  Minimize2,
-  X,
-  Calendar,
-  MapPin,
-  Clock,
-  Shield
-} from 'lucide-react'
+import { Expand, Minimize2, X, Calendar, MapPin, Clock, Shield } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 
@@ -30,13 +22,13 @@ interface EventsMapProps {
 // Get marker color based on event type
 function getMarkerColor(eventType: EventType): string {
   const colors: Record<EventType, string> = {
-    tournament: '#fbbf24',      // amber
+    tournament: '#fbbf24', // amber
     painting_workshop: '#c084fc', // purple
-    casual_play: '#60a5fa',      // blue
-    campaign: '#34d399',         // emerald
-    release_event: '#f87171',    // red
-    meetup: '#22d3ee',           // cyan
-    other: '#a8a29e',            // gray
+    casual_play: '#60a5fa', // blue
+    campaign: '#34d399', // emerald
+    release_event: '#f87171', // red
+    meetup: '#22d3ee', // cyan
+    other: '#a8a29e', // gray
   }
   return colors[eventType] || '#a8a29e'
 }
@@ -46,7 +38,7 @@ function formatEventDate(startDate: string): string {
   return date.toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'short',
-    year: 'numeric'
+    year: 'numeric',
   })
 }
 
@@ -59,7 +51,7 @@ export default function EventsMap({
   events,
   center = [-3.7038, 40.4168], // Madrid default
   zoom = 5,
-  className
+  className,
 }: EventsMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
@@ -77,7 +69,7 @@ export default function EventsMap({
     }
 
     // Clear existing markers
-    markersRef.current.forEach(marker => marker.remove())
+    markersRef.current.forEach((marker) => marker.remove())
     markersRef.current = []
 
     events.forEach((event) => {
@@ -139,13 +131,13 @@ export default function EventsMap({
         map.current?.flyTo({
           center: [event.longitude, event.latitude],
           zoom: 12,
-          duration: 1000
+          duration: 1000,
         })
       })
 
       const marker = new mapboxgl.Marker({
         element: el,
-        anchor: 'center'
+        anchor: 'center',
       })
         .setLngLat([event.longitude, event.latitude])
         .addTo(map.current!)
@@ -165,17 +157,14 @@ export default function EventsMap({
       attributionControl: false,
     })
 
-    map.current.addControl(
-      new mapboxgl.NavigationControl({ showCompass: false }),
-      'top-right'
-    )
+    map.current.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
 
     map.current.on('load', () => {
       addEventMarkers()
     })
 
     return () => {
-      markersRef.current.forEach(marker => marker.remove())
+      markersRef.current.forEach((marker) => marker.remove())
       map.current?.remove()
       map.current = null
     }
@@ -200,35 +189,36 @@ export default function EventsMap({
     <>
       <div className={cn('relative overflow-hidden', className)}>
         {/* Grimdark overlays */}
-        <div className="absolute inset-0 pointer-events-none z-10">
+        <div className="pointer-events-none absolute inset-0 z-10">
           {/* Vignette */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(10,10,15,0.6)_100%)]" />
 
           {/* Corner brackets */}
-          <div className="absolute top-3 left-3 w-8 h-8 border-l-2 border-t-2 border-amber-500/30" />
-          <div className="absolute top-3 right-3 w-8 h-8 border-r-2 border-t-2 border-amber-500/30" />
-          <div className="absolute bottom-3 left-3 w-8 h-8 border-l-2 border-b-2 border-amber-500/30" />
-          <div className="absolute bottom-3 right-3 w-8 h-8 border-r-2 border-b-2 border-amber-500/30" />
+          <div className="absolute left-3 top-3 h-8 w-8 border-l-2 border-t-2 border-amber-500/30" />
+          <div className="absolute right-3 top-3 h-8 w-8 border-r-2 border-t-2 border-amber-500/30" />
+          <div className="absolute bottom-3 left-3 h-8 w-8 border-b-2 border-l-2 border-amber-500/30" />
+          <div className="absolute bottom-3 right-3 h-8 w-8 border-b-2 border-r-2 border-amber-500/30" />
 
           {/* Scanlines */}
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
-              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(251, 191, 36, 0.1) 2px, rgba(251, 191, 36, 0.1) 4px)',
+              backgroundImage:
+                'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(251, 191, 36, 0.1) 2px, rgba(251, 191, 36, 0.1) 4px)',
             }}
           />
         </div>
 
         {/* Map container */}
-        <div ref={mapContainer} className="w-full h-full" />
+        <div ref={mapContainer} className="h-full w-full" />
 
         {/* Expand button */}
         <button
           onClick={() => setIsExpanded(true)}
-          className="absolute bottom-4 right-4 z-20 p-2 bg-void/90 border border-amber-500/30 rounded-lg text-amber-500/80 hover:text-amber-400 hover:border-amber-500/50 transition-all"
+          className="absolute bottom-4 right-4 z-20 rounded-lg border border-amber-500/30 bg-void/90 p-2 text-amber-500/80 transition-all hover:border-amber-500/50 hover:text-amber-400"
           title="Expandir mapa"
         >
-          <Expand className="w-5 h-5" />
+          <Expand className="h-5 w-5" />
         </button>
 
         {/* Selected event popup */}
@@ -240,49 +230,49 @@ export default function EventsMap({
               exit={{ opacity: 0, y: 20 }}
               className="absolute bottom-4 left-4 right-16 z-20 max-w-sm"
             >
-              <div className="p-4 rounded-xl bg-void/95 backdrop-blur-sm border border-amber-500/30">
+              <div className="rounded-xl border border-amber-500/30 bg-void/95 p-4 backdrop-blur-sm">
                 <button
                   onClick={closePopup}
-                  className="absolute top-2 right-2 p-1 text-bone/40 hover:text-bone transition-colors"
+                  className="absolute right-2 top-2 p-1 text-bone/40 transition-colors hover:text-bone"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="h-4 w-4" />
                 </button>
 
                 {/* Event type badge */}
                 <div
-                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-mono mb-2"
+                  className="mb-2 inline-flex items-center gap-1.5 rounded px-2 py-0.5 font-mono text-xs"
                   style={{
                     background: `${getMarkerColor(selectedEvent.event_type)}20`,
                     color: getMarkerColor(selectedEvent.event_type),
-                    border: `1px solid ${getMarkerColor(selectedEvent.event_type)}40`
+                    border: `1px solid ${getMarkerColor(selectedEvent.event_type)}40`,
                   }}
                 >
                   {eventTypeConfig[selectedEvent.event_type].label}
                   {selectedEvent.is_official && (
-                    <Shield className="w-3 h-3 text-imperial-gold ml-1" />
+                    <Shield className="ml-1 h-3 w-3 text-imperial-gold" />
                   )}
                 </div>
 
-                <h3 className="font-display font-bold text-bone text-sm mb-2 pr-6">
+                <h3 className="mb-2 pr-6 font-display text-sm font-bold text-bone">
                   {selectedEvent.name}
                 </h3>
 
-                <div className="space-y-1 text-xs text-bone/60 mb-3">
+                <div className="mb-3 space-y-1 text-xs text-bone/60">
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-3.5 h-3.5 text-amber-500/60" />
+                    <Calendar className="h-3.5 w-3.5 text-amber-500/60" />
                     <span>{formatEventDate(selectedEvent.start_date)}</span>
-                    <Clock className="w-3.5 h-3.5 text-amber-500/60 ml-2" />
+                    <Clock className="ml-2 h-3.5 w-3.5 text-amber-500/60" />
                     <span>{formatEventTime(selectedEvent.start_date)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-3.5 h-3.5 text-amber-500/60" />
+                    <MapPin className="h-3.5 w-3.5 text-amber-500/60" />
                     <span>{selectedEvent.city}</span>
                   </div>
                 </div>
 
                 <Link
                   href={`/comunidad/eventos/${selectedEvent.slug}`}
-                  className="inline-flex items-center gap-1 text-xs font-mono text-amber-400 hover:text-amber-300 transition-colors"
+                  className="inline-flex items-center gap-1 font-mono text-xs text-amber-400 transition-colors hover:text-amber-300"
                 >
                   Ver detalles →
                 </Link>
@@ -302,23 +292,25 @@ export default function EventsMap({
             className="fixed inset-0 z-50 bg-void"
           >
             {/* Header */}
-            <div className="absolute top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-void to-transparent">
-              <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="absolute left-0 right-0 top-0 z-10 bg-gradient-to-b from-void to-transparent p-4">
+              <div className="mx-auto flex max-w-7xl items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-amber-500/20 border border-amber-500/30">
-                    <MapPin className="w-5 h-5 text-amber-500" />
+                  <div className="rounded-lg border border-amber-500/30 bg-amber-500/20 p-2">
+                    <MapPin className="h-5 w-5 text-amber-500" />
                   </div>
                   <div>
                     <h2 className="font-display font-bold text-bone">MAPA DE EVENTOS</h2>
-                    <p className="text-xs font-mono text-amber-500/60 tracking-wider">CHRONUS CARTOGRAPHIA</p>
+                    <p className="font-mono text-xs tracking-wider text-amber-500/60">
+                      CHRONUS CARTOGRAPHIA
+                    </p>
                   </div>
                 </div>
 
                 <button
                   onClick={() => setIsExpanded(false)}
-                  className="p-2 bg-void-light border border-bone/20 rounded-lg text-bone/60 hover:text-bone hover:border-bone/40 transition-all"
+                  className="rounded-lg border border-bone/20 bg-void-light p-2 text-bone/60 transition-all hover:border-bone/40 hover:text-bone"
                 >
-                  <Minimize2 className="w-5 h-5" />
+                  <Minimize2 className="h-5 w-5" />
                 </button>
               </div>
             </div>
@@ -346,7 +338,7 @@ function EventsMapFullscreen({
   zoom,
   selectedEvent,
   onSelectEvent,
-  onClose
+  onClose,
 }: {
   events: EventWithOrganizer[]
   center: [number, number]
@@ -367,7 +359,7 @@ function EventsMapFullscreen({
       return
     }
 
-    markersRef.current.forEach(marker => marker.remove())
+    markersRef.current.forEach((marker) => marker.remove())
     markersRef.current = []
 
     events.forEach((event) => {
@@ -425,13 +417,13 @@ function EventsMapFullscreen({
         map.current?.flyTo({
           center: [event.longitude, event.latitude],
           zoom: 13,
-          duration: 1000
+          duration: 1000,
         })
       })
 
       const marker = new mapboxgl.Marker({
         element: el,
-        anchor: 'center'
+        anchor: 'center',
       })
         .setLngLat([event.longitude, event.latitude])
         .addTo(map.current!)
@@ -451,23 +443,20 @@ function EventsMapFullscreen({
       attributionControl: false,
     })
 
-    map.current.addControl(
-      new mapboxgl.NavigationControl({ showCompass: true }),
-      'top-right'
-    )
+    map.current.addControl(new mapboxgl.NavigationControl({ showCompass: true }), 'top-right')
 
     map.current.on('load', addEventMarkers)
 
     return () => {
-      markersRef.current.forEach(marker => marker.remove())
+      markersRef.current.forEach((marker) => marker.remove())
       map.current?.remove()
       map.current = null
     }
   }, [center, zoom, addEventMarkers])
 
   return (
-    <div className="w-full h-full pt-16">
-      <div ref={mapContainer} className="w-full h-full" />
+    <div className="h-full w-full pt-16">
+      <div ref={mapContainer} className="h-full w-full" />
 
       {/* Popup */}
       <AnimatePresence>
@@ -476,58 +465,56 @@ function EventsMapFullscreen({
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="absolute top-24 right-4 z-20 w-80"
+            className="absolute right-4 top-24 z-20 w-80"
           >
-            <div className="p-5 rounded-xl bg-void/95 backdrop-blur-sm border border-amber-500/30">
+            <div className="rounded-xl border border-amber-500/30 bg-void/95 p-5 backdrop-blur-sm">
               <button
                 onClick={onClose}
-                className="absolute top-3 right-3 p-1 text-bone/40 hover:text-bone transition-colors"
+                className="absolute right-3 top-3 p-1 text-bone/40 transition-colors hover:text-bone"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" />
               </button>
 
               <div
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-mono mb-3"
+                className="mb-3 inline-flex items-center gap-1.5 rounded px-2 py-0.5 font-mono text-xs"
                 style={{
                   background: `${getMarkerColor(selectedEvent.event_type)}20`,
                   color: getMarkerColor(selectedEvent.event_type),
-                  border: `1px solid ${getMarkerColor(selectedEvent.event_type)}40`
+                  border: `1px solid ${getMarkerColor(selectedEvent.event_type)}40`,
                 }}
               >
                 {eventTypeConfig[selectedEvent.event_type].label}
                 {selectedEvent.is_official && (
-                  <Shield className="w-3 h-3 text-imperial-gold ml-1" />
+                  <Shield className="ml-1 h-3 w-3 text-imperial-gold" />
                 )}
               </div>
 
-              <h3 className="font-display font-bold text-bone mb-3 pr-6">
-                {selectedEvent.name}
-              </h3>
+              <h3 className="mb-3 pr-6 font-display font-bold text-bone">{selectedEvent.name}</h3>
 
               {selectedEvent.description && (
-                <p className="text-sm text-bone/60 mb-4 line-clamp-3">
+                <p className="mb-4 line-clamp-3 text-sm text-bone/60">
                   {selectedEvent.description}
                 </p>
               )}
 
-              <div className="space-y-2 text-sm text-bone/60 mb-4">
+              <div className="mb-4 space-y-2 text-sm text-bone/60">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-amber-500/60" />
+                  <Calendar className="h-4 w-4 text-amber-500/60" />
                   <span>{formatEventDate(selectedEvent.start_date)}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-amber-500/60" />
+                  <Clock className="h-4 w-4 text-amber-500/60" />
                   <span>{formatEventTime(selectedEvent.start_date)}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-amber-500/60" />
+                  <MapPin className="h-4 w-4 text-amber-500/60" />
                   <span>{selectedEvent.venue_name || selectedEvent.city}</span>
                 </div>
               </div>
 
               <Link
                 href={`/comunidad/eventos/${selectedEvent.slug}`}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 border border-amber-500/40 rounded-lg text-amber-400 text-sm font-mono hover:bg-amber-500/30 transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-500/20 px-4 py-2 font-mono text-sm text-amber-400 transition-colors hover:bg-amber-500/30"
               >
                 Ver detalles completos →
               </Link>

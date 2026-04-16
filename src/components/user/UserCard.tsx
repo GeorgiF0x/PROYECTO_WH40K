@@ -15,20 +15,14 @@ function UserCardImpl({ user, showBio = false, className = '' }: UserCardProps) 
   return (
     <Link
       href={`/usuarios/${user.username}`}
-      className={`flex items-center gap-3 p-3 bg-void-light rounded-lg border border-bone/10 hover:border-gold/30 transition-colors ${className}`}
+      className={`hover:border-gold/30 flex items-center gap-3 rounded-lg border border-bone/10 bg-void-light p-3 transition-colors ${className}`}
     >
-      <Avatar
-        src={user.avatar_url}
-        alt={user.display_name || user.username}
-        size="md"
-      />
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-bone truncate">
-          {user.display_name || user.username}
-        </p>
-        <p className="text-sm text-bone/60 truncate">@{user.username}</p>
+      <Avatar src={user.avatar_url} alt={user.display_name || user.username} size="md" />
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium text-bone">{user.display_name || user.username}</p>
+        <p className="truncate text-sm text-bone/60">@{user.username}</p>
         {showBio && user.bio && (
-          <p className="text-sm text-bone/50 mt-1 line-clamp-2">{user.bio}</p>
+          <p className="mt-1 line-clamp-2 text-sm text-bone/50">{user.bio}</p>
         )}
       </div>
     </Link>

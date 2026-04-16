@@ -35,9 +35,8 @@ export function FactionSymbol({
   if (!theme || !iconConfig) return null
 
   const dimensions = sizeMap[size]
-  const iconPath = variant === 'dark' && iconConfig.iconPathDark
-    ? iconConfig.iconPathDark
-    : iconConfig.iconPath
+  const iconPath =
+    variant === 'dark' && iconConfig.iconPathDark ? iconConfig.iconPathDark : iconConfig.iconPath
 
   return (
     <motion.div
@@ -46,9 +45,13 @@ export function FactionSymbol({
         width: dimensions,
         height: dimensions,
       }}
-      animate={animated ? {
-        scale: [1, 1.05, 1],
-      } : undefined}
+      animate={
+        animated
+          ? {
+              scale: [1, 1.05, 1],
+            }
+          : undefined
+      }
       transition={{
         duration: 3,
         repeat: Infinity,
@@ -63,10 +66,14 @@ export function FactionSymbol({
             background: theme.colors.glow,
             opacity: 0.3,
           }}
-          animate={animated ? {
-            opacity: [0.2, 0.4, 0.2],
-            scale: [0.8, 1.1, 0.8],
-          } : undefined}
+          animate={
+            animated
+              ? {
+                  opacity: [0.2, 0.4, 0.2],
+                  scale: [0.8, 1.1, 0.8],
+                }
+              : undefined
+          }
           transition={{
             duration: 2,
             repeat: Infinity,
@@ -77,11 +84,12 @@ export function FactionSymbol({
 
       {/* SVG Icon - white with faction glow */}
       <div
-        className="relative w-full h-full"
+        className="relative h-full w-full"
         style={{
-          filter: variant === 'glow'
-            ? `drop-shadow(0 0 12px ${theme.colors.glow}) drop-shadow(0 0 6px ${theme.colors.primary})`
-            : `drop-shadow(0 0 6px ${theme.colors.glow}80) drop-shadow(0 0 2px ${theme.colors.primary}60)`,
+          filter:
+            variant === 'glow'
+              ? `drop-shadow(0 0 12px ${theme.colors.glow}) drop-shadow(0 0 6px ${theme.colors.primary})`
+              : `drop-shadow(0 0 6px ${theme.colors.glow}80) drop-shadow(0 0 2px ${theme.colors.primary}60)`,
         }}
       >
         <Image

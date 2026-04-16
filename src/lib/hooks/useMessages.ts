@@ -119,10 +119,7 @@ export function useMessages(
             // Check for a pending optimistic message with matching content.
             if (msgWithSender.sender_id === currentUserId) {
               const pendingIdx = prev.findIndex(
-                (m) =>
-                  m._tempId &&
-                  m._status === 'sending' &&
-                  m.content === msgWithSender.content
+                (m) => m._tempId && m._status === 'sending' && m.content === msgWithSender.content
               )
               if (pendingIdx !== -1) {
                 // Replace the optimistic placeholder with the real message
@@ -223,9 +220,7 @@ export function useMessages(
       if (error || !data) {
         // Mark optimistic message as failed
         setMessages((prev) =>
-          prev.map((m) =>
-            m._tempId === tempId ? { ...m, _status: 'error' as const } : m
-          )
+          prev.map((m) => (m._tempId === tempId ? { ...m, _status: 'error' as const } : m))
         )
         return { data: null, error }
       }
@@ -254,9 +249,7 @@ export function useMessages(
       setMessages((prev) => {
         const msg = prev.find((m) => m._tempId === tempId)
         if (msg) failedContent = msg.content
-        return prev.map((m) =>
-          m._tempId === tempId ? { ...m, _status: 'sending' as const } : m
-        )
+        return prev.map((m) => (m._tempId === tempId ? { ...m, _status: 'sending' as const } : m))
       })
 
       if (!failedContent) return
@@ -265,9 +258,7 @@ export function useMessages(
 
       if (error || !data) {
         setMessages((prev) =>
-          prev.map((m) =>
-            m._tempId === tempId ? { ...m, _status: 'error' as const } : m
-          )
+          prev.map((m) => (m._tempId === tempId ? { ...m, _status: 'error' as const } : m))
         )
         return
       }

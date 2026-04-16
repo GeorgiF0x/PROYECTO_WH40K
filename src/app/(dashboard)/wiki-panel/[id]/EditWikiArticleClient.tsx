@@ -25,7 +25,13 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
-import { BlockNoteEditor, type WikiEditorRef, WikiGallery, FactionPicker, EditorGuide } from '@/components/wiki'
+import {
+  BlockNoteEditor,
+  type WikiEditorRef,
+  WikiGallery,
+  FactionPicker,
+  EditorGuide,
+} from '@/components/wiki'
 import {
   WikiPageBackground,
   GothicCorners,
@@ -34,7 +40,12 @@ import {
 } from '@/components/wiki/WikiDecorations'
 import { factions } from '@/lib/data'
 import { compressImage } from '@/lib/utils/compressImage'
-import type { WikiPage, WikiCategory, WikiPageUpdateInput, WikiRevision } from '@/lib/supabase/wiki.types'
+import type {
+  WikiPage,
+  WikiCategory,
+  WikiPageUpdateInput,
+  WikiRevision,
+} from '@/lib/supabase/wiki.types'
 
 interface EditWikiArticleClientProps {
   pageId: string
@@ -73,9 +84,9 @@ function TacticalCard({
 }) {
   const c = color || 'rgba(201,162,39,0.25)'
   return (
-    <div className={`relative group ${className}`}>
+    <div className={`group relative ${className}`}>
       <div
-        className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        className="absolute left-0 right-0 top-0 h-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background: `linear-gradient(to right, transparent, ${c}, transparent)`,
         }}
@@ -86,7 +97,12 @@ function TacticalCard({
   )
 }
 
-export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, isLexicanum }: EditWikiArticleClientProps) {
+export default function EditWikiArticleClient({
+  pageId,
+  currentUserId,
+  isAdmin,
+  isLexicanum,
+}: EditWikiArticleClientProps) {
   const router = useRouter()
   const editorRef = useRef<WikiEditorRef>(null)
 
@@ -113,10 +129,10 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
   const [heroDragOver, setHeroDragOver] = useState(false)
   const heroFileRef = useRef<HTMLInputElement>(null)
 
-  const selectedFaction = page ? factions.find(f => f.id === page.faction_id) : null
+  const selectedFaction = page ? factions.find((f) => f.id === page.faction_id) : null
   const currentColor = selectedFaction?.color || '#C9A227'
 
-  const canEdit = isAdmin || isLexicanum || (page?.author_id === currentUserId)
+  const canEdit = isAdmin || isLexicanum || page?.author_id === currentUserId
   const canPublish = isAdmin || isLexicanum
   const canDelete = isAdmin
 
@@ -163,27 +179,30 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
     }
   }
 
-  const handleHeroUpload = useCallback(async (file: File) => {
-    setHeroUploading(true)
-    try {
-      const compressed = await compressImage(file)
-      const formData = new FormData()
-      formData.append('file', compressed)
-      if (page?.faction_id) formData.append('faction_id', page.faction_id)
-      const res = await fetch('/api/wiki/upload', { method: 'POST', body: formData })
-      if (!res.ok) {
+  const handleHeroUpload = useCallback(
+    async (file: File) => {
+      setHeroUploading(true)
+      try {
+        const compressed = await compressImage(file)
+        const formData = new FormData()
+        formData.append('file', compressed)
+        if (page?.faction_id) formData.append('faction_id', page.faction_id)
+        const res = await fetch('/api/wiki/upload', { method: 'POST', body: formData })
+        if (!res.ok) {
+          const data = await res.json()
+          throw new Error(data.error || 'Error al subir')
+        }
         const data = await res.json()
-        throw new Error(data.error || 'Error al subir')
+        setHeroImage(data.url)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error al subir imagen')
+      } finally {
+        setHeroUploading(false)
+        if (heroFileRef.current) heroFileRef.current.value = ''
       }
-      const data = await res.json()
-      setHeroImage(data.url)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al subir imagen')
-    } finally {
-      setHeroUploading(false)
-      if (heroFileRef.current) heroFileRef.current.value = ''
-    }
-  }, [page?.faction_id])
+    },
+    [page?.faction_id]
+  )
 
   function handleHeroDrop(e: React.DragEvent) {
     e.preventDefault()
@@ -243,7 +262,11 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
   }
 
   async function handleDelete() {
-    if (!confirm('Estas seguro de que quieres eliminar este articulo? Esta accion no se puede deshacer.')) {
+    if (
+      !confirm(
+        'Estas seguro de que quieres eliminar este articulo? Esta accion no se puede deshacer.'
+      )
+    ) {
       return
     }
 
@@ -262,8 +285,8 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-10 w-64 bg-bone/10 rounded animate-pulse" />
-        <div className="h-96 bg-bone/10 rounded-lg animate-pulse" />
+        <div className="h-10 w-64 animate-pulse rounded bg-bone/10" />
+        <div className="h-96 animate-pulse rounded-lg bg-bone/10" />
       </div>
     )
   }
@@ -272,13 +295,13 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
     return (
       <div className="relative">
         <WikiPageBackground />
-        <div className="relative z-10 text-center py-20 rounded-2xl bg-void-light/30 border border-blood/20 overflow-hidden">
+        <div className="relative z-10 overflow-hidden rounded-2xl border border-blood/20 bg-void-light/30 py-20 text-center">
           <GothicCorners className="text-blood/20" size={36} />
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center bg-blood/10 border border-blood/30">
-            <ShieldAlert className="w-9 h-9 text-blood/70" />
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-blood/30 bg-blood/10">
+            <ShieldAlert className="h-9 w-9 text-blood/70" />
           </div>
-          <h2 className="font-display text-2xl font-bold text-bone mb-2">Acceso Denegado</h2>
-          <p className="font-mono text-sm text-bone/40 mb-8">
+          <h2 className="mb-2 font-display text-2xl font-bold text-bone">Acceso Denegado</h2>
+          <p className="mb-8 font-mono text-sm text-bone/40">
             Solo puedes editar articulos que hayas creado.
           </p>
           <Link href="/wiki-panel">
@@ -291,8 +314,8 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
 
   if (error && !page) {
     return (
-      <div className="text-center py-20">
-        <h2 className="font-display text-2xl text-white mb-4">{error}</h2>
+      <div className="py-20 text-center">
+        <h2 className="mb-4 font-display text-2xl text-white">{error}</h2>
         <Link href="/wiki-panel">
           <Button variant="outline">Volver al listado</Button>
         </Link>
@@ -305,7 +328,7 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
       <WikiPageBackground />
 
       <motion.div
-        className="relative z-10 space-y-8 max-w-6xl"
+        className="relative z-10 max-w-6xl space-y-8"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -320,36 +343,36 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
           }}
         >
           <GothicCorners className="text-imperial-gold/20" size={36} />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_center,rgba(201,162,39,0.06)_0%,transparent_60%)] pointer-events-none" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_center,rgba(201,162,39,0.06)_0%,transparent_60%)]" />
 
-          <div className="relative flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+          <div className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
             <div className="flex items-start gap-4">
               <Link href="/wiki-panel">
                 <Button variant="ghost" size="sm" className="mt-1">
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="h-4 w-4" />
                 </Button>
               </Link>
               <div>
                 <SectionLabel icon={Crosshair} className="mb-2">
                   EDITAR ARTICULO // ARCHIVO LEXICANUM
                 </SectionLabel>
-                <div className="flex items-center gap-3 mb-1">
-                  <h1 className="text-2xl font-display font-bold text-bone tracking-wide">
+                <div className="mb-1 flex items-center gap-3">
+                  <h1 className="font-display text-2xl font-bold tracking-wide text-bone">
                     Editar Articulo
                   </h1>
                   <div className="flex items-center gap-1.5">
                     <motion.div
-                      className="w-2 h-2 rounded-full bg-necron-teal"
+                      className="h-2 w-2 rounded-full bg-necron-teal"
                       animate={{ opacity: [1, 0.4, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     />
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono tracking-wider border bg-imperial-gold/15 border-imperial-gold/40 text-imperial-gold shadow-[0_0_12px_rgba(201,162,39,0.2)]">
-                      <Feather className="w-3 h-3" />
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-imperial-gold/40 bg-imperial-gold/15 px-2.5 py-1 font-mono text-[11px] tracking-wider text-imperial-gold shadow-[0_0_12px_rgba(201,162,39,0.2)]">
+                      <Feather className="h-3 w-3" />
                       {isAdmin ? 'ARCHIVISTA' : isLexicanum ? 'LEXICANUM' : 'SCRIBE'}
                     </span>
                   </div>
                 </div>
-                <p className="text-bone/40 font-mono text-sm">
+                <p className="font-mono text-sm text-bone/40">
                   {selectedFaction?.shortName} / {page?.title}
                 </p>
               </div>
@@ -359,11 +382,11 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
               {status === 'published' && (
                 <Link href={`/wiki/${page?.faction_id}/${page?.slug}`} target="_blank">
                   <motion.button
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/10 text-bone/60 hover:bg-bone/5 hover:text-bone transition-all duration-200"
+                    className="inline-flex items-center gap-2 rounded-lg border border-bone/10 bg-void-light/60 px-3 py-2 text-sm font-medium text-bone/60 transition-all duration-200 hover:bg-bone/5 hover:text-bone"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                   >
-                    <Eye className="w-4 h-4" />
+                    <Eye className="h-4 w-4" />
                     Ver
                   </motion.button>
                 </Link>
@@ -371,22 +394,22 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
               <motion.button
                 type="button"
                 onClick={() => setShowRevisions(!showRevisions)}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/10 text-bone/60 hover:bg-bone/5 hover:text-bone transition-all duration-200"
+                className="inline-flex items-center gap-2 rounded-lg border border-bone/10 bg-void-light/60 px-3 py-2 text-sm font-medium text-bone/60 transition-all duration-200 hover:bg-bone/5 hover:text-bone"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
               >
-                <History className="w-4 h-4" />
+                <History className="h-4 w-4" />
                 Historial
               </motion.button>
               {canDelete && (
                 <motion.button
                   type="button"
                   onClick={handleDelete}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-blood/20 text-blood/70 hover:bg-blood/10 hover:border-blood/40 hover:text-blood-light transition-all duration-200"
+                  className="inline-flex items-center gap-2 rounded-lg border border-blood/20 bg-void-light/60 px-3 py-2 text-sm font-medium text-blood/70 transition-all duration-200 hover:border-blood/40 hover:bg-blood/10 hover:text-blood-light"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="h-4 w-4" />
                   Eliminar
                 </motion.button>
               )}
@@ -394,11 +417,11 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
                 type="button"
                 onClick={() => handleSave()}
                 disabled={saving}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/70 hover:bg-bone/5 hover:border-bone/30 hover:text-bone transition-all duration-200 disabled:opacity-40"
+                className="inline-flex items-center gap-2 rounded-lg border border-bone/15 bg-void-light/60 px-4 py-2 text-sm font-medium text-bone/70 transition-all duration-200 hover:border-bone/30 hover:bg-bone/5 hover:text-bone disabled:opacity-40"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
               >
-                <Save className="w-4 h-4" />
+                <Save className="h-4 w-4" />
                 Guardar
               </motion.button>
               {canPublish && status !== 'published' && (
@@ -406,11 +429,11 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
                   type="button"
                   onClick={() => handleSave('published')}
                   disabled={saving}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200 disabled:opacity-40"
+                  className="inline-flex items-center gap-2 rounded-lg border border-imperial-gold/30 bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 px-5 py-2 text-sm font-semibold text-void shadow-[0_0_20px_rgba(201,162,39,0.2)] transition-all duration-200 hover:from-imperial-gold hover:to-imperial-gold/80 hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] disabled:opacity-40"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  <Globe className="w-4 h-4" />
+                  <Globe className="h-4 w-4" />
                   Publicar
                 </motion.button>
               )}
@@ -419,11 +442,11 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
                   type="button"
                   onClick={() => handleSave('archived')}
                   disabled={saving}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/60 hover:bg-bone/5 hover:text-bone transition-all duration-200 disabled:opacity-40"
+                  className="inline-flex items-center gap-2 rounded-lg border border-bone/15 bg-void-light/60 px-4 py-2 text-sm font-medium text-bone/60 transition-all duration-200 hover:bg-bone/5 hover:text-bone disabled:opacity-40"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  <Archive className="w-4 h-4" />
+                  <Archive className="h-4 w-4" />
                   Archivar
                 </motion.button>
               )}
@@ -438,7 +461,7 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-lg bg-blood/20 border border-blood/40 text-blood-light font-body"
+            className="rounded-lg border border-blood/40 bg-blood/20 p-4 font-body text-blood-light"
           >
             {error}
           </motion.div>
@@ -447,20 +470,25 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
         {/* Status indicator */}
         <motion.div variants={itemVariants} className="flex items-center gap-3">
           <span
-            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-mono tracking-wider ${
-              status === 'draft' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' :
-              status === 'published' ? 'bg-green-500/15 text-green-400 border border-green-500/30' :
-              'bg-gray-500/15 text-gray-400 border border-gray-500/30'
+            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-sm tracking-wider ${
+              status === 'draft'
+                ? 'border border-amber-500/30 bg-amber-500/15 text-amber-400'
+                : status === 'published'
+                  ? 'border border-green-500/30 bg-green-500/15 text-green-400'
+                  : 'border border-gray-500/30 bg-gray-500/15 text-gray-400'
             }`}
           >
-            {status === 'draft' ? <FileText className="w-4 h-4" /> :
-             status === 'published' ? <Globe className="w-4 h-4" /> :
-             <Archive className="w-4 h-4" />}
-            {status === 'draft' ? 'BORRADOR' :
-             status === 'published' ? 'PUBLICADO' : 'ARCHIVADO'}
+            {status === 'draft' ? (
+              <FileText className="h-4 w-4" />
+            ) : status === 'published' ? (
+              <Globe className="h-4 w-4" />
+            ) : (
+              <Archive className="h-4 w-4" />
+            )}
+            {status === 'draft' ? 'BORRADOR' : status === 'published' ? 'PUBLICADO' : 'ARCHIVADO'}
           </span>
           {page?.published_at && (
-            <span className="text-sm text-bone/50 font-mono">
+            <span className="font-mono text-sm text-bone/50">
               Publicado el {new Date(page.published_at).toLocaleDateString('es-ES')}
             </span>
           )}
@@ -480,16 +508,16 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
         )}
 
         {/* ── Main grid ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="space-y-6 lg:col-span-3">
             {/* Title & Slug */}
             <motion.div variants={itemVariants}>
               <TacticalCard color={`${currentColor}40`}>
                 <Card>
-                  <CardContent className="pt-4 space-y-4">
+                  <CardContent className="space-y-4 pt-4">
                     <div>
-                      <label className="block font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em] uppercase mb-2">
+                      <label className="mb-2 block font-mono text-[10px] uppercase tracking-[0.2em] text-imperial-gold/50">
                         TITULO *
                       </label>
                       <Input
@@ -500,7 +528,7 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
                       />
                     </div>
                     <div>
-                      <label className="block font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em] uppercase mb-2">
+                      <label className="mb-2 block font-mono text-[10px] uppercase tracking-[0.2em] text-imperial-gold/50">
                         SLUG (URL) *
                       </label>
                       <Input
@@ -509,7 +537,7 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
                         onChange={(e) => setSlug(e.target.value)}
                         placeholder="slug-del-articulo"
                       />
-                      <p className="mt-1 text-xs text-bone/40 font-mono">
+                      <p className="mt-1 font-mono text-xs text-bone/40">
                         /wiki/{page?.faction_id}/{slug}
                       </p>
                     </div>
@@ -523,29 +551,34 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
               <TacticalCard color={`${currentColor}40`}>
                 <Card padding="none">
                   <CardHeader className="border-b border-bone/10 p-4">
-                    <CardTitle className="text-base flex items-center justify-between">
+                    <CardTitle className="flex items-center justify-between text-base">
                       <div className="flex items-center gap-2">
                         <div
                           className="h-6 w-1 rounded-full"
-                          style={{ background: `linear-gradient(180deg, ${currentColor}, ${currentColor}40)` }}
+                          style={{
+                            background: `linear-gradient(180deg, ${currentColor}, ${currentColor}40)`,
+                          }}
                         />
-                        <span className="font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CONTENIDO</span>
+                        <span className="font-mono text-[10px] tracking-[0.2em] text-imperial-gold/50">
+                          CONTENIDO
+                        </span>
                       </div>
                       <button
                         type="button"
                         onClick={() => setShowGuide(!showGuide)}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono text-bone/40 hover:text-imperial-gold/70 hover:bg-imperial-gold/5 transition-colors"
+                        className="flex items-center gap-1.5 rounded-md px-2.5 py-1 font-mono text-[10px] text-bone/40 transition-colors hover:bg-imperial-gold/5 hover:text-imperial-gold/70"
                         title="Guia del editor"
                       >
-                        <HelpCircle className="w-3.5 h-3.5" />
+                        <HelpCircle className="h-3.5 w-3.5" />
                         <span className="hidden sm:inline">AYUDA</span>
                       </button>
                     </CardTitle>
                   </CardHeader>
                   <EditorGuide isOpen={showGuide} onClose={() => setShowGuide(false)} />
-                  <div className="px-4 py-2 border-b border-bone/5">
-                    <span className="text-[11px] font-mono text-bone/25 italic">
-                      Escribe <span className="text-imperial-gold/40">/</span> para insertar bloques especiales
+                  <div className="border-b border-bone/5 px-4 py-2">
+                    <span className="font-mono text-[11px] italic text-bone/25">
+                      Escribe <span className="text-imperial-gold/40">/</span> para insertar bloques
+                      especiales
                     </span>
                   </div>
                   <BlockNoteEditor
@@ -577,15 +610,17 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
               <TacticalCard color={`${currentColor}30`}>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">CLASIFICACION</CardTitle>
+                    <CardTitle className="font-mono text-[10px] text-base tracking-[0.2em] text-imperial-gold/50">
+                      CLASIFICACION
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <label className="block font-mono text-[10px] text-bone/40 tracking-[0.15em] uppercase mb-2">
+                      <label className="mb-2 block font-mono text-[10px] uppercase tracking-[0.15em] text-bone/40">
                         FACCION
                       </label>
                       <div
-                        className="px-4 py-2 rounded-lg border font-body"
+                        className="rounded-lg border px-4 py-2 font-body"
                         style={{
                           background: selectedFaction ? `${selectedFaction.color}10` : undefined,
                           borderColor: selectedFaction?.color || 'rgba(232,232,240,0.1)',
@@ -596,20 +631,22 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
                       </div>
                     </div>
                     <div>
-                      <label className="block font-mono text-[10px] text-bone/40 tracking-[0.15em] uppercase mb-2">
+                      <label className="mb-2 block font-mono text-[10px] uppercase tracking-[0.15em] text-bone/40">
                         CATEGORIA
                       </label>
                       <select
                         value={categoryId}
                         onChange={(e) => setCategoryId(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg bg-void-light border border-bone/10 text-bone font-body focus:outline-none focus:ring-2 transition-all duration-200"
+                        className="w-full rounded-lg border border-bone/10 bg-void-light px-4 py-2 font-body text-bone transition-all duration-200 focus:outline-none focus:ring-2"
                         style={{
                           ['--tw-ring-color' as string]: currentColor,
                         }}
                       >
                         <option value="">Sin categoria</option>
-                        {categories.map(c => (
-                          <option key={c.id} value={c.id}>{c.name}</option>
+                        {categories.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -623,7 +660,9 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
               <TacticalCard color={`${currentColor}30`}>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">EXTRACTO</CardTitle>
+                    <CardTitle className="font-mono text-[10px] text-base tracking-[0.2em] text-imperial-gold/50">
+                      EXTRACTO
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Textarea
@@ -642,7 +681,9 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
               <TacticalCard color={`${currentColor}30`}>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">IMAGEN PRINCIPAL</CardTitle>
+                    <CardTitle className="font-mono text-[10px] text-base tracking-[0.2em] text-imperial-gold/50">
+                      IMAGEN PRINCIPAL
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <input
@@ -656,32 +697,35 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
                       className="hidden"
                     />
                     {heroImage ? (
-                      <div className="relative aspect-video rounded-lg overflow-hidden border border-bone/10 group/preview">
+                      <div className="group/preview relative aspect-video overflow-hidden rounded-lg border border-bone/10">
                         <img
                           src={heroImage}
                           alt="Preview"
-                          className="w-full h-full object-cover"
+                          className="h-full w-full object-cover"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none'
+                            ;(e.target as HTMLImageElement).style.display = 'none'
                           }}
                         />
                         <button
                           type="button"
                           onClick={() => setHeroImage('')}
-                          className="absolute top-2 right-2 p-1.5 rounded-full bg-void/80 border border-bone/20 text-bone/60 hover:text-blood-light hover:border-blood/40 transition-colors opacity-0 group-hover/preview:opacity-100"
+                          className="absolute right-2 top-2 rounded-full border border-bone/20 bg-void/80 p-1.5 text-bone/60 opacity-0 transition-colors hover:border-blood/40 hover:text-blood-light group-hover/preview:opacity-100"
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <X className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     ) : (
                       <button
                         type="button"
                         onClick={() => heroFileRef.current?.click()}
-                        onDragOver={(e) => { e.preventDefault(); setHeroDragOver(true) }}
+                        onDragOver={(e) => {
+                          e.preventDefault()
+                          setHeroDragOver(true)
+                        }}
                         onDragLeave={() => setHeroDragOver(false)}
                         onDrop={handleHeroDrop}
                         disabled={heroUploading}
-                        className="w-full flex flex-col items-center justify-center gap-2 py-8 rounded-lg border-2 border-dashed text-xs font-mono transition-all duration-200 hover:bg-bone/5 disabled:opacity-50"
+                        className="flex w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed py-8 font-mono text-xs transition-all duration-200 hover:bg-bone/5 disabled:opacity-50"
                         style={{
                           borderColor: heroDragOver ? currentColor : `${currentColor}30`,
                           color: currentColor,
@@ -690,20 +734,18 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
                       >
                         {heroUploading ? (
                           <>
-                            <Loader2 className="w-6 h-6 animate-spin" />
+                            <Loader2 className="h-6 w-6 animate-spin" />
                             <span>Subiendo...</span>
                           </>
                         ) : (
                           <>
-                            <Upload className="w-6 h-6 opacity-60" />
+                            <Upload className="h-6 w-6 opacity-60" />
                             <span>Arrastra o haz clic para subir</span>
                           </>
                         )}
                       </button>
                     )}
-                    <p className="text-xs text-bone/40 font-mono">
-                      Recomendado: 1200x630px
-                    </p>
+                    <p className="font-mono text-xs text-bone/40">Recomendado: 1200x630px</p>
                   </CardContent>
                 </Card>
               </TacticalCard>
@@ -714,9 +756,11 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
               <TacticalCard color={`${currentColor}30`}>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em]">INFORMACION</CardTitle>
+                    <CardTitle className="font-mono text-[10px] text-base tracking-[0.2em] text-imperial-gold/50">
+                      INFORMACION
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-sm font-mono text-bone/60">
+                  <CardContent className="space-y-2 font-mono text-sm text-bone/60">
                     <div className="flex justify-between">
                       <span>Vistas:</span>
                       <span className="text-bone">{page?.views_count || 0}</span>
@@ -743,17 +787,14 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
         <ImperialDivider />
 
         {/* ── Bottom action bar ── */}
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center justify-between pt-4"
-        >
+        <motion.div variants={itemVariants} className="flex items-center justify-between pt-4">
           <Link href="/wiki-panel">
             <motion.button
               type="button"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-bone/50 hover:text-bone transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-bone/50 transition-colors hover:text-bone"
               whileHover={{ x: -4 }}
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="h-4 w-4" />
               Volver al listado
             </motion.button>
           </Link>
@@ -762,11 +803,11 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
               type="button"
               onClick={() => handleSave()}
               disabled={saving}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/15 text-bone/70 hover:bg-bone/5 hover:border-bone/30 hover:text-bone transition-all duration-200 disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-lg border border-bone/15 bg-void-light/60 px-4 py-2 text-sm font-medium text-bone/70 transition-all duration-200 hover:border-bone/30 hover:bg-bone/5 hover:text-bone disabled:opacity-40"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Save className="w-4 h-4" />
+              <Save className="h-4 w-4" />
               Guardar
             </motion.button>
             {canPublish && status !== 'published' && (
@@ -774,11 +815,11 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
                 type="button"
                 onClick={() => handleSave('published')}
                 disabled={saving}
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 text-void border border-imperial-gold/30 hover:from-imperial-gold hover:to-imperial-gold/80 shadow-[0_0_20px_rgba(201,162,39,0.2)] hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] transition-all duration-200 disabled:opacity-40"
+                className="inline-flex items-center gap-2 rounded-lg border border-imperial-gold/30 bg-gradient-to-r from-imperial-gold/80 to-imperial-gold/60 px-5 py-2 text-sm font-semibold text-void shadow-[0_0_20px_rgba(201,162,39,0.2)] transition-all duration-200 hover:from-imperial-gold hover:to-imperial-gold/80 hover:shadow-[0_0_30px_rgba(201,162,39,0.4)] disabled:opacity-40"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Globe className="w-4 h-4" />
+                <Globe className="h-4 w-4" />
                 Publicar
               </motion.button>
             )}

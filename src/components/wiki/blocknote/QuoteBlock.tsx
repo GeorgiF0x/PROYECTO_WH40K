@@ -17,24 +17,24 @@ export const QuoteBlock = createReactBlockSpec(
 
       return (
         <div
-          className="relative my-8 p-6 rounded-xl"
+          className="relative my-8 rounded-xl p-6"
           style={{
             background: `linear-gradient(135deg, color-mix(in srgb, ${factionColor} 9%, transparent) 0%, transparent 100%)`,
             border: `1px solid color-mix(in srgb, ${factionColor} 19%, transparent)`,
           }}
         >
           <QuoteIcon
-            className="absolute top-3 left-3 w-6 h-6 opacity-30"
+            className="absolute left-3 top-3 h-6 w-6 opacity-30"
             style={{ color: factionColor }}
           />
           <QuoteIcon
-            className="absolute bottom-3 right-3 w-6 h-6 opacity-30 rotate-180"
+            className="absolute bottom-3 right-3 h-6 w-6 rotate-180 opacity-30"
             style={{ color: factionColor }}
           />
 
-          <div className="pl-6 space-y-3">
+          <div className="space-y-3 pl-6">
             <textarea
-              className="font-body text-lg italic text-bone/90 leading-relaxed bg-transparent border-none outline-none w-full resize-none"
+              className="w-full resize-none border-none bg-transparent font-body text-lg italic leading-relaxed text-bone/90 outline-none"
               value={props.block.props.text}
               onChange={(e) => {
                 props.editor.updateBlock(props.block, {
@@ -47,7 +47,7 @@ export const QuoteBlock = createReactBlockSpec(
 
             <div className="flex items-center gap-3">
               <input
-                className="font-body font-semibold bg-transparent border-none outline-none flex-1 text-sm"
+                className="flex-1 border-none bg-transparent font-body text-sm font-semibold outline-none"
                 style={{ color: factionColor }}
                 value={props.block.props.author}
                 onChange={(e) => {
@@ -59,7 +59,7 @@ export const QuoteBlock = createReactBlockSpec(
               />
               <span className="text-bone/30">-</span>
               <input
-                className="font-body text-bone/50 bg-transparent border-none outline-none flex-1 text-sm"
+                className="flex-1 border-none bg-transparent font-body text-sm text-bone/50 outline-none"
                 value={props.block.props.source}
                 onChange={(e) => {
                   props.editor.updateBlock(props.block, {

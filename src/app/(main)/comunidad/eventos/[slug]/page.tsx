@@ -14,11 +14,13 @@ async function getEvent(slug: string): Promise<EventWithOrganizer | null> {
 
   const { data, error } = await supabase
     .from('events')
-    .select(`
+    .select(
+      `
       *,
       organizer:organizer_id(id, username, display_name, avatar_url, creator_status),
       store:store_id(id, name, slug)
-    `)
+    `
+    )
     .eq('slug', slug)
     .single()
 
@@ -62,17 +64,17 @@ export default async function EventDetailPage({ params }: PageProps) {
 
 function EventDetailSkeleton() {
   return (
-    <div className="min-h-screen pt-20 pb-16">
-      <div className="max-w-4xl mx-auto px-6">
-        <div className="h-64 bg-void-light rounded-2xl animate-pulse mb-8" />
-        <div className="h-8 w-2/3 bg-void-light rounded animate-pulse mb-4" />
-        <div className="h-4 w-1/3 bg-void-light/50 rounded animate-pulse mb-8" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-4">
-            <div className="h-32 bg-void-light rounded-xl animate-pulse" />
-            <div className="h-48 bg-void-light rounded-xl animate-pulse" />
+    <div className="min-h-screen pb-16 pt-20">
+      <div className="mx-auto max-w-4xl px-6">
+        <div className="mb-8 h-64 animate-pulse rounded-2xl bg-void-light" />
+        <div className="mb-4 h-8 w-2/3 animate-pulse rounded bg-void-light" />
+        <div className="mb-8 h-4 w-1/3 animate-pulse rounded bg-void-light/50" />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="space-y-4 md:col-span-2">
+            <div className="h-32 animate-pulse rounded-xl bg-void-light" />
+            <div className="h-48 animate-pulse rounded-xl bg-void-light" />
           </div>
-          <div className="h-64 bg-void-light rounded-xl animate-pulse" />
+          <div className="h-64 animate-pulse rounded-xl bg-void-light" />
         </div>
       </div>
     </div>

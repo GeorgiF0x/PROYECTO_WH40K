@@ -84,9 +84,7 @@ export function BlockNoteEditorInner({
         }
       },
       clearContent: () => {
-        editor.replaceBlocks(editor.document, [
-          { type: 'paragraph' as const },
-        ] as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+        editor.replaceBlocks(editor.document, [{ type: 'paragraph' as const }] as any) // eslint-disable-line @typescript-eslint/no-explicit-any
       },
     }),
     [editor]
@@ -100,17 +98,14 @@ export function BlockNoteEditorInner({
   }, [editor, onChange])
 
   const slashMenuItems = useCallback(
-    async (query: string) =>
-      filterSuggestionItems(getWikiSlashMenuItems(editor as any), query), // eslint-disable-line @typescript-eslint/no-explicit-any
+    async (query: string) => filterSuggestionItems(getWikiSlashMenuItems(editor as any), query), // eslint-disable-line @typescript-eslint/no-explicit-any
     [editor]
   )
 
   return (
     <div
       className={className}
-      style={
-        { '--bn-faction-color': factionColor } as React.CSSProperties
-      }
+      style={{ '--bn-faction-color': factionColor } as React.CSSProperties}
     >
       <BlockNoteView
         editor={editor}
@@ -119,10 +114,7 @@ export function BlockNoteEditorInner({
         theme="dark"
         slashMenu={false}
       >
-        <SuggestionMenuController
-          triggerCharacter="/"
-          getItems={slashMenuItems}
-        />
+        <SuggestionMenuController triggerCharacter="/" getItems={slashMenuItems} />
       </BlockNoteView>
     </div>
   )

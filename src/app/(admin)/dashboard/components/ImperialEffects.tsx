@@ -12,15 +12,9 @@ export function ScanLines() {
   return (
     <>
       {/* Static scanlines */}
-      <div
-        className="scanlines-overlay"
-        aria-hidden="true"
-      />
+      <div className="scanlines-overlay" aria-hidden="true" />
       {/* Moving scan sweep */}
-      <div
-        className="scan-sweep"
-        aria-hidden="true"
-      />
+      <div className="scan-sweep" aria-hidden="true" />
     </>
   )
 }
@@ -44,10 +38,7 @@ export function RadarPulse({
   className = '',
 }: RadarPulseProps) {
   return (
-    <div
-      className={`relative ${className}`}
-      style={{ width: size, height: size }}
-    >
+    <div className={`relative ${className}`} style={{ width: size, height: size }}>
       {/* Multiple concentric rings */}
       {[0, 1, 2].map((index) => (
         <motion.div
@@ -69,7 +60,7 @@ export function RadarPulse({
       ))}
       {/* Center dot */}
       <motion.div
-        className="absolute top-1/2 left-1/2 w-2 h-2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+        className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{ backgroundColor: color }}
         animate={{
           scale: [1, 1.2, 1],
@@ -115,7 +106,9 @@ export function HoloGlow({
     <motion.div
       className={`relative ${className}`}
       whileHover={{
-        boxShadow: `0 0 ${blur}px ${spread}px ${color}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`,
+        boxShadow: `0 0 ${blur}px ${spread}px ${color}${Math.round(opacity * 255)
+          .toString(16)
+          .padStart(2, '0')}`,
       }}
       transition={{ duration: 0.3 }}
     >
@@ -145,13 +138,11 @@ export function DataStream({
   className = '',
 }: DataStreamProps) {
   const columns = Math.floor(width / 15)
-  const characters = '01001101011001010100001101001000010000011001110100110101001110010101010101001101'
+  const characters =
+    '01001101011001010100001101001000010000011001110100110101001110010101010101001101'
 
   return (
-    <div
-      className={`relative overflow-hidden ${className}`}
-      style={{ width, height }}
-    >
+    <div className={`relative overflow-hidden ${className}`} style={{ width, height }}>
       {Array.from({ length: columns }).map((_, colIndex) => {
         if (Math.random() > density) return null
 
@@ -161,7 +152,7 @@ export function DataStream({
         return (
           <motion.div
             key={colIndex}
-            className="absolute text-[10px] font-mono leading-3"
+            className="absolute font-mono text-[10px] leading-3"
             style={{
               left: colIndex * 15,
               color: 'rgba(13, 155, 138, 0.7)',
@@ -258,20 +249,12 @@ interface TacticalFrameProps {
   className?: string
 }
 
-export function TacticalFrame({
-  children,
-  color = '#C9A227',
-  className = '',
-}: TacticalFrameProps) {
+export function TacticalFrame({ children, color = '#C9A227', className = '' }: TacticalFrameProps) {
   return (
-    <motion.div
-      className={`relative ${className}`}
-      initial="idle"
-      whileHover="active"
-    >
+    <motion.div className={`relative ${className}`} initial="idle" whileHover="active">
       {/* Corner brackets */}
       <motion.span
-        className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2"
+        className="absolute left-0 top-0 h-4 w-4 border-l-2 border-t-2"
         style={{ borderColor: `${color}50` }}
         variants={{
           idle: { width: 16, height: 16, borderColor: `${color}50` },
@@ -280,7 +263,7 @@ export function TacticalFrame({
         transition={{ duration: 0.2 }}
       />
       <motion.span
-        className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2"
+        className="absolute right-0 top-0 h-4 w-4 border-r-2 border-t-2"
         style={{ borderColor: `${color}50` }}
         variants={{
           idle: { width: 16, height: 16, borderColor: `${color}50` },
@@ -289,7 +272,7 @@ export function TacticalFrame({
         transition={{ duration: 0.2 }}
       />
       <motion.span
-        className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2"
+        className="absolute bottom-0 left-0 h-4 w-4 border-b-2 border-l-2"
         style={{ borderColor: `${color}50` }}
         variants={{
           idle: { width: 16, height: 16, borderColor: `${color}50` },
@@ -298,7 +281,7 @@ export function TacticalFrame({
         transition={{ duration: 0.2 }}
       />
       <motion.span
-        className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2"
+        className="absolute bottom-0 right-0 h-4 w-4 border-b-2 border-r-2"
         style={{ borderColor: `${color}50` }}
         variants={{
           idle: { width: 16, height: 16, borderColor: `${color}50` },
@@ -327,7 +310,7 @@ export function EnergySeparator({ className = '', showPulse = true }: EnergySepa
     <div className={`energy-separator ${className}`}>
       {showPulse && (
         <motion.span
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-imperial-gold rounded-full"
+          className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-imperial-gold"
           animate={{
             scale: [1, 1.3, 1],
             opacity: [0.5, 1, 0.5],
@@ -387,7 +370,7 @@ export function CogitatorLoading({
         />
         {/* Center dot */}
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-imperial-gold rounded-full"
+          className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-imperial-gold"
           animate={{
             scale: [1, 1.5, 1],
             opacity: [0.5, 1, 0.5],
@@ -427,9 +410,7 @@ export function StrategiumHeader({ title, subtitle, className = '' }: Strategium
       transition={{ duration: 0.4 }}
     >
       <div>
-        {subtitle && (
-          <p className="subtitle mb-1">{subtitle}</p>
-        )}
+        {subtitle && <p className="subtitle mb-1">{subtitle}</p>}
         <h2>{title}</h2>
       </div>
     </motion.div>

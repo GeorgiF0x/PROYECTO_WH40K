@@ -15,7 +15,7 @@ export function createClient() {
   console.log('[Supabase Client] Creating client...', {
     hasUrl: !!supabaseUrl,
     hasKey: !!supabaseAnonKey,
-    url: supabaseUrl?.slice(0, 30) + '...'
+    url: supabaseUrl?.slice(0, 30) + '...',
   })
 
   if (!supabaseUrl || !supabaseAnonKey) {

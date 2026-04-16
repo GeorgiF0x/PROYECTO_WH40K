@@ -6,9 +6,7 @@ import type { ZodIssue, ZodType } from 'zod'
  * passed validation (and you get the typed data), or it failed and you get a
  * ready-to-return NextResponse — no more boilerplate per-route.
  */
-export type ParseResult<T> =
-  | { success: true; data: T }
-  | { success: false; response: NextResponse }
+export type ParseResult<T> = { success: true; data: T } | { success: false; response: NextResponse }
 
 interface ValidationErrorBody {
   error: string

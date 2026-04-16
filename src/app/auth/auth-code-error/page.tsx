@@ -12,28 +12,26 @@ function ErrorContent() {
   const errorCode = searchParams.get('code')
 
   return (
-    <div className="min-h-screen bg-void flex items-center justify-center p-6">
+    <div className="flex min-h-screen items-center justify-center bg-void p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full text-center"
+        className="w-full max-w-md text-center"
       >
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blood/20 border border-blood/30 mb-6">
-          <AlertTriangle className="w-8 h-8 text-blood" />
+        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border border-blood/30 bg-blood/20">
+          <AlertTriangle className="h-8 w-8 text-blood" />
         </div>
 
-        <h1 className="text-2xl font-display font-bold text-bone mb-4">
-          Error de Autenticación
-        </h1>
+        <h1 className="mb-4 font-display text-2xl font-bold text-bone">Error de Autenticación</h1>
 
-        <p className="text-bone/60 font-body mb-4">
-          Hubo un problema al iniciar sesión. Esto puede ocurrir si el enlace ha expirado
-          o si hubo un error con el proveedor de autenticación.
+        <p className="mb-4 font-body text-bone/60">
+          Hubo un problema al iniciar sesión. Esto puede ocurrir si el enlace ha expirado o si hubo
+          un error con el proveedor de autenticación.
         </p>
 
         {(error || errorCode) && (
-          <div className="mb-6 p-4 bg-blood/10 border border-blood/30 rounded-lg text-left">
-            <p className="text-xs text-bone/50 font-mono">
+          <div className="mb-6 rounded-lg border border-blood/30 bg-blood/10 p-4 text-left">
+            <p className="font-mono text-xs text-bone/50">
               {errorCode && <span className="block">Code: {errorCode}</span>}
               {error && <span className="block">Error: {error}</span>}
             </p>
@@ -43,7 +41,7 @@ function ErrorContent() {
         <div className="space-y-3">
           <Link href="/login">
             <motion.button
-              className="w-full px-6 py-3 bg-imperial-gold text-void font-display font-bold rounded-lg"
+              className="w-full rounded-lg bg-imperial-gold px-6 py-3 font-display font-bold text-void"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -53,11 +51,11 @@ function ErrorContent() {
 
           <Link href="/">
             <motion.button
-              className="w-full px-6 py-3 bg-void-light border border-bone/10 text-bone font-body rounded-lg flex items-center justify-center gap-2"
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-bone/10 bg-void-light px-6 py-3 font-body text-bone"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="h-4 w-4" />
               Volver al inicio
             </motion.button>
           </Link>

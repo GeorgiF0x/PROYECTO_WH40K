@@ -20,22 +20,22 @@ import {
 
 export default function PrivacidadPage() {
   return (
-    <div className="min-h-screen pt-24 pb-16 bg-gradient-to-b from-void via-amber-950/5 to-void">
+    <div className="min-h-screen bg-gradient-to-b from-void via-amber-950/5 to-void pb-16 pt-24">
       {/* Background decorative elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <motion.div
-          className="absolute top-1/3 -right-32 w-72 h-72 bg-amber-500/5 rounded-full blur-3xl"
+          className="absolute -right-32 top-1/3 h-72 w-72 rounded-full bg-amber-500/5 blur-3xl"
           animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
           transition={{ duration: 10, repeat: Infinity }}
         />
         <motion.div
-          className="absolute bottom-1/3 -left-32 w-72 h-72 bg-amber-500/5 rounded-full blur-3xl"
+          className="absolute -left-32 bottom-1/3 h-72 w-72 rounded-full bg-amber-500/5 blur-3xl"
           animate={{ scale: [1.3, 1, 1.3], opacity: [0.4, 0.2, 0.4] }}
           transition={{ duration: 10, repeat: Infinity }}
         />
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 relative">
+      <div className="relative mx-auto max-w-4xl px-6">
         {/* Back link */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -44,10 +44,10 @@ export default function PrivacidadPage() {
         >
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-amber-400/70 hover:text-amber-400 transition-colors mb-8 group"
+            className="group mb-8 inline-flex items-center gap-2 text-sm text-amber-400/70 transition-colors hover:text-amber-400"
           >
             <motion.span whileHover={{ x: -4 }} transition={{ type: 'spring', stiffness: 400 }}>
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="h-4 w-4" />
             </motion.span>
             Volver al Forge
           </Link>
@@ -58,47 +58,47 @@ export default function PrivacidadPage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative bg-gradient-to-br from-amber-950/80 via-amber-900/60 to-amber-950/80 border-2 border-amber-500/40 rounded-2xl overflow-hidden mb-10"
+          className="relative mb-10 overflow-hidden rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-950/80 via-amber-900/60 to-amber-950/80"
         >
           {/* Animated scan line */}
           <motion.div
-            className="absolute inset-0 bg-gradient-to-b from-amber-400/5 via-transparent to-transparent h-20"
+            className="absolute inset-0 h-20 bg-gradient-to-b from-amber-400/5 via-transparent to-transparent"
             animate={{ y: ['-100%', '500%'] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
           />
 
           {/* Corner brackets */}
-          <div className="absolute top-0 left-0 w-8 h-8 border-l-3 border-t-3 border-amber-400" />
-          <div className="absolute top-0 right-0 w-8 h-8 border-r-3 border-t-3 border-amber-400" />
-          <div className="absolute bottom-0 left-0 w-8 h-8 border-l-3 border-b-3 border-amber-400" />
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-r-3 border-b-3 border-amber-400" />
+          <div className="border-l-3 border-t-3 absolute left-0 top-0 h-8 w-8 border-amber-400" />
+          <div className="border-r-3 border-t-3 absolute right-0 top-0 h-8 w-8 border-amber-400" />
+          <div className="border-l-3 border-b-3 absolute bottom-0 left-0 h-8 w-8 border-amber-400" />
+          <div className="border-r-3 border-b-3 absolute bottom-0 right-0 h-8 w-8 border-amber-400" />
 
-          <div className="bg-amber-500/15 border-b border-amber-500/30 px-6 py-3 flex items-center gap-3">
+          <div className="flex items-center gap-3 border-b border-amber-500/30 bg-amber-500/15 px-6 py-3">
             <motion.div
               animate={{ rotate: [0, 5, -5, 0] }}
               transition={{ duration: 4, repeat: Infinity }}
             >
-              <Shield className="w-5 h-5 text-amber-400" />
+              <Shield className="h-5 w-5 text-amber-400" />
             </motion.div>
-            <span className="text-sm font-bold text-amber-300 uppercase tracking-wider">
+            <span className="text-sm font-bold uppercase tracking-wider text-amber-300">
               Decreto de Protección de Datos
             </span>
           </div>
 
-          <div className="p-6 md:p-8 relative">
+          <div className="relative p-6 md:p-8">
             <div className="flex items-center gap-5">
               <motion.div
-                className="p-4 bg-amber-500/20 rounded-xl border border-amber-500/30"
+                className="rounded-xl border border-amber-500/30 bg-amber-500/20 p-4"
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               >
-                <Eye className="w-10 h-10 text-amber-400" />
+                <Eye className="h-10 w-10 text-amber-400" />
               </motion.div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-amber-100">
+                <h1 className="text-2xl font-bold text-amber-100 md:text-3xl">
                   Política de Privacidad
                 </h1>
-                <p className="text-sm text-amber-400/60 mt-1">
+                <p className="mt-1 text-sm text-amber-400/60">
                   Ref: ADMINISTRATUM/PRIVACY/M41.999 | Última actualización: 28.01.026.M3
                 </p>
               </div>
@@ -108,39 +108,35 @@ export default function PrivacidadPage() {
 
         {/* Content */}
         <div className="space-y-10">
-          <AnimatedSection
-            icon={FileText}
-            title="I. Información General"
-            id="info"
-            delay={0.2}
-          >
+          <AnimatedSection icon={FileText} title="I. Información General" id="info" delay={0.2}>
             <p>
-              En cumplimiento del Reglamento (UE) 2016/679 del Parlamento Europeo (<span className="text-amber-400">RGPD</span>) y la
-              Ley Orgánica 3/2018 de Protección de Datos Personales (<span className="text-amber-400">LOPDGDD</span>), te informamos
-              sobre el tratamiento de tus datos personales en <strong className="text-amber-300">Grimdark Legion</strong>.
+              En cumplimiento del Reglamento (UE) 2016/679 del Parlamento Europeo (
+              <span className="text-amber-400">RGPD</span>) y la Ley Orgánica 3/2018 de Protección
+              de Datos Personales (<span className="text-amber-400">LOPDGDD</span>), te informamos
+              sobre el tratamiento de tus datos personales en{' '}
+              <strong className="text-amber-300">Grimdark Legion</strong>.
             </p>
             <motion.div
-              className="mt-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl"
+              className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4"
               whileHover={{ scale: 1.01 }}
             >
-              <h4 className="font-semibold text-amber-200 mb-2">Responsable del Tratamiento</h4>
+              <h4 className="mb-2 font-semibold text-amber-200">Responsable del Tratamiento</h4>
               <ul className="space-y-1 text-sm text-amber-300/70">
-                <li><strong className="text-amber-200">Nombre:</strong> Grimdark Legion</li>
-                <li><strong className="text-amber-200">Email:</strong> contacto@grimdarklegion.com</li>
-                <li><strong className="text-amber-200">Sitio web:</strong> https://grimdarklegion.com</li>
+                <li>
+                  <strong className="text-amber-200">Nombre:</strong> Grimdark Legion
+                </li>
+                <li>
+                  <strong className="text-amber-200">Email:</strong> contacto@grimdarklegion.com
+                </li>
+                <li>
+                  <strong className="text-amber-200">Sitio web:</strong> https://grimdarklegion.com
+                </li>
               </ul>
             </motion.div>
           </AnimatedSection>
 
-          <AnimatedSection
-            icon={Database}
-            title="II. Datos que Recopilamos"
-            id="datos"
-            delay={0.3}
-          >
-            <p>
-              Recopilamos los siguientes tipos de datos personales:
-            </p>
+          <AnimatedSection icon={Database} title="II. Datos que Recopilamos" id="datos" delay={0.3}>
+            <p>Recopilamos los siguientes tipos de datos personales:</p>
             <div className="mt-4 space-y-3">
               <DataCategory
                 title="Datos de Registro"
@@ -188,50 +184,41 @@ export default function PrivacidadPage() {
             id="finalidad"
             delay={0.4}
           >
-            <p>
-              Tus datos personales son tratados para las siguientes finalidades:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-amber-200/70 mt-4">
+            <p>Tus datos personales son tratados para las siguientes finalidades:</p>
+            <ul className="mt-4 list-inside list-disc space-y-2 text-amber-200/70">
               <li>
-                <strong className="text-amber-200">Prestación del servicio:</strong> Gestión de tu cuenta,
-                publicación de contenido, comunicación entre usuarios.
+                <strong className="text-amber-200">Prestación del servicio:</strong> Gestión de tu
+                cuenta, publicación de contenido, comunicación entre usuarios.
               </li>
               <li>
-                <strong className="text-amber-200">Mejora del servicio:</strong> Análisis de uso para
-                mejorar la plataforma y detectar problemas técnicos.
+                <strong className="text-amber-200">Mejora del servicio:</strong> Análisis de uso
+                para mejorar la plataforma y detectar problemas técnicos.
               </li>
               <li>
                 <strong className="text-amber-200">Seguridad:</strong> Prevención de fraude, abuso y
                 cumplimiento de nuestras normas de comunidad.
               </li>
               <li>
-                <strong className="text-amber-200">Comunicaciones:</strong> Notificaciones sobre tu cuenta,
-                actualizaciones importantes del servicio.
+                <strong className="text-amber-200">Comunicaciones:</strong> Notificaciones sobre tu
+                cuenta, actualizaciones importantes del servicio.
               </li>
             </ul>
           </AnimatedSection>
 
-          <AnimatedSection
-            icon={Server}
-            title="IV. Base Legal"
-            id="base-legal"
-            delay={0.5}
-          >
-            <p>
-              El tratamiento de tus datos se basa en:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-amber-200/70 mt-4">
+          <AnimatedSection icon={Server} title="IV. Base Legal" id="base-legal" delay={0.5}>
+            <p>El tratamiento de tus datos se basa en:</p>
+            <ul className="mt-4 list-inside list-disc space-y-2 text-amber-200/70">
               <li>
                 <strong className="text-amber-200">Ejecución de contrato:</strong> Necesario para
                 prestarte el servicio al que te has registrado (Art. 6.1.b RGPD).
               </li>
               <li>
-                <strong className="text-amber-200">Consentimiento:</strong> Para cookies no esenciales
-                y comunicaciones opcionales (Art. 6.1.a RGPD).
+                <strong className="text-amber-200">Consentimiento:</strong> Para cookies no
+                esenciales y comunicaciones opcionales (Art. 6.1.a RGPD).
               </li>
               <li>
-                <strong className="text-amber-200">Interés legítimo:</strong> Para seguridad y mejora
-                del servicio (Art. 6.1.f RGPD).
+                <strong className="text-amber-200">Interés legítimo:</strong> Para seguridad y
+                mejora del servicio (Art. 6.1.f RGPD).
               </li>
             </ul>
           </AnimatedSection>
@@ -242,36 +229,31 @@ export default function PrivacidadPage() {
             id="comparticion"
             delay={0.6}
           >
-            <p>
-              Tus datos pueden ser compartidos con:
-            </p>
+            <p>Tus datos pueden ser compartidos con:</p>
             <div className="mt-4 space-y-3">
-              <ThirdParty name="Supabase (PostgreSQL)" purpose="Almacenamiento de datos y autenticación" location="UE/EE.UU." />
+              <ThirdParty
+                name="Supabase (PostgreSQL)"
+                purpose="Almacenamiento de datos y autenticación"
+                location="UE/EE.UU."
+              />
               <ThirdParty name="Vercel" purpose="Alojamiento de la aplicación" location="EE.UU." />
               <ThirdParty name="Mapbox" purpose="Mapas para tiendas y eventos" location="EE.UU." />
             </div>
             <motion.div
-              className="mt-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl"
+              className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4"
               whileHover={{ scale: 1.01 }}
             >
               <p className="text-sm text-amber-300/80">
-                <strong className="text-amber-200">Nota:</strong> No vendemos ni alquilamos tus datos
-                personales a terceros. Solo compartimos datos cuando es necesario para
+                <strong className="text-amber-200">Nota:</strong> No vendemos ni alquilamos tus
+                datos personales a terceros. Solo compartimos datos cuando es necesario para
                 proporcionar el servicio o cuando la ley lo requiere.
               </p>
             </motion.div>
           </AnimatedSection>
 
-          <AnimatedSection
-            icon={UserCheck}
-            title="VI. Tus Derechos"
-            id="derechos"
-            delay={0.7}
-          >
-            <p>
-              Como ciudadano de la UE, tienes los siguientes derechos sobre tus datos:
-            </p>
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+          <AnimatedSection icon={UserCheck} title="VI. Tus Derechos" id="derechos" delay={0.7}>
+            <p>Como ciudadano de la UE, tienes los siguientes derechos sobre tus datos:</p>
+            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
               <Right title="Acceso" description="Solicitar una copia de tus datos personales" />
               <Right title="Rectificación" description="Corregir datos inexactos o incompletos" />
               <Right title="Supresión" description="Solicitar la eliminación de tus datos" />
@@ -281,26 +263,24 @@ export default function PrivacidadPage() {
             </div>
             <p className="mt-4">
               Para ejercer estos derechos, contacta con nosotros en:{' '}
-              <a href="mailto:contacto@grimdarklegion.com" className="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              <a
+                href="mailto:contacto@grimdarklegion.com"
+                className="text-amber-400 underline underline-offset-2 hover:text-amber-300"
+              >
                 contacto@grimdarklegion.com
               </a>
             </p>
-            <p className="mt-2 text-amber-400/60 text-sm">
+            <p className="mt-2 text-sm text-amber-400/60">
               Responderemos a tu solicitud en un plazo máximo de 30 días.
             </p>
           </AnimatedSection>
 
-          <AnimatedSection
-            icon={Clock}
-            title="VII. Retención de Datos"
-            id="retencion"
-            delay={0.8}
-          >
+          <AnimatedSection icon={Clock} title="VII. Retención de Datos" id="retencion" delay={0.8}>
             <p>
-              Conservamos tus datos personales mientras tu cuenta esté activa. Si decides
-              eliminar tu cuenta:
+              Conservamos tus datos personales mientras tu cuenta esté activa. Si decides eliminar
+              tu cuenta:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-amber-200/70 mt-4">
+            <ul className="mt-4 list-inside list-disc space-y-2 text-amber-200/70">
               <li>Tu perfil y datos personales serán eliminados inmediatamente</li>
               <li>El contenido que hayas publicado (miniaturas, comentarios) se anonimizará</li>
               <li>Los datos de facturación se conservarán según requisitos legales (si aplica)</li>
@@ -314,31 +294,33 @@ export default function PrivacidadPage() {
             id="contacto"
             delay={0.9}
           >
-            <p>
-              Si tienes preguntas sobre esta política o quieres ejercer tus derechos:
-            </p>
+            <p>Si tienes preguntas sobre esta política o quieres ejercer tus derechos:</p>
             <motion.div
-              className="mt-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl"
+              className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4"
               whileHover={{ scale: 1.01 }}
             >
               <p className="text-amber-200">
                 <strong>Email:</strong>{' '}
-                <a href="mailto:contacto@grimdarklegion.com" className="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+                <a
+                  href="mailto:contacto@grimdarklegion.com"
+                  className="text-amber-400 underline underline-offset-2 hover:text-amber-300"
+                >
                   contacto@grimdarklegion.com
                 </a>
               </p>
             </motion.div>
             <p className="mt-4 text-amber-300/70">
-              Si consideras que no hemos atendido adecuadamente tus derechos, puedes presentar
-              una reclamación ante la{' '}
+              Si consideras que no hemos atendido adecuadamente tus derechos, puedes presentar una
+              reclamación ante la{' '}
               <a
                 href="https://www.aepd.es"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-amber-400 hover:text-amber-300 underline underline-offset-2"
+                className="text-amber-400 underline underline-offset-2 hover:text-amber-300"
               >
                 Agencia Española de Protección de Datos (AEPD)
-              </a>.
+              </a>
+              .
             </p>
           </AnimatedSection>
 
@@ -347,24 +329,26 @@ export default function PrivacidadPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mt-16 pt-8 border-t border-amber-500/20 text-center"
+            className="mt-16 border-t border-amber-500/20 pt-8 text-center"
           >
             <motion.div
-              className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500/10 border border-amber-500/30 rounded-xl"
+              className="inline-flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-6 py-3"
               whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(251, 191, 36, 0.2)' }}
             >
-              <Shield className="w-5 h-5 text-amber-400" />
-              <span className="text-sm text-amber-300 tracking-wider font-medium">SELLO DEL ADMINISTRATUM</span>
+              <Shield className="h-5 w-5 text-amber-400" />
+              <span className="text-sm font-medium tracking-wider text-amber-300">
+                SELLO DEL ADMINISTRATUM
+              </span>
             </motion.div>
-            <p className="text-[11px] text-amber-500/50 mt-4 tracking-[0.2em]">
+            <p className="mt-4 text-[11px] tracking-[0.2em] text-amber-500/50">
               ++ DOCUMENTO OFICIAL ++ PROTECCIÓN DE DATOS ++ TUS DATOS, TU CONTROL ++
             </p>
 
             {/* Related links */}
-            <div className="flex items-center justify-center gap-6 mt-6">
+            <div className="mt-6 flex items-center justify-center gap-6">
               <Link
                 href="/legal/cookies"
-                className="text-sm text-amber-400/70 hover:text-amber-400 transition-colors"
+                className="text-sm text-amber-400/70 transition-colors hover:text-amber-400"
               >
                 Política de Cookies
               </Link>
@@ -401,35 +385,27 @@ function AnimatedSection({
       transition={{ duration: 0.6, delay }}
       className="scroll-mt-24"
     >
-      <div className="flex items-center gap-3 mb-5">
+      <div className="mb-5 flex items-center gap-3">
         <motion.div
-          className="p-2.5 bg-amber-500/15 rounded-lg border border-amber-500/30"
+          className="rounded-lg border border-amber-500/30 bg-amber-500/15 p-2.5"
           whileHover={{ scale: 1.1, rotate: 5 }}
         >
-          <Icon className="w-5 h-5 text-amber-400" />
+          <Icon className="h-5 w-5 text-amber-400" />
         </motion.div>
         <h2 className="text-xl font-bold text-amber-100">{title}</h2>
       </div>
-      <div className="pl-14 space-y-4 text-amber-200/80 leading-relaxed">
-        {children}
-      </div>
+      <div className="space-y-4 pl-14 leading-relaxed text-amber-200/80">{children}</div>
     </motion.section>
   )
 }
 
-function DataCategory({
-  title,
-  items,
-}: {
-  title: string
-  items: string[]
-}) {
+function DataCategory({ title, items }: { title: string; items: string[] }) {
   return (
     <motion.div
-      className="p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl"
+      className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4"
       whileHover={{ scale: 1.01, borderColor: 'rgba(251, 191, 36, 0.4)' }}
     >
-      <h4 className="font-semibold text-amber-200 mb-3">{title}</h4>
+      <h4 className="mb-3 font-semibold text-amber-200">{title}</h4>
       <ul className="space-y-1.5">
         {items.map((item, i) => (
           <motion.li
@@ -438,9 +414,9 @@ function DataCategory({
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.05 }}
             viewport={{ once: true }}
-            className="text-sm text-amber-300/70 flex items-start gap-2"
+            className="flex items-start gap-2 text-sm text-amber-300/70"
           >
-            <span className="text-amber-400 mt-0.5">•</span>
+            <span className="mt-0.5 text-amber-400">•</span>
             {item}
           </motion.li>
         ))}
@@ -460,34 +436,30 @@ function ThirdParty({
 }) {
   return (
     <motion.div
-      className="p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl"
+      className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4"
       whileHover={{ scale: 1.01, borderColor: 'rgba(251, 191, 36, 0.4)' }}
     >
       <div className="flex items-start justify-between">
         <div>
           <span className="font-medium text-amber-200">{name}</span>
-          <p className="text-sm text-amber-400/60 mt-0.5">{purpose}</p>
+          <p className="mt-0.5 text-sm text-amber-400/60">{purpose}</p>
         </div>
-        <span className="text-xs text-amber-400/50 bg-amber-500/10 px-2 py-1 rounded">{location}</span>
+        <span className="rounded bg-amber-500/10 px-2 py-1 text-xs text-amber-400/50">
+          {location}
+        </span>
       </div>
     </motion.div>
   )
 }
 
-function Right({
-  title,
-  description,
-}: {
-  title: string
-  description: string
-}) {
+function Right({ title, description }: { title: string; description: string }) {
   return (
     <motion.div
-      className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl"
+      className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3"
       whileHover={{ scale: 1.02, borderColor: 'rgba(251, 191, 36, 0.4)' }}
     >
-      <h4 className="font-semibold text-amber-200 text-sm">{title}</h4>
-      <p className="text-xs text-amber-400/60 mt-1">{description}</p>
+      <h4 className="text-sm font-semibold text-amber-200">{title}</h4>
+      <p className="mt-1 text-xs text-amber-400/60">{description}</p>
     </motion.div>
   )
 }

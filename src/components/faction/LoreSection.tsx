@@ -16,25 +16,25 @@ export function LoreSection({ faction }: LoreSectionProps) {
 
   // Solo mostramos las primeras 2 secciones de lore como "gancho"
   const featuredLore = faction.loreSections.slice(0, 2)
-  const firstQuote = featuredLore.find(s => s.quote)?.quote
+  const firstQuote = featuredLore.find((s) => s.quote)?.quote
 
   return (
     <section className="py-16 md:py-24">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="mx-auto max-w-7xl px-6">
         {/* Hero Lore Introduction */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-4xl mx-auto text-center mb-20"
+          className="mx-auto mb-20 max-w-4xl text-center"
         >
           <span
-            className="font-body text-sm font-semibold tracking-widest uppercase mb-4 block"
+            className="mb-4 block font-body text-sm font-semibold uppercase tracking-widest"
             style={{ color: faction.color }}
           >
             Trasfondo
           </span>
-          <h2 className="font-display text-3xl md:text-5xl font-black text-white mb-8">
+          <h2 className="mb-8 font-display text-3xl font-black text-white md:text-5xl">
             La Historia de {faction.shortName}
           </h2>
 
@@ -42,7 +42,7 @@ export function LoreSection({ faction }: LoreSectionProps) {
           <div className="text-left">
             <p className="font-body text-xl leading-relaxed text-bone/80">
               <span
-                className="float-left font-display text-6xl font-black mr-4 mt-1 leading-none"
+                className="float-left mr-4 mt-1 font-display text-6xl font-black leading-none"
                 style={{ color: faction.color }}
               >
                 {faction.longDescription.charAt(0)}
@@ -58,36 +58,32 @@ export function LoreSection({ faction }: LoreSectionProps) {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="relative max-w-3xl mx-auto mb-20 p-8 rounded-2xl text-center"
+            className="relative mx-auto mb-20 max-w-3xl rounded-2xl p-8 text-center"
             style={{
               background: `linear-gradient(135deg, ${faction.color}15 0%, transparent 100%)`,
               border: `1px solid ${faction.color}30`,
             }}
           >
             <Quote
-              className="absolute top-4 left-4 w-8 h-8 opacity-30"
+              className="absolute left-4 top-4 h-8 w-8 opacity-30"
               style={{ color: faction.color }}
             />
             <Quote
-              className="absolute bottom-4 right-4 w-8 h-8 opacity-30 rotate-180"
+              className="absolute bottom-4 right-4 h-8 w-8 rotate-180 opacity-30"
               style={{ color: faction.color }}
             />
-            <p className="font-body text-2xl italic text-bone/90 mb-4">
-              "{firstQuote.text}"
-            </p>
+            <p className="mb-4 font-body text-2xl italic text-bone/90">"{firstQuote.text}"</p>
             <footer className="font-body">
               <span className="font-semibold" style={{ color: faction.color }}>
                 {firstQuote.author}
               </span>
-              {firstQuote.source && (
-                <span className="text-bone/50"> — {firstQuote.source}</span>
-              )}
+              {firstQuote.source && <span className="text-bone/50"> — {firstQuote.source}</span>}
             </footer>
           </motion.blockquote>
         )}
 
         {/* Lore Cards - Solo 2 secciones principales */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
+        <div className="mb-20 grid grid-cols-1 gap-8 lg:grid-cols-2">
           {featuredLore.map((section, index) => (
             <motion.article
               key={section.title}
@@ -95,7 +91,7 @@ export function LoreSection({ faction }: LoreSectionProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="group relative rounded-2xl overflow-hidden"
+              className="group relative overflow-hidden rounded-2xl"
               style={{
                 background: theme?.cssVars['--faction-bg'] || '#030308',
                 border: `1px solid ${faction.color}20`,
@@ -119,7 +115,7 @@ export function LoreSection({ faction }: LoreSectionProps) {
 
                 {/* Chapter number */}
                 <div
-                  className="absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center font-display font-bold"
+                  className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full font-display font-bold"
                   style={{ background: faction.color, color: '#000' }}
                 >
                   {index + 1}
@@ -128,22 +124,20 @@ export function LoreSection({ faction }: LoreSectionProps) {
 
               {/* Content */}
               <div className="p-6">
-                <h3 className="font-display text-xl font-bold text-white mb-4">
-                  {section.title}
-                </h3>
-                <p className="font-body text-bone/70 leading-relaxed line-clamp-4">
+                <h3 className="mb-4 font-display text-xl font-bold text-white">{section.title}</h3>
+                <p className="line-clamp-4 font-body leading-relaxed text-bone/70">
                   {section.content.split('\n\n')[0]}
                 </p>
 
                 {/* Read more hint */}
                 <Link
                   href={`/wiki/${faction.id}`}
-                  className="mt-4 flex items-center gap-2 font-body text-sm opacity-60 group-hover:opacity-100 transition-opacity"
+                  className="mt-4 flex items-center gap-2 font-body text-sm opacity-60 transition-opacity group-hover:opacity-100"
                   style={{ color: faction.color }}
                 >
-                  <BookOpen className="w-4 h-4" />
+                  <BookOpen className="h-4 w-4" />
                   <span>Explorar en la Wiki</span>
-                  <ArrowRight className="w-3 h-3" />
+                  <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
             </motion.article>
@@ -157,14 +151,12 @@ export function LoreSection({ faction }: LoreSectionProps) {
           viewport={{ once: true }}
           className="mb-20"
         >
-          <div className="flex items-center gap-3 mb-8">
-            <Users className="w-6 h-6" style={{ color: faction.color }} />
-            <h3 className="font-display text-2xl font-bold text-white">
-              Personajes Legendarios
-            </h3>
+          <div className="mb-8 flex items-center gap-3">
+            <Users className="h-6 w-6" style={{ color: faction.color }} />
+            <h3 className="font-display text-2xl font-bold text-white">Personajes Legendarios</h3>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {faction.notableCharacters.map((character, i) => {
               const [name, title] = character.split(' - ')
               return (
@@ -174,23 +166,19 @@ export function LoreSection({ faction }: LoreSectionProps) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05 }}
-                  className="p-4 rounded-xl border transition-all hover:border-opacity-50"
+                  className="rounded-xl border p-4 transition-all hover:border-opacity-50"
                   style={{
                     background: `${faction.color}05`,
                     borderColor: `${faction.color}20`,
                   }}
                 >
                   <h4
-                    className="font-display text-sm font-bold mb-1"
+                    className="mb-1 font-display text-sm font-bold"
                     style={{ color: faction.color }}
                   >
                     {name}
                   </h4>
-                  {title && (
-                    <p className="font-body text-xs text-bone/50">
-                      {title}
-                    </p>
-                  )}
+                  {title && <p className="font-body text-xs text-bone/50">{title}</p>}
                 </motion.div>
               )
             })}
@@ -202,7 +190,7 @@ export function LoreSection({ faction }: LoreSectionProps) {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="relative p-8 rounded-2xl overflow-hidden"
+          className="relative overflow-hidden rounded-2xl p-8"
           style={{
             background: `linear-gradient(135deg, ${theme?.cssVars['--faction-bg'] || '#030308'} 0%, ${faction.color}10 100%)`,
             border: `1px solid ${faction.color}30`,
@@ -216,16 +204,16 @@ export function LoreSection({ faction }: LoreSectionProps) {
             }}
           />
 
-          <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="relative flex flex-col items-center justify-between gap-6 md:flex-row">
             <div className="flex items-center gap-4">
               <div
-                className="w-16 h-16 rounded-full flex items-center justify-center"
+                className="flex h-16 w-16 items-center justify-center rounded-full"
                 style={{ background: `${faction.color}20` }}
               >
-                <BookOpen className="w-8 h-8" style={{ color: faction.color }} />
+                <BookOpen className="h-8 w-8" style={{ color: faction.color }} />
               </div>
               <div>
-                <h3 className="font-display text-xl font-bold text-white mb-1">
+                <h3 className="mb-1 font-display text-xl font-bold text-white">
                   Lexicanum Imperial
                 </h3>
                 <p className="font-body text-bone/60">
@@ -236,7 +224,7 @@ export function LoreSection({ faction }: LoreSectionProps) {
 
             <Link
               href={`/wiki/${faction.id}`}
-              className="flex items-center gap-2 px-6 py-3 rounded-lg font-body font-semibold transition-all hover:scale-105"
+              className="flex items-center gap-2 rounded-lg px-6 py-3 font-body font-semibold transition-all hover:scale-105"
               style={{
                 background: `${faction.color}20`,
                 color: faction.color,
@@ -244,7 +232,7 @@ export function LoreSection({ faction }: LoreSectionProps) {
               }}
             >
               <span>Explorar Wiki</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </motion.div>

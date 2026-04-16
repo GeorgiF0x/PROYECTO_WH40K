@@ -29,10 +29,7 @@ const AVATAR_DEFAULTS: Required<CompressOptions> = {
  * Compress an image file using Canvas API.
  * Returns a new File with reduced size.
  */
-export async function compressImage(
-  file: File,
-  options: CompressOptions = {}
-): Promise<File> {
+export async function compressImage(file: File, options: CompressOptions = {}): Promise<File> {
   const opts = { ...DEFAULTS, ...options }
 
   // Skip compression for small files (<100KB) or non-images

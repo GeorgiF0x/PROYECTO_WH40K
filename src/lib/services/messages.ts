@@ -79,12 +79,14 @@ export async function getOrCreateConversation(
   }
 
   // Create new conversation with both participants atomically via RPC
-  const { data: newConversationId, error: rpcError } = await supabase
-    .rpc('create_conversation_with_participants', {
+  const { data: newConversationId, error: rpcError } = await supabase.rpc(
+    'create_conversation_with_participants',
+    {
       p_listing_id: listingId,
       p_user_a: buyerId,
       p_user_b: sellerId,
-    })
+    }
+  )
 
   if (rpcError || !newConversationId) {
     return { conversationId: '', error: rpcError || new Error('Failed to create conversation') }
@@ -93,11 +95,7 @@ export async function getOrCreateConversation(
   return { conversationId: newConversationId as string, error: null }
 }
 
-export async function sendMessage(
-  conversationId: string,
-  senderId: string,
-  content: string
-) {
+export async function sendMessage(conversationId: string, senderId: string, content: string) {
   const { data, error } = await supabase
     .from('messages')
     .insert({
@@ -138,16 +136,15 @@ export async function getConversations(userId: string): Promise<{
   }
 
   const conversationIds = participations.map((p) => p.conversation_id)
-  const lastReadMap = new Map(
-    participations.map((p) => [p.conversation_id, p.last_read_at])
-  )
+  const lastReadMap = new Map(participations.map((p) => [p.conversation_id, p.last_read_at]))
 
   // 2. Fetch conversations, other participants, and last messages IN PARALLEL
   const [convResult, otherUsersResult, ...messageResults] = await Promise.all([
     // Conversations with listing info (1 query)
     supabase
       .from('conversations')
-      .select(`
+      .select(
+        `
         id,
         listing_id,
         updated_at,
@@ -155,14 +152,16 @@ export async function getConversations(userId: string): Promise<{
           title,
           images
         )
-      `)
+      `
+      )
       .in('id', conversationIds)
       .order('updated_at', { ascending: false }),
 
     // ALL other participants in one batch query (1 query instead of N)
     supabase
       .from('conversation_participants')
-      .select(`
+      .select(
+        `
         conversation_id,
         profiles:user_id (
           id,
@@ -170,7 +169,8 @@ export async function getConversations(userId: string): Promise<{
           display_name,
           avatar_url
         )
-      `)
+      `
+      )
       .in('conversation_id', conversationIds)
       .neq('user_id', userId),
 
@@ -239,7 +239,8 @@ export async function getMessages(
 ): Promise<{ data: MessageWithSender[]; error: Error | null }> {
   const { data, error } = await supabase
     .from('messages')
-    .select(`
+    .select(
+      `
       id,
       conversation_id,
       sender_id,
@@ -251,7 +252,8 @@ export async function getMessages(
         display_name,
         avatar_url
       )
-    `)
+    `
+    )
     .eq('conversation_id', conversationId)
     .order('created_at', { ascending: true })
     .range(offset, offset + limit - 1)
@@ -262,10 +264,7 @@ export async function getMessages(
   }
 }
 
-export async function markConversationRead(
-  conversationId: string,
-  userId: string
-) {
+export async function markConversationRead(conversationId: string, userId: string) {
   const { error } = await supabase
     .from('conversation_participants')
     .update({ last_read_at: new Date().toISOString() })
@@ -315,7 +314,8 @@ export async function getConversationMetadata(conversationId: string, currentUse
   // Get conversation with listing info
   const { data: conversation, error: convError } = await supabase
     .from('conversations')
-    .select(`
+    .select(
+      `
       id,
       listing_id,
       listings:listing_id (
@@ -323,7 +323,8 @@ export async function getConversationMetadata(conversationId: string, currentUse
         title,
         images
       )
-    `)
+    `
+    )
     .eq('id', conversationId)
     .single()
 
@@ -334,14 +335,16 @@ export async function getConversationMetadata(conversationId: string, currentUse
   // Get other participant
   const { data: otherParticipants, error: partError } = await supabase
     .from('conversation_participants')
-    .select(`
+    .select(
+      `
       profiles:user_id (
         id,
         username,
         display_name,
         avatar_url
       )
-    `)
+    `
+    )
     .eq('conversation_id', conversationId)
     .neq('user_id', currentUserId)
     .limit(1)

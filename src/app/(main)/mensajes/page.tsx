@@ -15,10 +15,10 @@ import { createClient } from '@/lib/supabase/client'
 // Floating warp energy particles — wisps + orbs, Astropath atmosphere
 const WARP_PARTICLES = Array.from({ length: 18 }, (_, i) => ({
   id: i,
-  left: `${(i * 7 + 3) % 92 + 4}%`,
-  top: `${(i * 13 + 8) % 84 + 8}%`,
+  left: `${((i * 7 + 3) % 92) + 4}%`,
+  top: `${((i * 13 + 8) % 84) + 8}%`,
   isOrb: i >= 11,
-  w: i >= 11 ? (i % 3 === 0 ? 12 : 7) : (i % 3 === 0 ? 55 : i % 2 === 0 ? 38 : 22),
+  w: i >= 11 ? (i % 3 === 0 ? 12 : 7) : i % 3 === 0 ? 55 : i % 2 === 0 ? 38 : 22,
   h: i >= 11 ? (i % 3 === 0 ? 12 : 7) : 3,
   rot: i >= 11 ? 0 : (i * 37) % 180,
   drift: (i % 2 === 0 ? -1 : 1) * (15 + (i % 4) * 10),
@@ -30,7 +30,7 @@ const WARP_PARTICLES = Array.from({ length: 18 }, (_, i) => ({
 
 function WarpWisps() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {WARP_PARTICLES.map((p) => (
         <motion.div
           key={p.id}
@@ -68,25 +68,31 @@ function WarpWisps() {
 function PsychicDivider() {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-warp-light/25" />
+      <div className="h-px flex-1 bg-gradient-to-r from-transparent to-warp-light/25" />
       <div className="flex items-center gap-1.5">
         <motion.div
-          className="w-1.5 h-1.5 rounded-full bg-warp-light/50"
+          className="h-1.5 w-1.5 rounded-full bg-warp-light/50"
           animate={{ opacity: [0.3, 0.8, 0.3] }}
           transition={{ duration: 3, repeat: Infinity }}
         />
-        <svg viewBox="0 0 28 16" className="w-6 h-4 text-warp-light/40" fill="none" stroke="currentColor" strokeWidth="1.2">
+        <svg
+          viewBox="0 0 28 16"
+          className="h-4 w-6 text-warp-light/40"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.2"
+        >
           <path d="M1 8 Q7 1,14 1 Q21 1,27 8 Q21 15,14 15 Q7 15,1 8Z" />
           <circle cx="14" cy="8" r="3.5" strokeWidth="0.8" opacity="0.7" />
           <circle cx="14" cy="8" r="1.3" fill="currentColor" opacity="0.7" stroke="none" />
         </svg>
         <motion.div
-          className="w-1.5 h-1.5 rounded-full bg-warp-light/50"
+          className="h-1.5 w-1.5 rounded-full bg-warp-light/50"
           animate={{ opacity: [0.3, 0.8, 0.3] }}
           transition={{ duration: 3, repeat: Infinity, delay: 1.5 }}
         />
       </div>
-      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-warp-light/25" />
+      <div className="h-px flex-1 bg-gradient-to-l from-transparent to-warp-light/25" />
     </div>
   )
 }
@@ -143,10 +149,10 @@ export default function MensajesPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen pt-24 pb-16 px-6">
-        <div className="max-w-3xl mx-auto space-y-4">
+      <div className="min-h-screen px-6 pb-16 pt-24">
+        <div className="mx-auto max-w-3xl space-y-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-20 bg-void-light rounded-lg animate-pulse" />
+            <div key={i} className="h-20 animate-pulse rounded-lg bg-void-light" />
           ))}
         </div>
       </div>
@@ -155,22 +161,20 @@ export default function MensajesPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center relative">
-        <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(107,28,95,0.03)_0%,transparent_50%)]" />
-        <div className="text-center relative">
-          <div className="relative inline-block mb-6">
-            <div className="absolute -inset-4 bg-warp-light/5 rounded-full blur-xl" />
-            <div className="relative p-4 bg-void-light/50 rounded-full border border-warp-light/10">
-              <ShieldAlert className="w-12 h-12 text-bone/20" />
+      <div className="relative flex min-h-screen items-center justify-center pb-16 pt-24">
+        <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_center,rgba(107,28,95,0.03)_0%,transparent_50%)]" />
+        <div className="relative text-center">
+          <div className="relative mb-6 inline-block">
+            <div className="absolute -inset-4 rounded-full bg-warp-light/5 blur-xl" />
+            <div className="relative rounded-full border border-warp-light/10 bg-void-light/50 p-4">
+              <ShieldAlert className="h-12 w-12 text-bone/20" />
             </div>
           </div>
-          <h2 className="text-xl font-display font-bold text-bone mb-2">
-            Acceso restringido
-          </h2>
-          <p className="text-xs font-mono text-bone/30 uppercase tracking-wider mb-1">
+          <h2 className="mb-2 font-display text-xl font-bold text-bone">Acceso restringido</h2>
+          <p className="mb-1 font-mono text-xs uppercase tracking-wider text-bone/30">
             Autorizacion psiquica requerida
           </p>
-          <p className="text-bone/50 text-sm font-body">
+          <p className="font-body text-sm text-bone/50">
             Inicia sesion para acceder al coro astropatico
           </p>
         </div>
@@ -179,9 +183,9 @@ export default function MensajesPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16 relative">
+    <div className="relative min-h-screen pb-16 pt-24">
       {/* Warp-tinted background — Astropath */}
-      <div className="fixed inset-0 pointer-events-none">
+      <div className="pointer-events-none fixed inset-0">
         {/* Strong aurora layers */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(107,28,95,0.10)_0%,transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,42,123,0.07)_0%,transparent_45%)]" />
@@ -203,7 +207,7 @@ export default function MensajesPage() {
         {[0, 1, 2].map((i) => (
           <motion.div
             key={`wave-${i}`}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border border-warp-light/[0.07] rounded-full"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-warp-light/[0.07]"
             style={{ width: 200, height: 200 }}
             animate={{ scale: [0.5, 4], opacity: [0.4, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeOut', delay: i * 1.7 }}
@@ -213,14 +217,22 @@ export default function MensajesPage() {
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.svg
             viewBox="0 0 400 200"
-            className="w-[600px] h-[300px] text-warp-light"
+            className="h-[300px] w-[600px] text-warp-light"
             fill="none"
             stroke="currentColor"
             animate={{ opacity: [0.03, 0.08, 0.03] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <path d="M10 100 Q100 10,200 10 Q300 10,390 100 Q300 190,200 190 Q100 190,10 100Z" strokeWidth="2" opacity="0.6" />
-            <path d="M40 100 Q110 30,200 30 Q290 30,360 100 Q290 170,200 170 Q110 170,40 100Z" strokeWidth="1" opacity="0.3" />
+            <path
+              d="M10 100 Q100 10,200 10 Q300 10,390 100 Q300 190,200 190 Q100 190,10 100Z"
+              strokeWidth="2"
+              opacity="0.6"
+            />
+            <path
+              d="M40 100 Q110 30,200 30 Q290 30,360 100 Q290 170,200 170 Q110 170,40 100Z"
+              strokeWidth="1"
+              opacity="0.3"
+            />
             <ellipse cx="200" cy="100" rx="55" ry="50" strokeWidth="1.5" opacity="0.5" />
             <circle cx="200" cy="100" r="22" fill="currentColor" opacity="0.2" stroke="none" />
           </motion.svg>
@@ -230,94 +242,118 @@ export default function MensajesPage() {
           className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/30 to-transparent"
           style={{ top: '30%' }}
           animate={{ opacity: [0, 0.6, 0], scaleY: [1, 3, 1] }}
-          transition={{ duration: 0.5, repeat: Infinity, ease: 'easeInOut', delay: 4, repeatDelay: 6 }}
+          transition={{
+            duration: 0.5,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 4,
+            repeatDelay: 6,
+          }}
         />
         <motion.div
           className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/25 to-transparent"
           style={{ top: '62%' }}
           animate={{ opacity: [0, 0.5, 0], scaleY: [1, 2, 1] }}
-          transition={{ duration: 0.4, repeat: Infinity, ease: 'easeInOut', delay: 9, repeatDelay: 8 }}
+          transition={{
+            duration: 0.4,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 9,
+            repeatDelay: 8,
+          }}
         />
         <motion.div
           className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-warp-light/20 to-transparent"
           style={{ top: '85%' }}
           animate={{ opacity: [0, 0.4, 0] }}
-          transition={{ duration: 0.3, repeat: Infinity, ease: 'easeInOut', delay: 14, repeatDelay: 11 }}
+          transition={{
+            duration: 0.3,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 14,
+            repeatDelay: 11,
+          }}
         />
       </div>
 
-      <div className="px-6 relative">
-        <div className="max-w-3xl mx-auto space-y-6">
-
+      <div className="relative px-6">
+        <div className="mx-auto max-w-3xl space-y-6">
           {/* ── Astropath Header ─────────────────────────────── */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="relative rounded-xl p-4 bg-void-light/30 backdrop-blur-sm overflow-hidden border border-warp-light/25"
+            className="relative overflow-hidden rounded-xl border border-warp-light/25 bg-void-light/30 p-4 backdrop-blur-sm"
           >
             {/* Warp aurora background — strong */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(139,42,123,0.12)_0%,transparent_60%)] pointer-events-none" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(107,28,95,0.08)_0%,transparent_50%)] pointer-events-none" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(139,42,123,0.12)_0%,transparent_60%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(107,28,95,0.08)_0%,transparent_50%)]" />
 
             {/* Traveling warp energy pulse */}
             <motion.div
-              className="absolute top-0 left-0 w-28 h-[2px] bg-gradient-to-r from-transparent via-warp-light/40 to-transparent pointer-events-none"
+              className="pointer-events-none absolute left-0 top-0 h-[2px] w-28 bg-gradient-to-r from-transparent via-warp-light/40 to-transparent"
               animate={{ left: ['-15%', '115%'] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1 }}
             />
             {/* Bottom shimmer — offset timing */}
             <motion.div
-              className="absolute bottom-0 right-0 w-20 h-[1px] bg-gradient-to-r from-transparent via-warp-light/25 to-transparent pointer-events-none"
+              className="pointer-events-none absolute bottom-0 right-0 h-[1px] w-20 bg-gradient-to-r from-transparent via-warp-light/25 to-transparent"
               animate={{ right: ['-10%', '110%'] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2 }}
             />
 
-            <div className="relative flex items-center justify-between flex-wrap gap-3">
+            <div className="relative flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 {/* Radio with psychic pulse rings — 3 rings */}
-                <div className="relative flex items-center justify-center" style={{ width: 44, height: 44 }}>
+                <div
+                  className="relative flex items-center justify-center"
+                  style={{ width: 44, height: 44 }}
+                >
                   <motion.div
-                    className="absolute inset-0 border border-warp-light/20 rounded-full"
+                    className="absolute inset-0 rounded-full border border-warp-light/20"
                     animate={{ scale: [1, 2], opacity: [0.5, 0] }}
                     transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut' }}
                   />
                   <motion.div
-                    className="absolute inset-0 border border-warp-light/20 rounded-full"
+                    className="absolute inset-0 rounded-full border border-warp-light/20"
                     animate={{ scale: [1, 2], opacity: [0.5, 0] }}
                     transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut', delay: 0.8 }}
                   />
                   <motion.div
-                    className="absolute inset-0 border border-warp-light/15 rounded-full"
+                    className="absolute inset-0 rounded-full border border-warp-light/15"
                     animate={{ scale: [1, 2], opacity: [0.4, 0] }}
                     transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut', delay: 1.6 }}
                   />
-                  <div className="relative p-2 bg-warp/20 rounded-full border border-warp-light/30">
+                  <div className="relative rounded-full border border-warp-light/30 bg-warp/20 p-2">
                     <motion.div
                       animate={{ opacity: [0.6, 1, 0.6] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      <Radio className="w-5 h-5 text-warp-light" />
+                      <Radio className="h-5 w-5 text-warp-light" />
                     </motion.div>
                   </div>
                 </div>
                 <div>
-                  <span className="text-xs font-mono uppercase tracking-[0.25em] text-imperial-gold/70 block">
+                  <span className="block font-mono text-xs uppercase tracking-[0.25em] text-imperial-gold/70">
                     Astropath <span className="text-warp-light/40">~</span> Transmisiones del Warp
                   </span>
-                  <span className="text-[10px] font-mono text-bone/30 tracking-wider">
+                  <span className="font-mono text-[10px] tracking-wider text-bone/30">
                     CORO ASTROPATICO <span className="text-warp-light/25">~</span> CANAL SEGURO
                   </span>
                 </div>
               </div>
 
               {/* Pulsing psychic signal indicator */}
-              <div className="flex items-center gap-2 text-xs font-mono text-bone/30">
+              <div className="flex items-center gap-2 font-mono text-xs text-bone/30">
                 <motion.div
-                  className="w-2 h-2 rounded-full bg-warp-light/60"
+                  className="h-2 w-2 rounded-full bg-warp-light/60"
                   animate={{
                     opacity: [0.4, 1, 0.4],
-                    boxShadow: ['0 0 0px rgba(139,42,123,0)', '0 0 6px rgba(139,42,123,0.4)', '0 0 0px rgba(139,42,123,0)'],
+                    boxShadow: [
+                      '0 0 0px rgba(139,42,123,0)',
+                      '0 0 6px rgba(139,42,123,0.4)',
+                      '0 0 0px rgba(139,42,123,0)',
+                    ],
                   }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
@@ -332,7 +368,10 @@ export default function MensajesPage() {
           {isLoading ? (
             <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-20 bg-void-light/30 rounded-xl animate-pulse border border-bone/5" />
+                <div
+                  key={i}
+                  className="h-20 animate-pulse rounded-xl border border-bone/5 bg-void-light/30"
+                />
               ))}
             </div>
           ) : conversations.length === 0 ? (
@@ -343,33 +382,33 @@ export default function MensajesPage() {
               className="flex flex-col items-center justify-center py-20"
             >
               <div className="relative mb-6">
-                <Radio className="w-16 h-16 text-bone/10" />
+                <Radio className="h-16 w-16 text-bone/10" />
                 <motion.div
                   className="absolute inset-0"
                   animate={{ opacity: [0.1, 0.4, 0.1] }}
                   transition={{ duration: 3, repeat: Infinity }}
                 >
-                  <Radio className="w-16 h-16 text-warp-light/20" />
+                  <Radio className="h-16 w-16 text-warp-light/20" />
                 </motion.div>
                 {/* Psychic ripples — warp purple */}
                 <motion.div
-                  className="absolute inset-0 border-2 border-warp-light/10 rounded-full"
+                  className="absolute inset-0 rounded-full border-2 border-warp-light/10"
                   animate={{ scale: [1, 2.5], opacity: [0.3, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
                 />
                 <motion.div
-                  className="absolute inset-0 border-2 border-warp-light/10 rounded-full"
+                  className="absolute inset-0 rounded-full border-2 border-warp-light/10"
                   animate={{ scale: [1, 2.5], opacity: [0.3, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeOut', delay: 0.7 }}
                 />
               </div>
-              <h3 className="text-lg font-display font-bold text-bone/40 mb-2">
+              <h3 className="mb-2 font-display text-lg font-bold text-bone/40">
                 El warp permanece en silencio
               </h3>
-              <p className="text-sm text-bone/25 text-center max-w-sm font-body">
+              <p className="max-w-sm text-center font-body text-sm text-bone/25">
                 Las transmisiones con vendedores y compradores apareceran aqui
               </p>
-              <p className="text-[10px] font-mono text-bone/15 uppercase tracking-wider mt-3">
+              <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-bone/15">
                 No hay senales psiquicas detectadas
               </p>
             </motion.div>
@@ -389,33 +428,35 @@ export default function MensajesPage() {
                     >
                       <Link href={`/mensajes/${conv.id}`}>
                         <div
-                          className={`relative group rounded-xl overflow-hidden transition-all duration-300 ${
+                          className={`group relative overflow-hidden rounded-xl transition-all duration-300 ${
                             unread
-                              ? 'bg-void-light/40 border border-warp-light/20 hover:border-warp-light/40 hover:shadow-[0_0_25px_rgba(139,42,123,0.1)]'
-                              : 'bg-void-light/20 border border-bone/5 hover:border-warp-light/15 hover:shadow-[0_0_20px_rgba(139,42,123,0.06)]'
+                              ? 'border border-warp-light/20 bg-void-light/40 hover:border-warp-light/40 hover:shadow-[0_0_25px_rgba(139,42,123,0.1)]'
+                              : 'border border-bone/5 bg-void-light/20 hover:border-warp-light/15 hover:shadow-[0_0_20px_rgba(139,42,123,0.06)]'
                           }`}
                         >
                           {/* Warp aurora on hover */}
-                          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,rgba(139,42,123,0.08)_0%,transparent_60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_left,rgba(139,42,123,0.08)_0%,transparent_60%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
                           {/* Left accent line — warp tinted */}
-                          <div className={`absolute left-0 top-0 bottom-0 w-[3px] transition-colors ${
-                            unread
-                              ? 'bg-gradient-to-b from-warp-light/80 via-warp-light/40 to-transparent'
-                              : 'bg-bone/5 group-hover:bg-warp-light/20'
-                          }`} />
+                          <div
+                            className={`absolute bottom-0 left-0 top-0 w-[3px] transition-colors ${
+                              unread
+                                ? 'bg-gradient-to-b from-warp-light/80 via-warp-light/40 to-transparent'
+                                : 'bg-bone/5 group-hover:bg-warp-light/20'
+                            }`}
+                          />
 
                           {/* Unread psychic glow — warp tinted, bigger */}
                           {unread && (
-                            <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-warp-light/8 blur-2xl pointer-events-none" />
+                            <div className="bg-warp-light/8 pointer-events-none absolute -left-10 top-1/2 h-32 w-32 -translate-y-1/2 rounded-full blur-2xl" />
                           )}
 
                           <div className="relative flex items-center gap-4 p-4 pl-5">
                             {/* Avatar */}
-                            <div className="flex-shrink-0 relative">
+                            <div className="relative flex-shrink-0">
                               {unread && (
                                 <motion.div
-                                  className="absolute -inset-1 bg-imperial-gold/15 rounded-full blur-sm"
+                                  className="absolute -inset-1 rounded-full bg-imperial-gold/15 blur-sm"
                                   animate={{ opacity: [0.3, 0.7, 0.3] }}
                                   transition={{ duration: 2, repeat: Infinity }}
                                 />
@@ -429,17 +470,21 @@ export default function MensajesPage() {
                             </div>
 
                             {/* Content */}
-                            <div className="flex-1 min-w-0">
+                            <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between gap-2">
-                                <p className={`font-display font-semibold truncate ${
-                                  unread ? 'text-bone' : 'text-bone/60'
-                                }`}>
+                                <p
+                                  className={`truncate font-display font-semibold ${
+                                    unread ? 'text-bone' : 'text-bone/60'
+                                  }`}
+                                >
                                   {conv.other_user.display_name || conv.other_user.username}
                                 </p>
                                 {conv.last_message && (
-                                  <span className={`text-xs flex-shrink-0 font-mono ${
-                                    unread ? 'text-imperial-gold/70' : 'text-bone/25'
-                                  }`}>
+                                  <span
+                                    className={`flex-shrink-0 font-mono text-xs ${
+                                      unread ? 'text-imperial-gold/70' : 'text-bone/25'
+                                    }`}
+                                  >
                                     {timeAgo(conv.last_message.created_at)}
                                   </span>
                                 )}
@@ -447,16 +492,18 @@ export default function MensajesPage() {
 
                               {/* Listing title */}
                               {conv.listing_title && (
-                                <p className="text-xs text-imperial-gold/40 truncate mt-0.5 font-mono">
+                                <p className="mt-0.5 truncate font-mono text-xs text-imperial-gold/40">
                                   {conv.listing_title}
                                 </p>
                               )}
 
                               {/* Last message preview */}
                               {conv.last_message && (
-                                <p className={`text-sm truncate mt-1 font-body ${
-                                  unread ? 'text-bone/70' : 'text-bone/35'
-                                }`}>
+                                <p
+                                  className={`mt-1 truncate font-body text-sm ${
+                                    unread ? 'text-bone/70' : 'text-bone/35'
+                                  }`}
+                                >
                                   {conv.last_message.sender_id === user?.id ? 'Tu: ' : ''}
                                   {conv.last_message.content}
                                 </p>
@@ -465,7 +512,7 @@ export default function MensajesPage() {
 
                             {/* Listing thumbnail */}
                             {conv.listing_image && (
-                              <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden relative border border-bone/5">
+                              <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg border border-bone/5">
                                 <Image
                                   src={conv.listing_image}
                                   alt={conv.listing_title || 'Listing'}
@@ -479,8 +526,14 @@ export default function MensajesPage() {
                             {/* Unread indicator */}
                             {unread && (
                               <motion.div
-                                className="absolute top-4 right-4 w-2.5 h-2.5 bg-imperial-gold rounded-full"
-                                animate={{ boxShadow: ['0 0 0px rgba(201,162,39,0.3)', '0 0 8px rgba(201,162,39,0.5)', '0 0 0px rgba(201,162,39,0.3)'] }}
+                                className="absolute right-4 top-4 h-2.5 w-2.5 rounded-full bg-imperial-gold"
+                                animate={{
+                                  boxShadow: [
+                                    '0 0 0px rgba(201,162,39,0.3)',
+                                    '0 0 8px rgba(201,162,39,0.5)',
+                                    '0 0 0px rgba(201,162,39,0.3)',
+                                  ],
+                                }}
                                 transition={{ duration: 2, repeat: Infinity }}
                               />
                             )}

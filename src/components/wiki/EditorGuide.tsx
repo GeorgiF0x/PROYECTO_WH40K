@@ -47,17 +47,14 @@ function SectionToggle({
       <button
         type="button"
         onClick={onToggle}
-        className="w-full flex items-center justify-between gap-3 py-2.5 px-3 rounded-lg text-left hover:bg-imperial-gold/5 transition-colors"
+        className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-imperial-gold/5"
       >
         <div className="flex items-center gap-2.5">
-          <Icon className="w-4 h-4 shrink-0" style={{ color: 'rgba(201,162,39,0.6)' }} />
+          <Icon className="h-4 w-4 shrink-0" style={{ color: 'rgba(201,162,39,0.6)' }} />
           <span className="text-sm font-medium text-bone/80">{section.title}</span>
         </div>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <ChevronDown className="w-4 h-4 text-bone/40" />
+        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <ChevronDown className="h-4 w-4 text-bone/40" />
         </motion.div>
       </button>
       <AnimatePresence>
@@ -69,7 +66,7 @@ function SectionToggle({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="px-3 pb-3 pt-1 text-sm text-bone/60 leading-relaxed">
+            <div className="px-3 pb-3 pt-1 text-sm leading-relaxed text-bone/60">
               {section.content}
             </div>
           </motion.div>
@@ -92,10 +89,13 @@ function BlockItem({
 }) {
   return (
     <div className="flex items-start gap-2.5 py-1.5">
-      <Icon className="w-4 h-4 shrink-0 mt-0.5" style={{ color: color || 'rgba(201,162,39,0.6)' }} />
+      <Icon
+        className="mt-0.5 h-4 w-4 shrink-0"
+        style={{ color: color || 'rgba(201,162,39,0.6)' }}
+      />
       <div>
-        <span className="text-bone/80 font-medium">{name}</span>
-        <span className="text-bone/40 ml-1.5">— {desc}</span>
+        <span className="font-medium text-bone/80">{name}</span>
+        <span className="ml-1.5 text-bone/40">— {desc}</span>
       </div>
     </div>
   )
@@ -104,7 +104,7 @@ function BlockItem({
 function AlertSwatch({ color, label }: { color: string; label: string }) {
   return (
     <div className="flex items-center gap-2 py-1">
-      <div className="w-3 h-3 rounded-sm shrink-0" style={{ background: color }} />
+      <div className="h-3 w-3 shrink-0 rounded-sm" style={{ background: color }} />
       <span className="text-bone/70">{label}</span>
     </div>
   )
@@ -114,7 +114,7 @@ export function EditorGuide({ isOpen, onClose }: { isOpen: boolean; onClose: () 
   const [openSections, setOpenSections] = useState<Set<string>>(new Set(['basics']))
 
   function toggleSection(id: string) {
-    setOpenSections(prev => {
+    setOpenSections((prev) => {
       const next = new Set(prev)
       if (next.has(id)) {
         next.delete(id)
@@ -132,8 +132,12 @@ export function EditorGuide({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       icon: Type,
       content: (
         <div className="space-y-1">
-          <p className="mb-2 text-bone/50 font-mono text-xs">
-            Escribe <kbd className="px-1.5 py-0.5 rounded bg-imperial-gold/10 border border-imperial-gold/20 text-imperial-gold/80 font-mono text-[11px]">/</kbd> para ver todos los bloques disponibles
+          <p className="mb-2 font-mono text-xs text-bone/50">
+            Escribe{' '}
+            <kbd className="rounded border border-imperial-gold/20 bg-imperial-gold/10 px-1.5 py-0.5 font-mono text-[11px] text-imperial-gold/80">
+              /
+            </kbd>{' '}
+            para ver todos los bloques disponibles
           </p>
           <BlockItem icon={Heading1} name="Encabezado 1" desc="Markdown: # + Espacio" />
           <BlockItem icon={Heading2} name="Encabezado 2" desc="Markdown: ## + Espacio" />
@@ -151,7 +155,11 @@ export function EditorGuide({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       icon: BookOpen,
       content: (
         <div className="space-y-1">
-          <BlockItem icon={BookOpen} name="Bloque de Lore" desc="Seccion decorada para narrativa de lore" />
+          <BlockItem
+            icon={BookOpen}
+            name="Bloque de Lore"
+            desc="Seccion decorada para narrativa de lore"
+          />
           <BlockItem icon={Quote} name="Bloque de Cita" desc="Cita con atribucion de autor" />
         </div>
       ),
@@ -162,7 +170,7 @@ export function EditorGuide({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       icon: AlertTriangle,
       content: (
         <div className="space-y-1">
-          <p className="mb-2 text-bone/50 text-xs">4 tipos de alerta con estilos unicos:</p>
+          <p className="mb-2 text-xs text-bone/50">4 tipos de alerta con estilos unicos:</p>
           <AlertSwatch color="#DC2626" label="Herejia — Advertencia de contenido hereje" />
           <AlertSwatch color="#EA580C" label="Peligro — Aviso de peligro" />
           <AlertSwatch color="#14B8A6" label="Info — Nota informativa" />
@@ -176,7 +184,7 @@ export function EditorGuide({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       icon: Bold,
       content: (
         <div className="space-y-1">
-          <p className="mb-2 text-bone/50 text-xs">Selecciona texto para ver la barra de formato</p>
+          <p className="mb-2 text-xs text-bone/50">Selecciona texto para ver la barra de formato</p>
           <BlockItem icon={Bold} name="Negrita" desc="Ctrl+B" />
           <BlockItem icon={Italic} name="Cursiva" desc="Ctrl+I" />
           <BlockItem icon={Link} name="Enlace" desc="Ctrl+K" />
@@ -190,10 +198,15 @@ export function EditorGuide({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       icon: Image,
       content: (
         <div className="space-y-2">
-          <p className="text-bone/50 text-xs">
-            Escribe <kbd className="px-1.5 py-0.5 rounded bg-imperial-gold/10 border border-imperial-gold/20 text-imperial-gold/80 font-mono text-[11px]">/</kbd> y selecciona <span className="text-bone/80">Imagen</span>, o arrastra una imagen directamente al editor.
+          <p className="text-xs text-bone/50">
+            Escribe{' '}
+            <kbd className="rounded border border-imperial-gold/20 bg-imperial-gold/10 px-1.5 py-0.5 font-mono text-[11px] text-imperial-gold/80">
+              /
+            </kbd>{' '}
+            y selecciona <span className="text-bone/80">Imagen</span>, o arrastra una imagen
+            directamente al editor.
           </p>
-          <p className="text-bone/50 text-xs">
+          <p className="text-xs text-bone/50">
             Las imagenes se comprimen automaticamente y se suben a Supabase Storage.
           </p>
         </div>
@@ -204,29 +217,29 @@ export function EditorGuide({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       title: 'Consejos para Buenas Entradas',
       icon: Lightbulb,
       content: (
-        <ul className="space-y-1.5 text-xs list-none">
+        <ul className="list-none space-y-1.5 text-xs">
           <li className="flex items-start gap-2">
-            <span className="text-imperial-gold/50 mt-0.5 shrink-0">+</span>
+            <span className="mt-0.5 shrink-0 text-imperial-gold/50">+</span>
             <span>Usa un titulo descriptivo y claro</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-imperial-gold/50 mt-0.5 shrink-0">+</span>
+            <span className="mt-0.5 shrink-0 text-imperial-gold/50">+</span>
             <span>Comienza con un extracto que resuma el contenido</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-imperial-gold/50 mt-0.5 shrink-0">+</span>
+            <span className="mt-0.5 shrink-0 text-imperial-gold/50">+</span>
             <span>Usa bloques de Lore para narrativa extensa</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-imperial-gold/50 mt-0.5 shrink-0">+</span>
+            <span className="mt-0.5 shrink-0 text-imperial-gold/50">+</span>
             <span>Anade alertas para informacion importante</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-imperial-gold/50 mt-0.5 shrink-0">+</span>
+            <span className="mt-0.5 shrink-0 text-imperial-gold/50">+</span>
             <span>Incluye imagenes de referencia</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-imperial-gold/50 mt-0.5 shrink-0">+</span>
+            <span className="mt-0.5 shrink-0 text-imperial-gold/50">+</span>
             <span>Revisa antes de publicar</span>
           </li>
         </ul>
@@ -245,26 +258,26 @@ export function EditorGuide({ isOpen, onClose }: { isOpen: boolean; onClose: () 
           className="overflow-hidden"
         >
           <div
-            className="border-t px-4 py-4 space-y-1"
+            className="space-y-1 border-t px-4 py-4"
             style={{
               borderColor: 'rgba(201,162,39,0.15)',
               background: 'rgba(201,162,39,0.03)',
             }}
           >
-            <div className="flex items-center justify-between mb-3">
-              <span className="font-mono text-[10px] text-imperial-gold/50 tracking-[0.2em] uppercase">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-imperial-gold/50">
                 GUIA DEL EDITOR
               </span>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-[10px] font-mono text-bone/30 hover:text-bone/60 transition-colors"
+                className="font-mono text-[10px] text-bone/30 transition-colors hover:text-bone/60"
               >
                 CERRAR
               </button>
             </div>
             <div className="divide-y divide-bone/5">
-              {sections.map(section => (
+              {sections.map((section) => (
                 <SectionToggle
                   key={section.id}
                   section={section}

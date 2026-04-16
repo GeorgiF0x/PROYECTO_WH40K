@@ -8,7 +8,8 @@ import { CommunityNavCard } from '@/components/community'
 
 export const metadata = {
   title: 'Comunidad — Cartographia Imperialis | Forge of War',
-  description: 'Explora el hub de la comunidad: encuentra tiendas locales, descubre creadores y conecta con otros jugadores.',
+  description:
+    'Explora el hub de la comunidad: encuentra tiendas locales, descubre creadores y conecta con otros jugadores.',
 }
 
 // Hub counts — fine to be a few minutes stale.
@@ -18,10 +19,7 @@ async function getCounts() {
   const supabase = await createClient()
 
   const [storesResult, creatorsResult, eventsResult] = await Promise.all([
-    supabase
-      .from('stores')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'approved'),
+    supabase.from('stores').select('id', { count: 'exact', head: true }).eq('status', 'approved'),
     supabase
       .from('profiles')
       .select('id', { count: 'exact', head: true })
@@ -29,13 +27,13 @@ async function getCounts() {
     supabase
       .from('events')
       .select('id', { count: 'exact', head: true })
-      .in('status', ['upcoming', 'ongoing'])
+      .in('status', ['upcoming', 'ongoing']),
   ])
 
   return {
     storesCount: storesResult.count || 0,
     creatorsCount: creatorsResult.count || 0,
-    eventsCount: eventsResult.count || 0
+    eventsCount: eventsResult.count || 0,
   }
 }
 
@@ -56,28 +54,23 @@ async function getAllStoreCoords() {
 }
 
 export default async function ComunidadPage() {
-  const [counts, storeCoords] = await Promise.all([
-    getCounts(),
-    getAllStoreCoords(),
-  ])
+  const [counts, storeCoords] = await Promise.all([getCounts(), getAllStoreCoords()])
 
   return (
-    <div className="min-h-screen pt-20 pb-16">
+    <div className="min-h-screen pb-16 pt-20">
       {/* Hero */}
       <CommunityHero />
 
       {/* Navigation Cards Section */}
-      <section className="max-w-7xl mx-auto px-6 mb-16">
+      <section className="mx-auto mb-16 max-w-7xl px-6">
         <div className="mb-8">
-          <h2 className="text-xs font-mono text-imperial-gold/60 tracking-widest mb-2">
+          <h2 className="mb-2 font-mono text-xs tracking-widest text-imperial-gold/60">
             DIRECTORIO IMPERIAL
           </h2>
-          <p className="text-2xl font-heading font-bold text-bone-100">
-            Explora la Comunidad
-          </p>
+          <p className="font-heading text-bone-100 text-2xl font-bold">Explora la Comunidad</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* Tiendas Card */}
           <CommunityNavCard
             href="/comunidad/tiendas"
@@ -117,23 +110,23 @@ export default async function ComunidadPage() {
       </section>
 
       {/* Map Preview Section */}
-      <section className="max-w-7xl mx-auto px-6 mb-16">
-        <div className="flex items-center justify-between mb-6">
+      <section className="mx-auto mb-16 max-w-7xl px-6">
+        <div className="mb-6 flex items-center justify-between">
           <div>
-            <h2 className="text-xs font-mono text-imperial-gold/60 tracking-widest mb-1">
+            <h2 className="mb-1 font-mono text-xs tracking-widest text-imperial-gold/60">
               MAPA IMPERIAL
             </h2>
-            <p className="text-xl font-heading font-bold text-bone-100 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-imperial-gold" />
+            <p className="font-heading text-bone-100 flex items-center gap-2 text-xl font-bold">
+              <MapPin className="h-5 w-5 text-imperial-gold" />
               Vista General de Tiendas
             </p>
           </div>
           <Link
             href="/comunidad/tiendas"
-            className="flex items-center gap-1.5 text-sm font-mono text-imperial-gold hover:text-yellow-400 transition-colors"
+            className="flex items-center gap-1.5 font-mono text-sm text-imperial-gold transition-colors hover:text-yellow-400"
           >
             Ver directorio completo
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
@@ -146,11 +139,11 @@ export default async function ComunidadPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="max-w-7xl mx-auto px-6">
-        <div className="relative p-8 md:p-12 rounded-2xl overflow-hidden bg-void-light border border-bone/10">
+      <section className="mx-auto max-w-7xl px-6">
+        <div className="relative overflow-hidden rounded-2xl border border-bone/10 bg-void-light p-8 md:p-12">
           {/* Grid bg */}
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="pointer-events-none absolute inset-0"
             style={{
               backgroundImage: `linear-gradient(rgba(201,162,39,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,162,39,0.04) 1px, transparent 1px)`,
               backgroundSize: '40px 40px',
@@ -158,38 +151,38 @@ export default async function ComunidadPage() {
           />
 
           {/* Corner brackets */}
-          <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-imperial-gold/30" />
-          <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-imperial-gold/30" />
-          <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-imperial-gold/30" />
-          <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-imperial-gold/30" />
+          <div className="absolute left-4 top-4 h-6 w-6 border-l-2 border-t-2 border-imperial-gold/30" />
+          <div className="absolute right-4 top-4 h-6 w-6 border-r-2 border-t-2 border-imperial-gold/30" />
+          <div className="absolute bottom-4 left-4 h-6 w-6 border-b-2 border-l-2 border-imperial-gold/30" />
+          <div className="absolute bottom-4 right-4 h-6 w-6 border-b-2 border-r-2 border-imperial-gold/30" />
 
           <div className="relative z-10 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-imperial-gold/10 border border-imperial-gold/20 mb-6">
-              <Compass className="w-8 h-8 text-imperial-gold" />
+            <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border border-imperial-gold/20 bg-imperial-gold/10">
+              <Compass className="h-8 w-8 text-imperial-gold" />
             </div>
 
-            <h3 className="text-2xl md:text-3xl font-heading font-bold text-bone mb-3">
+            <h3 className="font-heading mb-3 text-2xl font-bold text-bone md:text-3xl">
               Contribuye a la Comunidad
             </h3>
-            <p className="text-bone/60 font-body max-w-lg mx-auto mb-8">
-              Conoces una tienda que no está en el mapa? Eres un creador de contenido?
-              Ayuda a expandir el directorio imperial.
+            <p className="mx-auto mb-8 max-w-lg font-body text-bone/60">
+              Conoces una tienda que no está en el mapa? Eres un creador de contenido? Ayuda a
+              expandir el directorio imperial.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/comunidad/tiendas/nueva"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-imperial-gold to-yellow-500 text-void font-heading font-bold rounded-xl hover:opacity-90 transition-opacity"
+                className="font-heading inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-imperial-gold to-yellow-500 px-6 py-3 font-bold text-void transition-opacity hover:opacity-90"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="h-5 w-5" />
                 Registrar tienda
               </Link>
 
               <Link
                 href="/comunidad/creadores/solicitar"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-purple-500/20 border border-purple-500/30 text-purple-400 font-heading font-bold rounded-xl hover:bg-purple-500/30 transition-colors"
+                className="font-heading inline-flex items-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/20 px-6 py-3 font-bold text-purple-400 transition-colors hover:bg-purple-500/30"
               >
-                <Users className="w-5 h-5" />
+                <Users className="h-5 w-5" />
                 Ser creador
               </Link>
             </div>
@@ -202,8 +195,8 @@ export default async function ComunidadPage() {
 
 function MapSkeleton() {
   return (
-    <div className="w-full h-[400px] bg-void-light rounded-2xl animate-pulse border border-imperial-gold/20 flex items-center justify-center">
-      <MapPin className="w-12 h-12 text-bone/20" />
+    <div className="flex h-[400px] w-full animate-pulse items-center justify-center rounded-2xl border border-imperial-gold/20 bg-void-light">
+      <MapPin className="h-12 w-12 text-bone/20" />
     </div>
   )
 }

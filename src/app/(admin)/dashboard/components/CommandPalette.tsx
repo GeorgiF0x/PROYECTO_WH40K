@@ -44,8 +44,18 @@ const navItems = [
   { label: 'Reportes', href: '/dashboard/reportes', icon: Flag, color: 'text-blood-red' },
   { label: 'Eventos', href: '/dashboard/eventos', icon: Calendar, color: 'text-emerald-400' },
   { label: 'Escribas', href: '/dashboard/escribas', icon: ScrollText, color: 'text-amber-400' },
-  { label: 'Analiticas', href: '/dashboard/analiticas', icon: BarChart3, color: 'text-necron-teal' },
-  { label: 'Configuracion', href: '/dashboard/configuracion', icon: Settings, color: 'text-bone/60' },
+  {
+    label: 'Analiticas',
+    href: '/dashboard/analiticas',
+    icon: BarChart3,
+    color: 'text-necron-teal',
+  },
+  {
+    label: 'Configuracion',
+    href: '/dashboard/configuracion',
+    icon: Settings,
+    color: 'text-bone/60',
+  },
 ]
 
 const quickActions = [
@@ -79,16 +89,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           .select('id, username, display_name')
           .or(`username.ilike.${searchTerm},display_name.ilike.${searchTerm}`)
           .limit(5),
-        supabase
-          .from('stores')
-          .select('id, name, slug')
-          .ilike('name', searchTerm)
-          .limit(5),
-        supabase
-          .from('listings')
-          .select('id, title')
-          .ilike('title', searchTerm)
-          .limit(5),
+        supabase.from('stores').select('id, name, slug').ilike('name', searchTerm).limit(5),
+        supabase.from('listings').select('id, title').ilike('title', searchTerm).limit(5),
       ])
 
       const combined: SearchResult[] = []
@@ -213,110 +215,122 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             exit={{ opacity: 0, scale: 0.98, y: -10 }}
             transition={{ duration: 0.15 }}
           >
-            <div className="relative w-full max-w-lg mx-4">
+            <div className="relative mx-4 w-full max-w-lg">
               {/* Corner brackets */}
-              <div className="absolute -top-1 -left-1 w-4 h-4 border-l-2 border-t-2 border-imperial-gold/40" />
-              <div className="absolute -top-1 -right-1 w-4 h-4 border-r-2 border-t-2 border-imperial-gold/40" />
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 border-l-2 border-b-2 border-imperial-gold/40" />
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 border-r-2 border-b-2 border-imperial-gold/40" />
+              <div className="absolute -left-1 -top-1 h-4 w-4 border-l-2 border-t-2 border-imperial-gold/40" />
+              <div className="absolute -right-1 -top-1 h-4 w-4 border-r-2 border-t-2 border-imperial-gold/40" />
+              <div className="absolute -bottom-1 -left-1 h-4 w-4 border-b-2 border-l-2 border-imperial-gold/40" />
+              <div className="absolute -bottom-1 -right-1 h-4 w-4 border-b-2 border-r-2 border-imperial-gold/40" />
 
               <Command
-                className="rounded-xl border border-imperial-gold/15 bg-void-dark/95 backdrop-blur-xl shadow-2xl shadow-imperial-gold/5 overflow-hidden"
+                className="overflow-hidden rounded-xl border border-imperial-gold/15 bg-void-dark/95 shadow-2xl shadow-imperial-gold/5 backdrop-blur-xl"
                 shouldFilter={false}
               >
                 {/* Header */}
                 <div className="flex items-center gap-2 border-b border-imperial-gold/10 px-4 py-2">
                   <Cpu className="h-3 w-3 text-imperial-gold/60" />
-                  <span className="text-[10px] font-mono text-imperial-gold/60 tracking-widest">
+                  <span className="font-mono text-[10px] tracking-widest text-imperial-gold/60">
                     COGITATOR // BUSQUEDA GLOBAL
                   </span>
                   <button
                     onClick={() => onOpenChange(false)}
-                    className="ml-auto p-1 rounded text-bone/30 hover:text-bone/60 transition-colors"
+                    className="ml-auto rounded p-1 text-bone/30 transition-colors hover:text-bone/60"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
 
                 {/* Input */}
-                <div className="flex items-center gap-3 px-4 border-b border-imperial-gold/10">
-                  <Search className="h-4 w-4 text-imperial-gold/50 shrink-0" />
+                <div className="flex items-center gap-3 border-b border-imperial-gold/10 px-4">
+                  <Search className="h-4 w-4 shrink-0 text-imperial-gold/50" />
                   <Command.Input
                     value={query}
                     onValueChange={setQuery}
                     placeholder="Buscar modulos, usuarios, tiendas..."
-                    className="flex-1 bg-transparent py-3 text-sm text-bone placeholder:text-bone/30 outline-none font-mono"
+                    className="flex-1 bg-transparent py-3 font-mono text-sm text-bone outline-none placeholder:text-bone/30"
                   />
-                  <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-imperial-gold/20 bg-void-light px-1.5 font-mono text-[10px] text-bone/30">
+                  <kbd className="hidden h-5 items-center gap-1 rounded border border-imperial-gold/20 bg-void-light px-1.5 font-mono text-[10px] text-bone/30 sm:inline-flex">
                     ESC
                   </kbd>
                 </div>
 
                 {/* Results */}
                 <Command.List className="max-h-[320px] overflow-y-auto p-2">
-                  <Command.Empty className="py-8 text-center text-sm text-bone/30 font-mono">
+                  <Command.Empty className="py-8 text-center font-mono text-sm text-bone/30">
                     {isSearching ? 'Escaneando bases de datos...' : 'Sin resultados encontrados'}
                   </Command.Empty>
 
                   {/* Search results (when typing) */}
                   {userResults.length > 0 && (
-                    <Command.Group heading={
-                      <span className="flex items-center gap-2 text-[10px] font-mono text-necron-teal/60 tracking-widest px-2">
-                        <Users className="h-3 w-3" /> USUARIOS
-                      </span>
-                    }>
+                    <Command.Group
+                      heading={
+                        <span className="flex items-center gap-2 px-2 font-mono text-[10px] tracking-widest text-necron-teal/60">
+                          <Users className="h-3 w-3" /> USUARIOS
+                        </span>
+                      }
+                    >
                       {userResults.map((r) => (
                         <Command.Item
                           key={r.id}
                           value={`user-${r.id}`}
                           onSelect={() => navigate(r.href)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-bone/70 cursor-pointer data-[selected=true]:bg-imperial-gold/10 data-[selected=true]:text-bone transition-colors"
+                          className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-bone/70 transition-colors data-[selected=true]:bg-imperial-gold/10 data-[selected=true]:text-bone"
                         >
                           {typeIcon(r.type)}
                           <span className="flex-1 truncate">{r.label}</span>
-                          <span className="text-[10px] text-bone/30 font-mono">{typeLabel(r.type)}</span>
+                          <span className="font-mono text-[10px] text-bone/30">
+                            {typeLabel(r.type)}
+                          </span>
                         </Command.Item>
                       ))}
                     </Command.Group>
                   )}
 
                   {storeResults.length > 0 && (
-                    <Command.Group heading={
-                      <span className="flex items-center gap-2 text-[10px] font-mono text-amber-400/60 tracking-widest px-2">
-                        <Store className="h-3 w-3" /> TIENDAS
-                      </span>
-                    }>
+                    <Command.Group
+                      heading={
+                        <span className="flex items-center gap-2 px-2 font-mono text-[10px] tracking-widest text-amber-400/60">
+                          <Store className="h-3 w-3" /> TIENDAS
+                        </span>
+                      }
+                    >
                       {storeResults.map((r) => (
                         <Command.Item
                           key={r.id}
                           value={`store-${r.id}`}
                           onSelect={() => navigate(r.href)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-bone/70 cursor-pointer data-[selected=true]:bg-imperial-gold/10 data-[selected=true]:text-bone transition-colors"
+                          className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-bone/70 transition-colors data-[selected=true]:bg-imperial-gold/10 data-[selected=true]:text-bone"
                         >
                           {typeIcon(r.type)}
                           <span className="flex-1 truncate">{r.label}</span>
-                          <span className="text-[10px] text-bone/30 font-mono">{typeLabel(r.type)}</span>
+                          <span className="font-mono text-[10px] text-bone/30">
+                            {typeLabel(r.type)}
+                          </span>
                         </Command.Item>
                       ))}
                     </Command.Group>
                   )}
 
                   {listingResults.length > 0 && (
-                    <Command.Group heading={
-                      <span className="flex items-center gap-2 text-[10px] font-mono text-orange-400/60 tracking-widest px-2">
-                        <ShoppingBag className="h-3 w-3" /> ANUNCIOS
-                      </span>
-                    }>
+                    <Command.Group
+                      heading={
+                        <span className="flex items-center gap-2 px-2 font-mono text-[10px] tracking-widest text-orange-400/60">
+                          <ShoppingBag className="h-3 w-3" /> ANUNCIOS
+                        </span>
+                      }
+                    >
                       {listingResults.map((r) => (
                         <Command.Item
                           key={r.id}
                           value={`listing-${r.id}`}
                           onSelect={() => navigate(r.href)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-bone/70 cursor-pointer data-[selected=true]:bg-imperial-gold/10 data-[selected=true]:text-bone transition-colors"
+                          className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-bone/70 transition-colors data-[selected=true]:bg-imperial-gold/10 data-[selected=true]:text-bone"
                         >
                           {typeIcon(r.type)}
                           <span className="flex-1 truncate">{r.label}</span>
-                          <span className="text-[10px] text-bone/30 font-mono">{typeLabel(r.type)}</span>
+                          <span className="font-mono text-[10px] text-bone/30">
+                            {typeLabel(r.type)}
+                          </span>
                         </Command.Item>
                       ))}
                     </Command.Group>
@@ -325,11 +339,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   {/* Navigation (when not typing or no results) */}
                   {query.length < 2 && (
                     <>
-                      <Command.Group heading={
-                        <span className="flex items-center gap-2 text-[10px] font-mono text-imperial-gold/40 tracking-widest px-2">
-                          <Cpu className="h-3 w-3" /> NAVEGACION RAPIDA
-                        </span>
-                      }>
+                      <Command.Group
+                        heading={
+                          <span className="flex items-center gap-2 px-2 font-mono text-[10px] tracking-widest text-imperial-gold/40">
+                            <Cpu className="h-3 w-3" /> NAVEGACION RAPIDA
+                          </span>
+                        }
+                      >
                         {navItems.map((item) => {
                           const Icon = item.icon
                           return (
@@ -337,7 +353,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                               key={item.href}
                               value={item.label}
                               onSelect={() => navigate(item.href)}
-                              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-bone/70 cursor-pointer data-[selected=true]:bg-imperial-gold/10 data-[selected=true]:text-bone transition-colors"
+                              className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-bone/70 transition-colors data-[selected=true]:bg-imperial-gold/10 data-[selected=true]:text-bone"
                             >
                               <Icon className={`h-4 w-4 ${item.color}`} />
                               <span>{item.label}</span>
@@ -346,11 +362,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                         })}
                       </Command.Group>
 
-                      <Command.Group heading={
-                        <span className="flex items-center gap-2 text-[10px] font-mono text-necron-teal/40 tracking-widest px-2">
-                          <ExternalLink className="h-3 w-3" /> ACCIONES RAPIDAS
-                        </span>
-                      }>
+                      <Command.Group
+                        heading={
+                          <span className="flex items-center gap-2 px-2 font-mono text-[10px] tracking-widest text-necron-teal/40">
+                            <ExternalLink className="h-3 w-3" /> ACCIONES RAPIDAS
+                          </span>
+                        }
+                      >
                         {quickActions.map((action) => {
                           const Icon = action.icon
                           return (
@@ -358,7 +376,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                               key={action.label}
                               value={action.label}
                               onSelect={() => navigate(action.href, action.external)}
-                              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-bone/70 cursor-pointer data-[selected=true]:bg-imperial-gold/10 data-[selected=true]:text-bone transition-colors"
+                              className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-bone/70 transition-colors data-[selected=true]:bg-imperial-gold/10 data-[selected=true]:text-bone"
                             >
                               <Icon className="h-4 w-4 text-bone/40" />
                               <span>{action.label}</span>
@@ -372,17 +390,23 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
                 {/* Footer */}
                 <div className="flex items-center justify-between border-t border-imperial-gold/10 px-4 py-2">
-                  <div className="flex items-center gap-3 text-[10px] text-bone/30 font-mono">
+                  <div className="flex items-center gap-3 font-mono text-[10px] text-bone/30">
                     <span className="flex items-center gap-1">
-                      <kbd className="rounded border border-imperial-gold/20 bg-void-light px-1">↑↓</kbd>
+                      <kbd className="rounded border border-imperial-gold/20 bg-void-light px-1">
+                        ↑↓
+                      </kbd>
                       navegar
                     </span>
                     <span className="flex items-center gap-1">
-                      <kbd className="rounded border border-imperial-gold/20 bg-void-light px-1">↵</kbd>
+                      <kbd className="rounded border border-imperial-gold/20 bg-void-light px-1">
+                        ↵
+                      </kbd>
                       seleccionar
                     </span>
                     <span className="flex items-center gap-1">
-                      <kbd className="rounded border border-imperial-gold/20 bg-void-light px-1">esc</kbd>
+                      <kbd className="rounded border border-imperial-gold/20 bg-void-light px-1">
+                        esc
+                      </kbd>
                       cerrar
                     </span>
                   </div>

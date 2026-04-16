@@ -32,7 +32,15 @@ export function ProfileTabs({ userId, isOwnProfile = false }: ProfileTabsProps) 
   const [activeTab, setActiveTab] = useState<Tab>('miniatures')
   const [miniatures, setMiniatures] = useState<MiniatureWithStats[]>([])
   const [likedMiniatures, setLikedMiniatures] = useState<MiniatureWithStats[]>([])
-  const [badges, setBadges] = useState<{ id: string; name: string; description: string | null; icon_url: string | null; awarded_at: string }[]>([])
+  const [badges, setBadges] = useState<
+    {
+      id: string
+      name: string
+      description: string | null
+      icon_url: string | null
+      awarded_at: string
+    }[]
+  >([])
   const [isLoading, setIsLoading] = useState(true)
 
   const supabase = createClient()
@@ -52,12 +60,14 @@ export function ProfileTabs({ userId, isOwnProfile = false }: ProfileTabsProps) 
 
     const { data, error } = await supabase
       .from('miniatures')
-      .select(`
+      .select(
+        `
         *,
         profiles(id, username, display_name, avatar_url),
         miniature_likes(count),
         miniature_comments(count)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
@@ -78,14 +88,16 @@ export function ProfileTabs({ userId, isOwnProfile = false }: ProfileTabsProps) 
 
     const { data, error } = await supabase
       .from('miniature_likes')
-      .select(`
+      .select(
+        `
         miniature:miniatures(
           *,
           profiles(id, username, display_name, avatar_url),
           miniature_likes(count),
           miniature_comments(count)
         )
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
@@ -115,17 +127,24 @@ export function ProfileTabs({ userId, isOwnProfile = false }: ProfileTabsProps) 
 
     const { data, error } = await supabase
       .from('user_badges')
-      .select(`
+      .select(
+        `
         awarded_at,
         badge:badges(id, name, description, icon_url)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('awarded_at', { ascending: false })
 
     if (!error && data) {
       const badgeList = data
         .map((item) => ({
-          ...(item.badge as { id: string; name: string; description: string | null; icon_url: string | null }),
+          ...(item.badge as {
+            id: string
+            name: string
+            description: string | null
+            icon_url: string | null
+          }),
           awarded_at: item.awarded_at,
         }))
         .filter((b) => b.id)
@@ -141,7 +160,8 @@ export function ProfileTabs({ userId, isOwnProfile = false }: ProfileTabsProps) 
     { id: 'badges' as Tab, label: 'Insignias', icon: Award },
   ]
 
-  const currentItems = activeTab === 'miniatures' ? miniatures : activeTab === 'likes' ? likedMiniatures : []
+  const currentItems =
+    activeTab === 'miniatures' ? miniatures : activeTab === 'likes' ? likedMiniatures : []
 
   return (
     <div className="mt-8">
@@ -152,14 +172,12 @@ export function ProfileTabs({ userId, isOwnProfile = false }: ProfileTabsProps) 
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`relative flex items-center gap-2 px-6 py-3 font-body text-sm transition-colors ${
-              activeTab === tab.id
-                ? 'text-imperial-gold'
-                : 'text-bone/60 hover:text-bone'
+              activeTab === tab.id ? 'text-imperial-gold' : 'text-bone/60 hover:text-bone'
             }`}
             whileHover={{ backgroundColor: 'rgba(201, 162, 39, 0.05)' }}
             whileTap={{ scale: 0.98 }}
           >
-            <tab.icon className="w-4 h-4" />
+            <tab.icon className="h-4 w-4" />
             {tab.label}
             {activeTab === tab.id && (
               <motion.div
@@ -183,9 +201,9 @@ export function ProfileTabs({ userId, isOwnProfile = false }: ProfileTabsProps) 
           className="py-8"
         >
           {isLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="aspect-square bg-void-light rounded-xl animate-pulse" />
+                <div key={i} className="aspect-square animate-pulse rounded-xl bg-void-light" />
               ))}
             </div>
           ) : activeTab === 'badges' ? (
@@ -194,29 +212,33 @@ export function ProfileTabs({ userId, isOwnProfile = false }: ProfileTabsProps) 
               <EmptyState
                 icon={Award}
                 title="Sin insignias"
-                description={isOwnProfile ? 'Aun no has conseguido ninguna insignia' : 'Este usuario aun no tiene insignias'}
+                description={
+                  isOwnProfile
+                    ? 'Aun no has conseguido ninguna insignia'
+                    : 'Este usuario aun no tiene insignias'
+                }
               />
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                 {badges.map((badge) => (
                   <motion.div
                     key={badge.id}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="p-4 bg-void-light rounded-xl border border-bone/10 text-center"
+                    className="rounded-xl border border-bone/10 bg-void-light p-4 text-center"
                   >
-                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-imperial-gold/20 flex items-center justify-center">
+                    <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-imperial-gold/20">
                       {badge.icon_url ? (
                         <Image src={badge.icon_url} alt={badge.name} width={40} height={40} />
                       ) : (
-                        <Award className="w-8 h-8 text-imperial-gold" />
+                        <Award className="h-8 w-8 text-imperial-gold" />
                       )}
                     </div>
-                    <h4 className="font-display font-bold text-bone mb-1">{badge.name}</h4>
+                    <h4 className="mb-1 font-display font-bold text-bone">{badge.name}</h4>
                     {badge.description && (
-                      <p className="text-xs text-bone/60 font-body">{badge.description}</p>
+                      <p className="font-body text-xs text-bone/60">{badge.description}</p>
                     )}
-                    <p className="text-xs text-bone/40 mt-2">
+                    <p className="mt-2 text-xs text-bone/40">
                       {new Date(badge.awarded_at).toLocaleDateString('es-ES')}
                     </p>
                   </motion.div>
@@ -233,19 +255,15 @@ export function ProfileTabs({ userId, isOwnProfile = false }: ProfileTabsProps) 
                     ? 'Todavia no has compartido ninguna miniatura'
                     : 'Este usuario aun no ha compartido miniaturas'
                   : isOwnProfile
-                  ? 'Aun no has dado like a ninguna miniatura'
-                  : 'Este usuario aun no ha dado likes'
+                    ? 'Aun no has dado like a ninguna miniatura'
+                    : 'Este usuario aun no ha dado likes'
               }
             />
           ) : (
             // Miniatures Grid
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {currentItems.map((miniature, index) => (
-                <MiniatureGridItem
-                  key={miniature.id}
-                  miniature={miniature}
-                  index={index}
-                />
+                <MiniatureGridItem key={miniature.id} miniature={miniature} index={index} />
               ))}
             </div>
           )}
@@ -255,14 +273,22 @@ export function ProfileTabs({ userId, isOwnProfile = false }: ProfileTabsProps) 
   )
 }
 
-function EmptyState({ icon: Icon, title, description }: { icon: typeof ImageIcon; title: string; description: string }) {
+function EmptyState({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: typeof ImageIcon
+  title: string
+  description: string
+}) {
   return (
-    <div className="text-center py-12">
-      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-bone/10 flex items-center justify-center">
-        <Icon className="w-8 h-8 text-bone/40" />
+    <div className="py-12 text-center">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-bone/10">
+        <Icon className="h-8 w-8 text-bone/40" />
       </div>
-      <h3 className="text-lg font-display font-medium text-bone mb-2">{title}</h3>
-      <p className="text-bone/60 font-body">{description}</p>
+      <h3 className="mb-2 font-display text-lg font-medium text-bone">{title}</h3>
+      <p className="font-body text-bone/60">{description}</p>
     </div>
   )
 }
@@ -270,7 +296,8 @@ function EmptyState({ icon: Icon, title, description }: { icon: typeof ImageIcon
 function MiniatureGridItem({ miniature, index }: { miniature: MiniatureWithStats; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
 
-  const thumbnailUrl = miniature.thumbnail_url || miniature.images?.[0] || '/placeholder-miniature.jpg'
+  const thumbnailUrl =
+    miniature.thumbnail_url || miniature.images?.[0] || '/placeholder-miniature.jpg'
 
   return (
     <motion.div
@@ -280,7 +307,7 @@ function MiniatureGridItem({ miniature, index }: { miniature: MiniatureWithStats
     >
       <Link href={`/galeria/${miniature.id}`}>
         <motion.div
-          className="relative aspect-square rounded-xl overflow-hidden group cursor-pointer"
+          className="group relative aspect-square cursor-pointer overflow-hidden rounded-xl"
           onHoverStart={() => setIsHovered(true)}
           onHoverEnd={() => setIsHovered(false)}
           whileHover={{ scale: 1.02 }}
@@ -308,16 +335,14 @@ function MiniatureGridItem({ miniature, index }: { miniature: MiniatureWithStats
             animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 10 }}
             transition={{ duration: 0.2 }}
           >
-            <h4 className="font-display font-bold text-bone text-sm truncate">
-              {miniature.title}
-            </h4>
-            <div className="flex items-center gap-3 mt-1 text-xs text-bone/60">
+            <h4 className="truncate font-display text-sm font-bold text-bone">{miniature.title}</h4>
+            <div className="mt-1 flex items-center gap-3 text-xs text-bone/60">
               <span className="flex items-center gap-1">
-                <Heart className="w-3 h-3" />
+                <Heart className="h-3 w-3" />
                 {miniature.likes_count || 0}
               </span>
               <span className="flex items-center gap-1">
-                <MessageCircle className="w-3 h-3" />
+                <MessageCircle className="h-3 w-3" />
                 {miniature.comments_count || 0}
               </span>
             </div>
@@ -325,7 +350,7 @@ function MiniatureGridItem({ miniature, index }: { miniature: MiniatureWithStats
 
           {/* Border glow on hover */}
           <motion.div
-            className="absolute inset-0 rounded-xl border-2 border-imperial-gold pointer-events-none"
+            className="pointer-events-none absolute inset-0 rounded-xl border-2 border-imperial-gold"
             initial={{ opacity: 0 }}
             animate={{ opacity: isHovered ? 1 : 0 }}
             transition={{ duration: 0.2 }}

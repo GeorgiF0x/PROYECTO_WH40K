@@ -24,10 +24,22 @@ interface StoreCardProps {
 }
 
 const storeTypeLabels: Record<string, { label: string; color: string }> = {
-  specialist: { label: 'Especialista GW', color: 'bg-imperial-gold/20 text-imperial-gold border-imperial-gold/30' },
-  comics_games: { label: 'Comics y juegos', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-  general_hobby: { label: 'Hobby general', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
-  online_only: { label: 'Solo online', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
+  specialist: {
+    label: 'Especialista GW',
+    color: 'bg-imperial-gold/20 text-imperial-gold border-imperial-gold/30',
+  },
+  comics_games: {
+    label: 'Comics y juegos',
+    color: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  },
+  general_hobby: {
+    label: 'Hobby general',
+    color: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+  },
+  online_only: {
+    label: 'Solo online',
+    color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+  },
 }
 
 function StoreCard({ store, index = 0 }: StoreCardProps) {
@@ -49,7 +61,7 @@ function StoreCard({ store, index = 0 }: StoreCardProps) {
     >
       <Link href={`/comunidad/tiendas/${store.slug}`}>
         <motion.article
-          className="group relative bg-void-light rounded-xl overflow-hidden cursor-pointer"
+          className="group relative cursor-pointer overflow-hidden rounded-xl bg-void-light"
           onHoverStart={() => setIsHovered(true)}
           onHoverEnd={() => setIsHovered(false)}
           whileHover={{ y: -8 }}
@@ -57,7 +69,7 @@ function StoreCard({ store, index = 0 }: StoreCardProps) {
         >
           {/* Animated border glow */}
           <motion.div
-            className="absolute -inset-[1px] rounded-xl z-0"
+            className="absolute -inset-[1px] z-0 rounded-xl"
             style={{
               background: 'linear-gradient(135deg, #C9A227, transparent, #C9A227)',
               backgroundSize: '200% 200%',
@@ -70,11 +82,11 @@ function StoreCard({ store, index = 0 }: StoreCardProps) {
             transition={{ duration: 0.3 }}
           />
 
-          <div className="relative z-10 bg-void-light rounded-xl overflow-hidden">
+          <div className="relative z-10 overflow-hidden rounded-xl bg-void-light">
             {/* Image */}
             <div className="relative aspect-[16/9] overflow-hidden">
               {!imageLoaded && (
-                <div className="absolute inset-0 bg-void animate-pulse">
+                <div className="absolute inset-0 animate-pulse bg-void">
                   <div className="absolute inset-0 bg-gradient-to-br from-bone/5 to-transparent" />
                 </div>
               )}
@@ -91,16 +103,18 @@ function StoreCard({ store, index = 0 }: StoreCardProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-transparent opacity-80" />
 
               {/* Store type badge */}
-              <div className="absolute top-3 left-3">
-                <span className={`px-2.5 py-1 text-xs font-medium rounded-md border ${storeType.color}`}>
+              <div className="absolute left-3 top-3">
+                <span
+                  className={`rounded-md border px-2.5 py-1 text-xs font-medium ${storeType.color}`}
+                >
                   {storeType.label}
                 </span>
               </div>
 
               {/* Rating badge */}
               {(store.review_count ?? 0) > 0 && (
-                <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 bg-void/80 backdrop-blur-sm rounded-lg">
-                  <Star className="w-3.5 h-3.5 text-imperial-gold fill-imperial-gold" />
+                <div className="absolute right-3 top-3 flex items-center gap-1 rounded-lg bg-void/80 px-2.5 py-1 backdrop-blur-sm">
+                  <Star className="h-3.5 w-3.5 fill-imperial-gold text-imperial-gold" />
                   <span className="text-sm font-bold text-imperial-gold">
                     {Number(store.avg_rating).toFixed(1)}
                   </span>
@@ -111,21 +125,22 @@ function StoreCard({ store, index = 0 }: StoreCardProps) {
 
             {/* Info */}
             <div className="p-4">
-              <h3 className="font-display font-bold text-bone text-lg leading-tight line-clamp-1 group-hover:text-imperial-gold transition-colors duration-300">
+              <h3 className="line-clamp-1 font-display text-lg font-bold leading-tight text-bone transition-colors duration-300 group-hover:text-imperial-gold">
                 {store.name}
               </h3>
 
               {store.description && (
-                <p className="mt-1 text-sm text-bone/50 line-clamp-2 font-body">
+                <p className="mt-1 line-clamp-2 font-body text-sm text-bone/50">
                   {store.description}
                 </p>
               )}
 
               {/* Location */}
               <div className="mt-3 flex items-center gap-1.5 text-bone/40">
-                <MapPin className="w-4 h-4 flex-shrink-0" />
-                <span className="text-sm font-body truncate">
-                  {store.city}{store.province ? `, ${store.province}` : ''}
+                <MapPin className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate font-body text-sm">
+                  {store.city}
+                  {store.province ? `, ${store.province}` : ''}
                 </span>
               </div>
 
@@ -137,14 +152,14 @@ function StoreCard({ store, index = 0 }: StoreCardProps) {
               )}
 
               {/* Footer */}
-              <div className="mt-4 pt-3 border-t border-bone/10 flex items-center justify-between">
+              <div className="mt-4 flex items-center justify-between border-t border-bone/10 pt-3">
                 {store.website && (
-                  <span className="text-xs text-bone/40 font-body flex items-center gap-1">
-                    <ExternalLink className="w-3 h-3" />
+                  <span className="flex items-center gap-1 font-body text-xs text-bone/40">
+                    <ExternalLink className="h-3 w-3" />
                     Web
                   </span>
                 )}
-                <span className="text-xs text-imperial-gold/60 font-body ml-auto">
+                <span className="ml-auto font-body text-xs text-imperial-gold/60">
                   Ver detalle →
                 </span>
               </div>

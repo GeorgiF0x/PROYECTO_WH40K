@@ -10,10 +10,10 @@ interface RateEntry {
   dailyResetAt: number
 }
 
-const WINDOW_MS = 5 * 60 * 1000        // 5 minutes
-const MAX_PER_WINDOW = 10               // 10 uploads per 5 min
-const DAILY_MS = 24 * 60 * 60 * 1000   // 24 hours
-const MAX_PER_DAY = 50                  // 50 uploads per day
+const WINDOW_MS = 5 * 60 * 1000 // 5 minutes
+const MAX_PER_WINDOW = 10 // 10 uploads per 5 min
+const DAILY_MS = 24 * 60 * 60 * 1000 // 24 hours
+const MAX_PER_DAY = 50 // 50 uploads per day
 
 const rateLimitMap = new Map<string, RateEntry>()
 
@@ -32,7 +32,10 @@ function cleanupStaleEntries() {
   }
 }
 
-function checkRateLimit(userId: string, isAdmin: boolean): { allowed: boolean; retryAfterSec?: number; reason?: string } {
+function checkRateLimit(
+  userId: string,
+  isAdmin: boolean
+): { allowed: boolean; retryAfterSec?: number; reason?: string } {
   if (isAdmin) return { allowed: true }
 
   cleanupStaleEntries()
@@ -65,13 +68,21 @@ function checkRateLimit(userId: string, isAdmin: boolean): { allowed: boolean; r
   // Check daily quota
   if (entry.dailyCount >= MAX_PER_DAY) {
     const retryAfterSec = Math.ceil((entry.dailyResetAt - now) / 1000)
-    return { allowed: false, retryAfterSec, reason: `Daily upload limit (${MAX_PER_DAY}) reached. Try again later.` }
+    return {
+      allowed: false,
+      retryAfterSec,
+      reason: `Daily upload limit (${MAX_PER_DAY}) reached. Try again later.`,
+    }
   }
 
   // Check window rate
   if (entry.count >= MAX_PER_WINDOW) {
     const retryAfterSec = Math.ceil((entry.resetAt - now) / 1000)
-    return { allowed: false, retryAfterSec, reason: `Too many uploads. Limit: ${MAX_PER_WINDOW} per 5 minutes.` }
+    return {
+      allowed: false,
+      retryAfterSec,
+      reason: `Too many uploads. Limit: ${MAX_PER_WINDOW} per 5 minutes.`,
+    }
   }
 
   entry.count++
@@ -81,8 +92,8 @@ function checkRateLimit(userId: string, isAdmin: boolean): { allowed: boolean; r
 
 // --------------- Size Limits ---------------
 
-const MAX_SIZE_DEFAULT = 2 * 1024 * 1024  // 2 MB for compressed images
-const MAX_SIZE_GIF = 5 * 1024 * 1024      // 5 MB for GIFs (skip compression)
+const MAX_SIZE_DEFAULT = 2 * 1024 * 1024 // 2 MB for compressed images
+const MAX_SIZE_GIF = 5 * 1024 * 1024 // 5 MB for GIFs (skip compression)
 
 // --------------- Magic Bytes Validation ---------------
 
@@ -149,7 +160,9 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
 
     // Check auth
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -228,12 +241,10 @@ export async function POST(request: NextRequest) {
     const path = `${folder}/${filename}`
 
     // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
-      .from('wiki')
-      .upload(path, file, {
-        contentType: file.type,
-        cacheControl: '31536000', // 1 year cache
-      })
+    const { data, error } = await supabase.storage.from('wiki').upload(path, file, {
+      contentType: file.type,
+      cacheControl: '31536000', // 1 year cache
+    })
 
     if (error) {
       console.error('Wiki upload error:', error)

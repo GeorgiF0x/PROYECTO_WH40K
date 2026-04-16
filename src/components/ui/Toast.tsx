@@ -58,37 +58,37 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, x: 100, scale: 0.95 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-xl shadow-xl min-w-[280px] max-w-[400px] ${
+              className={`flex min-w-[280px] max-w-[400px] items-center gap-3 rounded-xl border px-4 py-3 shadow-xl backdrop-blur-xl ${
                 toast.type === 'success'
-                  ? 'bg-green-500/10 border-green-500/30'
+                  ? 'border-green-500/30 bg-green-500/10'
                   : toast.type === 'error'
-                  ? 'bg-red-500/10 border-red-500/30'
-                  : 'bg-blue-500/10 border-blue-500/30'
+                    ? 'border-red-500/30 bg-red-500/10'
+                    : 'border-blue-500/30 bg-blue-500/10'
               }`}
             >
               {/* Icon */}
               <div
-                className={`p-1 rounded-full ${
+                className={`rounded-full p-1 ${
                   toast.type === 'success'
                     ? 'bg-green-500'
                     : toast.type === 'error'
-                    ? 'bg-red-500'
-                    : 'bg-blue-500'
+                      ? 'bg-red-500'
+                      : 'bg-blue-500'
                 }`}
               >
-                {toast.type === 'success' && <Check className="w-3 h-3 text-white" />}
-                {toast.type === 'error' && <AlertCircle className="w-3 h-3 text-white" />}
-                {toast.type === 'info' && <Info className="w-3 h-3 text-white" />}
+                {toast.type === 'success' && <Check className="h-3 w-3 text-white" />}
+                {toast.type === 'error' && <AlertCircle className="h-3 w-3 text-white" />}
+                {toast.type === 'info' && <Info className="h-3 w-3 text-white" />}
               </div>
 
               {/* Message */}
               <p
-                className={`flex-1 text-sm font-body ${
+                className={`flex-1 font-body text-sm ${
                   toast.type === 'success'
                     ? 'text-green-400'
                     : toast.type === 'error'
-                    ? 'text-red-400'
-                    : 'text-blue-400'
+                      ? 'text-red-400'
+                      : 'text-blue-400'
                 }`}
               >
                 {toast.message}
@@ -97,9 +97,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               {/* Close button */}
               <button
                 onClick={() => removeToast(toast.id)}
-                className="p-1 text-bone/40 hover:text-bone transition-colors"
+                className="p-1 text-bone/40 transition-colors hover:text-bone"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" />
               </button>
             </motion.div>
           ))}

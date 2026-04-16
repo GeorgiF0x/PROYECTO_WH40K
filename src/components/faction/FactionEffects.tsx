@@ -39,21 +39,24 @@ function FactionIconParticles({ theme, factionId, count = 20 }: FactionIconParti
   }, [factionId, count])
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {particles.map((particle, i) => {
         // Different animation types for variety
         const animations = [
-          { // Gentle pulse
+          {
+            // Gentle pulse
             y: [0, -60, 0],
             opacity: [0.2, 0.5, 0.2],
             scale: [0.9, 1.1, 0.9],
           },
-          { // Rise and fade
+          {
+            // Rise and fade
             y: [0, -100, -150],
             opacity: [0, 0.6, 0],
             scale: [0.7, 1, 0.7],
           },
-          { // Slow breathe
+          {
+            // Slow breathe
             y: [0, -40, 0],
             opacity: [0.15, 0.45, 0.15],
             scale: [0.85, 1.05, 0.85],
@@ -89,7 +92,7 @@ function FactionIconParticles({ theme, factionId, count = 20 }: FactionIconParti
             <img
               src={encodedIconUrl}
               alt=""
-              className="relative w-full h-full object-contain"
+              className="relative h-full w-full object-contain"
               style={{
                 filter: `
                   drop-shadow(0 0 8px ${theme.colors.glow})
@@ -150,7 +153,7 @@ const ImperiumEffects = ({ theme }: { theme: FactionTheme }) => (
       {[...Array(8)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute top-0 left-1/2 w-1 origin-top"
+          className="absolute left-1/2 top-0 w-1 origin-top"
           style={{
             height: '150%',
             background: `linear-gradient(180deg, ${theme.colors.primary}40 0%, transparent 100%)`,
@@ -291,7 +294,7 @@ const AeldariEffects = ({ theme }: { theme: FactionTheme }) => (
     <FactionIconParticles theme={theme} factionId="aeldari" count={15} />
     {/* Ethereal wisps */}
     <motion.div
-      className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full"
+      className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full"
       style={{
         background: `radial-gradient(ellipse, ${theme.colors.primary}10 0%, transparent 70%)`,
         filter: 'blur(40px)',
@@ -340,9 +343,7 @@ const OrksEffects = ({ theme }: { theme: FactionTheme }) => (
       />
     ))}
     {/* WAAAGH! text watermark */}
-    <div
-      className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none"
-    >
+    <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.03]">
       <span
         className="font-display text-[20vw] font-black tracking-wider"
         style={{ color: theme.colors.primary }}
@@ -457,7 +458,7 @@ const effectComponents: Record<string, React.FC<{ theme: FactionTheme }>> = {
 export function FactionEffects({
   factionId,
   className = '',
-  showSubFactionIcons = true
+  showSubFactionIcons = true,
 }: FactionEffectsProps) {
   const theme = useMemo(() => getFactionTheme(factionId), [factionId])
 
@@ -469,7 +470,7 @@ export function FactionEffects({
 
   return (
     <div
-      className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
+      className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
       style={{
         background: theme.cssVars['--faction-bg'],
       }}
@@ -478,11 +479,7 @@ export function FactionEffects({
 
       {/* Sub-faction icons floating as particles */}
       {showSubFactionIcons && (
-        <SubFactionParticles
-          factionId={factionId}
-          theme={theme}
-          count={10}
-        />
+        <SubFactionParticles factionId={factionId} theme={theme} count={10} />
       )}
     </div>
   )

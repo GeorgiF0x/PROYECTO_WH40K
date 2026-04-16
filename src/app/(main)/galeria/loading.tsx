@@ -1,27 +1,27 @@
 export default function GaleriaLoading() {
   return (
-    <div className="min-h-screen pt-24 pb-16">
+    <div className="min-h-screen pb-16 pt-24">
       {/* Hero Skeleton */}
       <section className="relative px-6 py-16">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center animate-pulse">
-            <div className="inline-block w-48 h-8 bg-void-light rounded-full mb-6" />
-            <div className="h-16 w-96 bg-void-light rounded-lg mx-auto mb-4" />
-            <div className="h-6 w-[500px] max-w-full bg-void-light rounded mx-auto" />
+        <div className="mx-auto max-w-7xl">
+          <div className="animate-pulse text-center">
+            <div className="mb-6 inline-block h-8 w-48 rounded-full bg-void-light" />
+            <div className="mx-auto mb-4 h-16 w-96 rounded-lg bg-void-light" />
+            <div className="mx-auto h-6 w-[500px] max-w-full rounded bg-void-light" />
           </div>
         </div>
       </section>
 
       {/* Filters Skeleton */}
-      <section className="relative px-6 mb-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-void-light/50 backdrop-blur-xl rounded-2xl border border-bone/10 p-4 md:p-6 animate-pulse">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 h-12 bg-void rounded-xl" />
+      <section className="relative mb-8 px-6">
+        <div className="mx-auto max-w-7xl">
+          <div className="animate-pulse rounded-2xl border border-bone/10 bg-void-light/50 p-4 backdrop-blur-xl md:p-6">
+            <div className="flex flex-col gap-4 md:flex-row">
+              <div className="h-12 flex-1 rounded-xl bg-void" />
               <div className="flex gap-2">
-                <div className="w-24 h-12 bg-void rounded-xl" />
-                <div className="w-24 h-12 bg-void rounded-xl" />
-                <div className="w-24 h-12 bg-void rounded-xl" />
+                <div className="h-12 w-24 rounded-xl bg-void" />
+                <div className="h-12 w-24 rounded-xl bg-void" />
+                <div className="h-12 w-24 rounded-xl bg-void" />
               </div>
             </div>
           </div>
@@ -30,22 +30,22 @@ export default function GaleriaLoading() {
 
       {/* Grid Skeleton */}
       <section className="px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="h-6 w-48 bg-void-light rounded mb-8 animate-pulse" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-8 h-6 w-48 animate-pulse rounded bg-void-light" />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="bg-void-light rounded-xl overflow-hidden animate-pulse">
+              <div key={i} className="animate-pulse overflow-hidden rounded-xl bg-void-light">
                 <div className="aspect-square bg-void" />
-                <div className="p-4 space-y-3">
-                  <div className="h-5 bg-void rounded w-3/4" />
-                  <div className="flex justify-between items-center">
+                <div className="space-y-3 p-4">
+                  <div className="h-5 w-3/4 rounded bg-void" />
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-void rounded-full" />
-                      <div className="h-4 w-20 bg-void rounded" />
+                      <div className="h-8 w-8 rounded-full bg-void" />
+                      <div className="h-4 w-20 rounded bg-void" />
                     </div>
                     <div className="flex gap-2">
-                      <div className="h-4 w-12 bg-void rounded" />
-                      <div className="h-4 w-12 bg-void rounded" />
+                      <div className="h-4 w-12 rounded bg-void" />
+                      <div className="h-4 w-12 rounded bg-void" />
                     </div>
                   </div>
                 </div>

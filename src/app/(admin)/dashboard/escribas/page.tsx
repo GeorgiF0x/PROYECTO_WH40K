@@ -15,7 +15,13 @@ import {
   MessageSquare,
   Calendar,
 } from 'lucide-react'
-import { DataTable, StatusBadge, FilterTabs, type Column, type Action } from '../components/ui/data-table'
+import {
+  DataTable,
+  StatusBadge,
+  FilterTabs,
+  type Column,
+  type Action,
+} from '../components/ui/data-table'
 import { Modal, ConfirmDialog } from '../components/ui/modal'
 import { Button } from '../components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
@@ -98,7 +104,10 @@ export default function EscribasPage() {
       ])
 
       setCounts({
-        all: (pendingData.data?.length || 0) + (approvedData.data?.length || 0) + (rejectedData.data?.length || 0),
+        all:
+          (pendingData.data?.length || 0) +
+          (approvedData.data?.length || 0) +
+          (rejectedData.data?.length || 0),
         pending: pendingData.data?.length || 0,
         approved: approvedData.data?.length || 0,
         rejected: rejectedData.data?.length || 0,
@@ -180,9 +189,7 @@ export default function EscribasPage() {
       key: 'motivation',
       header: 'Motivacion',
       render: (app) => (
-        <p className="text-sm text-zinc-400 truncate max-w-[300px]">
-          {app.motivation}
-        </p>
+        <p className="max-w-[300px] truncate text-sm text-zinc-400">{app.motivation}</p>
       ),
     },
     {
@@ -190,9 +197,7 @@ export default function EscribasPage() {
       header: 'Estado',
       sortable: true,
       width: '120px',
-      render: (app) => (
-        <StatusBadge status={app.status} />
-      ),
+      render: (app) => <StatusBadge status={app.status} />,
     },
     {
       key: 'created_at',
@@ -214,18 +219,18 @@ export default function EscribasPage() {
   const actions: Action<ScribeApplication>[] = [
     {
       label: 'Ver solicitud',
-      icon: <Eye className="w-4 h-4" />,
+      icon: <Eye className="h-4 w-4" />,
       onClick: (app) => setViewApp(app),
     },
     {
       label: 'Aprobar',
-      icon: <CheckCircle className="w-4 h-4" />,
+      icon: <CheckCircle className="h-4 w-4" />,
       onClick: (app) => setConfirmAction({ app, action: 'approve' }),
       show: (app) => app.status === 'pending',
     },
     {
       label: 'Rechazar',
-      icon: <XCircle className="w-4 h-4" />,
+      icon: <XCircle className="h-4 w-4" />,
       onClick: (app) => setConfirmAction({ app, action: 'reject' }),
       show: (app) => app.status === 'pending',
     },
@@ -245,7 +250,9 @@ export default function EscribasPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-white">Lexicanum Scribes</h1>
-          <p className="text-sm text-zinc-400">Gestiona las solicitudes para unirse a la Orden de Escribas</p>
+          <p className="text-sm text-zinc-400">
+            Gestiona las solicitudes para unirse a la Orden de Escribas
+          </p>
         </div>
       </div>
 
@@ -266,7 +273,7 @@ export default function EscribasPage() {
         searchFields={['motivation']}
         loading={loading}
         emptyMessage="No hay solicitudes de escriba"
-        emptyIcon={<ScrollText className="w-8 h-8 text-zinc-600 mx-auto" />}
+        emptyIcon={<ScrollText className="mx-auto h-8 w-8 text-zinc-600" />}
         pageSize={10}
       />
 
@@ -322,10 +329,10 @@ export default function EscribasPage() {
                   {viewApp.user?.display_name || viewApp.user?.username || 'Usuario'}
                 </h3>
                 <p className="text-sm text-zinc-500">@{viewApp.user?.username}</p>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="mt-1 flex items-center gap-2">
                   <StatusBadge status={viewApp.status} />
-                  <span className="text-xs text-zinc-500 flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
+                  <span className="flex items-center gap-1 text-xs text-zinc-500">
+                    <Calendar className="h-3 w-3" />
                     {new Date(viewApp.created_at).toLocaleDateString('es-ES', {
                       day: 'numeric',
                       month: 'long',
@@ -338,12 +345,12 @@ export default function EscribasPage() {
 
             {/* Motivation */}
             <div>
-              <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                <MessageSquare className="w-3 h-3" />
+              <p className="mb-1.5 flex items-center gap-1 text-xs font-medium uppercase tracking-wider text-[#E8E8F0]/40">
+                <MessageSquare className="h-3 w-3" />
                 Motivacion
               </p>
-              <div className="max-h-40 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
-                <p className="text-sm text-[#E8E8F0]/70 whitespace-pre-wrap break-words">
+              <div className="max-h-40 overflow-y-auto rounded-lg border border-[#C9A227]/10 bg-[#0a0a12]/80 p-3">
+                <p className="whitespace-pre-wrap break-words text-sm text-[#E8E8F0]/70">
                   {viewApp.motivation}
                 </p>
               </div>
@@ -352,12 +359,12 @@ export default function EscribasPage() {
             {/* Experience */}
             {viewApp.experience && (
               <div>
-                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                  <BookOpen className="w-3 h-3" />
+                <p className="mb-1.5 flex items-center gap-1 text-xs font-medium uppercase tracking-wider text-[#E8E8F0]/40">
+                  <BookOpen className="h-3 w-3" />
                   Experiencia con el lore de 40K
                 </p>
-                <div className="max-h-32 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
-                  <p className="text-sm text-[#E8E8F0]/60 whitespace-pre-wrap break-words">
+                <div className="max-h-32 overflow-y-auto rounded-lg border border-[#C9A227]/10 bg-[#0a0a12]/80 p-3">
+                  <p className="whitespace-pre-wrap break-words text-sm text-[#E8E8F0]/60">
                     {viewApp.experience}
                   </p>
                 </div>
@@ -367,33 +374,32 @@ export default function EscribasPage() {
             {/* Sample topic */}
             {viewApp.sample_topic && (
               <div>
-                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                  <Feather className="w-3 h-3" />
+                <p className="mb-1.5 flex items-center gap-1 text-xs font-medium uppercase tracking-wider text-[#E8E8F0]/40">
+                  <Feather className="h-3 w-3" />
                   Tema de interes
                 </p>
-                <div className="rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
-                  <p className="text-sm text-[#E8E8F0]/60 break-words">
-                    {viewApp.sample_topic}
-                  </p>
+                <div className="rounded-lg border border-[#C9A227]/10 bg-[#0a0a12]/80 p-3">
+                  <p className="break-words text-sm text-[#E8E8F0]/60">{viewApp.sample_topic}</p>
                 </div>
               </div>
             )}
 
             {/* Reviewer notes (for processed) */}
             {viewApp.status !== 'pending' && viewApp.reviewer_notes && (
-              <div className="pt-3 border-t border-[#C9A227]/10">
-                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5">
+              <div className="border-t border-[#C9A227]/10 pt-3">
+                <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-[#E8E8F0]/40">
                   Notas del revisor
                 </p>
-                <div className="max-h-28 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
-                  <p className="text-sm text-[#E8E8F0]/60 whitespace-pre-wrap break-words">
+                <div className="max-h-28 overflow-y-auto rounded-lg border border-[#C9A227]/10 bg-[#0a0a12]/80 p-3">
+                  <p className="whitespace-pre-wrap break-words text-sm text-[#E8E8F0]/60">
                     {viewApp.reviewer_notes}
                   </p>
                 </div>
                 {viewApp.reviewer && (
-                  <p className="text-xs text-zinc-600 mt-1">
+                  <p className="mt-1 text-xs text-zinc-600">
                     Revisado por @{viewApp.reviewer.username}
-                    {viewApp.reviewed_at && ` el ${new Date(viewApp.reviewed_at).toLocaleDateString('es-ES')}`}
+                    {viewApp.reviewed_at &&
+                      ` el ${new Date(viewApp.reviewed_at).toLocaleDateString('es-ES')}`}
                   </p>
                 )}
               </div>
@@ -401,15 +407,15 @@ export default function EscribasPage() {
 
             {/* Link to public profile */}
             {viewApp.user?.username && (
-              <div className="pt-2 border-t border-zinc-800">
+              <div className="border-t border-zinc-800 pt-2">
                 <Link
                   href={`/usuarios/${viewApp.user.username}`}
                   target="_blank"
                   className="flex items-center gap-2 text-sm text-amber-500 hover:text-amber-400"
                 >
-                  <Feather className="w-4 h-4" />
+                  <Feather className="h-4 w-4" />
                   Ver perfil publico
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <ExternalLink className="h-3.5 w-3.5" />
                 </Link>
               </div>
             )}
@@ -425,32 +431,32 @@ export default function EscribasPage() {
           setReviewNotes('')
         }}
         onConfirm={handleAction}
-        title={
-          confirmAction?.action === 'approve'
-            ? 'Aprobar escriba'
-            : 'Rechazar solicitud'
-        }
+        title={confirmAction?.action === 'approve' ? 'Aprobar escriba' : 'Rechazar solicitud'}
         description={
           confirmAction?.action === 'approve'
             ? `¿Aprobar a "${
-                confirmAction?.app.user?.display_name || confirmAction?.app.user?.username || 'este usuario'
+                confirmAction?.app.user?.display_name ||
+                confirmAction?.app.user?.username ||
+                'este usuario'
               }" como Lexicanum Scribe? Podra crear y editar articulos en la wiki.`
             : `¿Rechazar la solicitud de "${
-                confirmAction?.app.user?.display_name || confirmAction?.app.user?.username || 'este usuario'
+                confirmAction?.app.user?.display_name ||
+                confirmAction?.app.user?.username ||
+                'este usuario'
               }"?`
         }
         confirmLabel={confirmAction?.action === 'approve' ? 'Aprobar' : 'Rechazar'}
         loading={actionLoading}
       >
         <div className="mt-3">
-          <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+          <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
             Notas (opcional)
           </label>
           <textarea
             value={reviewNotes}
             onChange={(e) => setReviewNotes(e.target.value)}
             placeholder="Escribe una nota para el solicitante..."
-            className="w-full mt-1 h-20 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg text-zinc-300 text-sm placeholder-zinc-600 focus:outline-none focus:border-amber-500/50 resize-none"
+            className="mt-1 h-20 w-full resize-none rounded-lg border border-zinc-700 bg-zinc-800/50 px-3 py-2 text-sm text-zinc-300 placeholder-zinc-600 focus:border-amber-500/50 focus:outline-none"
           />
         </div>
       </ConfirmDialog>

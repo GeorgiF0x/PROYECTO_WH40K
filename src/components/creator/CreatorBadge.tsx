@@ -27,18 +27,21 @@ interface CreatorBadgeProps {
   className?: string
 }
 
-export const creatorTypeConfig: Record<CreatorType, {
-  label: string
-  title: string
-  tagline: string
-  icon: typeof Palette
-  secondaryIcon: typeof Cog
-  color: string
-  colorHex: string
-  bgColor: string
-  borderColor: string
-  glowColor: string
-}> = {
+export const creatorTypeConfig: Record<
+  CreatorType,
+  {
+    label: string
+    title: string
+    tagline: string
+    icon: typeof Palette
+    secondaryIcon: typeof Cog
+    color: string
+    colorHex: string
+    bgColor: string
+    borderColor: string
+    glowColor: string
+  }
+> = {
   painter: {
     label: 'Pintor',
     title: 'Adepto de la Forja',
@@ -49,7 +52,7 @@ export const creatorTypeConfig: Record<CreatorType, {
     colorHex: '#c084fc',
     bgColor: 'bg-purple-500/20',
     borderColor: 'border-purple-500/50',
-    glowColor: 'shadow-purple-500/30'
+    glowColor: 'shadow-purple-500/30',
   },
   youtuber: {
     label: 'YouTuber',
@@ -61,7 +64,7 @@ export const creatorTypeConfig: Record<CreatorType, {
     colorHex: '#f87171',
     bgColor: 'bg-red-500/20',
     borderColor: 'border-red-500/50',
-    glowColor: 'shadow-red-500/30'
+    glowColor: 'shadow-red-500/30',
   },
   artist: {
     label: 'Artista',
@@ -73,7 +76,7 @@ export const creatorTypeConfig: Record<CreatorType, {
     colorHex: '#22d3ee',
     bgColor: 'bg-cyan-500/20',
     borderColor: 'border-cyan-500/50',
-    glowColor: 'shadow-cyan-500/30'
+    glowColor: 'shadow-cyan-500/30',
   },
   blogger: {
     label: 'Blogger',
@@ -85,7 +88,7 @@ export const creatorTypeConfig: Record<CreatorType, {
     colorHex: '#fbbf24',
     bgColor: 'bg-amber-500/20',
     borderColor: 'border-amber-500/50',
-    glowColor: 'shadow-amber-500/30'
+    glowColor: 'shadow-amber-500/30',
   },
   instructor: {
     label: 'Instructor',
@@ -97,8 +100,8 @@ export const creatorTypeConfig: Record<CreatorType, {
     colorHex: '#34d399',
     bgColor: 'bg-emerald-500/20',
     borderColor: 'border-emerald-500/50',
-    glowColor: 'shadow-emerald-500/30'
-  }
+    glowColor: 'shadow-emerald-500/30',
+  },
 }
 
 const sizeConfig = {
@@ -106,20 +109,20 @@ const sizeConfig = {
     icon: 'w-3 h-3',
     padding: 'px-1.5 py-0.5',
     text: 'text-xs',
-    gap: 'gap-1'
+    gap: 'gap-1',
   },
   md: {
     icon: 'w-4 h-4',
     padding: 'px-2 py-1',
     text: 'text-sm',
-    gap: 'gap-1.5'
+    gap: 'gap-1.5',
   },
   lg: {
     icon: 'w-5 h-5',
     padding: 'px-3 py-1.5',
     text: 'text-base',
-    gap: 'gap-2'
-  }
+    gap: 'gap-2',
+  },
 }
 
 export function CreatorBadge({
@@ -129,7 +132,7 @@ export function CreatorBadge({
   showTagline = false,
   verified = true,
   variant = 'default',
-  className
+  className,
 }: CreatorBadgeProps) {
   const config = creatorTypeConfig[type]
   const sizes = sizeConfig[size]
@@ -142,7 +145,7 @@ export function CreatorBadge({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         className={cn(
-          'inline-flex items-center gap-2 px-2.5 py-1 rounded-lg border backdrop-blur-sm',
+          'inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 backdrop-blur-sm',
           className
         )}
         style={{
@@ -151,10 +154,13 @@ export function CreatorBadge({
         }}
         title={config.title}
       >
-        <Icon className={cn(size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4')} style={{ color: config.colorHex }} />
+        <Icon
+          className={cn(size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4')}
+          style={{ color: config.colorHex }}
+        />
         <span
           className={cn(
-            'font-mono tracking-wider uppercase',
+            'font-mono uppercase tracking-wider',
             size === 'sm' ? 'text-[10px]' : 'text-xs'
           )}
           style={{ color: config.colorHex }}
@@ -206,7 +212,7 @@ export function CreatorBadge({
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.45, duration: 0.3 }}
-        className={cn('inline-flex items-center gap-2.5 px-3 py-1.5 rounded-lg', className)}
+        className={cn('inline-flex items-center gap-2.5 rounded-lg px-3 py-1.5', className)}
         style={{
           background: `linear-gradient(135deg, ${config.colorHex}20 0%, ${config.colorHex}10 100%)`,
           border: `1px solid ${config.colorHex}35`,
@@ -215,24 +221,24 @@ export function CreatorBadge({
       >
         {/* Icon */}
         <div
-          className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
+          className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md"
           style={{
             background: `linear-gradient(135deg, ${config.colorHex}35, ${config.colorHex}15)`,
             border: `1px solid ${config.colorHex}40`,
           }}
         >
-          <Icon className="w-4 h-4" style={{ color: config.colorHex }} />
+          <Icon className="h-4 w-4" style={{ color: config.colorHex }} />
         </div>
 
         {/* Text */}
         <div className="flex flex-col leading-tight">
           <span
-            className="text-sm font-display font-bold tracking-wide whitespace-nowrap"
+            className="whitespace-nowrap font-display text-sm font-bold tracking-wide"
             style={{ color: config.colorHex }}
           >
             {config.title}
           </span>
-          <span className="text-[10px] text-bone/50 font-mono tracking-wider whitespace-nowrap">
+          <span className="whitespace-nowrap font-mono text-[10px] tracking-wider text-bone/50">
             {config.tagline}
           </span>
         </div>
@@ -281,28 +287,26 @@ export function CreatorBadge({
         >
           {/* Icon badge */}
           <div
-            className="mx-auto mb-2 w-10 h-10 rounded-xl flex items-center justify-center"
+            className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl"
             style={{
               background: `linear-gradient(135deg, ${config.colorHex}50, ${config.colorHex}20)`,
               border: `2px solid ${config.colorHex}60`,
               boxShadow: `0 4px 15px ${config.colorHex}30`,
             }}
           >
-            <Icon className="w-5 h-5" style={{ color: config.colorHex }} />
+            <Icon className="h-5 w-5" style={{ color: config.colorHex }} />
           </div>
 
           {/* Title */}
           <h3
-            className="text-lg font-display font-bold tracking-wide"
+            className="font-display text-lg font-bold tracking-wide"
             style={{ color: config.colorHex }}
           >
             {config.title}
           </h3>
 
           {/* Tagline */}
-          <p className="text-sm text-bone/60 font-mono mt-1">
-            {config.tagline}
-          </p>
+          <p className="mt-1 font-mono text-sm text-bone/60">{config.tagline}</p>
         </motion.div>
       </motion.div>
     )
@@ -329,39 +333,32 @@ export function CreatorBadge({
           transition={{ duration: 3, repeat: Infinity }}
           whileHover={{ scale: 1.1, rotate: 5 }}
         >
-          <Image
-            src="/purity-seal-large.svg"
-            alt="Sello de Pureza"
-            width={80}
-            height={80}
-          />
+          <Image src="/purity-seal-large.svg" alt="Sello de Pureza" width={80} height={80} />
         </motion.div>
 
         {/* Content */}
         <div className="flex items-center gap-3">
           {/* Icon */}
           <div
-            className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
+            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl"
             style={{
               background: `linear-gradient(135deg, ${config.colorHex}40, ${config.colorHex}15)`,
               border: `2px solid ${config.colorHex}50`,
               boxShadow: `0 4px 15px ${config.colorHex}25`,
             }}
           >
-            <Icon className="w-6 h-6" style={{ color: config.colorHex }} />
+            <Icon className="h-6 w-6" style={{ color: config.colorHex }} />
           </div>
 
           {/* Text */}
           <div>
             <h3
-              className="font-display font-bold text-base tracking-wide"
+              className="font-display text-base font-bold tracking-wide"
               style={{ color: config.colorHex }}
             >
               {config.title}
             </h3>
-            <p className="text-xs text-bone/50 font-mono">
-              {config.tagline}
-            </p>
+            <p className="font-mono text-xs text-bone/50">{config.tagline}</p>
           </div>
         </div>
       </motion.div>
@@ -400,7 +397,7 @@ export function CreatorBadge({
       {/* Badge content */}
       <motion.div
         className={cn(
-          'inline-flex items-center rounded-lg backdrop-blur-sm relative overflow-hidden',
+          'relative inline-flex items-center overflow-hidden rounded-lg backdrop-blur-sm',
           sizes.padding,
           sizes.gap
         )}
@@ -416,10 +413,7 @@ export function CreatorBadge({
       >
         <Icon className={cn(sizes.icon)} style={{ color: config.colorHex }} />
         {showLabel && (
-          <span
-            className={cn(sizes.text, 'font-medium')}
-            style={{ color: config.colorHex }}
-          >
+          <span className={cn(sizes.text, 'font-medium')} style={{ color: config.colorHex }}>
             {config.title}
           </span>
         )}
@@ -435,6 +429,6 @@ export function getCreatorTypeConfig(type: CreatorType) {
 export function getAllCreatorTypes() {
   return Object.entries(creatorTypeConfig).map(([value, config]) => ({
     value: value as CreatorType,
-    ...config
+    ...config,
   }))
 }

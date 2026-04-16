@@ -102,25 +102,28 @@ export default function LocationPicker({ value, onChange }: LocationPickerProps)
     map.current.easeTo({ center: [lng, lat], zoom: 14 })
   }, [])
 
-  const reverseGeocode = useCallback(async (lng: number, lat: number) => {
-    const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
-    if (!token) return
+  const reverseGeocode = useCallback(
+    async (lng: number, lat: number) => {
+      const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
+      if (!token) return
 
-    try {
-      const res = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?country=ES&language=es&access_token=${token}`
-      )
-      const data = await res.json()
-      const feature = data.features?.[0] as GeocodingFeature | undefined
-      if (feature) {
-        const location = parseFeature(feature, lng, lat)
-        onChange(location)
-        setQuery(feature.place_name)
+      try {
+        const res = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?country=ES&language=es&access_token=${token}`
+        )
+        const data = await res.json()
+        const feature = data.features?.[0] as GeocodingFeature | undefined
+        if (feature) {
+          const location = parseFeature(feature, lng, lat)
+          onChange(location)
+          setQuery(feature.place_name)
+        }
+      } catch (err) {
+        console.error('Reverse geocoding error:', err)
       }
-    } catch (err) {
-      console.error('Reverse geocoding error:', err)
-    }
-  }, [onChange])
+    },
+    [onChange]
+  )
 
   const searchAddress = useCallback(async (searchQuery: string) => {
     const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
@@ -173,17 +176,17 @@ export default function LocationPicker({ value, onChange }: LocationPickerProps)
     <div className="space-y-4">
       {/* Search input */}
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-bone/40" />
+        <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-bone/40" />
         <input
           type="text"
           value={query}
           onChange={handleInputChange}
           onFocus={() => results.length > 0 && setShowResults(true)}
           placeholder="Buscar direccion..."
-          className="w-full pl-11 pr-10 py-3 bg-void border border-bone/10 rounded-xl font-body text-bone placeholder:text-bone/30 focus:outline-none focus:border-imperial-gold/50 transition-colors"
+          className="w-full rounded-xl border border-bone/10 bg-void py-3 pl-11 pr-10 font-body text-bone transition-colors placeholder:text-bone/30 focus:border-imperial-gold/50 focus:outline-none"
         />
         {isSearching && (
-          <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-imperial-gold animate-spin" />
+          <Loader2 className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-imperial-gold" />
         )}
         {query && !isSearching && (
           <button
@@ -191,22 +194,22 @@ export default function LocationPicker({ value, onChange }: LocationPickerProps)
             onClick={handleClear}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-bone/40 hover:text-bone/60"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         )}
 
         {/* Results dropdown */}
         {showResults && results.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-void-light border border-bone/10 rounded-xl overflow-hidden z-50 shadow-xl">
+          <div className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-xl border border-bone/10 bg-void-light shadow-xl">
             {results.map((feature, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => handleSelectResult(feature)}
-                className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-imperial-gold/10 transition-colors border-b border-bone/5 last:border-0"
+                className="flex w-full items-start gap-3 border-b border-bone/5 px-4 py-3 text-left transition-colors last:border-0 hover:bg-imperial-gold/10"
               >
-                <MapPin className="w-4 h-4 text-imperial-gold mt-0.5 flex-shrink-0" />
-                <span className="text-sm font-body text-bone/70 line-clamp-2">
+                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-imperial-gold" />
+                <span className="line-clamp-2 font-body text-sm text-bone/70">
                   {feature.place_name}
                 </span>
               </button>
@@ -218,22 +221,23 @@ export default function LocationPicker({ value, onChange }: LocationPickerProps)
       {/* Mini map */}
       <div
         ref={mapContainer}
-        className="w-full h-[200px] rounded-xl border border-bone/10 overflow-hidden"
+        className="h-[200px] w-full overflow-hidden rounded-xl border border-bone/10"
       />
 
       {/* Selected location info */}
       {value && (
-        <div className="flex items-center gap-2 px-3 py-2 bg-imperial-gold/10 border border-imperial-gold/20 rounded-lg">
-          <MapPin className="w-4 h-4 text-imperial-gold flex-shrink-0" />
-          <span className="text-sm font-body text-bone/70 truncate">
+        <div className="flex items-center gap-2 rounded-lg border border-imperial-gold/20 bg-imperial-gold/10 px-3 py-2">
+          <MapPin className="h-4 w-4 flex-shrink-0 text-imperial-gold" />
+          <span className="truncate font-body text-sm text-bone/70">
             {value.address} - {value.city}
             {value.province ? `, ${value.province}` : ''}
           </span>
         </div>
       )}
 
-      <p className="text-xs text-bone/40 font-body">
-        Busca la direccion o haz clic en el mapa para seleccionar la ubicacion. Puedes arrastrar el marcador para ajustar.
+      <p className="font-body text-xs text-bone/40">
+        Busca la direccion o haz clic en el mapa para seleccionar la ubicacion. Puedes arrastrar el
+        marcador para ajustar.
       </p>
     </div>
   )

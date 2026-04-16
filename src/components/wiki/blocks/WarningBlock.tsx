@@ -13,13 +13,16 @@ interface WarningBlockProps {
   className?: string
 }
 
-const warningConfig: Record<WarningType, {
-  icon: typeof AlertTriangle
-  color: string
-  bgColor: string
-  borderColor: string
-  defaultTitle: string
-}> = {
+const warningConfig: Record<
+  WarningType,
+  {
+    icon: typeof AlertTriangle
+    color: string
+    bgColor: string
+    borderColor: string
+    defaultTitle: string
+  }
+> = {
   heresy: {
     icon: Skull,
     color: '#DC143C',
@@ -57,30 +60,22 @@ export function WarningBlock({ type = 'info', title, children, className }: Warn
 
   return (
     <div
-      className={cn(
-        'my-6 p-4 rounded-lg',
-        className
-      )}
+      className={cn('my-6 rounded-lg p-4', className)}
       style={{
         background: config.bgColor,
         borderLeft: `4px solid ${config.color}`,
       }}
     >
       <div className="flex items-start gap-3">
-        <Icon
-          className="w-5 h-5 mt-0.5 flex-shrink-0"
-          style={{ color: config.color }}
-        />
-        <div className="flex-1 min-w-0">
+        <Icon className="mt-0.5 h-5 w-5 flex-shrink-0" style={{ color: config.color }} />
+        <div className="min-w-0 flex-1">
           <h4
-            className="font-display text-sm font-bold uppercase tracking-wider mb-2"
+            className="mb-2 font-display text-sm font-bold uppercase tracking-wider"
             style={{ color: config.color }}
           >
             {displayTitle}
           </h4>
-          <div className="font-body text-sm text-bone/80 leading-relaxed">
-            {children}
-          </div>
+          <div className="font-body text-sm leading-relaxed text-bone/80">{children}</div>
         </div>
       </div>
     </div>

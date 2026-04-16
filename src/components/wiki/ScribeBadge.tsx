@@ -13,12 +13,15 @@ interface ScribeBadgeProps {
   className?: string
 }
 
-const roleConfig: Record<WikiRole, {
-  label: string
-  title: string
-  icon: typeof Feather
-  colorHex: string
-}> = {
+const roleConfig: Record<
+  WikiRole,
+  {
+    label: string
+    title: string
+    icon: typeof Feather
+    colorHex: string
+  }
+> = {
   scribe: {
     label: 'Scribe',
     title: 'Lexicanum Scribe',
@@ -54,12 +57,7 @@ const sizeConfig = {
   },
 }
 
-export function ScribeBadge({
-  role,
-  size = 'md',
-  showLabel = true,
-  className,
-}: ScribeBadgeProps) {
+export function ScribeBadge({ role, size = 'md', showLabel = true, className }: ScribeBadgeProps) {
   const config = roleConfig[role]
   const sizes = sizeConfig[size]
   const Icon = config.icon
@@ -87,10 +85,7 @@ export function ScribeBadge({
     >
       <Icon className={cn(sizes.icon)} style={{ color: config.colorHex }} />
       {showLabel && (
-        <span
-          className={cn(sizes.text, 'font-medium')}
-          style={{ color: config.colorHex }}
-        >
+        <span className={cn(sizes.text, 'font-medium')} style={{ color: config.colorHex }}>
           {config.title}
         </span>
       )}

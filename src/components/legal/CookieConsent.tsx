@@ -21,22 +21,28 @@ export default function CookieConsent() {
   }, [])
 
   const acceptAll = () => {
-    localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({
-      essential: true,
-      analytics: true,
-      preferences: true,
-      timestamp: Date.now()
-    }))
+    localStorage.setItem(
+      COOKIE_CONSENT_KEY,
+      JSON.stringify({
+        essential: true,
+        analytics: true,
+        preferences: true,
+        timestamp: Date.now(),
+      })
+    )
     setShowBanner(false)
   }
 
   const acceptEssential = () => {
-    localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({
-      essential: true,
-      analytics: false,
-      preferences: false,
-      timestamp: Date.now()
-    }))
+    localStorage.setItem(
+      COOKIE_CONSENT_KEY,
+      JSON.stringify({
+        essential: true,
+        analytics: false,
+        preferences: false,
+        timestamp: Date.now(),
+      })
+    )
     setShowBanner(false)
   }
 
@@ -49,7 +55,7 @@ export default function CookieConsent() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
             onClick={acceptEssential}
           />
 
@@ -59,9 +65,9 @@ export default function CookieConsent() {
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 100, opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-4 left-4 right-4 md:bottom-8 md:left-auto md:right-8 md:max-w-lg z-50"
+            className="fixed bottom-4 left-4 right-4 z-50 md:bottom-8 md:left-auto md:right-8 md:max-w-lg"
           >
-            <div className="relative bg-gradient-to-br from-amber-950 via-amber-900/95 to-amber-950 border-2 border-amber-500/50 rounded-xl shadow-2xl shadow-amber-900/30 overflow-hidden">
+            <div className="relative overflow-hidden rounded-xl border-2 border-amber-500/50 bg-gradient-to-br from-amber-950 via-amber-900/95 to-amber-950 shadow-2xl shadow-amber-900/30">
               {/* Animated glow effect */}
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/10 to-transparent"
@@ -70,28 +76,30 @@ export default function CookieConsent() {
               />
 
               {/* Corner brackets */}
-              <div className="absolute top-0 left-0 w-5 h-5 border-l-2 border-t-2 border-amber-400" />
-              <div className="absolute top-0 right-0 w-5 h-5 border-r-2 border-t-2 border-amber-400" />
-              <div className="absolute bottom-0 left-0 w-5 h-5 border-l-2 border-b-2 border-amber-400" />
-              <div className="absolute bottom-0 right-0 w-5 h-5 border-r-2 border-b-2 border-amber-400" />
+              <div className="absolute left-0 top-0 h-5 w-5 border-l-2 border-t-2 border-amber-400" />
+              <div className="absolute right-0 top-0 h-5 w-5 border-r-2 border-t-2 border-amber-400" />
+              <div className="absolute bottom-0 left-0 h-5 w-5 border-b-2 border-l-2 border-amber-400" />
+              <div className="absolute bottom-0 right-0 h-5 w-5 border-b-2 border-r-2 border-amber-400" />
 
               {/* Header bar */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-amber-500/20 border-b border-amber-500/30 px-4 py-2.5 flex items-center gap-2"
+                className="flex items-center gap-2 border-b border-amber-500/30 bg-amber-500/20 px-4 py-2.5"
               >
                 <motion.div
                   animate={{ rotate: [0, 10, -10, 0] }}
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
                 >
-                  <Shield className="w-5 h-5 text-amber-400" />
+                  <Shield className="h-5 w-5 text-amber-400" />
                 </motion.div>
-                <span className="text-sm font-bold text-amber-300 uppercase tracking-wider">
+                <span className="text-sm font-bold uppercase tracking-wider text-amber-300">
                   Decreto del Administratum
                 </span>
-                <span className="text-xs text-amber-400/60 hidden sm:inline">// Ref: COOKIE-GDPR-M41</span>
+                <span className="hidden text-xs text-amber-400/60 sm:inline">
+                  // Ref: COOKIE-GDPR-M41
+                </span>
               </motion.div>
 
               {/* Content */}
@@ -103,20 +111,23 @@ export default function CookieConsent() {
                   className="flex items-start gap-4"
                 >
                   <motion.div
-                    className="hidden sm:flex p-3 bg-amber-500/20 rounded-lg border border-amber-500/30"
+                    className="hidden rounded-lg border border-amber-500/30 bg-amber-500/20 p-3 sm:flex"
                     whileHover={{ scale: 1.1, rotate: 5 }}
                   >
-                    <Cookie className="w-7 h-7 text-amber-400" />
+                    <Cookie className="h-7 w-7 text-amber-400" />
                   </motion.div>
 
                   <div className="flex-1 space-y-3">
                     <h3 className="text-lg font-bold text-amber-100">
                       Registro de Datos Obligatorio
                     </h3>
-                    <p className="text-sm text-amber-200/80 leading-relaxed">
+                    <p className="text-sm leading-relaxed text-amber-200/80">
                       Por decreto del Administratum Imperial, este dominio utiliza{' '}
-                      <span className="text-amber-400 font-medium">archivos de datos (cookies)</span> para
-                      garantizar el correcto funcionamiento del servicio y mejorar tu experiencia como ciudadano imperial.
+                      <span className="font-medium text-amber-400">
+                        archivos de datos (cookies)
+                      </span>{' '}
+                      para garantizar el correcto funcionamiento del servicio y mejorar tu
+                      experiencia como ciudadano imperial.
                     </p>
 
                     {/* Expandable details */}
@@ -129,7 +140,7 @@ export default function CookieConsent() {
                           transition={{ duration: 0.3 }}
                           className="overflow-hidden"
                         >
-                          <div className="pt-3 space-y-2 border-t border-amber-500/20">
+                          <div className="space-y-2 border-t border-amber-500/20 pt-3">
                             <CookieCategory
                               title="Cookies Esenciales"
                               description="Autenticación y seguridad del servicio."
@@ -156,19 +167,25 @@ export default function CookieConsent() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.5 }}
-                      className="flex items-center gap-4 text-xs pt-1"
+                      className="flex items-center gap-4 pt-1 text-xs"
                     >
                       <button
                         onClick={() => setShowDetails(!showDetails)}
-                        className="text-amber-400/80 hover:text-amber-300 transition-colors flex items-center gap-1"
+                        className="flex items-center gap-1 text-amber-400/80 transition-colors hover:text-amber-300"
                       >
-                        <ScrollText className="w-3 h-3" />
+                        <ScrollText className="h-3 w-3" />
                         {showDetails ? 'Ocultar' : 'Ver detalles'}
                       </button>
-                      <Link href="/legal/cookies" className="text-amber-400/80 hover:text-amber-300 transition-colors">
+                      <Link
+                        href="/legal/cookies"
+                        className="text-amber-400/80 transition-colors hover:text-amber-300"
+                      >
                         Política de Cookies
                       </Link>
-                      <Link href="/legal/privacidad" className="text-amber-400/80 hover:text-amber-300 transition-colors">
+                      <Link
+                        href="/legal/privacidad"
+                        className="text-amber-400/80 transition-colors hover:text-amber-300"
+                      >
                         Privacidad
                       </Link>
                     </motion.div>
@@ -180,13 +197,13 @@ export default function CookieConsent() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="flex flex-col sm:flex-row gap-3 mt-5 pt-4 border-t border-amber-500/20"
+                  className="mt-5 flex flex-col gap-3 border-t border-amber-500/20 pt-4 sm:flex-row"
                 >
                   <motion.button
                     onClick={acceptEssential}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1 px-4 py-2.5 rounded-lg border border-amber-500/40 text-amber-300 hover:bg-amber-500/10 hover:border-amber-400/60 transition-all text-sm font-medium"
+                    className="flex-1 rounded-lg border border-amber-500/40 px-4 py-2.5 text-sm font-medium text-amber-300 transition-all hover:border-amber-400/60 hover:bg-amber-500/10"
                   >
                     Solo Esenciales
                   </motion.button>
@@ -194,9 +211,9 @@ export default function CookieConsent() {
                     onClick={acceptAll}
                     whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(251, 191, 36, 0.3)' }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1 px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-amber-950 font-bold text-sm hover:from-amber-500 hover:to-amber-400 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 px-4 py-2.5 text-sm font-bold text-amber-950 shadow-lg shadow-amber-500/20 transition-all hover:from-amber-500 hover:to-amber-400"
                   >
-                    <Check className="w-4 h-4" />
+                    <Check className="h-4 w-4" />
                     Aceptar Todo
                   </motion.button>
                 </motion.div>
@@ -207,9 +224,9 @@ export default function CookieConsent() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
-                className="bg-amber-950/80 border-t border-amber-500/20 px-4 py-2 text-center"
+                className="border-t border-amber-500/20 bg-amber-950/80 px-4 py-2 text-center"
               >
-                <p className="text-[10px] text-amber-500/60 tracking-[0.15em]">
+                <p className="text-[10px] tracking-[0.15em] text-amber-500/60">
                   ++ POR EL EMPERADOR Y EL CUMPLIMIENTO DEL RGPD ++
                 </p>
               </motion.div>
@@ -237,24 +254,26 @@ function CookieCategory({
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay }}
-      className="flex items-start gap-3 p-2.5 bg-amber-500/10 rounded-lg border border-amber-500/20"
+      className="flex items-start gap-3 rounded-lg border border-amber-500/20 bg-amber-500/10 p-2.5"
     >
-      <div className={cn(
-        'w-4 h-4 rounded border flex items-center justify-center mt-0.5 flex-shrink-0',
-        required ? 'bg-amber-500/30 border-amber-400' : 'border-amber-500/40'
-      )}>
-        {required && <Check className="w-3 h-3 text-amber-300" />}
+      <div
+        className={cn(
+          'mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border',
+          required ? 'border-amber-400 bg-amber-500/30' : 'border-amber-500/40'
+        )}
+      >
+        {required && <Check className="h-3 w-3 text-amber-300" />}
       </div>
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-amber-200">{title}</span>
           {required && (
-            <span className="text-[9px] px-1.5 py-0.5 bg-amber-500/30 text-amber-300 rounded font-medium">
+            <span className="rounded bg-amber-500/30 px-1.5 py-0.5 text-[9px] font-medium text-amber-300">
               REQUERIDO
             </span>
           )}
         </div>
-        <p className="text-xs text-amber-300/60 mt-0.5">{description}</p>
+        <p className="mt-0.5 text-xs text-amber-300/60">{description}</p>
       </div>
     </motion.div>
   )

@@ -29,31 +29,28 @@ import {
 } from 'lucide-react'
 import type { Miniature, Profile } from '@/lib/types/database.types'
 
-const HolographicDisplay = dynamic(
-  () => import('@/components/holographic'),
-  {
-    ssr: false,
-    loading: () => <HoloFallback />,
-  }
-)
+const HolographicDisplay = dynamic(() => import('@/components/holographic'), {
+  ssr: false,
+  loading: () => <HoloFallback />,
+})
 
 function HoloFallback() {
   return (
-    <div className="relative aspect-square bg-void rounded-lg overflow-hidden flex items-center justify-center">
+    <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-void">
       <NecronCorner position="tl" />
       <NecronCorner position="tr" />
       <NecronCorner position="bl" />
       <NecronCorner position="br" />
 
       {/* Radial glow */}
-      <div className="absolute inset-0 bg-gradient-radial from-necron-teal/10 via-transparent to-transparent animate-pulse-glow" />
+      <div className="absolute inset-0 animate-pulse-glow bg-gradient-radial from-necron-teal/10 via-transparent to-transparent" />
 
       {/* Scan line */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="w-full h-px bg-necron-teal/30 animate-scan" />
+        <div className="h-px w-full animate-scan bg-necron-teal/30" />
       </div>
 
-      <p className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/60 animate-pulse">
+      <p className="animate-pulse font-body text-xs uppercase tracking-[0.2em] text-necron-dark/60">
         Inicializando escáner...
       </p>
     </div>
@@ -62,13 +59,18 @@ function HoloFallback() {
 
 // Necron angular circuit-trace filigree corner — geometric, cold, technological
 function NecronCorner({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
-  const posClass = { tl: 'top-0 left-0', tr: 'top-0 right-0', bl: 'bottom-0 left-0', br: 'bottom-0 right-0' }[position]
+  const posClass = {
+    tl: 'top-0 left-0',
+    tr: 'top-0 right-0',
+    bl: 'bottom-0 left-0',
+    br: 'bottom-0 right-0',
+  }[position]
   const flip = { tl: undefined, tr: 'scaleX(-1)', bl: 'scaleY(-1)', br: 'scale(-1)' }[position]
 
   return (
     <svg
       viewBox="0 0 60 60"
-      className={`absolute w-14 h-14 text-necron-teal pointer-events-none ${posClass}`}
+      className={`pointer-events-none absolute h-14 w-14 text-necron-teal ${posClass}`}
       style={flip ? { transform: flip } : undefined}
       fill="none"
       stroke="currentColor"
@@ -93,8 +95,8 @@ function NecronCorner({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
 
 // Gauss data grid — network of nodes with faint connections (Necron tech)
 const GRID_NODES = Array.from({ length: 10 }, (_, i) => ({
-  left: `${(i * 7.9 + 11.3) % 96 + 2}%`,
-  top: `${(i * 12.3 + 7.1) % 96 + 2}%`,
+  left: `${((i * 7.9 + 11.3) % 96) + 2}%`,
+  top: `${((i * 12.3 + 7.1) % 96) + 2}%`,
   size: i % 6 === 0 ? 2.5 : i % 3 === 0 ? 1.5 : 1,
   opacity: i % 6 === 0 ? 0.25 : i % 3 === 0 ? 0.15 : 0.08,
   pulse: i % 5 === 0,
@@ -104,7 +106,7 @@ const GRID_NODES = Array.from({ length: 10 }, (_, i) => ({
 
 function GaussGrid() {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {GRID_NODES.map((n, i) =>
         n.pulse ? (
           <motion.div
@@ -112,7 +114,12 @@ function GaussGrid() {
             className="absolute bg-necron-teal"
             style={{ left: n.left, top: n.top, width: n.size, height: n.size }}
             animate={{ opacity: [n.opacity * 0.4, n.opacity * 1.8, n.opacity * 0.4] }}
-            transition={{ duration: n.pulseDur, repeat: Infinity, delay: n.pulseDelay, ease: 'easeInOut' }}
+            transition={{
+              duration: n.pulseDur,
+              repeat: Infinity,
+              delay: n.pulseDelay,
+              ease: 'easeInOut',
+            }}
           />
         ) : (
           <div
@@ -129,8 +136,8 @@ function GaussGrid() {
 // Floating gauss embers — small energy particles
 const EMBER_SEEDS = Array.from({ length: 8 }, (_, i) => ({
   id: i,
-  left: `${(i * 14 + 7) % 88 + 6}%`,
-  top: `${(i * 19 + 12) % 78 + 11}%`,
+  left: `${((i * 14 + 7) % 88) + 6}%`,
+  top: `${((i * 19 + 12) % 78) + 11}%`,
   drift: (i % 2 === 0 ? -1 : 1) * (16 + (i % 3) * 10),
   dur: 5 + (i % 4) * 1.8,
   delay: i * 0.6,
@@ -139,7 +146,7 @@ const EMBER_SEEDS = Array.from({ length: 8 }, (_, i) => ({
 
 function GaussEmbers() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {EMBER_SEEDS.map((p) => (
         <motion.div
           key={p.id}
@@ -176,16 +183,16 @@ function TriarchAnkh({ size = 20, className = '' }: { size?: number; className?:
 // Section divider with Necron glyphs
 function SectionDivider({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-3 my-4">
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-necron-teal/15" />
+    <div className="my-4 flex items-center gap-3">
+      <div className="h-px flex-1 bg-gradient-to-r from-transparent to-necron-teal/15" />
       <div className="flex items-center gap-2">
-        <div className="w-1 h-1 bg-necron-teal/30" />
-        <span className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/50">
+        <div className="h-1 w-1 bg-necron-teal/30" />
+        <span className="font-body text-xs uppercase tracking-[0.2em] text-necron-dark/50">
           {label}
         </span>
-        <div className="w-1 h-1 bg-necron-teal/30" />
+        <div className="h-1 w-1 bg-necron-teal/30" />
       </div>
-      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-necron-teal/15" />
+      <div className="h-px flex-1 bg-gradient-to-l from-transparent to-necron-teal/15" />
     </div>
   )
 }
@@ -256,10 +263,12 @@ export default function MiniatureDetailPage() {
     setIsLoading(true)
     const { data, error } = await supabase
       .from('miniatures')
-      .select(`
+      .select(
+        `
         *,
         profiles:user_id (*)
-      `)
+      `
+      )
       .eq('id', miniatureId as string)
       .single()
 
@@ -275,10 +284,12 @@ export default function MiniatureDetailPage() {
   const fetchComments = async () => {
     const { data, error } = await supabase
       .from('miniature_comments')
-      .select(`
+      .select(
+        `
         *,
         profiles:user_id (*)
-      `)
+      `
+      )
       .eq('miniature_id', miniatureId as string)
       .order('created_at', { ascending: false })
 
@@ -322,12 +333,10 @@ export default function MiniatureDetailPage() {
         console.error('Error removing like:', error)
       }
     } else {
-      const { error } = await supabase
-        .from('miniature_likes')
-        .insert({
-          miniature_id: miniatureId as string,
-          user_id: user.id,
-        })
+      const { error } = await supabase.from('miniature_likes').insert({
+        miniature_id: miniatureId as string,
+        user_id: user.id,
+      })
 
       if (error) {
         setIsLiked(false)
@@ -357,26 +366,27 @@ export default function MiniatureDetailPage() {
   const handleDelete = async () => {
     if (!miniature || !user?.id || user.id !== miniature.user_id) return
 
-    const confirmed = confirm('¿Estas seguro de que quieres eliminar esta miniatura? Esta accion no se puede deshacer.')
+    const confirmed = confirm(
+      '¿Estas seguro de que quieres eliminar esta miniatura? Esta accion no se puede deshacer.'
+    )
     if (!confirmed) return
 
     setIsDeleting(true)
 
     if (miniature.images?.length) {
-      const filePaths = miniature.images.map((url) => {
-        const parts = url.split('/miniatures/')
-        return parts.length > 1 ? parts[1] : ''
-      }).filter(Boolean)
+      const filePaths = miniature.images
+        .map((url) => {
+          const parts = url.split('/miniatures/')
+          return parts.length > 1 ? parts[1] : ''
+        })
+        .filter(Boolean)
 
       if (filePaths.length > 0) {
         await supabase.storage.from('miniatures').remove(filePaths)
       }
     }
 
-    const { error } = await supabase
-      .from('miniatures')
-      .delete()
-      .eq('id', miniature.id)
+    const { error } = await supabase.from('miniatures').delete().eq('id', miniature.id)
 
     if (error) {
       console.error('Error deleting miniature:', error)
@@ -401,14 +411,14 @@ export default function MiniatureDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-24 pb-16 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="aspect-square bg-void-light rounded-2xl animate-pulse" />
+      <div className="min-h-screen px-6 pb-16 pt-24">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <div className="aspect-square animate-pulse rounded-2xl bg-void-light" />
             <div className="space-y-6">
-              <div className="h-10 bg-void-light rounded-lg w-3/4 animate-pulse" />
-              <div className="h-4 bg-void-light rounded w-full animate-pulse" />
-              <div className="h-4 bg-void-light rounded w-2/3 animate-pulse" />
+              <div className="h-10 w-3/4 animate-pulse rounded-lg bg-void-light" />
+              <div className="h-4 w-full animate-pulse rounded bg-void-light" />
+              <div className="h-4 w-2/3 animate-pulse rounded bg-void-light" />
             </div>
           </div>
         </div>
@@ -418,14 +428,14 @@ export default function MiniatureDetailPage() {
 
   if (!miniature) {
     return (
-      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center pb-16 pt-24">
         <div className="text-center">
-          <h2 className="text-2xl font-display font-bold text-bone mb-4">
+          <h2 className="mb-4 font-display text-2xl font-bold text-bone">
             Miniatura no encontrada
           </h2>
           <Link href="/galeria">
             <motion.button
-              className="px-6 py-3 bg-necron-teal text-void font-semibold rounded-lg"
+              className="rounded-lg bg-necron-teal px-6 py-3 font-semibold text-void"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -437,7 +447,9 @@ export default function MiniatureDetailPage() {
     )
   }
 
-  const rawImages = miniature.images?.length ? miniature.images : [miniature.thumbnail_url || '/placeholder-miniature.jpg']
+  const rawImages = miniature.images?.length
+    ? miniature.images
+    : [miniature.thumbnail_url || '/placeholder-miniature.jpg']
   // Optimized versions for Three.js and thumbnails
   const images = rawImages.map((url) => optimizeImageUrl(url, 800, 80))
   const thumbImages = rawImages.map((url) => optimizeImageUrl(url, 200, 70))
@@ -447,9 +459,9 @@ export default function MiniatureDetailPage() {
       {/* Preload hero image so browser fetches it before Three.js requests it */}
       {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
       <link rel="preload" as="image" href={images[0]} />
-      <div className="min-h-screen pt-24 pb-16 relative">
+      <div className="relative min-h-screen pb-16 pt-24">
         {/* === Atmospheric Background — lighter than gallery listing === */}
-        <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="pointer-events-none fixed inset-0 z-0">
           {/* Teal aurora */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(13,155,138,0.06)_0%,transparent_55%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(0,212,170,0.04)_0%,transparent_45%)]" />
@@ -475,26 +487,31 @@ export default function MiniatureDetailPage() {
             className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-necron-dark/15 to-transparent"
             style={{ top: '40%' }}
             animate={{ opacity: [0, 0, 0.5, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', times: [0, 0.85, 0.92, 1] }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              times: [0, 0.85, 0.92, 1],
+            }}
           />
         </div>
 
         {/* Back Button */}
-        <div className="relative z-10 px-6 mb-6">
-          <div className="max-w-7xl mx-auto">
+        <div className="relative z-10 mb-6 px-6">
+          <div className="mx-auto max-w-7xl">
             <motion.button
               onClick={() => router.back()}
-              className="flex items-center gap-2 text-bone/60 hover:text-necron-dark transition-colors"
+              className="flex items-center gap-2 text-bone/60 transition-colors hover:text-necron-dark"
               whileHover={{ x: -4 }}
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="h-5 w-5" />
               <span className="font-body">Volver</span>
             </motion.button>
           </div>
         </div>
 
         <div className="relative z-10 px-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+          <div className="mx-auto max-w-7xl space-y-6">
             {/* ── Solemnace Specimen Header ─────────────────────── */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -502,7 +519,7 @@ export default function MiniatureDetailPage() {
               transition={{ duration: 0.5 }}
               className="mb-2"
             >
-              <div className="relative bg-void-light/30 backdrop-blur-sm rounded-xl p-5 overflow-hidden">
+              <div className="relative overflow-hidden rounded-xl bg-void-light/30 p-5 backdrop-blur-sm">
                 {/* Necron angular filigree corners */}
                 <NecronCorner position="tl" />
                 <NecronCorner position="tr" />
@@ -513,28 +530,28 @@ export default function MiniatureDetailPage() {
                 <GaussGrid />
 
                 {/* Teal vignette */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(13,155,138,0.06)_0%,transparent_60%)] pointer-events-none" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(13,155,138,0.06)_0%,transparent_60%)]" />
 
                 {/* Floating gauss embers */}
                 <GaussEmbers />
 
                 {/* Traveling gauss shimmer along top edge */}
                 <motion.div
-                  className="absolute top-0 left-0 w-24 h-[2px] bg-gradient-to-r from-transparent via-necron-dark/50 to-transparent pointer-events-none"
+                  className="pointer-events-none absolute left-0 top-0 h-[2px] w-24 bg-gradient-to-r from-transparent via-necron-dark/50 to-transparent"
                   animate={{ left: ['-10%', '110%'] }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1 }}
                 />
 
-                <div className="relative flex items-center justify-between flex-wrap gap-3">
+                <div className="relative flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     {/* Pulsing Triarch Ankh */}
                     <div className="relative">
                       <motion.div
-                        className="absolute inset-0 bg-necron-teal/20 rounded-lg blur-sm"
+                        className="absolute inset-0 rounded-lg bg-necron-teal/20 blur-sm"
                         animate={{ opacity: [0.4, 0.8, 0.4] }}
                         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                       />
-                      <div className="relative p-2 bg-necron-teal/10 rounded-lg border border-necron-teal/20">
+                      <div className="relative rounded-lg border border-necron-teal/20 bg-necron-teal/10 p-2">
                         <motion.div
                           animate={{ opacity: [0.7, 1, 0.7] }}
                           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
@@ -544,21 +561,28 @@ export default function MiniatureDetailPage() {
                       </div>
                     </div>
                     <div>
-                      <span className="text-xs font-mono uppercase tracking-[0.25em] text-necron-dark/70 block">
-                        Solemnace <span className="text-necron-teal/30">◆</span> Registro de Espécimen
+                      <span className="block font-mono text-xs uppercase tracking-[0.25em] text-necron-dark/70">
+                        Solemnace <span className="text-necron-teal/30">◆</span> Registro de
+                        Espécimen
                       </span>
-                      <span className="text-[10px] font-mono text-bone/30 tracking-wider">
-                        REF: {miniature.id.slice(0, 8).toUpperCase()} <span className="text-necron-teal/20">◆</span> FECHA REGISTRO: {new Date(miniature.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      <span className="font-mono text-[10px] tracking-wider text-bone/30">
+                        REF: {miniature.id.slice(0, 8).toUpperCase()}{' '}
+                        <span className="text-necron-teal/20">◆</span> FECHA REGISTRO:{' '}
+                        {new Date(miniature.created_at).toLocaleDateString('es-ES', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-bone/40 text-xs font-mono">
+                  <div className="flex items-center gap-4 font-mono text-xs text-bone/40">
                     <span className="flex items-center gap-1.5">
-                      <Eye className="w-3.5 h-3.5" />
+                      <Eye className="h-3.5 w-3.5" />
                       {miniature.view_count ?? 0} inspecciones
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <Shield className="w-3.5 h-3.5 text-necron-dark/60" />
+                      <Shield className="h-3.5 w-3.5 text-necron-dark/60" />
                       Catalogado
                     </span>
                   </div>
@@ -567,7 +591,7 @@ export default function MiniatureDetailPage() {
             </motion.div>
 
             {/* Two-Column Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-8 lg:gap-10">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[55%_45%] lg:gap-10">
               {/* LEFT: Holographic Display */}
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
@@ -582,7 +606,7 @@ export default function MiniatureDetailPage() {
                   <NecronCorner position="bl" />
                   <NecronCorner position="br" />
 
-                  <div className="aspect-square rounded-lg overflow-hidden bg-void border border-bone/5">
+                  <div className="aspect-square overflow-hidden rounded-lg border border-bone/5 bg-void">
                     <HolographicDisplay
                       imageUrl={images[currentImageIndex]}
                       allImageUrls={images}
@@ -594,26 +618,26 @@ export default function MiniatureDetailPage() {
                     <>
                       <motion.button
                         onClick={prevImage}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-void/80 backdrop-blur-sm rounded-full text-bone border border-bone/10 z-10"
+                        className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-bone/10 bg-void/80 p-2 text-bone backdrop-blur-sm"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                       >
-                        <ChevronLeft className="w-4 h-4" />
+                        <ChevronLeft className="h-4 w-4" />
                       </motion.button>
                       <motion.button
                         onClick={nextImage}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-void/80 backdrop-blur-sm rounded-full text-bone border border-bone/10 z-10"
+                        className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-bone/10 bg-void/80 p-2 text-bone backdrop-blur-sm"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                       >
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronRight className="h-4 w-4" />
                       </motion.button>
                     </>
                   )}
 
                   {/* Image counter */}
                   {images.length > 1 && (
-                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-void/80 backdrop-blur-sm rounded-full text-xs text-bone/70 border border-bone/10 z-10">
+                    <div className="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-full border border-bone/10 bg-void/80 px-3 py-1 text-xs text-bone/70 backdrop-blur-sm">
                       {currentImageIndex + 1} / {images.length}
                     </div>
                   )}
@@ -622,12 +646,12 @@ export default function MiniatureDetailPage() {
                 {/* Thumbnails + Detail button row */}
                 <div className="flex items-center gap-3">
                   {images.length > 1 && (
-                    <div className="flex gap-2 overflow-x-auto flex-1">
+                    <div className="flex flex-1 gap-2 overflow-x-auto">
                       {thumbImages.map((img, idx) => (
                         <motion.button
                           key={idx}
                           onClick={() => setCurrentImageIndex(idx)}
-                          className={`relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 border ${
+                          className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border ${
                             idx === currentImageIndex
                               ? 'border-necron-teal ring-1 ring-necron-teal/30'
                               : 'border-bone/10 opacity-50 hover:opacity-100'
@@ -642,11 +666,11 @@ export default function MiniatureDetailPage() {
                   )}
                   <motion.button
                     onClick={() => setShowLightbox(true)}
-                    className="relative flex items-center gap-2 px-4 py-2.5 border border-necron-teal/30 text-necron-dark rounded-lg text-xs font-body uppercase tracking-wider hover:bg-necron-teal/10 transition-colors flex-shrink-0 overflow-hidden"
+                    className="relative flex flex-shrink-0 items-center gap-2 overflow-hidden rounded-lg border border-necron-teal/30 px-4 py-2.5 font-body text-xs uppercase tracking-wider text-necron-dark transition-colors hover:bg-necron-teal/10"
                     whileHover={{ scale: 1.03, boxShadow: '0 0 20px rgba(13,155,138,0.15)' }}
                     whileTap={{ scale: 0.97 }}
                   >
-                    <Maximize2 className="w-4 h-4" />
+                    <Maximize2 className="h-4 w-4" />
                     Ver detalle
                   </motion.button>
                 </div>
@@ -661,24 +685,24 @@ export default function MiniatureDetailPage() {
               >
                 {/* DESIGNACION */}
                 <div>
-                  <span className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/50 mb-1 block">
+                  <span className="mb-1 block font-body text-xs uppercase tracking-[0.2em] text-necron-dark/50">
                     Designacion
                   </span>
                   <div className="border-l-2 border-necron-teal pl-4">
-                    <h1 className="text-2xl md:text-3xl font-display font-bold text-bone">
+                    <h1 className="font-display text-2xl font-bold text-bone md:text-3xl">
                       {miniature.title}
                     </h1>
                   </div>
                 </div>
 
                 {/* OPERARIO */}
-                <div className="border border-bone/10 rounded-lg p-4 bg-void-light/30">
-                  <span className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/50 mb-3 block">
+                <div className="rounded-lg border border-bone/10 bg-void-light/30 p-4">
+                  <span className="mb-3 block font-body text-xs uppercase tracking-[0.2em] text-necron-dark/50">
                     Operario
                   </span>
                   <Link href={`/usuarios/${miniature.profiles.username}`}>
                     <motion.div
-                      className="flex items-center gap-4 hover:bg-void-light/40 -m-2 p-2 rounded-lg transition-colors group"
+                      className="group -m-2 flex items-center gap-4 rounded-lg p-2 transition-colors hover:bg-void-light/40"
                       whileHover={{ scale: 1.01 }}
                     >
                       <Avatar
@@ -687,14 +711,14 @@ export default function MiniatureDetailPage() {
                         fallback={miniature.profiles.username}
                         size="lg"
                       />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-display font-semibold text-bone group-hover:text-necron-dark transition-colors truncate">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-display font-semibold text-bone transition-colors group-hover:text-necron-dark">
                           {miniature.profiles.display_name || miniature.profiles.username}
                         </p>
                         <p className="text-sm text-bone/50">@{miniature.profiles.username}</p>
                       </div>
                       <motion.span
-                        className="px-3 py-1.5 bg-necron-teal/10 border border-necron-teal/30 text-necron-dark font-semibold text-xs rounded-md"
+                        className="rounded-md border border-necron-teal/30 bg-necron-teal/10 px-3 py-1.5 text-xs font-semibold text-necron-dark"
                         whileHover={{ scale: 1.02, backgroundColor: 'rgba(13, 155, 138, 0.2)' }}
                         whileTap={{ scale: 0.98 }}
                         onClick={(e) => e.preventDefault()}
@@ -707,11 +731,11 @@ export default function MiniatureDetailPage() {
 
                 {/* INFORME TACTICO */}
                 {miniature.description && (
-                  <div className="border border-bone/10 rounded-lg p-4 bg-void-light/30">
-                    <span className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/50 mb-2 block">
+                  <div className="rounded-lg border border-bone/10 bg-void-light/30 p-4">
+                    <span className="mb-2 block font-body text-xs uppercase tracking-[0.2em] text-necron-dark/50">
                       Informe Tactico
                     </span>
-                    <p className="text-bone/70 font-body leading-relaxed text-sm">
+                    <p className="font-body text-sm leading-relaxed text-bone/70">
                       {miniature.description}
                     </p>
                   </div>
@@ -722,22 +746,22 @@ export default function MiniatureDetailPage() {
                   <div className="flex items-center gap-2">
                     <Link href={`/mi-galeria/editar/${miniature.id}`} className="flex-1">
                       <motion.button
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-necron-teal/30 text-necron-dark rounded-lg text-sm font-semibold hover:bg-necron-teal/10 transition-colors"
+                        className="flex w-full items-center justify-center gap-2 rounded-lg border border-necron-teal/30 px-4 py-2.5 text-sm font-semibold text-necron-dark transition-colors hover:bg-necron-teal/10"
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        <Pencil className="w-4 h-4" />
+                        <Pencil className="h-4 w-4" />
                         Editar
                       </motion.button>
                     </Link>
                     <motion.button
                       onClick={handleDelete}
                       disabled={isDeleting}
-                      className="flex items-center justify-center gap-2 px-4 py-2.5 border border-red-500/30 text-red-400 rounded-lg text-sm font-semibold hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                      className="flex items-center justify-center gap-2 rounded-lg border border-red-500/30 px-4 py-2.5 text-sm font-semibold text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="h-4 w-4" />
                       Eliminar
                     </motion.button>
                   </div>
@@ -747,34 +771,34 @@ export default function MiniatureDetailPage() {
                 <div className="flex items-center gap-2">
                   <motion.button
                     onClick={handleLike}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all ${
+                    className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
                       isLiked
-                        ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                        : 'bg-void-light border border-bone/10 text-bone hover:border-red-500/30 hover:text-red-400'
+                        ? 'border border-red-500/30 bg-red-500/20 text-red-400'
+                        : 'border border-bone/10 bg-void-light text-bone hover:border-red-500/30 hover:text-red-400'
                     }`}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Heart className={`w-4 h-4 ${isLiked ? 'fill-red-400' : ''}`} />
+                    <Heart className={`h-4 w-4 ${isLiked ? 'fill-red-400' : ''}`} />
                     <span>{likesCount}</span>
                   </motion.button>
 
                   <motion.button
-                    className="flex items-center gap-2 px-4 py-2.5 bg-void-light border border-bone/10 text-bone hover:border-bone/30 rounded-lg font-semibold text-sm transition-all"
+                    className="flex items-center gap-2 rounded-lg border border-bone/10 bg-void-light px-4 py-2.5 text-sm font-semibold text-bone transition-all hover:border-bone/30"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Share2 className="w-4 h-4" />
+                    <Share2 className="h-4 w-4" />
                     Compartir
                   </motion.button>
 
                   <motion.button
                     onClick={() => setShowReportModal(true)}
-                    className="p-2.5 bg-void-light border border-bone/10 text-bone/50 hover:text-red-400 hover:border-red-500/30 rounded-lg transition-all"
+                    className="rounded-lg border border-bone/10 bg-void-light p-2.5 text-bone/50 transition-all hover:border-red-500/30 hover:text-red-400"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Flag className="w-4 h-4" />
+                    <Flag className="h-4 w-4" />
                   </motion.button>
                 </div>
               </motion.div>
@@ -787,45 +811,45 @@ export default function MiniatureDetailPage() {
               transition={{ delay: 0.3 }}
             >
               <SectionDivider label="Registro de Comunicaciones" />
-              <div className="border border-bone/10 rounded-lg p-5 bg-void-light/30">
-                <h3 className="text-sm font-display font-bold text-bone mb-4 flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4 text-necron-dark" />
+              <div className="rounded-lg border border-bone/10 bg-void-light/30 p-5">
+                <h3 className="mb-4 flex items-center gap-2 font-display text-sm font-bold text-bone">
+                  <MessageCircle className="h-4 w-4 text-necron-dark" />
                   Comentarios ({comments.length})
                 </h3>
 
                 {/* Comment Input */}
                 {isAuthenticated ? (
-                  <div className="flex gap-3 mb-5">
+                  <div className="mb-5 flex gap-3">
                     <Avatar
                       src={profile?.avatar_url}
                       alt={profile?.display_name || profile?.username || 'Tu avatar'}
                       fallback={profile?.username || user?.email?.charAt(0).toUpperCase()}
                       size="sm"
                     />
-                    <div className="flex-1 relative">
+                    <div className="relative flex-1">
                       <input
                         type="text"
                         placeholder="Escribe un comentario..."
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSubmitComment()}
-                        className="w-full px-4 py-2.5 pr-12 bg-void border border-bone/10 rounded-lg text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-necron-teal/50"
+                        className="w-full rounded-lg border border-bone/10 bg-void px-4 py-2.5 pr-12 text-sm text-bone placeholder:text-bone/30 focus:border-necron-teal/50 focus:outline-none"
                       />
                       <motion.button
                         onClick={handleSubmitComment}
                         disabled={!newComment.trim() || isSubmittingComment}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-necron-dark disabled:text-bone/30 disabled:cursor-not-allowed"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-necron-dark disabled:cursor-not-allowed disabled:text-bone/30"
                         whileHover={newComment.trim() ? { scale: 1.1 } : {}}
                         whileTap={newComment.trim() ? { scale: 0.9 } : {}}
                       >
-                        <SendHorizontal className="w-4 h-4" />
+                        <SendHorizontal className="h-4 w-4" />
                       </motion.button>
                     </div>
                   </div>
                 ) : (
                   <Link href="/login">
-                    <div className="p-3 bg-void rounded-lg text-center mb-5 hover:bg-void-light/50 transition-colors cursor-pointer border border-bone/5">
-                      <p className="text-bone/60 text-sm">
+                    <div className="mb-5 cursor-pointer rounded-lg border border-bone/5 bg-void p-3 text-center transition-colors hover:bg-void-light/50">
+                      <p className="text-sm text-bone/60">
                         <span className="text-necron-dark">Inicia sesion</span> para comentar
                       </p>
                     </div>
@@ -833,9 +857,9 @@ export default function MiniatureDetailPage() {
                 )}
 
                 {/* Comments List */}
-                <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                <div className="max-h-[400px] space-y-3 overflow-y-auto pr-2">
                   {comments.length === 0 ? (
-                    <p className="text-bone/40 text-center py-6 text-sm">
+                    <p className="py-6 text-center text-sm text-bone/40">
                       Se el primero en comentar
                     </p>
                   ) : (
@@ -844,7 +868,7 @@ export default function MiniatureDetailPage() {
                         key={comment.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-3 p-3 bg-void rounded-lg border border-bone/5"
+                        className="flex gap-3 rounded-lg border border-bone/5 bg-void p-3"
                       >
                         <Avatar
                           src={comment.profiles.avatar_url}
@@ -852,16 +876,16 @@ export default function MiniatureDetailPage() {
                           fallback={comment.profiles.username}
                           size="sm"
                         />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-bone text-sm truncate">
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-1 flex items-center gap-2">
+                            <span className="truncate text-sm font-semibold text-bone">
                               {comment.profiles.display_name || comment.profiles.username}
                             </span>
-                            <span className="text-xs text-bone/40 flex-shrink-0">
+                            <span className="flex-shrink-0 text-xs text-bone/40">
                               {new Date(comment.created_at).toLocaleDateString('es-ES')}
                             </span>
                           </div>
-                          <p className="text-bone/70 text-sm">{comment.content}</p>
+                          <p className="text-sm text-bone/70">{comment.content}</p>
                         </div>
                       </motion.div>
                     ))
@@ -878,11 +902,11 @@ export default function MiniatureDetailPage() {
                 viewport={{ once: true }}
               >
                 <SectionDivider label="Registros Relacionados" />
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                   {relatedMiniatures.map((m) => (
                     <Link key={m.id} href={`/galeria/${m.id}`}>
                       <motion.div
-                        className="relative aspect-square rounded-lg overflow-hidden group border border-bone/5"
+                        className="group relative aspect-square overflow-hidden rounded-lg border border-bone/5"
                         whileHover={{ scale: 1.02 }}
                       >
                         <Image
@@ -892,9 +916,9 @@ export default function MiniatureDetailPage() {
                           sizes="(max-width: 640px) 50vw, 20vw"
                           className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-void/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="absolute inset-0 bg-gradient-to-t from-void/80 to-transparent opacity-0 transition-opacity group-hover:opacity-100">
                           <div className="absolute bottom-3 left-3 right-3">
-                            <p className="font-display font-bold text-bone text-xs truncate">
+                            <p className="truncate font-display text-xs font-bold text-bone">
                               {m.title}
                             </p>
                           </div>
@@ -916,7 +940,7 @@ export default function MiniatureDetailPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-void/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-8"
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-void/95 p-4 backdrop-blur-xl sm:p-8"
             onClick={() => setShowLightbox(false)}
             onKeyDown={(e) => {
               if (e.key === 'Escape') setShowLightbox(false)
@@ -931,27 +955,27 @@ export default function MiniatureDetailPage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="w-full max-w-5xl flex items-center justify-between mb-4"
+              className="mb-4 flex w-full max-w-5xl items-center justify-between"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3">
-                <TriarchAnkh size={12} className="text-necron-teal/50 flex-shrink-0" />
-                <span className="text-xs font-body uppercase tracking-[0.2em] text-necron-dark/50">
+                <TriarchAnkh size={12} className="flex-shrink-0 text-necron-teal/50" />
+                <span className="font-body text-xs uppercase tracking-[0.2em] text-necron-dark/50">
                   Solemnace <span className="text-necron-teal/25">◆</span> Visor Prismático
                 </span>
                 {images.length > 1 && (
-                  <span className="text-xs font-body text-bone/40 ml-2">
+                  <span className="ml-2 font-body text-xs text-bone/40">
                     {currentImageIndex + 1} / {images.length}
                   </span>
                 )}
               </div>
               <motion.button
                 onClick={() => setShowLightbox(false)}
-                className="flex items-center gap-2 px-3 py-1.5 border border-bone/10 rounded-md text-bone/60 hover:text-bone hover:border-bone/30 transition-colors text-xs font-body uppercase tracking-wider"
+                className="flex items-center gap-2 rounded-md border border-bone/10 px-3 py-1.5 font-body text-xs uppercase tracking-wider text-bone/60 transition-colors hover:border-bone/30 hover:text-bone"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="h-3.5 w-3.5" />
                 Cerrar
               </motion.button>
             </motion.div>
@@ -962,7 +986,7 @@ export default function MiniatureDetailPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative max-w-5xl w-full flex-1 min-h-0"
+              className="relative min-h-0 w-full max-w-5xl flex-1"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Necron filigree corners */}
@@ -971,19 +995,19 @@ export default function MiniatureDetailPage() {
               <NecronCorner position="bl" />
               <NecronCorner position="br" />
 
-              <div className="relative w-full h-full flex items-center justify-center border border-bone/5 rounded-lg bg-void-light/20 overflow-hidden">
+              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg border border-bone/5 bg-void-light/20">
                 <Image
                   src={images[currentImageIndex]}
                   alt={miniature.title}
                   width={1400}
                   height={1400}
-                  className="object-contain max-h-[70vh] w-auto"
+                  className="max-h-[70vh] w-auto object-contain"
                   priority
                 />
 
                 {/* Scan line overlay */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-10">
-                  <div className="w-full h-px bg-necron-teal/30 animate-scan" />
+                <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-10">
+                  <div className="h-px w-full animate-scan bg-necron-teal/30" />
                 </div>
               </div>
 
@@ -992,19 +1016,19 @@ export default function MiniatureDetailPage() {
                 <>
                   <motion.button
                     onClick={prevImage}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 p-3 bg-void/80 backdrop-blur-sm rounded-full text-bone border border-bone/10"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-bone/10 bg-void/80 p-3 text-bone backdrop-blur-sm"
                     whileHover={{ scale: 1.1, borderColor: 'rgba(13, 155, 138, 0.4)' }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="h-5 w-5" />
                   </motion.button>
                   <motion.button
                     onClick={nextImage}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-void/80 backdrop-blur-sm rounded-full text-bone border border-bone/10"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-bone/10 bg-void/80 p-3 text-bone backdrop-blur-sm"
                     whileHover={{ scale: 1.1, borderColor: 'rgba(13, 155, 138, 0.4)' }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="h-5 w-5" />
                   </motion.button>
                 </>
               )}
@@ -1016,16 +1040,16 @@ export default function MiniatureDetailPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="flex gap-2 mt-4 overflow-x-auto max-w-5xl"
+                className="mt-4 flex max-w-5xl gap-2 overflow-x-auto"
                 onClick={(e) => e.stopPropagation()}
               >
                 {thumbImages.map((img, idx) => (
                   <motion.button
                     key={idx}
                     onClick={() => setCurrentImageIndex(idx)}
-                    className={`relative w-14 h-14 rounded-md overflow-hidden flex-shrink-0 border transition-all ${
+                    className={`relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-md border transition-all ${
                       idx === currentImageIndex
-                        ? 'border-necron-teal ring-1 ring-necron-teal/30 opacity-100'
+                        ? 'border-necron-teal opacity-100 ring-1 ring-necron-teal/30'
                         : 'border-bone/10 opacity-40 hover:opacity-80'
                     }`}
                     whileHover={{ scale: 1.08 }}

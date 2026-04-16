@@ -11,16 +11,16 @@
   /* Core Colors */
   --void-dark: #030308;
   --void-light: #0a0a12;
-  --imperial-gold: #C9A227;
+  --imperial-gold: #c9a227;
   --imperial-gold-dim: rgba(201, 162, 39, 0.3);
-  --necron-teal: #0D9B8A;
+  --necron-teal: #0d9b8a;
   --necron-teal-dim: rgba(13, 155, 138, 0.3);
-  --blood-red: #8B0000;
+  --blood-red: #8b0000;
   --blood-red-dim: rgba(139, 0, 0, 0.3);
-  --bone: #E8E8F0;
+  --bone: #e8e8f0;
   --bone-dim: rgba(232, 232, 240, 0.6);
-  --warp-purple: #6B1C5F;
-  --steel: #2A2A35;
+  --warp-purple: #6b1c5f;
+  --steel: #2a2a35;
 
   /* Functional Colors */
   --background: var(--void-dark);
@@ -36,7 +36,11 @@
   --scanline-color: rgba(13, 155, 138, 0.03);
 
   /* Sidebar */
-  --sidebar-background: linear-gradient(180deg, rgba(3, 3, 8, 0.98) 0%, rgba(10, 10, 18, 0.95) 100%);
+  --sidebar-background: linear-gradient(
+    180deg,
+    rgba(3, 3, 8, 0.98) 0%,
+    rgba(10, 10, 18, 0.95) 100%
+  );
   --sidebar-border: rgba(201, 162, 39, 0.1);
   --sidebar-item-active: rgba(201, 162, 39, 0.1);
   --sidebar-item-hover: rgba(201, 162, 39, 0.05);
@@ -57,7 +61,11 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 .dashboard-root {
-  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-family:
+    var(--font-geist-sans),
+    system-ui,
+    -apple-system,
+    sans-serif;
   background: var(--void-dark);
   color: var(--bone);
   min-height: 100vh;
@@ -97,8 +105,12 @@
 }
 
 @keyframes starfield-drift {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(-400px, -300px); }
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-400px, -300px);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -119,8 +131,13 @@
 }
 
 @keyframes grid-pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -143,8 +160,13 @@
 }
 
 @keyframes scanline-flicker {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.98; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.98;
+  }
 }
 
 /* Horizontal scan sweep */
@@ -164,8 +186,12 @@
 }
 
 @keyframes scan-sweep {
-  0% { transform: translateY(-100px); }
-  100% { transform: translateY(calc(100vh + 100px)); }
+  0% {
+    transform: translateY(-100px);
+  }
+  100% {
+    transform: translateY(calc(100vh + 100px));
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -201,8 +227,13 @@
 }
 
 @keyframes sidebar-glow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -225,7 +256,9 @@
   height: 0;
   background: linear-gradient(180deg, transparent, var(--imperial-gold), transparent);
   border-radius: 0 2px 2px 0;
-  transition: height 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    height 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .nav-item:hover::before,
@@ -300,7 +333,12 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent-color, var(--imperial-gold)), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-color, var(--imperial-gold)),
+    transparent
+  );
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -323,11 +361,7 @@
 
 .dashboard-card {
   position: relative;
-  background: linear-gradient(
-    135deg,
-    rgba(10, 10, 18, 0.9) 0%,
-    rgba(3, 3, 8, 0.95) 100%
-  );
+  background: linear-gradient(135deg, rgba(10, 10, 18, 0.9) 0%, rgba(3, 3, 8, 0.95) 100%);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   backdrop-filter: blur(10px);
@@ -370,11 +404,7 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 .dashboard-header {
-  background: linear-gradient(
-    180deg,
-    rgba(3, 3, 8, 0.98) 0%,
-    rgba(3, 3, 8, 0.9) 100%
-  );
+  background: linear-gradient(180deg, rgba(3, 3, 8, 0.98) 0%, rgba(3, 3, 8, 0.9) 100%);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--sidebar-border);
   position: relative;
@@ -497,8 +527,12 @@
 }
 
 @keyframes orbit-rotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -533,8 +567,15 @@
 }
 
 @keyframes energy-pulse {
-  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -566,29 +607,64 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes holoFlicker {
-  0%, 100% { opacity: 1; }
-  92% { opacity: 1; }
-  93% { opacity: 0.8; }
-  94% { opacity: 1; }
-  95% { opacity: 0.9; }
-  96% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.8;
+  }
+  94% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0.9;
+  }
+  96% {
+    opacity: 1;
+  }
 }
 
 @keyframes dataStream {
-  0% { transform: translateY(-100%); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(100%); opacity: 0; }
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
 }
 
 .animate-fade-in {
@@ -608,8 +684,14 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 @keyframes pulse-ring {
-  0% { transform: scale(0.8); opacity: 1; }
-  100% { transform: scale(2); opacity: 0; }
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
 
 .pulse-dot {
@@ -749,7 +831,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .cogitator-text {

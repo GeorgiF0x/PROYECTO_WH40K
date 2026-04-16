@@ -8,10 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@/lib/hooks/useAuth'
 import Turnstile from '@/components/auth/Turnstile'
 import { Mail, ArrowLeft, Send, CheckCircle, AlertCircle, Shield, Sparkles } from 'lucide-react'
-import {
-  forgotPasswordSchema,
-  type ForgotPasswordFormData,
-} from '@/lib/validation/auth-schemas'
+import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/lib/validation/auth-schemas'
 
 // Staggered animation variants
 const containerVariants = {
@@ -41,7 +38,7 @@ const itemVariants = {
 function SuccessAnimation() {
   return (
     <motion.div
-      className="relative w-24 h-24 mx-auto"
+      className="relative mx-auto h-24 w-24"
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ type: 'spring', stiffness: 200, damping: 15 }}
@@ -74,7 +71,7 @@ function SuccessAnimation() {
           animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
         >
-          <Mail className="w-10 h-10 text-green-400" />
+          <Mail className="h-10 w-10 text-green-400" />
         </motion.div>
       </div>
 
@@ -99,7 +96,7 @@ function SuccessAnimation() {
             ease: 'easeOut',
           }}
         >
-          <Sparkles className="w-4 h-4 text-imperial-gold" />
+          <Sparkles className="h-4 w-4 text-imperial-gold" />
         </motion.div>
       ))}
     </motion.div>
@@ -177,16 +174,16 @@ export default function ForgotPasswordPage() {
 
       {/* Main card */}
       <motion.div
-        className="relative bg-void-light/95 backdrop-blur-xl rounded-2xl p-8 border border-bone/5"
+        className="relative rounded-2xl border border-bone/5 bg-void-light/95 p-8 backdrop-blur-xl"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Corner accents */}
-        <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 border-imperial-gold/40 rounded-tl-2xl" />
-        <div className="absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 border-imperial-gold/40 rounded-tr-2xl" />
-        <div className="absolute bottom-0 left-0 w-8 h-8 border-l-2 border-b-2 border-imperial-gold/40 rounded-bl-2xl" />
-        <div className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 border-imperial-gold/40 rounded-br-2xl" />
+        <div className="absolute left-0 top-0 h-8 w-8 rounded-tl-2xl border-l-2 border-t-2 border-imperial-gold/40" />
+        <div className="absolute right-0 top-0 h-8 w-8 rounded-tr-2xl border-r-2 border-t-2 border-imperial-gold/40" />
+        <div className="absolute bottom-0 left-0 h-8 w-8 rounded-bl-2xl border-b-2 border-l-2 border-imperial-gold/40" />
+        <div className="absolute bottom-0 right-0 h-8 w-8 rounded-br-2xl border-b-2 border-r-2 border-imperial-gold/40" />
 
         <AnimatePresence mode="wait">
           {success ? (
@@ -195,12 +192,12 @@ export default function ForgotPasswordPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="text-center py-4"
+              className="py-4 text-center"
             >
               <SuccessAnimation />
 
               <motion.h2
-                className="text-2xl font-display font-bold text-bone mt-6 mb-3"
+                className="mb-3 mt-6 font-display text-2xl font-bold text-bone"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
@@ -209,12 +206,13 @@ export default function ForgotPasswordPage() {
               </motion.h2>
 
               <motion.p
-                className="text-bone/60 mb-8 leading-relaxed"
+                className="mb-8 leading-relaxed text-bone/60"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
               >
-                Si existe una cuenta con ese email, recibirás un enlace para restablecer tu contraseña.
+                Si existe una cuenta con ese email, recibirás un enlace para restablecer tu
+                contraseña.
               </motion.p>
 
               <motion.div
@@ -224,11 +222,11 @@ export default function ForgotPasswordPage() {
               >
                 <Link href="/login">
                   <motion.button
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-transparent border border-imperial-gold/50 text-imperial-gold font-body font-semibold tracking-wide transition-all duration-300 rounded-lg hover:bg-imperial-gold/10"
+                    className="inline-flex items-center gap-2 rounded-lg border border-imperial-gold/50 bg-transparent px-6 py-3 font-body font-semibold tracking-wide text-imperial-gold transition-all duration-300 hover:bg-imperial-gold/10"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="h-4 w-4" />
                     Volver al Login
                   </motion.button>
                 </Link>
@@ -237,9 +235,9 @@ export default function ForgotPasswordPage() {
           ) : (
             <motion.div key="form">
               {/* Header */}
-              <motion.div variants={itemVariants} className="text-center mb-8">
+              <motion.div variants={itemVariants} className="mb-8 text-center">
                 <motion.div
-                  className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-imperial-gold/20 to-yellow-600/10 border border-imperial-gold/30 mb-4"
+                  className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full border border-imperial-gold/30 bg-gradient-to-br from-imperial-gold/20 to-yellow-600/10"
                   animate={{
                     boxShadow: [
                       '0 0 20px rgba(201, 162, 39, 0.2)',
@@ -249,13 +247,13 @@ export default function ForgotPasswordPage() {
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
                 >
-                  <Shield className="w-8 h-8 text-imperial-gold" />
+                  <Shield className="h-8 w-8 text-imperial-gold" />
                 </motion.div>
-                <h1 className="text-2xl font-display font-bold tracking-wide">
+                <h1 className="font-display text-2xl font-bold tracking-wide">
                   <span className="text-bone">Recupera tu </span>
                   <span className="text-gradient">Cuenta</span>
                 </h1>
-                <p className="text-bone/50 text-sm mt-2 font-body">
+                <p className="mt-2 font-body text-sm text-bone/50">
                   Te enviaremos instrucciones por email
                 </p>
               </motion.div>
@@ -269,9 +267,9 @@ export default function ForgotPasswordPage() {
                     exit={{ opacity: 0, height: 0 }}
                     className="mb-6"
                   >
-                    <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-                      <p className="text-red-400 text-sm">{error}</p>
+                    <div className="flex items-center gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-4">
+                      <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-400" />
+                      <p className="text-sm text-red-400">{error}</p>
                     </div>
                   </motion.div>
                 )}
@@ -279,10 +277,11 @@ export default function ForgotPasswordPage() {
 
               {/* Info Box */}
               <motion.div variants={itemVariants} className="mb-6">
-                <div className="flex items-start gap-3 p-4 bg-imperial-gold/5 border border-imperial-gold/20 rounded-lg">
-                  <Mail className="w-5 h-5 text-imperial-gold flex-shrink-0 mt-0.5" />
-                  <p className="text-bone/70 text-sm leading-relaxed">
-                    Introduce el email asociado a tu cuenta y te enviaremos un enlace seguro para restablecer tu contraseña.
+                <div className="flex items-start gap-3 rounded-lg border border-imperial-gold/20 bg-imperial-gold/5 p-4">
+                  <Mail className="mt-0.5 h-5 w-5 flex-shrink-0 text-imperial-gold" />
+                  <p className="text-sm leading-relaxed text-bone/70">
+                    Introduce el email asociado a tu cuenta y te enviaremos un enlace seguro para
+                    restablecer tu contraseña.
                   </p>
                 </div>
               </motion.div>
@@ -291,7 +290,7 @@ export default function ForgotPasswordPage() {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* Email Field */}
                 <motion.div variants={itemVariants}>
-                  <label className="block text-sm font-medium text-bone/80 mb-2 font-body">
+                  <label className="mb-2 block font-body text-sm font-medium text-bone/80">
                     Email
                   </label>
                   <div className="relative">
@@ -312,17 +311,17 @@ export default function ForgotPasswordPage() {
                           color: focusedField === 'email' ? '#C9A227' : 'rgba(232, 232, 240, 0.4)',
                         }}
                       >
-                        <Mail className="w-5 h-5" />
+                        <Mail className="h-5 w-5" />
                       </motion.div>
                       <input
                         type="email"
                         placeholder="tu@email.com"
-                        className={`w-full pl-12 pr-4 py-4 bg-void border rounded-lg font-body text-bone placeholder:text-bone/30 focus:outline-none transition-all duration-300 ${
+                        className={`w-full rounded-lg border bg-void py-4 pl-12 pr-4 font-body text-bone transition-all duration-300 placeholder:text-bone/30 focus:outline-none ${
                           errors.email
                             ? 'border-red-500/50'
                             : focusedField === 'email'
-                            ? 'border-imperial-gold/50'
-                            : 'border-bone/10'
+                              ? 'border-imperial-gold/50'
+                              : 'border-bone/10'
                         }`}
                         {...register('email')}
                         onFocus={() => setFocusedField('email')}
@@ -336,9 +335,9 @@ export default function ForgotPasswordPage() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="text-red-400 text-sm mt-2 flex items-center gap-1"
+                        className="mt-2 flex items-center gap-1 text-sm text-red-400"
                       >
-                        <AlertCircle className="w-3 h-3" />
+                        <AlertCircle className="h-3 w-3" />
                         {errors.email.message}
                       </motion.p>
                     )}
@@ -360,26 +359,36 @@ export default function ForgotPasswordPage() {
                   <motion.button
                     type="submit"
                     disabled={isLoading || !emailValue}
-                    className="relative w-full py-4 bg-gradient-to-r from-imperial-gold via-yellow-500 to-imperial-gold text-void font-display font-bold tracking-wider uppercase text-sm overflow-hidden rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-imperial-gold via-yellow-500 to-imperial-gold py-4 font-display text-sm font-bold uppercase tracking-wider text-void disabled:cursor-not-allowed disabled:opacity-50"
                     style={{
                       backgroundSize: '200% 100%',
                     }}
-                    whileHover={!isLoading && emailValue ? { scale: 1.02, backgroundPosition: '100% 0' } : {}}
+                    whileHover={
+                      !isLoading && emailValue ? { scale: 1.02, backgroundPosition: '100% 0' } : {}
+                    }
                     whileTap={!isLoading && emailValue ? { scale: 0.98 } : {}}
-                    animate={!isLoading && emailValue ? {
-                      boxShadow: [
-                        '0 4px 20px rgba(201, 162, 39, 0.3)',
-                        '0 4px 40px rgba(201, 162, 39, 0.5)',
-                        '0 4px 20px rgba(201, 162, 39, 0.3)',
-                      ],
-                    } : {}}
+                    animate={
+                      !isLoading && emailValue
+                        ? {
+                            boxShadow: [
+                              '0 4px 20px rgba(201, 162, 39, 0.3)',
+                              '0 4px 40px rgba(201, 162, 39, 0.5)',
+                              '0 4px 20px rgba(201, 162, 39, 0.3)',
+                            ],
+                          }
+                        : {}
+                    }
                     transition={{ duration: 2, repeat: Infinity }}
                   >
                     {/* Shimmer effect */}
                     <motion.div
                       className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                       style={{ backgroundSize: '200% 100%' }}
-                      animate={!isLoading && emailValue ? { backgroundPosition: ['200% 0', '-200% 0'] } : {}}
+                      animate={
+                        !isLoading && emailValue
+                          ? { backgroundPosition: ['200% 0', '-200% 0'] }
+                          : {}
+                      }
                       transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                     />
 
@@ -387,7 +396,7 @@ export default function ForgotPasswordPage() {
                       {isLoading ? (
                         <>
                           <motion.div
-                            className="w-5 h-5 border-2 border-void/30 border-t-void rounded-full"
+                            className="h-5 w-5 rounded-full border-2 border-void/30 border-t-void"
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                           />
@@ -395,7 +404,7 @@ export default function ForgotPasswordPage() {
                         </>
                       ) : (
                         <>
-                          <Send className="w-4 h-4" />
+                          <Send className="h-4 w-4" />
                           Enviar Enlace
                         </>
                       )}
@@ -408,17 +417,17 @@ export default function ForgotPasswordPage() {
               <motion.div variants={itemVariants} className="mt-8 text-center">
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2 text-bone/50 hover:text-imperial-gold text-sm font-body transition-colors duration-300"
+                  className="inline-flex items-center gap-2 font-body text-sm text-bone/50 transition-colors duration-300 hover:text-imperial-gold"
                 >
-                  <ArrowLeft className="w-4 h-4" />
+                  <ArrowLeft className="h-4 w-4" />
                   Volver al login
                 </Link>
               </motion.div>
 
               {/* Security Note */}
-              <motion.div variants={itemVariants} className="mt-6 pt-6 border-t border-bone/5">
+              <motion.div variants={itemVariants} className="mt-6 border-t border-bone/5 pt-6">
                 <div className="flex items-center justify-center gap-2 text-xs text-bone/30">
-                  <CheckCircle className="w-3 h-3" />
+                  <CheckCircle className="h-3 w-3" />
                   <span>Conexión segura y encriptada</span>
                 </div>
               </motion.div>

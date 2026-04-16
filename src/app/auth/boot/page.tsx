@@ -19,11 +19,7 @@ function BootScreen() {
 
 export default function BootPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="fixed inset-0 z-[100] bg-void" />
-      }
-    >
+    <Suspense fallback={<div className="fixed inset-0 z-[100] bg-void" />}>
       <BootScreen />
     </Suspense>
   )

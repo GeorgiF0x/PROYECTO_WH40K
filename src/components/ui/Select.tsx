@@ -22,10 +22,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full">
         {label && (
-          <label
-            htmlFor={selectId}
-            className="block text-sm font-medium text-bone mb-1.5"
-          >
+          <label htmlFor={selectId} className="mb-1.5 block text-sm font-medium text-bone">
             {label}
           </label>
         )}
@@ -33,12 +30,12 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           id={selectId}
           className={cn(
-            'w-full px-4 py-2.5 bg-void border rounded-md text-bone',
-            'focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold',
-            'transition-colors duration-200 appearance-none cursor-pointer',
+            'w-full rounded-md border bg-void px-4 py-2.5 text-bone',
+            'focus:ring-gold/50 focus:border-gold focus:outline-none focus:ring-2',
+            'cursor-pointer appearance-none transition-colors duration-200',
             'bg-[url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%23d4c4a8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E")] bg-[length:1.5rem_1.5rem] bg-[right_0.5rem_center] bg-no-repeat pr-10',
             error
-              ? 'border-red-500 focus:ring-red-500/50 focus:border-red-500'
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50'
               : 'border-bone/20 hover:border-bone/40',
             className
           )}
@@ -55,9 +52,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        {error && (
-          <p className="mt-1.5 text-sm text-red-400">{error}</p>
-        )}
+        {error && <p className="mt-1.5 text-sm text-red-400">{error}</p>}
       </div>
     )
   }

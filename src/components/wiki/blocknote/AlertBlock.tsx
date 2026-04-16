@@ -32,7 +32,10 @@ export const AlertBlock = createReactBlockSpec(
   {
     type: 'alertBlock' as const,
     propSchema: {
-      alertType: { default: 'info' as const, values: ['heresy', 'danger', 'info', 'imperial'] as const },
+      alertType: {
+        default: 'info' as const,
+        values: ['heresy', 'danger', 'info', 'imperial'] as const,
+      },
       title: { default: '' },
     },
     content: 'inline',
@@ -46,20 +49,17 @@ export const AlertBlock = createReactBlockSpec(
 
       return (
         <div
-          className="my-6 p-4 rounded-lg"
+          className="my-6 rounded-lg p-4"
           style={{
             background: config.bgColor,
             borderLeft: `4px solid ${config.color}`,
           }}
         >
           <div className="flex items-start gap-3">
-            <Icon
-              className="w-5 h-5 mt-0.5 flex-shrink-0"
-              style={{ color: config.color }}
-            />
-            <div className="flex-1 min-w-0">
+            <Icon className="mt-0.5 h-5 w-5 flex-shrink-0" style={{ color: config.color }} />
+            <div className="min-w-0 flex-1">
               <input
-                className="font-display text-sm font-bold uppercase tracking-wider mb-2 bg-transparent border-none outline-none w-full"
+                className="mb-2 w-full border-none bg-transparent font-display text-sm font-bold uppercase tracking-wider outline-none"
                 style={{ color: config.color }}
                 value={displayTitle}
                 onChange={(e) => {
@@ -70,7 +70,7 @@ export const AlertBlock = createReactBlockSpec(
                 placeholder={config.defaultTitle}
               />
               <div
-                className="font-body text-sm text-bone/80 leading-relaxed inline-content"
+                className="inline-content font-body text-sm leading-relaxed text-bone/80"
                 ref={props.contentRef}
               />
             </div>

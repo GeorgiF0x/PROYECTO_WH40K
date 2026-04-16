@@ -37,9 +37,7 @@ export async function updateSession(request: NextRequest) {
 
   // Protected routes - redirect to login if not authenticated
   const protectedPaths = ['/perfil', '/mi-galeria', '/mensajes', '/mercado/crear', '/admin']
-  const isProtectedPath = protectedPaths.some(path =>
-    request.nextUrl.pathname.startsWith(path)
-  )
+  const isProtectedPath = protectedPaths.some((path) => request.nextUrl.pathname.startsWith(path))
 
   if (isProtectedPath && !user) {
     const url = request.nextUrl.clone()
@@ -50,9 +48,7 @@ export async function updateSession(request: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   const authPaths = ['/login', '/register', '/forgot-password']
-  const isAuthPath = authPaths.some(path =>
-    request.nextUrl.pathname === path
-  )
+  const isAuthPath = authPaths.some((path) => request.nextUrl.pathname === path)
 
   if (isAuthPath && user) {
     const url = request.nextUrl.clone()

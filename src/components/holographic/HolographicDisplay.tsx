@@ -10,10 +10,7 @@ interface HolographicDisplayProps {
   allImageUrls: string[]
 }
 
-export default function HolographicDisplay({
-  imageUrl,
-  allImageUrls,
-}: HolographicDisplayProps) {
+export default function HolographicDisplay({ imageUrl, allImageUrls }: HolographicDisplayProps) {
   return (
     <Canvas
       camera={{ position: [0, 0, 3], fov: 45 }}
@@ -26,20 +23,10 @@ export default function HolographicDisplay({
 
       <Suspense fallback={null}>
         <Float speed={1.5} floatIntensity={0.15} rotationIntensity={0}>
-          <HolographicImagePlane
-            imageUrl={imageUrl}
-            allImageUrls={allImageUrls}
-          />
+          <HolographicImagePlane imageUrl={imageUrl} allImageUrls={allImageUrls} />
         </Float>
 
-        <Sparkles
-          count={20}
-          scale={3}
-          size={1}
-          color="#C9A227"
-          opacity={0.15}
-          speed={0.3}
-        />
+        <Sparkles count={20} scale={3} size={1} color="#C9A227" opacity={0.15} speed={0.3} />
       </Suspense>
     </Canvas>
   )

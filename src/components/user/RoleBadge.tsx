@@ -29,10 +29,13 @@ const BADGE_SIZES = {
 }
 
 const BADGE_COLORS: Record<string, string> = {
-  admin: 'bg-gradient-to-r from-imperial-gold/20 to-blood-red/20 border-imperial-gold/50 text-imperial-gold',
+  admin:
+    'bg-gradient-to-r from-imperial-gold/20 to-blood-red/20 border-imperial-gold/50 text-imperial-gold',
   moderator: 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border-blue-400/50 text-blue-300',
-  creator: 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-400/50 text-purple-300',
-  store_owner: 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-400/50 text-amber-300',
+  creator:
+    'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-400/50 text-purple-300',
+  store_owner:
+    'bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-400/50 text-amber-300',
   user: 'bg-void-light/30 border-bone/30 text-bone/70',
 }
 
@@ -66,7 +69,8 @@ export function RoleBadge({
   return (
     <div className={cn('flex flex-wrap', sizeConfig.gap, className)}>
       {badges.map((badge, index) => {
-        const colorKey = badge.type === 'role' ? role : badge.type === 'creator' ? 'creator' : 'store_owner'
+        const colorKey =
+          badge.type === 'role' ? role : badge.type === 'creator' ? 'creator' : 'store_owner'
 
         return (
           <div
@@ -92,27 +96,27 @@ export function RoleBadge({
                   alt={badge.name}
                   width={sizeConfig.icon}
                   height={sizeConfig.icon}
-                  className="brightness-0 invert opacity-80"
+                  className="opacity-80 brightness-0 invert"
                 />
                 {/* Subtle glow behind icon */}
                 <div
-                  className="absolute inset-0 blur-sm opacity-50"
+                  className="absolute inset-0 opacity-50 blur-sm"
                   style={{
                     background: `radial-gradient(circle, ${
                       colorKey === 'admin'
                         ? 'rgba(201, 162, 39, 0.5)'
                         : colorKey === 'moderator'
-                        ? 'rgba(96, 165, 250, 0.5)'
-                        : colorKey === 'creator'
-                        ? 'rgba(168, 85, 247, 0.5)'
-                        : 'rgba(251, 191, 36, 0.5)'
+                          ? 'rgba(96, 165, 250, 0.5)'
+                          : colorKey === 'creator'
+                            ? 'rgba(168, 85, 247, 0.5)'
+                            : 'rgba(251, 191, 36, 0.5)'
                     } 0%, transparent 70%)`,
                   }}
                 />
               </div>
 
               {/* Name */}
-              <span className="font-medium whitespace-nowrap">{badge.name}</span>
+              <span className="whitespace-nowrap font-medium">{badge.name}</span>
             </motion.div>
 
             {/* Tooltip */}
@@ -123,10 +127,10 @@ export function RoleBadge({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 5, scale: 0.95 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute z-50 left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-void-dark/95 border border-bone/20 rounded-lg shadow-xl backdrop-blur-sm whitespace-nowrap"
+                  className="absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-bone/20 bg-void-dark/95 px-3 py-2 shadow-xl backdrop-blur-sm"
                 >
                   <div className="text-sm font-medium text-bone">{badge.title}</div>
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-void-dark/95" />
+                  <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-void-dark/95" />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -163,7 +167,8 @@ export function RoleIcon({
     return null
   }
 
-  const colorKey = displayRole.type === 'role' ? role : displayRole.type === 'creator' ? 'creator' : 'store_owner'
+  const colorKey =
+    displayRole.type === 'role' ? role : displayRole.type === 'creator' ? 'creator' : 'store_owner'
 
   return (
     <div
@@ -171,29 +176,26 @@ export function RoleIcon({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <motion.div
-        whileHover={{ scale: 1.1 }}
-        className="relative"
-      >
+      <motion.div whileHover={{ scale: 1.1 }} className="relative">
         <Image
           src={displayRole.icon}
           alt={displayRole.name}
           width={size}
           height={size}
-          className="brightness-0 invert opacity-90"
+          className="opacity-90 brightness-0 invert"
         />
         {/* Glow effect */}
         <div
-          className="absolute inset-0 blur-md opacity-60"
+          className="absolute inset-0 opacity-60 blur-md"
           style={{
             background: `radial-gradient(circle, ${
               colorKey === 'admin'
                 ? 'rgba(201, 162, 39, 0.6)'
                 : colorKey === 'moderator'
-                ? 'rgba(96, 165, 250, 0.6)'
-                : colorKey === 'creator'
-                ? 'rgba(168, 85, 247, 0.6)'
-                : 'rgba(251, 191, 36, 0.6)'
+                  ? 'rgba(96, 165, 250, 0.6)'
+                  : colorKey === 'creator'
+                    ? 'rgba(168, 85, 247, 0.6)'
+                    : 'rgba(251, 191, 36, 0.6)'
             } 0%, transparent 70%)`,
           }}
         />
@@ -207,11 +209,11 @@ export function RoleIcon({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 5, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-void-dark/95 border border-bone/20 rounded-lg shadow-xl backdrop-blur-sm whitespace-nowrap"
+            className="absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-bone/20 bg-void-dark/95 px-3 py-2 shadow-xl backdrop-blur-sm"
           >
             <div className="text-sm font-medium text-bone">{displayRole.name}</div>
             <div className="text-xs text-bone/60">{displayRole.title}</div>
-            <div className="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-void-dark/95" />
+            <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-void-dark/95" />
           </motion.div>
         )}
       </AnimatePresence>

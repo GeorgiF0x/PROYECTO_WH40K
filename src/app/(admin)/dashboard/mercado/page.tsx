@@ -23,7 +23,13 @@ import {
   Ban,
   Star,
 } from 'lucide-react'
-import { DataTable, StatusBadge, FilterTabs, type Column, type Action } from '../components/ui/data-table'
+import {
+  DataTable,
+  StatusBadge,
+  FilterTabs,
+  type Column,
+  type Action,
+} from '../components/ui/data-table'
 import { Modal, ConfirmDialog, FormField, Textarea } from '../components/ui/modal'
 import { Button } from '../components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
@@ -74,9 +80,9 @@ const typeLabels: Record<string, string> = {
 }
 
 const typeIcons: Record<string, React.ReactNode> = {
-  sale: <Tag className="w-3.5 h-3.5" />,
-  trade: <RefreshCw className="w-3.5 h-3.5" />,
-  both: <Package className="w-3.5 h-3.5" />,
+  sale: <Tag className="h-3.5 w-3.5" />,
+  trade: <RefreshCw className="h-3.5 w-3.5" />,
+  both: <Package className="h-3.5 w-3.5" />,
 }
 
 const conditionLabels: Record<string, string> = {
@@ -130,10 +136,12 @@ export default function MercadoPage() {
     try {
       let query = supabase
         .from('listings')
-        .select(`
+        .select(
+          `
           *,
           seller:profiles!listings_seller_id_fkey(username, display_name, avatar_url)
-        `)
+        `
+        )
         .neq('status', 'deleted' as unknown as 'active' | 'sold' | 'reserved' | 'inactive')
         .order('created_at', { ascending: false })
 
@@ -154,11 +162,23 @@ export default function MercadoPage() {
         { count: reservedCount },
         { count: inactiveCount },
       ] = await Promise.all([
-        supabase.from('listings').select('*', { count: 'exact', head: true }).neq('status', 'deleted' as unknown as 'active'),
-        supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+        supabase
+          .from('listings')
+          .select('*', { count: 'exact', head: true })
+          .neq('status', 'deleted' as unknown as 'active'),
+        supabase
+          .from('listings')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'active'),
         supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'sold'),
-        supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'reserved'),
-        supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'inactive'),
+        supabase
+          .from('listings')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'reserved'),
+        supabase
+          .from('listings')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'inactive'),
       ])
 
       setCounts({
@@ -242,22 +262,17 @@ export default function MercadoPage() {
       header: 'Anuncio',
       render: (listing) => (
         <div className="flex items-center gap-3">
-          <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0">
+          <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-zinc-800">
             {listing.images?.[0] ? (
-              <Image
-                src={listing.images[0]}
-                alt={listing.title}
-                fill
-                className="object-cover"
-              />
+              <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <ShoppingBag className="w-5 h-5 text-zinc-600" />
+              <div className="flex h-full w-full items-center justify-center">
+                <ShoppingBag className="h-5 w-5 text-zinc-600" />
               </div>
             )}
           </div>
           <div className="min-w-0">
-            <p className="font-medium text-white truncate">{listing.title}</p>
+            <p className="truncate font-medium text-white">{listing.title}</p>
             <div className="flex items-center gap-2 text-xs text-zinc-500">
               <span className="flex items-center gap-1">
                 {typeIcons[listing.listing_type]}
@@ -278,7 +293,9 @@ export default function MercadoPage() {
           <Avatar className="h-6 w-6">
             <AvatarImage src={listing.seller?.avatar_url || undefined} />
             <AvatarFallback className="text-xs">
-              {(listing.seller?.display_name || listing.seller?.username)?.slice(0, 2).toUpperCase()}
+              {(listing.seller?.display_name || listing.seller?.username)
+                ?.slice(0, 2)
+                .toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <span className="text-sm text-zinc-300">
@@ -293,9 +310,7 @@ export default function MercadoPage() {
       sortable: true,
       width: '120px',
       render: (listing) => (
-        <span className="font-medium text-amber-500">
-          {formatPrice(listing.price)}
-        </span>
+        <span className="font-medium text-amber-500">{formatPrice(listing.price)}</span>
       ),
     },
     {
@@ -304,8 +319,8 @@ export default function MercadoPage() {
       sortable: true,
       width: '80px',
       render: (listing) => (
-        <span className="text-zinc-400 flex items-center gap-1">
-          <Eye className="w-3.5 h-3.5" />
+        <span className="flex items-center gap-1 text-zinc-400">
+          <Eye className="h-3.5 w-3.5" />
           {listing.views_count || 0}
         </span>
       ),
@@ -315,9 +330,7 @@ export default function MercadoPage() {
       header: 'Fecha',
       sortable: true,
       width: '100px',
-      render: (listing) => (
-        <span className="text-zinc-500">{formatDate(listing.created_at)}</span>
-      ),
+      render: (listing) => <span className="text-zinc-500">{formatDate(listing.created_at)}</span>,
     },
     {
       key: 'status',
@@ -327,10 +340,13 @@ export default function MercadoPage() {
       render: (listing) => (
         <StatusBadge
           status={
-            listing.status === 'active' ? 'approved' :
-            listing.status === 'sold' ? 'closed' :
-            listing.status === 'reserved' ? 'pending' :
-            'inactive'
+            listing.status === 'active'
+              ? 'approved'
+              : listing.status === 'sold'
+                ? 'closed'
+                : listing.status === 'reserved'
+                  ? 'pending'
+                  : 'inactive'
           }
           labels={statusLabels}
         />
@@ -342,35 +358,35 @@ export default function MercadoPage() {
   const actions: Action<ListingItem>[] = [
     {
       label: 'Ver detalles',
-      icon: <Eye className="w-4 h-4" />,
+      icon: <Eye className="h-4 w-4" />,
       onClick: (listing) => setViewListing(listing),
     },
     {
       label: 'Ver en mercado',
-      icon: <ExternalLink className="w-4 h-4" />,
+      icon: <ExternalLink className="h-4 w-4" />,
       onClick: (listing) => window.open(`/mercado/${listing.id}`, '_blank'),
     },
     {
       label: 'Marcar vendido',
-      icon: <CheckCircle className="w-4 h-4" />,
+      icon: <CheckCircle className="h-4 w-4" />,
       onClick: (listing) => handleStatusChange(listing, 'sold'),
       show: (listing) => listing.status === 'active' || listing.status === 'reserved',
     },
     {
       label: 'Reactivar',
-      icon: <RefreshCw className="w-4 h-4" />,
+      icon: <RefreshCw className="h-4 w-4" />,
       onClick: (listing) => handleStatusChange(listing, 'active'),
       show: (listing) => listing.status === 'inactive' || listing.status === 'sold',
     },
     {
       label: 'Desactivar',
-      icon: <Ban className="w-4 h-4" />,
+      icon: <Ban className="h-4 w-4" />,
       onClick: (listing) => handleStatusChange(listing, 'inactive'),
       show: (listing) => listing.status === 'active',
     },
     {
       label: 'Eliminar',
-      icon: <Trash2 className="w-4 h-4" />,
+      icon: <Trash2 className="h-4 w-4" />,
       onClick: (listing) => setDeleteListing(listing),
       variant: 'danger',
     },
@@ -402,11 +418,11 @@ export default function MercadoPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10">
-              <ShoppingBag className="w-5 h-5 text-emerald-500" />
+            <div className="rounded-lg bg-emerald-500/10 p-2">
+              <ShoppingBag className="h-5 w-5 text-emerald-500" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{counts.all}</p>
@@ -414,10 +430,10 @@ export default function MercadoPage() {
             </div>
           </div>
         </div>
-        <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-500/10">
-              <Eye className="w-5 h-5 text-blue-500" />
+            <div className="rounded-lg bg-blue-500/10 p-2">
+              <Eye className="h-5 w-5 text-blue-500" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">
@@ -427,10 +443,10 @@ export default function MercadoPage() {
             </div>
           </div>
         </div>
-        <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-500/10">
-              <CheckCircle className="w-5 h-5 text-amber-500" />
+            <div className="rounded-lg bg-amber-500/10 p-2">
+              <CheckCircle className="h-5 w-5 text-amber-500" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{counts.sold}</p>
@@ -438,17 +454,16 @@ export default function MercadoPage() {
             </div>
           </div>
         </div>
-        <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-purple-500/10">
-              <Tag className="w-5 h-5 text-purple-500" />
+            <div className="rounded-lg bg-purple-500/10 p-2">
+              <Tag className="h-5 w-5 text-purple-500" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">
                 {counts.active > 0
                   ? `${Math.round((counts.sold / (counts.sold + counts.active)) * 100)}%`
-                  : '0%'
-                }
+                  : '0%'}
               </p>
               <p className="text-xs text-zinc-500">Tasa de venta</p>
             </div>
@@ -473,7 +488,7 @@ export default function MercadoPage() {
         searchFields={['title', 'description']}
         loading={loading}
         emptyMessage="No hay anuncios"
-        emptyIcon={<ShoppingBag className="w-8 h-8 text-zinc-600 mx-auto" />}
+        emptyIcon={<ShoppingBag className="mx-auto h-8 w-8 text-zinc-600" />}
         pageSize={10}
       />
 
@@ -490,7 +505,7 @@ export default function MercadoPage() {
             </Button>
             <Button asChild>
               <a href={`/mercado/${viewListing?.id}`} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="w-4 h-4 mr-2" />
+                <ExternalLink className="mr-2 h-4 w-4" />
                 Ver en mercado
               </a>
             </Button>
@@ -503,7 +518,10 @@ export default function MercadoPage() {
             {viewListing.images && viewListing.images.length > 0 && (
               <div className="grid grid-cols-4 gap-2">
                 {viewListing.images.slice(0, 4).map((img, index) => (
-                  <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-zinc-800">
+                  <div
+                    key={index}
+                    className="relative aspect-square overflow-hidden rounded-lg bg-zinc-800"
+                  >
                     <Image src={img} alt="" fill className="object-cover" />
                   </div>
                 ))}
@@ -514,8 +532,8 @@ export default function MercadoPage() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-lg font-semibold text-white">{viewListing.title}</h3>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-zinc-500 flex items-center gap-1">
+                <div className="mt-1 flex items-center gap-2">
+                  <span className="flex items-center gap-1 text-xs text-zinc-500">
                     {typeIcons[viewListing.listing_type]}
                     {typeLabels[viewListing.listing_type]}
                   </span>
@@ -531,29 +549,32 @@ export default function MercadoPage() {
               </div>
               <StatusBadge
                 status={
-                  viewListing.status === 'active' ? 'approved' :
-                  viewListing.status === 'sold' ? 'closed' :
-                  viewListing.status === 'reserved' ? 'pending' :
-                  'inactive'
+                  viewListing.status === 'active'
+                    ? 'approved'
+                    : viewListing.status === 'sold'
+                      ? 'closed'
+                      : viewListing.status === 'reserved'
+                        ? 'pending'
+                        : 'inactive'
                 }
                 labels={statusLabels}
               />
             </div>
 
             {/* Price */}
-            <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20">
-              <p className="text-sm text-zinc-400 mb-1">Precio</p>
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
+              <p className="mb-1 text-sm text-zinc-400">Precio</p>
               <p className="text-2xl font-bold text-amber-500">{formatPrice(viewListing.price)}</p>
             </div>
 
             {/* Description */}
             {viewListing.description && (
               <div>
-                <p className="text-xs font-medium text-[#E8E8F0]/40 uppercase tracking-wider mb-1.5">
+                <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-[#E8E8F0]/40">
                   Descripcion
                 </p>
-                <div className="max-h-36 overflow-y-auto rounded-lg bg-[#0a0a12]/80 border border-[#C9A227]/10 p-3">
-                  <p className="text-sm text-[#E8E8F0]/70 whitespace-pre-wrap break-words">
+                <div className="max-h-36 overflow-y-auto rounded-lg border border-[#C9A227]/10 bg-[#0a0a12]/80 p-3">
+                  <p className="whitespace-pre-wrap break-words text-sm text-[#E8E8F0]/70">
                     {viewListing.description}
                   </p>
                 </div>
@@ -562,14 +583,16 @@ export default function MercadoPage() {
 
             {/* Seller */}
             <div>
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">
                 Vendedor
               </p>
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={viewListing.seller?.avatar_url || undefined} />
                   <AvatarFallback>
-                    {(viewListing.seller?.display_name || viewListing.seller?.username)?.slice(0, 2).toUpperCase()}
+                    {(viewListing.seller?.display_name || viewListing.seller?.username)
+                      ?.slice(0, 2)
+                      .toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div>
@@ -581,27 +604,27 @@ export default function MercadoPage() {
                 <Link
                   href={`/usuarios/${viewListing.seller?.username}`}
                   target="_blank"
-                  className="ml-auto text-xs text-blue-500 hover:text-blue-400 flex items-center gap-1"
+                  className="ml-auto flex items-center gap-1 text-xs text-blue-500 hover:text-blue-400"
                 >
                   Ver perfil
-                  <ExternalLink className="w-3 h-3" />
+                  <ExternalLink className="h-3 w-3" />
                 </Link>
               </div>
             </div>
 
             {/* Meta info */}
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-800">
+            <div className="grid grid-cols-2 gap-4 border-t border-zinc-800 pt-4">
               <div className="flex items-center gap-2 text-sm text-zinc-400">
-                <Eye className="w-4 h-4" />
+                <Eye className="h-4 w-4" />
                 <span>{viewListing.views_count || 0} vistas</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-zinc-400">
-                <Calendar className="w-4 h-4" />
+                <Calendar className="h-4 w-4" />
                 <span>{formatDate(viewListing.created_at)}</span>
               </div>
               {viewListing.location && (
-                <div className="flex items-center gap-2 text-sm text-zinc-400 col-span-2">
-                  <MapPin className="w-4 h-4" />
+                <div className="col-span-2 flex items-center gap-2 text-sm text-zinc-400">
+                  <MapPin className="h-4 w-4" />
                   <span>{viewListing.location}</span>
                 </div>
               )}

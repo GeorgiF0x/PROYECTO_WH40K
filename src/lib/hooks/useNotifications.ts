@@ -63,15 +63,10 @@ export function useNotifications(userId: string | undefined) {
 
   const markAsRead = useCallback(
     async (id: string) => {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ read: true })
-        .eq('id', id)
+      const { error } = await supabase.from('notifications').update({ read: true }).eq('id', id)
 
       if (!error) {
-        setNotifications((prev) =>
-          prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-        )
+        setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
       }
     },
     [supabase]
@@ -93,10 +88,7 @@ export function useNotifications(userId: string | undefined) {
 
   const deleteNotification = useCallback(
     async (id: string) => {
-      const { error } = await supabase
-        .from('notifications')
-        .delete()
-        .eq('id', id)
+      const { error } = await supabase.from('notifications').delete().eq('id', id)
 
       if (!error) {
         setNotifications((prev) => prev.filter((n) => n.id !== id))

@@ -52,19 +52,19 @@ export function FactionPicker({
 }: FactionPickerProps) {
   const [hoveredFaction, setHoveredFaction] = useState<string | null>(null)
 
-  const selectedFaction = factions.find(f => f.id === factionId)
+  const selectedFaction = factions.find((f) => f.id === factionId)
   const currentColor = factionColor || selectedFaction?.color || '#C9A227'
-  const subFactions = factionId ? (subFactionIcons[factionId] || []) : []
-  const featured = subFactions.filter(sf => sf.featured)
-  const others = subFactions.filter(sf => !sf.featured)
+  const subFactions = factionId ? subFactionIcons[factionId] || [] : []
+  const featured = subFactions.filter((sf) => sf.featured)
+  const others = subFactions.filter((sf) => !sf.featured)
 
   return (
-    <div className="relative overflow-hidden rounded-xl bg-void-light/40 backdrop-blur-sm border border-bone/10">
+    <div className="relative overflow-hidden rounded-xl border border-bone/10 bg-void-light/40 backdrop-blur-sm">
       {/* Corner brackets */}
-      <span className="absolute top-0 left-0 w-4 h-4 border-t border-l border-imperial-gold/30" />
-      <span className="absolute top-0 right-0 w-4 h-4 border-t border-r border-imperial-gold/30" />
-      <span className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-imperial-gold/30" />
-      <span className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-imperial-gold/30" />
+      <span className="absolute left-0 top-0 h-4 w-4 border-l border-t border-imperial-gold/30" />
+      <span className="absolute right-0 top-0 h-4 w-4 border-r border-t border-imperial-gold/30" />
+      <span className="absolute bottom-0 left-0 h-4 w-4 border-b border-l border-imperial-gold/30" />
+      <span className="absolute bottom-0 right-0 h-4 w-4 border-b border-r border-imperial-gold/30" />
 
       {/* Glow line top */}
       <div
@@ -78,16 +78,16 @@ export function FactionPicker({
 
       <div className="p-5">
         {/* Section label */}
-        <div className="flex items-center gap-2 mb-4">
+        <div className="mb-4 flex items-center gap-2">
           <Shield className="h-3.5 w-3.5 text-imperial-gold/60" />
-          <span className="text-[10px] font-mono text-imperial-gold/60 tracking-[0.3em] uppercase">
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-imperial-gold/60">
             FACCION PRINCIPAL
           </span>
         </div>
 
         {/* Faction grid with icons */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mb-2">
-          {factions.map(f => {
+        <div className="mb-2 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+          {factions.map((f) => {
             const isSelected = factionId === f.id
             const isHovered = hoveredFaction === f.id
             const iconPath = FACTION_MAIN_ICONS[f.id]
@@ -101,7 +101,7 @@ export function FactionPicker({
                 }}
                 onMouseEnter={() => setHoveredFaction(f.id)}
                 onMouseLeave={() => setHoveredFaction(null)}
-                className="relative flex flex-col items-center gap-2 rounded-xl border transition-all duration-300 py-3 px-2"
+                className="relative flex flex-col items-center gap-2 rounded-xl border px-2 py-3 transition-all duration-300"
                 style={{
                   background: isSelected
                     ? `linear-gradient(180deg, ${f.color}25 0%, ${f.color}08 100%)`
@@ -125,25 +125,23 @@ export function FactionPicker({
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center z-10"
+                    className="absolute -right-1.5 -top-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full"
                     style={{ background: f.color }}
                   >
-                    <Check className="w-3 h-3 text-void" />
+                    <Check className="h-3 w-3 text-void" />
                   </motion.div>
                 )}
 
                 {/* Icon container */}
                 <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300"
                   style={{
                     background: isSelected
                       ? `linear-gradient(135deg, ${f.color}, ${f.color}90)`
                       : isHovered
                         ? `${f.color}20`
                         : 'rgba(232,232,240,0.05)',
-                    boxShadow: isSelected
-                      ? `0 0 16px ${f.color}50`
-                      : 'none',
+                    boxShadow: isSelected ? `0 0 16px ${f.color}50` : 'none',
                   }}
                 >
                   {iconPath ? (
@@ -163,7 +161,7 @@ export function FactionPicker({
                     />
                   ) : (
                     <Shield
-                      className="w-5 h-5 transition-colors duration-300"
+                      className="h-5 w-5 transition-colors duration-300"
                       style={{ color: isSelected ? '#fff' : `${f.color}60` }}
                     />
                   )}
@@ -171,7 +169,7 @@ export function FactionPicker({
 
                 {/* Faction name */}
                 <span
-                  className="text-[11px] font-medium leading-tight text-center transition-colors duration-300"
+                  className="text-center text-[11px] font-medium leading-tight transition-colors duration-300"
                   style={{
                     color: isSelected ? f.color : isHovered ? f.color : 'rgba(232,232,240,0.5)',
                   }}
@@ -206,19 +204,22 @@ export function FactionPicker({
               {/* Separator */}
               <div className="my-4 flex items-center gap-3">
                 <div
-                  className="flex-1 h-px"
+                  className="h-px flex-1"
                   style={{
                     background: `linear-gradient(to right, ${currentColor}40, transparent)`,
                   }}
                 />
                 <div className="flex items-center gap-1.5">
-                  <ChevronRight className="w-3 h-3" style={{ color: `${currentColor}80` }} />
-                  <span className="text-[10px] font-mono tracking-[0.3em] uppercase" style={{ color: `${currentColor}80` }}>
+                  <ChevronRight className="h-3 w-3" style={{ color: `${currentColor}80` }} />
+                  <span
+                    className="font-mono text-[10px] uppercase tracking-[0.3em]"
+                    style={{ color: `${currentColor}80` }}
+                  >
                     SUBFACCION (OPCIONAL)
                   </span>
                 </div>
                 <div
-                  className="flex-1 h-px"
+                  className="h-px flex-1"
                   style={{
                     background: `linear-gradient(to left, ${currentColor}40, transparent)`,
                   }}
@@ -232,7 +233,7 @@ export function FactionPicker({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   onClick={() => onSubFactionChange('')}
-                  className="mb-3 text-xs font-mono text-bone/40 hover:text-bone/70 transition-colors"
+                  className="mb-3 font-mono text-xs text-bone/40 transition-colors hover:text-bone/70"
                 >
                   &times; Quitar subfaccion
                 </motion.button>
@@ -241,12 +242,12 @@ export function FactionPicker({
               {/* Featured subfactions (larger) */}
               {featured.length > 0 && (
                 <motion.div
-                  className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3"
+                  className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4"
                   variants={gridVariants}
                   initial="hidden"
                   animate="visible"
                 >
-                  {featured.map(sf => (
+                  {featured.map((sf) => (
                     <SubFactionButton
                       key={sf.name}
                       sf={sf}
@@ -262,12 +263,12 @@ export function FactionPicker({
               {/* Other subfactions */}
               {others.length > 0 && (
                 <motion.div
-                  className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2"
+                  className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4"
                   variants={gridVariants}
                   initial="hidden"
                   animate="visible"
                 >
-                  {others.map(sf => (
+                  {others.map((sf) => (
                     <SubFactionButton
                       key={sf.name}
                       sf={sf}
@@ -306,7 +307,7 @@ function SubFactionButton({
       type="button"
       variants={iconVariants}
       onClick={onClick}
-      className="group relative flex items-center gap-2.5 rounded-lg border transition-all duration-200 text-left overflow-hidden"
+      className="group relative flex items-center gap-2.5 overflow-hidden rounded-lg border text-left transition-all duration-200"
       style={{
         padding: featured ? '10px 12px' : '8px 10px',
         background: isSelected
@@ -327,14 +328,14 @@ function SubFactionButton({
         <motion.div
           initial={{ scaleY: 0 }}
           animate={{ scaleY: 1 }}
-          className="absolute left-0 top-1 bottom-1 w-[3px] rounded-full"
+          className="absolute bottom-1 left-0 top-1 w-[3px] rounded-full"
           style={{ background: color }}
         />
       )}
 
       {/* SVG icon */}
       <div
-        className="flex-shrink-0 flex items-center justify-center rounded-md transition-all duration-200"
+        className="flex flex-shrink-0 items-center justify-center rounded-md transition-all duration-200"
         style={{
           width: featured ? 36 : 28,
           height: featured ? 36 : 28,
@@ -344,7 +345,7 @@ function SubFactionButton({
         <img
           src={sf.icon}
           alt={sf.name}
-          className="w-full h-full object-contain transition-all duration-200"
+          className="h-full w-full object-contain transition-all duration-200"
           style={{
             filter: isSelected
               ? `brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(0deg) drop-shadow(0 0 6px ${color}40)`
@@ -355,7 +356,7 @@ function SubFactionButton({
 
       {/* Name */}
       <span
-        className="text-xs font-medium leading-tight truncate transition-colors duration-200"
+        className="truncate text-xs font-medium leading-tight transition-colors duration-200"
         style={{
           color: isSelected ? color : 'rgba(232,232,240,0.6)',
           fontSize: featured ? '0.8125rem' : '0.75rem',
@@ -369,19 +370,16 @@ function SubFactionButton({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="ml-auto flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center"
+          className="ml-auto flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full"
           style={{ background: color }}
         >
-          <Check className="w-2.5 h-2.5 text-void" />
+          <Check className="h-2.5 w-2.5 text-void" />
         </motion.div>
       )}
 
       {/* Featured star */}
       {featured && !isSelected && (
-        <span
-          className="absolute top-1 right-1.5 text-[8px]"
-          style={{ color: `${color}50` }}
-        >
+        <span className="absolute right-1.5 top-1 text-[8px]" style={{ color: `${color}50` }}>
           &#9733;
         </span>
       )}

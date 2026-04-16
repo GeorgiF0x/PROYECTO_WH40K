@@ -11,7 +11,13 @@ import {
   type ReactNode,
 } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { User, Session, AuthError, PostgrestError, SupabaseClient } from '@supabase/supabase-js'
+import type {
+  User,
+  Session,
+  AuthError,
+  PostgrestError,
+  SupabaseClient,
+} from '@supabase/supabase-js'
 import type { Profile } from '@/lib/types/database.types'
 
 // ── Types ────────────────────────────────────────────────────
@@ -69,11 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }, 10000)
         })
 
-        const queryPromise = supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .single()
+        const queryPromise = supabase.from('profiles').select('*').eq('id', userId).single()
 
         const { data: existingProfile, error: fetchError } = await Promise.race([
           queryPromise,

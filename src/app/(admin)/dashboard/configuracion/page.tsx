@@ -57,28 +57,28 @@ const sections: SettingSection[] = [
     id: 'general',
     title: 'General',
     description: 'Configuracion general de la plataforma',
-    icon: <Globe className="w-5 h-5" />,
+    icon: <Globe className="h-5 w-5" />,
     color: 'bg-blue-500/10 text-blue-500',
   },
   {
     id: 'notifications',
     title: 'Notificaciones',
     description: 'Alertas y notificaciones del sistema',
-    icon: <Bell className="w-5 h-5" />,
+    icon: <Bell className="h-5 w-5" />,
     color: 'bg-amber-500/10 text-amber-500',
   },
   {
     id: 'security',
     title: 'Seguridad',
     description: 'Autenticacion y permisos',
-    icon: <Shield className="w-5 h-5" />,
+    icon: <Shield className="h-5 w-5" />,
     color: 'bg-emerald-500/10 text-emerald-500',
   },
   {
     id: 'integrations',
     title: 'Integraciones',
     description: 'Servicios externos y APIs',
-    icon: <Zap className="w-5 h-5" />,
+    icon: <Zap className="h-5 w-5" />,
     color: 'bg-purple-500/10 text-purple-500',
   },
 ]
@@ -101,13 +101,13 @@ function SettingCard({
   action?: React.ReactNode
 }) {
   return (
-    <div className="rounded-xl bg-zinc-900/50 border border-zinc-800 overflow-hidden">
-      <div className="flex items-start justify-between p-5 border-b border-zinc-800/50">
+    <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50">
+      <div className="flex items-start justify-between border-b border-zinc-800/50 p-5">
         <div className="flex items-start gap-3">
-          {icon && <div className="p-2 rounded-lg bg-white/5">{icon}</div>}
+          {icon && <div className="rounded-lg bg-white/5 p-2">{icon}</div>}
           <div>
             <h3 className="text-sm font-semibold text-white">{title}</h3>
-            {description && <p className="text-xs text-zinc-500 mt-0.5">{description}</p>}
+            {description && <p className="mt-0.5 text-xs text-zinc-500">{description}</p>}
           </div>
         </div>
         {action}
@@ -133,7 +133,7 @@ function ToggleSwitch({
       disabled={disabled}
       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
         enabled ? 'bg-blue-500' : 'bg-zinc-700'
-      } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+      } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
     >
       <span
         className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -159,9 +159,9 @@ function SettingToggle({
 }) {
   return (
     <div className="flex items-center justify-between py-3">
-      <div className="flex-1 min-w-0 pr-4">
+      <div className="min-w-0 flex-1 pr-4">
         <p className="text-sm font-medium text-white">{label}</p>
-        {description && <p className="text-xs text-zinc-500 mt-0.5">{description}</p>}
+        {description && <p className="mt-0.5 text-xs text-zinc-500">{description}</p>}
       </div>
       <ToggleSwitch enabled={enabled} onChange={onChange} disabled={disabled} />
     </div>
@@ -197,7 +197,7 @@ function InputField({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full px-4 py-2.5 bg-zinc-800/50 border border-zinc-700 rounded-lg text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 disabled:opacity-50"
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-800/50 px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/20 disabled:opacity-50"
         />
         {secret && (
           <button
@@ -205,7 +205,7 @@ function InputField({
             onClick={() => setShowSecret(!showSecret)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
           >
-            {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         )}
       </div>
@@ -227,14 +227,18 @@ function ApiKeyDisplay({ label, value }: { label: string; value: string }) {
     <div className="space-y-2">
       <label className="text-sm font-medium text-zinc-300">{label}</label>
       <div className="flex items-center gap-2">
-        <div className="flex-1 px-4 py-2.5 bg-zinc-800/50 border border-zinc-700 rounded-lg font-mono text-sm text-zinc-400">
+        <div className="flex-1 rounded-lg border border-zinc-700 bg-zinc-800/50 px-4 py-2.5 font-mono text-sm text-zinc-400">
           {masked}
         </div>
         <button
           onClick={handleCopy}
-          className="p-2.5 bg-zinc-800/50 border border-zinc-700 rounded-lg text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors"
+          className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-2.5 text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white"
         >
-          {copied ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+          {copied ? (
+            <CheckCircle className="h-4 w-4 text-emerald-500" />
+          ) : (
+            <Copy className="h-4 w-4" />
+          )}
         </button>
       </div>
     </div>
@@ -309,21 +313,21 @@ export default function ConfiguracionPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
-              className="flex items-center gap-2 text-emerald-500 text-sm"
+              className="flex items-center gap-2 text-sm text-emerald-500"
             >
-              <CheckCircle className="w-4 h-4" />
+              <CheckCircle className="h-4 w-4" />
               Guardado
             </motion.div>
           )}
           <Button onClick={handleSave} disabled={saving}>
             {saving ? (
               <>
-                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                 Guardando...
               </>
             ) : (
               <>
-                <Save className="w-4 h-4 mr-2" />
+                <Save className="mr-2 h-4 w-4" />
                 Guardar cambios
               </>
             )}
@@ -334,18 +338,18 @@ export default function ConfiguracionPage() {
       <div className="grid gap-6 lg:grid-cols-4">
         {/* Sidebar Navigation */}
         <div className="lg:col-span-1">
-          <nav className="space-y-1 sticky top-6">
+          <nav className="sticky top-6 space-y-1">
             {sections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
+                className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-all ${
                   activeSection === section.id
                     ? 'bg-white/5 text-white'
-                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.02]'
+                    : 'text-zinc-400 hover:bg-white/[0.02] hover:text-white'
                 }`}
               >
-                <div className={`p-2 rounded-lg ${section.color}`}>{section.icon}</div>
+                <div className={`rounded-lg p-2 ${section.color}`}>{section.icon}</div>
                 <div>
                   <p className="text-sm font-medium">{section.title}</p>
                   <p className="text-xs text-zinc-500">{section.description}</p>
@@ -355,8 +359,8 @@ export default function ConfiguracionPage() {
           </nav>
 
           {/* Quick Links */}
-          <div className="mt-6 p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
-            <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">
+          <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+            <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
               Enlaces rapidos
             </h4>
             <div className="space-y-2">
@@ -366,9 +370,9 @@ export default function ConfiguracionPage() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white"
               >
-                <Database className="w-4 h-4" />
+                <Database className="h-4 w-4" />
                 Supabase Dashboard
-                <ExternalLink className="w-3 h-3 ml-auto" />
+                <ExternalLink className="ml-auto h-3 w-3" />
               </a>
               <a
                 href="https://vercel.com/dashboard"
@@ -376,23 +380,23 @@ export default function ConfiguracionPage() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white"
               >
-                <Zap className="w-4 h-4" />
+                <Zap className="h-4 w-4" />
                 Vercel Dashboard
-                <ExternalLink className="w-3 h-3 ml-auto" />
+                <ExternalLink className="ml-auto h-3 w-3" />
               </a>
             </div>
           </div>
         </div>
 
         {/* Settings Content */}
-        <div className="lg:col-span-3 space-y-6">
+        <div className="space-y-6 lg:col-span-3">
           {/* General Settings */}
           {activeSection === 'general' && (
             <>
               <SettingCard
                 title="Informacion del sitio"
                 description="Datos basicos de la plataforma"
-                icon={<Globe className="w-4 h-4 text-blue-500" />}
+                icon={<Globe className="h-4 w-4 text-blue-500" />}
               >
                 <div className="space-y-4">
                   <InputField
@@ -411,7 +415,7 @@ export default function ConfiguracionPage() {
               <SettingCard
                 title="Estado del sistema"
                 description="Control de acceso a la plataforma"
-                icon={<Settings className="w-4 h-4 text-zinc-400" />}
+                icon={<Settings className="h-4 w-4 text-zinc-400" />}
               >
                 <div className="divide-y divide-zinc-800/50">
                   <SettingToggle
@@ -432,7 +436,7 @@ export default function ConfiguracionPage() {
               <SettingCard
                 title="Contenido"
                 description="Limites y configuracion de contenido"
-                icon={<Image className="w-4 h-4 text-emerald-500" />}
+                icon={<Image className="h-4 w-4 text-emerald-500" />}
               >
                 <div className="space-y-4">
                   <SettingToggle
@@ -441,7 +445,7 @@ export default function ConfiguracionPage() {
                     enabled={settings.autoApproveContent}
                     onChange={(v) => updateSetting('autoApproveContent', v)}
                   />
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-zinc-800/50">
+                  <div className="grid grid-cols-2 gap-4 border-t border-zinc-800/50 pt-4">
                     <InputField
                       label="Max imagenes por anuncio"
                       value={settings.maxImagesPerListing.toString()}
@@ -465,7 +469,7 @@ export default function ConfiguracionPage() {
             <SettingCard
               title="Alertas de administrador"
               description="Configura cuando recibir notificaciones"
-              icon={<Bell className="w-4 h-4 text-amber-500" />}
+              icon={<Bell className="h-4 w-4 text-amber-500" />}
             >
               <div className="divide-y divide-zinc-800/50">
                 <SettingToggle
@@ -502,7 +506,7 @@ export default function ConfiguracionPage() {
               <SettingCard
                 title="Autenticacion"
                 description="Configuracion de seguridad de cuentas"
-                icon={<Lock className="w-4 h-4 text-emerald-500" />}
+                icon={<Lock className="h-4 w-4 text-emerald-500" />}
               >
                 <div className="divide-y divide-zinc-800/50">
                   <SettingToggle
@@ -523,7 +527,7 @@ export default function ConfiguracionPage() {
               <SettingCard
                 title="Sesiones"
                 description="Control de sesiones de usuario"
-                icon={<Key className="w-4 h-4 text-purple-500" />}
+                icon={<Key className="h-4 w-4 text-purple-500" />}
               >
                 <div className="grid grid-cols-2 gap-4">
                   <InputField
@@ -541,20 +545,28 @@ export default function ConfiguracionPage() {
                 </div>
               </SettingCard>
 
-              <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
+              <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500" />
                   <div>
                     <h4 className="text-sm font-medium text-amber-500">Zona de peligro</h4>
-                    <p className="text-xs text-zinc-400 mt-1">
+                    <p className="mt-1 text-xs text-zinc-400">
                       Las acciones en esta seccion pueden afectar permanentemente a la plataforma.
                       Asegurate de tener backups antes de realizar cambios criticos.
                     </p>
-                    <div className="flex gap-3 mt-4">
-                      <Button variant="outline" size="sm" className="text-amber-500 border-amber-500/30 hover:bg-amber-500/10">
+                    <div className="mt-4 flex gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
+                      >
                         Limpiar cache
                       </Button>
-                      <Button variant="outline" size="sm" className="text-red-500 border-red-500/30 hover:bg-red-500/10">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-red-500/30 text-red-500 hover:bg-red-500/10"
+                      >
                         Reiniciar sesiones
                       </Button>
                     </div>
@@ -570,10 +582,10 @@ export default function ConfiguracionPage() {
               <SettingCard
                 title="Supabase"
                 description="Base de datos y autenticacion"
-                icon={<Database className="w-4 h-4 text-emerald-500" />}
+                icon={<Database className="h-4 w-4 text-emerald-500" />}
                 action={
-                  <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-xs">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-500">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                     Conectado
                   </span>
                 }
@@ -595,10 +607,10 @@ export default function ConfiguracionPage() {
               <SettingCard
                 title="Vercel"
                 description="Hosting y analytics"
-                icon={<Zap className="w-4 h-4 text-white" />}
+                icon={<Zap className="h-4 w-4 text-white" />}
                 action={
-                  <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-xs">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-500">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                     Conectado
                   </span>
                 }
@@ -622,10 +634,10 @@ export default function ConfiguracionPage() {
               <SettingCard
                 title="Cloudflare"
                 description="CDN y optimizacion de imagenes"
-                icon={<Image className="w-4 h-4 text-orange-500" />}
+                icon={<Image className="h-4 w-4 text-orange-500" />}
                 action={
-                  <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-xs">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-500">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                     Conectado
                   </span>
                 }
@@ -641,24 +653,24 @@ export default function ConfiguracionPage() {
               <SettingCard
                 title="Otras integraciones"
                 description="Servicios adicionales disponibles"
-                icon={<Settings className="w-4 h-4 text-zinc-400" />}
+                icon={<Settings className="h-4 w-4 text-zinc-400" />}
               >
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-lg bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors cursor-pointer">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Mail className="w-5 h-5 text-blue-500" />
+                  <div className="cursor-pointer rounded-lg border border-white/5 bg-white/[0.02] p-4 transition-colors hover:border-white/10">
+                    <div className="mb-2 flex items-center gap-3">
+                      <Mail className="h-5 w-5 text-blue-500" />
                       <span className="text-sm font-medium text-white">Resend</span>
                     </div>
                     <p className="text-xs text-zinc-500">Emails transaccionales</p>
-                    <span className="inline-block mt-2 text-xs text-zinc-600">No configurado</span>
+                    <span className="mt-2 inline-block text-xs text-zinc-600">No configurado</span>
                   </div>
-                  <div className="p-4 rounded-lg bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors cursor-pointer">
-                    <div className="flex items-center gap-3 mb-2">
-                      <MessageSquare className="w-5 h-5 text-green-500" />
+                  <div className="cursor-pointer rounded-lg border border-white/5 bg-white/[0.02] p-4 transition-colors hover:border-white/10">
+                    <div className="mb-2 flex items-center gap-3">
+                      <MessageSquare className="h-5 w-5 text-green-500" />
                       <span className="text-sm font-medium text-white">Discord</span>
                     </div>
                     <p className="text-xs text-zinc-500">Webhooks y OAuth</p>
-                    <span className="inline-block mt-2 text-xs text-zinc-600">No configurado</span>
+                    <span className="mt-2 inline-block text-xs text-zinc-600">No configurado</span>
                   </div>
                 </div>
               </SettingCard>

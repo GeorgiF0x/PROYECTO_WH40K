@@ -37,7 +37,20 @@ import { createClient } from '@/lib/supabase/client'
 // HELPERS
 // ══════════════════════════════════════════════════════════════
 
-const MONTH_NAMES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+const MONTH_NAMES = [
+  'Ene',
+  'Feb',
+  'Mar',
+  'Abr',
+  'May',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dic',
+]
 const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab']
 
 type TimeRange = '7d' | '30d' | '90d'
@@ -52,7 +65,12 @@ function getDateRange(range: TimeRange) {
     previousISO: previous.toISOString(),
     nowISO: now.toISOString(),
     days,
-    label: range === '7d' ? 'vs 7d anteriores' : range === '30d' ? 'vs 30d anteriores' : 'vs 90d anteriores',
+    label:
+      range === '7d'
+        ? 'vs 7d anteriores'
+        : range === '30d'
+          ? 'vs 30d anteriores'
+          : 'vs 90d anteriores',
   }
 }
 
@@ -141,22 +159,26 @@ function BentoCard({ children, className = '', title, subtitle, icon, action }: 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className={`relative overflow-hidden rounded-xl bg-void-light/50 backdrop-blur-sm border border-imperial-gold/15 p-5 hover:border-imperial-gold/30 transition-colors ${className}`}
+      className={`relative overflow-hidden rounded-xl border border-imperial-gold/15 bg-void-light/50 p-5 backdrop-blur-sm transition-colors hover:border-imperial-gold/30 ${className}`}
     >
       {/* Corner brackets */}
-      <span className="absolute top-2 left-2 w-2 h-2 border-l border-t border-imperial-gold/30" />
-      <span className="absolute top-2 right-2 w-2 h-2 border-r border-t border-imperial-gold/30" />
-      <span className="absolute bottom-2 left-2 w-2 h-2 border-l border-b border-imperial-gold/30" />
-      <span className="absolute bottom-2 right-2 w-2 h-2 border-r border-b border-imperial-gold/30" />
+      <span className="absolute left-2 top-2 h-2 w-2 border-l border-t border-imperial-gold/30" />
+      <span className="absolute right-2 top-2 h-2 w-2 border-r border-t border-imperial-gold/30" />
+      <span className="absolute bottom-2 left-2 h-2 w-2 border-b border-l border-imperial-gold/30" />
+      <span className="absolute bottom-2 right-2 h-2 w-2 border-b border-r border-imperial-gold/30" />
 
       {(title || icon) && (
-        <div className="relative flex items-start justify-between mb-4">
+        <div className="relative mb-4 flex items-start justify-between">
           <div className="flex items-center gap-3">
             {icon && (
               <motion.div
-                className="p-2 rounded-lg bg-imperial-gold/10 border border-imperial-gold/20"
+                className="rounded-lg border border-imperial-gold/20 bg-imperial-gold/10 p-2"
                 animate={{
-                  boxShadow: ['0 0 5px rgba(201, 162, 39, 0.2)', '0 0 15px rgba(201, 162, 39, 0.3)', '0 0 5px rgba(201, 162, 39, 0.2)'],
+                  boxShadow: [
+                    '0 0 5px rgba(201, 162, 39, 0.2)',
+                    '0 0 15px rgba(201, 162, 39, 0.3)',
+                    '0 0 5px rgba(201, 162, 39, 0.2)',
+                  ],
                 }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
@@ -165,7 +187,7 @@ function BentoCard({ children, className = '', title, subtitle, icon, action }: 
             )}
             <div>
               {title && <h3 className="text-sm font-semibold text-bone">{title}</h3>}
-              {subtitle && <p className="text-xs text-bone/40 font-mono">{subtitle}</p>}
+              {subtitle && <p className="font-mono text-xs text-bone/40">{subtitle}</p>}
             </div>
           </div>
           {action}
@@ -190,19 +212,29 @@ interface MetricCardProps {
   color?: string
 }
 
-function MetricCard({ label, value, change, changeLabel, icon, sparklineData, color = CHART_COLORS.primary }: MetricCardProps) {
+function MetricCard({
+  label,
+  value,
+  change,
+  changeLabel,
+  icon,
+  sparklineData,
+  color = CHART_COLORS.primary,
+}: MetricCardProps) {
   const isPositive = change != null && change > 0
 
   return (
     <BentoCard>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <div className="text-imperial-gold/60">{icon}</div>
-            <span className="text-[10px] text-imperial-gold/50 uppercase tracking-widest font-mono">{label}</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-imperial-gold/50">
+              {label}
+            </span>
           </div>
           <motion.p
-            className="text-3xl font-display font-bold text-bone tracking-tight"
+            className="font-display text-3xl font-bold tracking-tight text-bone"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: 'spring', delay: 0.1 }}
@@ -210,21 +242,24 @@ function MetricCard({ label, value, change, changeLabel, icon, sparklineData, co
             {typeof value === 'number' ? value.toLocaleString() : value}
           </motion.p>
           {change != null && (
-            <div className="flex items-center gap-1.5 mt-2">
+            <div className="mt-2 flex items-center gap-1.5">
               {isPositive ? (
-                <TrendingUp className="w-3.5 h-3.5 text-necron-teal" />
+                <TrendingUp className="h-3.5 w-3.5 text-necron-teal" />
               ) : (
-                <TrendingDown className="w-3.5 h-3.5 text-blood-red" />
+                <TrendingDown className="text-blood-red h-3.5 w-3.5" />
               )}
-              <span className={`text-xs font-mono ${isPositive ? 'text-necron-teal' : 'text-blood-red'}`}>
-                {isPositive ? '+' : ''}{change}%
+              <span
+                className={`font-mono text-xs ${isPositive ? 'text-necron-teal' : 'text-blood-red'}`}
+              >
+                {isPositive ? '+' : ''}
+                {change}%
               </span>
-              {changeLabel && <span className="text-xs text-bone/30 font-mono">{changeLabel}</span>}
+              {changeLabel && <span className="font-mono text-xs text-bone/30">{changeLabel}</span>}
             </div>
           )}
         </div>
         {sparklineData && (
-          <div className="w-24 h-12">
+          <div className="h-12 w-24">
             <Sparkline data={sparklineData} color={color} height={48} />
           </div>
         )}
@@ -306,8 +341,14 @@ export default function AnaliticasPage() {
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('miniatures').select('*', { count: 'exact', head: true }),
-        supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
-        supabase.from('stores').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
+        supabase
+          .from('listings')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'active'),
+        supabase
+          .from('stores')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'approved'),
         supabase.from('follows').select('*', { count: 'exact', head: true }),
         supabase.from('miniature_likes').select('*', { count: 'exact', head: true }),
         supabase.from('miniature_comments').select('*', { count: 'exact', head: true }),
@@ -329,22 +370,66 @@ export default function AnaliticasPage() {
         { count: followsCurrent },
         { count: followsPrevious },
       ] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
-        supabase.from('miniatures').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
-        supabase.from('miniatures').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
-        supabase.from('listings').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
-        supabase.from('listings').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
-        supabase.from('miniature_likes').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
-        supabase.from('miniature_likes').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
-        supabase.from('miniature_comments').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
-        supabase.from('miniature_comments').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
-        supabase.from('follows').select('*', { count: 'exact', head: true }).gte('created_at', sinceISO),
-        supabase.from('follows').select('*', { count: 'exact', head: true }).gte('created_at', previousISO).lt('created_at', sinceISO),
+        supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', sinceISO),
+        supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', previousISO)
+          .lt('created_at', sinceISO),
+        supabase
+          .from('miniatures')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', sinceISO),
+        supabase
+          .from('miniatures')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', previousISO)
+          .lt('created_at', sinceISO),
+        supabase
+          .from('listings')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', sinceISO),
+        supabase
+          .from('listings')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', previousISO)
+          .lt('created_at', sinceISO),
+        supabase
+          .from('miniature_likes')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', sinceISO),
+        supabase
+          .from('miniature_likes')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', previousISO)
+          .lt('created_at', sinceISO),
+        supabase
+          .from('miniature_comments')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', sinceISO),
+        supabase
+          .from('miniature_comments')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', previousISO)
+          .lt('created_at', sinceISO),
+        supabase
+          .from('follows')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', sinceISO),
+        supabase
+          .from('follows')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', previousISO)
+          .lt('created_at', sinceISO),
       ])
 
-      const interactionsCurrent = (likesCurrent || 0) + (commentsCurrent || 0) + (followsCurrent || 0)
-      const interactionsPrevious = (likesPrevious || 0) + (commentsPrevious || 0) + (followsPrevious || 0)
+      const interactionsCurrent =
+        (likesCurrent || 0) + (commentsCurrent || 0) + (followsCurrent || 0)
+      const interactionsPrevious =
+        (likesPrevious || 0) + (commentsPrevious || 0) + (followsPrevious || 0)
 
       // ── Batch 3: Dates for charts (6 months) ──
       const [
@@ -356,9 +441,18 @@ export default function AnaliticasPage() {
         { data: followDates },
         { data: storeDates },
       ] = await Promise.all([
-        supabase.from('profiles').select('created_at').gte('created_at', sixMonthsAgo.toISOString()),
-        supabase.from('miniatures').select('created_at').gte('created_at', sixMonthsAgo.toISOString()),
-        supabase.from('listings').select('created_at').gte('created_at', sixMonthsAgo.toISOString()),
+        supabase
+          .from('profiles')
+          .select('created_at')
+          .gte('created_at', sixMonthsAgo.toISOString()),
+        supabase
+          .from('miniatures')
+          .select('created_at')
+          .gte('created_at', sixMonthsAgo.toISOString()),
+        supabase
+          .from('listings')
+          .select('created_at')
+          .gte('created_at', sixMonthsAgo.toISOString()),
         supabase.from('miniature_likes').select('created_at').gte('created_at', sevenDaysAgo),
         supabase.from('miniature_comments').select('created_at').gte('created_at', sevenDaysAgo),
         supabase.from('follows').select('created_at').gte('created_at', sevenDaysAgo),
@@ -382,17 +476,38 @@ export default function AnaliticasPage() {
         supabase.from('follows').select('created_at').gte('created_at', fourteenDaysAgo),
       ])
 
-      const usersSparkline = groupByDay((sparkUsers || []).map(r => r.created_at), 14)
-      const miniaturesSparkline = groupByDay((sparkMinis || []).map(r => r.created_at), 14)
-      const listingsSparkline = groupByDay((sparkListings || []).map(r => r.created_at), 14)
+      const usersSparkline = groupByDay(
+        (sparkUsers || []).map((r) => r.created_at),
+        14
+      )
+      const miniaturesSparkline = groupByDay(
+        (sparkMinis || []).map((r) => r.created_at),
+        14
+      )
+      const listingsSparkline = groupByDay(
+        (sparkListings || []).map((r) => r.created_at),
+        14
+      )
       // Interactions sparkline: sum of likes+comments+follows per day
-      const likesDaily = groupByDay((sparkLikes || []).map(r => r.created_at), 14)
-      const commentsDaily = groupByDay((sparkComments || []).map(r => r.created_at), 14)
-      const followsDaily = groupByDay((sparkFollows || []).map(r => r.created_at), 14)
+      const likesDaily = groupByDay(
+        (sparkLikes || []).map((r) => r.created_at),
+        14
+      )
+      const commentsDaily = groupByDay(
+        (sparkComments || []).map((r) => r.created_at),
+        14
+      )
+      const followsDaily = groupByDay(
+        (sparkFollows || []).map((r) => r.created_at),
+        14
+      )
       const interactionsSparkline = likesDaily.map((v, i) => v + commentsDaily[i] + followsDaily[i])
 
       // ── Monthly growth (6 months) ──
-      const monthBuckets: Record<string, { usuarios: number; miniaturas: number; anuncios: number }> = {}
+      const monthBuckets: Record<
+        string,
+        { usuarios: number; miniaturas: number; anuncios: number }
+      > = {}
       for (let i = 0; i < 6; i++) {
         const d = new Date(now.getFullYear(), now.getMonth() - 5 + i, 1)
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
@@ -419,7 +534,10 @@ export default function AnaliticasPage() {
       }))
 
       // ── Content created (stacked bar: miniatures, listings, stores by month) ──
-      const contentBuckets: Record<string, { miniaturas: number; anuncios: number; tiendas: number }> = {}
+      const contentBuckets: Record<
+        string,
+        { miniaturas: number; anuncios: number; tiendas: number }
+      > = {}
       for (const key of sortedMonths) {
         contentBuckets[key] = { miniaturas: 0, anuncios: 0, tiendas: 0 }
       }
@@ -475,11 +593,17 @@ export default function AnaliticasPage() {
         supabase.from('profiles').select('creator_type').neq('creator_status', 'none'),
         supabase.from('stores').select('status'),
         supabase.from('reports').select('status'),
-        supabase.from('miniatures').select('faction_id, tags!miniatures_faction_id_fkey(name)').not('faction_id', 'is', null),
+        supabase
+          .from('miniatures')
+          .select('faction_id, tags!miniatures_faction_id_fkey(name)')
+          .not('faction_id', 'is', null),
       ])
 
       // Category distribution
-      const catCounts = countByField((listingCategories || []) as Array<Record<string, unknown>>, 'category')
+      const catCounts = countByField(
+        (listingCategories || []) as Array<Record<string, unknown>>,
+        'category'
+      )
       const categoryDistribution = Object.entries(catCounts)
         .sort(([, a], [, b]) => b - a)
         .slice(0, 6)
@@ -491,8 +615,8 @@ export default function AnaliticasPage() {
 
       // Creator types
       const creatorCounts = countByField(
-        ((creatorProfiles || []).filter(p => p.creator_type)) as Array<Record<string, unknown>>,
-        'creator_type',
+        (creatorProfiles || []).filter((p) => p.creator_type) as Array<Record<string, unknown>>,
+        'creator_type'
       )
       const creatorTypes = Object.entries(creatorCounts)
         .sort(([, a], [, b]) => b - a)
@@ -503,7 +627,10 @@ export default function AnaliticasPage() {
         }))
 
       // Store status
-      const storeCounts = countByField((allStores || []) as Array<Record<string, unknown>>, 'status')
+      const storeCounts = countByField(
+        (allStores || []) as Array<Record<string, unknown>>,
+        'status'
+      )
       const maxStore = Math.max(...Object.values(storeCounts), 1)
       const storeStatusData = Object.entries(storeCounts)
         .sort(([, a], [, b]) => b - a)
@@ -515,7 +642,10 @@ export default function AnaliticasPage() {
         }))
 
       // Report status
-      const reportCounts = countByField((allReports || []) as Array<Record<string, unknown>>, 'status')
+      const reportCounts = countByField(
+        (allReports || []) as Array<Record<string, unknown>>,
+        'status'
+      )
       const maxReport = Math.max(...Object.values(reportCounts), 1)
       const reportStatusData = Object.entries(reportCounts)
         .sort(([, a], [, b]) => b - a)
@@ -542,31 +672,56 @@ export default function AnaliticasPage() {
         .map((f) => ({ name: f.name, value: f.count }))
 
       // ── Batch 5: Engagement averages ──
-      const [
-        { data: miniEngagement },
-        { count: creatorApplicants },
-        { count: creatorsApproved },
-      ] = await Promise.all([
-        supabase.from('miniatures').select('likes_count, comments_count'),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).neq('creator_status', 'none'),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('creator_status', 'approved'),
-      ])
+      const [{ data: miniEngagement }, { count: creatorApplicants }, { count: creatorsApproved }] =
+        await Promise.all([
+          supabase.from('miniatures').select('likes_count, comments_count'),
+          supabase
+            .from('profiles')
+            .select('*', { count: 'exact', head: true })
+            .neq('creator_status', 'none'),
+          supabase
+            .from('profiles')
+            .select('*', { count: 'exact', head: true })
+            .eq('creator_status', 'approved'),
+        ])
 
       const totalMinis = (miniEngagement || []).length
       const sumLikes = (miniEngagement || []).reduce((s, m) => s + (m.likes_count || 0), 0)
       const sumComments = (miniEngagement || []).reduce((s, m) => s + (m.comments_count || 0), 0)
       const avgLikesPerMini = totalMinis > 0 ? Math.round((sumLikes / totalMinis) * 10) / 10 : 0
-      const avgCommentsPerMini = totalMinis > 0 ? Math.round((sumComments / totalMinis) * 10) / 10 : 0
-      const creatorConversionRate = (creatorApplicants || 0) > 0
-        ? Math.round(((creatorsApproved || 0) / (creatorApplicants || 1)) * 100)
-        : 0
+      const avgCommentsPerMini =
+        totalMinis > 0 ? Math.round((sumComments / totalMinis) * 10) / 10 : 0
+      const creatorConversionRate =
+        (creatorApplicants || 0) > 0
+          ? Math.round(((creatorsApproved || 0) / (creatorApplicants || 1)) * 100)
+          : 0
 
       // Community breakdown
       const communityBreakdown = [
-        { label: 'Usuarios', value: usersCount || 0, max: Math.max(usersCount || 0, 1), color: CHART_COLORS.success },
-        { label: 'Creadores', value: creatorsApproved || 0, max: Math.max(usersCount || 0, 1), color: '#8B5CF6' },
-        { label: 'Tiendas', value: storesApproved || 0, max: Math.max(usersCount || 0, 1), color: CHART_COLORS.warning },
-        { label: 'Eventos', value: eventsCount || 0, max: Math.max(usersCount || 0, 1), color: CHART_COLORS.primary },
+        {
+          label: 'Usuarios',
+          value: usersCount || 0,
+          max: Math.max(usersCount || 0, 1),
+          color: CHART_COLORS.success,
+        },
+        {
+          label: 'Creadores',
+          value: creatorsApproved || 0,
+          max: Math.max(usersCount || 0, 1),
+          color: '#8B5CF6',
+        },
+        {
+          label: 'Tiendas',
+          value: storesApproved || 0,
+          max: Math.max(usersCount || 0, 1),
+          color: CHART_COLORS.warning,
+        },
+        {
+          label: 'Eventos',
+          value: eventsCount || 0,
+          max: Math.max(usersCount || 0, 1),
+          color: CHART_COLORS.primary,
+        },
       ]
 
       setData({
@@ -612,12 +767,12 @@ export default function AnaliticasPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-imperial-gold/10 rounded-lg animate-pulse" />
-        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+        <div className="h-8 w-48 animate-pulse rounded-lg bg-imperial-gold/10" />
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
             <motion.div
               key={i}
-              className="h-32 bg-void-light/50 border border-imperial-gold/10 rounded-xl"
+              className="h-32 rounded-xl border border-imperial-gold/10 bg-void-light/50"
               animate={{ opacity: [0.3, 0.6, 0.3] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
             />
@@ -625,12 +780,12 @@ export default function AnaliticasPage() {
         </div>
         <div className="grid gap-4 lg:grid-cols-3">
           <motion.div
-            className="lg:col-span-2 h-80 bg-void-light/50 border border-imperial-gold/10 rounded-xl"
+            className="h-80 rounded-xl border border-imperial-gold/10 bg-void-light/50 lg:col-span-2"
             animate={{ opacity: [0.3, 0.6, 0.3] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />
           <motion.div
-            className="h-80 bg-void-light/50 border border-imperial-gold/10 rounded-xl"
+            className="h-80 rounded-xl border border-imperial-gold/10 bg-void-light/50"
             animate={{ opacity: [0.3, 0.6, 0.3] }}
             transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
           />
@@ -649,27 +804,29 @@ export default function AnaliticasPage() {
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/* HEADER */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <Crosshair className="h-4 w-4 text-necron-teal/60" />
-            <span className="text-[10px] font-mono text-necron-teal/60 tracking-[0.3em]">
+            <span className="font-mono text-[10px] tracking-[0.3em] text-necron-teal/60">
               MODULO AUSPEX // TELEMETRIA
             </span>
           </div>
-          <h1 className="text-2xl font-display font-bold text-bone tracking-wide">Analiticas</h1>
-          <p className="text-bone/40 mt-1 font-mono text-sm">Metricas y rendimiento de la plataforma</p>
+          <h1 className="font-display text-2xl font-bold tracking-wide text-bone">Analiticas</h1>
+          <p className="mt-1 font-mono text-sm text-bone/40">
+            Metricas y rendimiento de la plataforma
+          </p>
         </div>
 
         {/* Time Range Selector */}
-        <div className="flex items-center gap-1 p-1 bg-void rounded-lg border border-imperial-gold/20">
+        <div className="flex items-center gap-1 rounded-lg border border-imperial-gold/20 bg-void p-1">
           {(['7d', '30d', '90d'] as const).map((range) => (
             <motion.button
               key={range}
               onClick={() => setTimeRange(range)}
-              className={`px-3 py-1.5 text-xs font-mono rounded-md transition-all ${
+              className={`rounded-md px-3 py-1.5 font-mono text-xs transition-all ${
                 timeRange === range
-                  ? 'bg-imperial-gold/20 text-imperial-gold border border-imperial-gold/30'
+                  ? 'border border-imperial-gold/30 bg-imperial-gold/20 text-imperial-gold'
                   : 'text-bone/40 hover:text-bone/70'
               }`}
               whileHover={{ scale: 1.02 }}
@@ -684,13 +841,13 @@ export default function AnaliticasPage() {
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/* ROW 1: KPI METRIC CARDS */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <MetricCard
           label="Usuarios"
           value={data?.totalUsers || 0}
           change={data?.usersGrowth}
           changeLabel={rangeInfo.label}
-          icon={<Users className="w-4 h-4" />}
+          icon={<Users className="h-4 w-4" />}
           sparklineData={data?.usersSparkline}
           color={CHART_COLORS.success}
         />
@@ -699,7 +856,7 @@ export default function AnaliticasPage() {
           value={data?.totalMiniatures || 0}
           change={data?.miniaturesGrowth}
           changeLabel={rangeInfo.label}
-          icon={<Image className="w-4 h-4" />}
+          icon={<Image className="h-4 w-4" />}
           sparklineData={data?.miniaturesSparkline}
           color={CHART_COLORS.primary}
         />
@@ -708,7 +865,7 @@ export default function AnaliticasPage() {
           value={data?.totalListings || 0}
           change={data?.listingsGrowth}
           changeLabel={rangeInfo.label}
-          icon={<ShoppingBag className="w-4 h-4" />}
+          icon={<ShoppingBag className="h-4 w-4" />}
           sparklineData={data?.listingsSparkline}
           color={CHART_COLORS.warning}
         />
@@ -717,7 +874,7 @@ export default function AnaliticasPage() {
           value={data?.totalInteractions || 0}
           change={data?.interactionsGrowth}
           changeLabel={rangeInfo.label}
-          icon={<Heart className="w-4 h-4" />}
+          icon={<Heart className="h-4 w-4" />}
           sparklineData={data?.interactionsSparkline}
           color={CHART_COLORS.tertiary}
         />
@@ -731,19 +888,19 @@ export default function AnaliticasPage() {
           className="lg:col-span-2"
           title="Crecimiento mensual"
           subtitle="Usuarios, miniaturas y anuncios (6 meses)"
-          icon={<TrendingUp className="w-4 h-4 text-emerald-500" />}
+          icon={<TrendingUp className="h-4 w-4 text-emerald-500" />}
           action={
             <div className="flex items-center gap-4 text-xs">
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#0D9B8A]" />
+                <span className="h-2 w-2 rounded-full bg-[#0D9B8A]" />
                 <span className="text-zinc-400">Usuarios</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#C9A227]" />
+                <span className="h-2 w-2 rounded-full bg-[#C9A227]" />
                 <span className="text-zinc-400">Miniaturas</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#6B1C5F]" />
+                <span className="h-2 w-2 rounded-full bg-[#6B1C5F]" />
                 <span className="text-zinc-400">Anuncios</span>
               </span>
             </div>
@@ -765,9 +922,9 @@ export default function AnaliticasPage() {
         <BentoCard
           title="Comunidad"
           subtitle="Desglose de la plataforma"
-          icon={<Users className="w-4 h-4 text-necron-teal" />}
+          icon={<Users className="h-4 w-4 text-necron-teal" />}
         >
-          <div className="space-y-4 mt-2">
+          <div className="mt-2 space-y-4">
             {(data?.communityBreakdown || []).map((item, index) => (
               <motion.div
                 key={item.label}
@@ -777,10 +934,12 @@ export default function AnaliticasPage() {
                 transition={{ delay: index * 0.1 }}
               >
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-bone/70 font-mono">{item.label}</span>
-                  <span className="text-bone font-mono font-bold">{item.value.toLocaleString()}</span>
+                  <span className="font-mono text-bone/70">{item.label}</span>
+                  <span className="font-mono font-bold text-bone">
+                    {item.value.toLocaleString()}
+                  </span>
                 </div>
-                <div className="h-2 bg-void rounded-full overflow-hidden border border-imperial-gold/10">
+                <div className="h-2 overflow-hidden rounded-full border border-imperial-gold/10 bg-void">
                   <motion.div
                     className="h-full rounded-full"
                     style={{ backgroundColor: item.color, boxShadow: `0 0 10px ${item.color}50` }}
@@ -803,7 +962,7 @@ export default function AnaliticasPage() {
           className="lg:col-span-2"
           title="Contenido creado"
           subtitle="Por tipo y mes (6 meses)"
-          icon={<BarChart3 className="w-4 h-4 text-violet-500" />}
+          icon={<BarChart3 className="h-4 w-4 text-violet-500" />}
         >
           <StackedBarChart
             data={data?.contentCreated || []}
@@ -819,20 +978,20 @@ export default function AnaliticasPage() {
         <BentoCard
           title="Categorias del mercado"
           subtitle="Distribucion de anuncios"
-          icon={<Layers className="w-4 h-4 text-cyan-500" />}
+          icon={<Layers className="h-4 w-4 text-cyan-500" />}
         >
-          <div className="space-y-3 mt-2">
+          <div className="mt-2 space-y-3">
             {(data?.categoryDistribution || []).map((cat) => (
               <ComparisonBar
                 key={cat.name}
                 label={cat.name}
                 value={cat.value}
-                maxValue={Math.max(...(data?.categoryDistribution || []).map(c => c.value), 1)}
+                maxValue={Math.max(...(data?.categoryDistribution || []).map((c) => c.value), 1)}
                 color={cat.fill}
               />
             ))}
             {(data?.categoryDistribution || []).length === 0 && (
-              <p className="text-xs text-bone/30 font-mono text-center py-4">Sin datos</p>
+              <p className="py-4 text-center font-mono text-xs text-bone/30">Sin datos</p>
             )}
           </div>
         </BentoCard>
@@ -840,20 +999,20 @@ export default function AnaliticasPage() {
         <BentoCard
           title="Tipos de creadores"
           subtitle="Creadores aprobados"
-          icon={<Palette className="w-4 h-4 text-purple-500" />}
+          icon={<Palette className="h-4 w-4 text-purple-500" />}
         >
-          <div className="space-y-3 mt-2">
+          <div className="mt-2 space-y-3">
             {(data?.creatorTypes || []).map((ct) => (
               <ComparisonBar
                 key={ct.name}
                 label={ct.name}
                 value={ct.value}
-                maxValue={Math.max(...(data?.creatorTypes || []).map(c => c.value), 1)}
+                maxValue={Math.max(...(data?.creatorTypes || []).map((c) => c.value), 1)}
                 color={ct.fill}
               />
             ))}
             {(data?.creatorTypes || []).length === 0 && (
-              <p className="text-xs text-bone/30 font-mono text-center py-4">Sin datos</p>
+              <p className="py-4 text-center font-mono text-xs text-bone/30">Sin datos</p>
             )}
           </div>
         </BentoCard>
@@ -866,7 +1025,7 @@ export default function AnaliticasPage() {
         <BentoCard
           title="Actividad semanal"
           subtitle="Likes, comentarios y follows (7 dias)"
-          icon={<Activity className="w-4 h-4 text-indigo-500" />}
+          icon={<Activity className="h-4 w-4 text-indigo-500" />}
         >
           <StackedBarChart
             data={data?.weeklyActivity || []}
@@ -882,28 +1041,38 @@ export default function AnaliticasPage() {
         <BentoCard
           title="Metricas de la plataforma"
           subtitle="Engagement y conversion"
-          icon={<Target className="w-4 h-4 text-orange-500" />}
+          icon={<Target className="h-4 w-4 text-orange-500" />}
         >
-          <div className="grid grid-cols-2 gap-4 mt-2">
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1 font-mono">Likes/miniatura</p>
+          <div className="mt-2 grid grid-cols-2 gap-4">
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <p className="mb-1 font-mono text-xs uppercase tracking-wider text-zinc-500">
+                Likes/miniatura
+              </p>
               <p className="text-2xl font-bold text-bone">{data?.avgLikesPerMini ?? 0}</p>
-              <p className="text-xs text-bone/30 mt-1 font-mono">promedio</p>
+              <p className="mt-1 font-mono text-xs text-bone/30">promedio</p>
             </div>
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1 font-mono">Comentarios/mini</p>
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <p className="mb-1 font-mono text-xs uppercase tracking-wider text-zinc-500">
+                Comentarios/mini
+              </p>
               <p className="text-2xl font-bold text-bone">{data?.avgCommentsPerMini ?? 0}</p>
-              <p className="text-xs text-bone/30 mt-1 font-mono">promedio</p>
+              <p className="mt-1 font-mono text-xs text-bone/30">promedio</p>
             </div>
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1 font-mono">Follows totales</p>
-              <p className="text-2xl font-bold text-bone">{(data?.totalFollows ?? 0).toLocaleString()}</p>
-              <p className="text-xs text-bone/30 mt-1 font-mono">conexiones</p>
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <p className="mb-1 font-mono text-xs uppercase tracking-wider text-zinc-500">
+                Follows totales
+              </p>
+              <p className="text-2xl font-bold text-bone">
+                {(data?.totalFollows ?? 0).toLocaleString()}
+              </p>
+              <p className="mt-1 font-mono text-xs text-bone/30">conexiones</p>
             </div>
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1 font-mono">Conv. creadores</p>
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <p className="mb-1 font-mono text-xs uppercase tracking-wider text-zinc-500">
+                Conv. creadores
+              </p>
               <p className="text-2xl font-bold text-bone">{data?.creatorConversionRate ?? 0}%</p>
-              <p className="text-xs text-bone/30 mt-1 font-mono">aprobados/total</p>
+              <p className="mt-1 font-mono text-xs text-bone/30">aprobados/total</p>
             </div>
           </div>
         </BentoCard>
@@ -916,10 +1085,14 @@ export default function AnaliticasPage() {
         <BentoCard
           title="Facciones populares"
           subtitle="Top 5 por miniaturas"
-          icon={<Shield className="w-4 h-4 text-rose-500" />}
+          icon={<Shield className="h-4 w-4 text-rose-500" />}
         >
           <SimpleBarChart
-            data={(data?.factionData || []).length > 0 ? data!.factionData : [{ name: 'Sin datos', value: 0 }]}
+            data={
+              (data?.factionData || []).length > 0
+                ? data!.factionData
+                : [{ name: 'Sin datos', value: 0 }]
+            }
             height={220}
             layout="horizontal"
           />
@@ -928,12 +1101,14 @@ export default function AnaliticasPage() {
         <BentoCard
           title="Estado operacional"
           subtitle="Tiendas y reportes por estado"
-          icon={<Store className="w-4 h-4 text-amber-500" />}
+          icon={<Store className="h-4 w-4 text-amber-500" />}
         >
           <div className="space-y-5">
             {/* Stores */}
             <div>
-              <p className="text-xs text-bone/50 font-mono mb-3 uppercase tracking-wider">Tiendas</p>
+              <p className="mb-3 font-mono text-xs uppercase tracking-wider text-bone/50">
+                Tiendas
+              </p>
               <div className="space-y-2">
                 {(data?.storeStatusData || []).map((item) => (
                   <ComparisonBar
@@ -945,13 +1120,15 @@ export default function AnaliticasPage() {
                   />
                 ))}
                 {(data?.storeStatusData || []).length === 0 && (
-                  <p className="text-xs text-bone/30 font-mono">Sin datos</p>
+                  <p className="font-mono text-xs text-bone/30">Sin datos</p>
                 )}
               </div>
             </div>
             {/* Reports */}
             <div>
-              <p className="text-xs text-bone/50 font-mono mb-3 uppercase tracking-wider">Reportes</p>
+              <p className="mb-3 font-mono text-xs uppercase tracking-wider text-bone/50">
+                Reportes
+              </p>
               <div className="space-y-2">
                 {(data?.reportStatusData || []).map((item) => (
                   <ComparisonBar
@@ -963,7 +1140,7 @@ export default function AnaliticasPage() {
                   />
                 ))}
                 {(data?.reportStatusData || []).length === 0 && (
-                  <p className="text-xs text-bone/30 font-mono">Sin datos</p>
+                  <p className="font-mono text-xs text-bone/30">Sin datos</p>
                 )}
               </div>
             </div>
@@ -977,30 +1154,33 @@ export default function AnaliticasPage() {
       <WebVitalsMonitor className="mt-8" />
 
       {/* Vercel Analytics Note */}
-      <div className="rounded-xl bg-gradient-to-r from-necron-teal/10 to-imperial-gold/10 border border-necron-teal/20 p-4">
+      <div className="rounded-xl border border-necron-teal/20 bg-gradient-to-r from-necron-teal/10 to-imperial-gold/10 p-4">
         <div className="flex items-start gap-3">
           <motion.div
-            className="p-2 rounded-lg bg-necron-teal/20 border border-necron-teal/30"
+            className="rounded-lg border border-necron-teal/30 bg-necron-teal/20 p-2"
             animate={{
-              boxShadow: ['0 0 5px rgba(13, 155, 138, 0.3)', '0 0 15px rgba(13, 155, 138, 0.5)', '0 0 5px rgba(13, 155, 138, 0.3)'],
+              boxShadow: [
+                '0 0 5px rgba(13, 155, 138, 0.3)',
+                '0 0 15px rgba(13, 155, 138, 0.5)',
+                '0 0 5px rgba(13, 155, 138, 0.3)',
+              ],
             }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            <Zap className="w-4 h-4 text-necron-teal" />
+            <Zap className="h-4 w-4 text-necron-teal" />
           </motion.div>
           <div>
             <h4 className="text-sm font-medium text-bone">Sistema de Telemetria Vercel</h4>
-            <p className="text-xs text-bone/40 mt-1 font-mono">
-              Datos de trafico y rendimiento via Vercel Analytics + Speed Insights.
-              Accede al{' '}
+            <p className="mt-1 font-mono text-xs text-bone/40">
+              Datos de trafico y rendimiento via Vercel Analytics + Speed Insights. Accede al{' '}
               <a
                 href="https://vercel.com/ge0rgid3v-4766s-projects/proyecto-wh-40-k/speed-insights"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-necron-teal hover:text-necron-teal/80 inline-flex items-center gap-1"
+                className="inline-flex items-center gap-1 text-necron-teal hover:text-necron-teal/80"
               >
                 modulo de telemetria completo
-                <ArrowUpRight className="w-3 h-3" />
+                <ArrowUpRight className="h-3 w-3" />
               </a>
             </p>
           </div>
