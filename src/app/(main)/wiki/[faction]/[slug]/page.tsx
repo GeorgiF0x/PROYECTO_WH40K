@@ -388,7 +388,7 @@ function FloatingActionBar({
 
 export default function WikiArticlePage() {
   const params = useParams()
-  const factionId = params.id as string
+  const factionId = params.faction as string
   const slug = params.slug as string
   const faction = getFactionById(factionId)
   const theme = getFactionTheme(factionId)
@@ -550,7 +550,7 @@ export default function WikiArticlePage() {
             <p className="font-body text-bone/60 mb-8">
               El articulo que buscas no existe o ha sido eliminado.
             </p>
-            <Link href={`/facciones/${factionId}/wiki`}>
+            <Link href={`/wiki/${factionId}`}>
               <Button variant="outline">Volver a la Wiki</Button>
             </Link>
           </motion.div>
@@ -607,7 +607,7 @@ export default function WikiArticlePage() {
               {faction.shortName}
             </Link>
             <ChevronRight className="w-3 h-3" style={{ color: `${fc}30` }} />
-            <Link href={`/facciones/${factionId}/wiki`} className="hover:text-bone/70 transition-colors">
+            <Link href={`/wiki/${factionId}`} className="hover:text-bone/70 transition-colors">
               Wiki
             </Link>
             {page.category && (
@@ -818,7 +818,7 @@ export default function WikiArticlePage() {
 
               {/* ── Back + Actions Row ── */}
               <div className="flex flex-wrap items-center justify-between gap-4 mt-8 pt-6" style={{ borderTop: `1px solid ${fc}10` }}>
-                <Link href={`/facciones/${factionId}/wiki`}>
+                <Link href={`/wiki/${factionId}`}>
                   <button className="flex items-center gap-2 text-sm font-body text-bone/40 hover:text-bone/70 transition-colors">
                     <ChevronLeft className="w-4 h-4" />
                     Volver a la Wiki

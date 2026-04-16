@@ -21,6 +21,9 @@ export const metadata = {
   description: 'Directorio de tiendas de Warhammer y hobby. Encuentra tu tienda mas cercana.',
 }
 
+// Stores are reviewed manually before publish — list barely changes day-to-day.
+export const revalidate = 3600
+
 interface SearchParams {
   type?: string
   ccaa?: string

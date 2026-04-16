@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { WikiContributionReviewInput } from '@/lib/supabase/wiki.types'
 import type { Json } from '@/lib/types/database.types'
+import { parseJsonBody } from '@/lib/validation/http'
+import { wikiContributionReviewSchema } from '@/lib/validation/schemas'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -83,15 +84,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const body: WikiContributionReviewInput = await request.json()
-
-    // Validate status
-    if (!body.status || !['approved', 'rejected'].includes(body.status)) {
-      return NextResponse.json(
-        { error: 'status must be "approved" or "rejected"' },
-        { status: 400 }
-      )
-    }
+    const parsed = await parseJsonBody(request, wikiContributionReviewSchema)
+    if (!parsed.success) return parsed.response
+    const body = parsed.data
 
     // Get the contribution
     const { data: contribution, error: fetchError } = await supabase

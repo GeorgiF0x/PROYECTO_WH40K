@@ -52,7 +52,7 @@ export function WikiArticleCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
     >
-      <Link href={`/facciones/${factionId}/wiki/${page.slug}`}>
+      <Link href={`/wiki/${factionId}/${page.slug}`}>
         <div
           className="group relative h-72 rounded-xl overflow-hidden card-hover"
           style={{

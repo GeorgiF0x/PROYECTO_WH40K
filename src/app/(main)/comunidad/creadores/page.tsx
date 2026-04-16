@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   description: 'El sagrado registro de los cronistas del Imperium. Pintores, artistas, narradores e instructores verificados de la comunidad Warhammer 40K.'
 }
 
+// Creator approvals are rare — once an hour is plenty.
+export const revalidate = 3600
+
 interface PageProps {
   searchParams: Promise<{
     type?: string

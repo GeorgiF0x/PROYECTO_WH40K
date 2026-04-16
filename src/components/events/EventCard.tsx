@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -19,7 +20,7 @@ import {
   Shield,
   ChevronRight
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, optimizeImageUrl } from '@/lib/utils'
 import type { EventWithOrganizer, EventType } from '@/lib/types/database.types'
 
 interface EventCardProps {
@@ -118,7 +119,7 @@ function isEventSoon(startDate: string): boolean {
   return diffDays >= 0 && diffDays <= 7
 }
 
-export function EventCard({ event, index = 0, variant = 'default' }: EventCardProps) {
+function EventCardImpl({ event, index = 0, variant = 'default' }: EventCardProps) {
   const config = eventTypeConfig[event.event_type]
   const Icon = config.icon
   const isSoon = isEventSoon(event.start_date)
@@ -189,7 +190,7 @@ export function EventCard({ event, index = 0, variant = 'default' }: EventCardPr
           <div className="relative h-36 overflow-hidden">
             {event.cover_image ? (
               <Image
-                src={event.cover_image}
+                src={optimizeImageUrl(event.cover_image, 600)}
                 alt={event.name}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -280,7 +281,7 @@ export function EventCard({ event, index = 0, variant = 'default' }: EventCardPr
                     <div className="w-5 h-5 rounded-full bg-void-light overflow-hidden">
                       {event.organizer.avatar_url ? (
                         <Image
-                          src={event.organizer.avatar_url}
+                          src={optimizeImageUrl(event.organizer.avatar_url, 40)}
                           alt={event.organizer.display_name || event.organizer.username}
                           width={20}
                           height={20}
@@ -352,3 +353,5 @@ export function EventCard({ event, index = 0, variant = 'default' }: EventCardPr
     </motion.div>
   )
 }
+
+export const EventCard = memo(EventCardImpl)

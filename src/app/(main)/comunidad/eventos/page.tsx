@@ -22,6 +22,10 @@ export const metadata: Metadata = {
   description: 'Calendario de eventos de Warhammer 40K. Torneos, talleres de pintura, campañas y quedadas de la comunidad.'
 }
 
+// Events change a few times a day. 5 minutes keeps the CDN warm without
+// holding onto stale data when an event is added or cancelled.
+export const revalidate = 300
+
 interface SearchParams {
   type?: string
   tier?: string

@@ -24,13 +24,11 @@ import {
   Crosshair,
   Radio,
 } from 'lucide-react'
-import {
-  MultiLineChart,
-  SimpleBarChart,
-  DonutChart,
-  ChartCard,
-  CHART_COLORS,
-} from './components/charts'
+// Lightweight wrappers stay sync — they're a few <div>s of JSX.
+import { ChartCard, CHART_COLORS } from './components/charts'
+// Recharts-backed components are split off into a separate chunk so the
+// dashboard shell paints before ~31 KB of charting code is fetched.
+import { MultiLineChart, SimpleBarChart, DonutChart } from './components/charts/lazy'
 import { TacticalFrame, RadarPulse, StrategiumHeader } from './components/ImperialEffects'
 import { createClient } from '@/lib/supabase/client'
 
@@ -78,6 +76,40 @@ interface RecentActivity {
   description: string
   timestamp: string
   status?: 'pending' | 'approved' | 'rejected'
+}
+
+// Shape returned by the get_dashboard_stats() Postgres RPC.
+interface DashboardStatsPayload {
+  counts: {
+    total_users: number
+    total_miniatures: number
+    active_listings: number
+    total_stores: number
+    pending_stores: number
+    rejected_stores: number
+    pending_creators: number
+    approved_creators: number
+    pending_reports: number
+  }
+  growth: Array<{
+    bucket: string // YYYY-MM
+    usuarios: number
+    miniaturas: number
+    anuncios: number
+  }>
+  factions: Array<{ name: string; value: number }>
+  recent_users: Array<{
+    id: string
+    username: string
+    display_name: string | null
+    created_at: string
+  }>
+  recent_stores: Array<{
+    id: string
+    name: string
+    status: string
+    created_at: string
+  }>
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -321,161 +353,89 @@ export default function DashboardPage() {
       const supabase = createClient()
 
       try {
-        // ── KPI counts ──
-        const [
-          { count: usersCount },
-          { count: miniaturesCount },
-          { count: listingsCount },
-          { count: storesCount },
-          { count: pendingStoresCount },
-          { count: pendingCreatorsCount },
-          { count: approvedCreatorsCount },
-          { count: pendingReportsCount },
-        ] = await Promise.all([
-          supabase.from('profiles').select('*', { count: 'exact', head: true }),
-          supabase.from('miniatures').select('*', { count: 'exact', head: true }),
-          supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
-          supabase.from('stores').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
-          supabase.from('stores').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-          supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('creator_status', 'pending'),
-          supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('creator_status', 'approved'),
-          supabase.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-        ])
+        // Single round-trip — get_dashboard_stats() runs all counts, growth
+        // series, top factions and recent activity inside Postgres via CTEs.
+        // The RPC name is cast because database.types.ts is regenerated after
+        // the migration is deployed.
+        const { data, error } = await supabase.rpc(
+          'get_dashboard_stats' as never
+        )
 
-        // ── Growth data (last 6 months) ──
-        const now = new Date()
-        const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1)
-        const sinceDate = sixMonthsAgo.toISOString()
-
-        const [
-          { data: userDates },
-          { data: miniatureDates },
-          { data: listingDates },
-        ] = await Promise.all([
-          supabase.from('profiles').select('created_at').gte('created_at', sinceDate),
-          supabase.from('miniatures').select('created_at').gte('created_at', sinceDate),
-          supabase.from('listings').select('created_at').gte('created_at', sinceDate),
-        ])
-
-        // Group by month
-        const monthBuckets: Record<string, { usuarios: number; miniaturas: number; anuncios: number }> = {}
-        for (let i = 0; i < 6; i++) {
-          const d = new Date(now.getFullYear(), now.getMonth() - 5 + i, 1)
-          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-          monthBuckets[key] = { usuarios: 0, miniaturas: 0, anuncios: 0 }
+        if (error || !data) {
+          console.error('Error fetching dashboard data:', error)
+          return
         }
 
-        const bucketKey = (iso: string) => {
-          const d = new Date(iso)
-          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-        }
+        const payload = data as unknown as DashboardStatsPayload
+        const counts = payload.counts
+        const growthRows = payload.growth ?? []
 
-        for (const row of userDates || []) {
-          const k = bucketKey(row.created_at)
-          if (monthBuckets[k]) monthBuckets[k].usuarios++
-        }
-        for (const row of miniatureDates || []) {
-          const k = bucketKey(row.created_at)
-          if (monthBuckets[k]) monthBuckets[k].miniaturas++
-        }
-        for (const row of listingDates || []) {
-          const k = bucketKey(row.created_at)
-          if (monthBuckets[k]) monthBuckets[k].anuncios++
-        }
-
-        const sortedMonths = Object.keys(monthBuckets).sort()
-        const growth: GrowthDataPoint[] = sortedMonths.map((key) => ({
-          name: MONTH_NAMES[parseInt(key.split('-')[1]) - 1],
-          ...monthBuckets[key],
+        // ── Growth chart data ──
+        const growth: GrowthDataPoint[] = growthRows.map((row) => ({
+          name: MONTH_NAMES[parseInt(row.bucket.split('-')[1]) - 1],
+          usuarios: row.usuarios,
+          miniaturas: row.miniaturas,
+          anuncios: row.anuncios,
         }))
         setGrowthData(growth)
 
-        // Calculate growth percentage (current month vs previous)
-        const currentMonth = sortedMonths[sortedMonths.length - 1]
-        const prevMonth = sortedMonths[sortedMonths.length - 2]
-        const usersGrowth = prevMonth ? calcGrowthPct(monthBuckets[currentMonth].usuarios, monthBuckets[prevMonth].usuarios) : null
-        const miniaturesGrowth = prevMonth ? calcGrowthPct(monthBuckets[currentMonth].miniaturas, monthBuckets[prevMonth].miniaturas) : null
+        // ── Growth percentages (current vs previous month) ──
+        const current = growthRows[growthRows.length - 1]
+        const previous = growthRows[growthRows.length - 2]
+        const usersGrowth = previous ? calcGrowthPct(current.usuarios, previous.usuarios) : null
+        const miniaturesGrowth = previous
+          ? calcGrowthPct(current.miniaturas, previous.miniaturas)
+          : null
 
         setStats({
-          totalUsers: usersCount || 0,
-          totalMiniatures: miniaturesCount || 0,
-          activeListings: listingsCount || 0,
-          totalStores: storesCount || 0,
-          pendingStores: pendingStoresCount || 0,
-          pendingCreators: pendingCreatorsCount || 0,
-          approvedCreators: approvedCreatorsCount || 0,
-          pendingReports: pendingReportsCount || 0,
+          totalUsers: counts.total_users,
+          totalMiniatures: counts.total_miniatures,
+          activeListings: counts.active_listings,
+          totalStores: counts.total_stores,
+          pendingStores: counts.pending_stores,
+          pendingCreators: counts.pending_creators,
+          approvedCreators: counts.approved_creators,
+          pendingReports: counts.pending_reports,
           usersGrowth,
           miniaturesGrowth,
         })
 
-        // ── Faction distribution (top 5 tags used in miniatures) ──
-        const { data: miniatureFactions } = await supabase
-          .from('miniatures')
-          .select('faction_id, tags!miniatures_faction_id_fkey(name)')
-          .not('faction_id', 'is', null)
+        // ── Faction distribution ──
+        setFactionData(payload.factions ?? [])
 
-        const factionCounts: Record<string, { name: string; count: number }> = {}
-        for (const row of miniatureFactions || []) {
-          const fid = row.faction_id as string
-          const tag = row.tags as unknown as { name: string } | null
-          if (fid && tag?.name) {
-            if (!factionCounts[fid]) factionCounts[fid] = { name: tag.name, count: 0 }
-            factionCounts[fid].count++
-          }
-        }
-        const factions = Object.values(factionCounts)
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5)
-          .map((f) => ({ name: f.name, value: f.count }))
-        setFactionData(factions)
-
-        // ── Content status (real counts: listings + stores + reports) ──
-        const [
-          { count: activeContent },
-          { count: pendingContent },
-          { count: rejectedContent },
-        ] = await Promise.all([
-          supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
-          supabase.from('stores').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-          supabase.from('stores').select('*', { count: 'exact', head: true }).eq('status', 'rejected'),
-        ])
+        // ── Content status donut ──
         setContentStatus([
-          { name: 'Activo', value: activeContent || 0, fill: CHART_COLORS.success },
-          { name: 'Pendiente', value: (pendingContent || 0) + (pendingReportsCount || 0), fill: CHART_COLORS.warning },
-          { name: 'Rechazado', value: rejectedContent || 0, fill: CHART_COLORS.danger },
+          { name: 'Activo', value: counts.active_listings, fill: CHART_COLORS.success },
+          {
+            name: 'Pendiente',
+            value: counts.pending_stores + counts.pending_reports,
+            fill: CHART_COLORS.warning,
+          },
+          { name: 'Rechazado', value: counts.rejected_stores, fill: CHART_COLORS.danger },
         ])
 
         // ── Recent activity ──
-        const { data: recentUsers } = await supabase
-          .from('profiles')
-          .select('id, username, display_name, created_at')
-          .order('created_at', { ascending: false })
-          .limit(3)
-
-        const { data: recentStores } = await supabase
-          .from('stores')
-          .select('id, name, status, created_at')
-          .order('created_at', { ascending: false })
-          .limit(3)
-
+        const recentUsers = payload.recent_users ?? []
+        const recentStores = payload.recent_stores ?? []
         const formattedActivities: RecentActivity[] = [
-          ...(recentUsers || []).map((user) => ({
+          ...recentUsers.map((user) => ({
             id: user.id,
             type: 'user' as const,
             title: user.display_name || user.username,
             description: 'Nuevo usuario registrado',
             timestamp: user.created_at,
           })),
-          ...(recentStores || []).filter(store => store.created_at).map((store) => ({
+          ...recentStores.map((store) => ({
             id: store.id,
             type: 'store' as const,
             title: store.name,
             description: 'Tienda registrada',
-            timestamp: store.created_at!,
+            timestamp: store.created_at,
             status: store.status as 'pending' | 'approved' | 'rejected',
           })),
-        ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5)
+        ]
+          .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+          .slice(0, 5)
 
         setActivities(formattedActivities)
       } catch (error) {

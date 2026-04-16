@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Heart, MessageCircle, Eye, User } from 'lucide-react'
 import { Avatar } from '@/components/ui'
+import { optimizeImageUrl } from '@/lib/utils'
 import type { Miniature } from '@/lib/types/database.types'
 
 // Flexible profile type that works with partial data from queries
@@ -29,11 +30,14 @@ interface MiniatureCardProps {
   variant?: 'card' | 'list'
 }
 
-export default function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCardProps) {
+function MiniatureCard({ miniature, index = 0, variant = 'card' }: MiniatureCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
 
-  const thumbnailUrl = miniature.thumbnail_url || miniature.images?.[0] || '/placeholder-miniature.jpg'
+  const rawThumb = miniature.thumbnail_url || miniature.images?.[0] || '/placeholder-miniature.jpg'
+  // List variant uses ~150px boxes (need 300 for retina). Card variant displays at
+  // ~400px on desktop (33vw) / 100vw on mobile — request 600 covers both with one URL.
+  const thumbnailUrl = optimizeImageUrl(rawThumb, variant === 'list' ? 300 : 600)
 
   // ── List variant ────────────────────────────────────
   if (variant === 'list') {
@@ -333,3 +337,5 @@ export default function MiniatureCard({ miniature, index = 0, variant = 'card' }
     </motion.div>
   )
 }
+
+export default memo(MiniatureCard)

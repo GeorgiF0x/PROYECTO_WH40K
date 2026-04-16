@@ -6,7 +6,10 @@ import { QuoteBlock, WarningBlock, ImageBlock, LoreBlock } from './blocks'
 import { WikiLinkPreview } from './WikiLinkPreview'
 import { cn } from '@/lib/utils'
 
-const WIKI_LINK_REGEX = /^\/facciones\/([^/]+)\/wiki\/([^/]+)$/
+// Matches both the new canonical /wiki/[faction]/[slug] and the legacy
+// /facciones/[faction]/wiki/[slug] format, for backwards compatibility with
+// content that was authored before the route migration.
+const WIKI_LINK_REGEX = /^\/(?:facciones\/([^/]+)\/wiki|wiki\/([^/]+))\/([^/]+)$/
 
 interface WikiRendererProps {
   content: WikiContent
@@ -286,8 +289,10 @@ function RenderBNInline({ item, factionColor }: { item: BlockNoteInlineContent; 
 
     const wikiMatch = href.match(WIKI_LINK_REGEX)
     if (wikiMatch) {
+      // Group 1 = legacy /facciones/.../wiki, group 2 = new /wiki/..., group 3 = slug
+      const factionFromUrl = wikiMatch[1] || wikiMatch[2]
       return (
-        <WikiLinkPreview href={href} factionId={wikiMatch[1]} slug={wikiMatch[2]} factionColor={factionColor}>
+        <WikiLinkPreview href={href} factionId={factionFromUrl} slug={wikiMatch[3]} factionColor={factionColor}>
           {linkContent}
         </WikiLinkPreview>
       )
@@ -576,8 +581,9 @@ function applyMark(content: React.ReactNode, mark: TiptapMark, factionColor: str
 
       const wikiMatch = href?.match(WIKI_LINK_REGEX)
       if (wikiMatch) {
+        const factionFromUrl = wikiMatch[1] || wikiMatch[2]
         return (
-          <WikiLinkPreview href={href} factionId={wikiMatch[1]} slug={wikiMatch[2]} factionColor={factionColor}>
+          <WikiLinkPreview href={href} factionId={factionFromUrl} slug={wikiMatch[3]} factionColor={factionColor}>
             {content}
           </WikiLinkPreview>
         )

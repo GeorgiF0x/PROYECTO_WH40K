@@ -4,28 +4,15 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Lock, Shield, AlertTriangle, Loader2, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '@/lib/hooks/useAuth'
 import Turnstile from '@/components/auth/Turnstile'
-
-const registerSchema = z
-  .object({
-    email: z.string().email('Email inválido'),
-    password: z
-      .string()
-      .min(8, 'Mínimo 8 caracteres')
-      .regex(/[A-Z]/, 'Requiere una mayúscula')
-      .regex(/[0-9]/, 'Requiere un número'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Las contraseñas no coinciden',
-    path: ['confirmPassword'],
-  })
-
-type RegisterFormData = z.infer<typeof registerSchema>
+import {
+  registerSchema,
+  type RegisterFormData,
+  getPasswordChecks,
+} from '@/lib/validation/auth-schemas'
 
 // Animation variants
 const containerVariants = {
@@ -50,11 +37,7 @@ const itemVariants = {
 
 // Password strength indicator
 function PasswordStrength({ password }: { password: string }) {
-  const checks = [
-    { label: '8+ caracteres', valid: password.length >= 8 },
-    { label: 'Mayúscula', valid: /[A-Z]/.test(password) },
-    { label: 'Número', valid: /[0-9]/.test(password) },
-  ]
+  const checks = getPasswordChecks(password)
 
   return (
     <div className="flex gap-3 mt-2">

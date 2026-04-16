@@ -25,7 +25,10 @@ interface SenderProfile {
   avatar_url: string | null
 }
 
-const POLL_INTERVAL_MS = 8000
+// Polling is a fallback for when Supabase Realtime drops the channel.
+// Realtime is the primary delivery mechanism, so a 30s interval is plenty
+// (was 8s — that meant ~10.8K reads/day per active user just from polling).
+const POLL_INTERVAL_MS = 30000
 
 export function useMessages(
   conversationId: string | undefined,

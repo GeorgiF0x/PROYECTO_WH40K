@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { parseJsonBody } from '@/lib/validation/http'
+import { scribeApplicationPostSchema } from '@/lib/validation/schemas'
 
 // POST - Create new scribe application
 export async function POST(request: NextRequest) {
@@ -42,24 +44,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse body
-    const body = await request.json()
-    const { motivation, experience, sample_topic } = body
-
-    if (!motivation || motivation.trim().length < 50) {
-      return NextResponse.json(
-        { error: 'La motivacion debe tener al menos 50 caracteres' },
-        { status: 400 }
-      )
-    }
+    const parsed = await parseJsonBody(request, scribeApplicationPostSchema)
+    if (!parsed.success) return parsed.response
+    const { motivation, experience, sample_topic } = parsed.data
 
     // Create application
     const { error: insertError } = await supabase
       .from('scribe_applications')
       .insert({
         user_id: user.id,
-        motivation: motivation.trim(),
-        experience: experience?.trim() || null,
-        sample_topic: sample_topic?.trim() || null,
+        motivation,
+        experience: experience ?? null,
+        sample_topic: sample_topic ?? null,
         status: 'pending',
       })
 

@@ -84,6 +84,63 @@ function checkRateLimit(userId: string, isAdmin: boolean): { allowed: boolean; r
 const MAX_SIZE_DEFAULT = 2 * 1024 * 1024  // 2 MB for compressed images
 const MAX_SIZE_GIF = 5 * 1024 * 1024      // 5 MB for GIFs (skip compression)
 
+// --------------- Magic Bytes Validation ---------------
+
+/**
+ * Verifies that the file's actual binary signature matches the declared MIME type.
+ * Prevents attackers from bypassing MIME validation by spoofing the Content-Type header.
+ */
+async function verifyFileSignature(file: File, mimeType: string): Promise<boolean> {
+  const buffer = await file.slice(0, 12).arrayBuffer()
+  const bytes = new Uint8Array(buffer)
+
+  switch (mimeType) {
+    case 'image/jpeg':
+      // FF D8 FF
+      return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
+
+    case 'image/png':
+      // 89 50 4E 47 0D 0A 1A 0A
+      return (
+        bytes[0] === 0x89 &&
+        bytes[1] === 0x50 &&
+        bytes[2] === 0x4e &&
+        bytes[3] === 0x47 &&
+        bytes[4] === 0x0d &&
+        bytes[5] === 0x0a &&
+        bytes[6] === 0x1a &&
+        bytes[7] === 0x0a
+      )
+
+    case 'image/webp':
+      // RIFF....WEBP — bytes 0-3: 'RIFF', bytes 8-11: 'WEBP'
+      return (
+        bytes[0] === 0x52 &&
+        bytes[1] === 0x49 &&
+        bytes[2] === 0x46 &&
+        bytes[3] === 0x46 &&
+        bytes[8] === 0x57 &&
+        bytes[9] === 0x45 &&
+        bytes[10] === 0x42 &&
+        bytes[11] === 0x50
+      )
+
+    case 'image/gif':
+      // GIF87a or GIF89a
+      return (
+        bytes[0] === 0x47 &&
+        bytes[1] === 0x49 &&
+        bytes[2] === 0x46 &&
+        bytes[3] === 0x38 &&
+        (bytes[4] === 0x37 || bytes[4] === 0x39) &&
+        bytes[5] === 0x61
+      )
+
+    default:
+      return false
+  }
+}
+
 // --------------- Route Handler ---------------
 
 // POST - Upload image to wiki storage bucket
@@ -146,6 +203,16 @@ export async function POST(request: NextRequest) {
     if (file.size > maxSize) {
       return NextResponse.json(
         { error: `File too large. Maximum size: ${maxLabel}` },
+        { status: 400 }
+      )
+    }
+
+    // Verify file signature (magic bytes) matches declared MIME type.
+    // Prevents file type spoofing — e.g. uploading a malicious .html as image/png.
+    const signatureValid = await verifyFileSignature(file, file.type)
+    if (!signatureValid) {
+      return NextResponse.json(
+        { error: 'File contents do not match declared image type' },
         { status: 400 }
       )
     }

@@ -346,7 +346,7 @@ export default function NewWikiArticlePage() {
                         placeholder="la-herejia-de-horus"
                       />
                       <p className="mt-1 text-xs text-bone/40 font-mono">
-                        /facciones/{factionId || '[faccion]'}/wiki/{slug || '[slug]'}
+                        /wiki/{factionId || '[faccion]'}/{slug || '[slug]'}
                       </p>
                     </div>
                   </CardContent>

@@ -28,8 +28,41 @@ const exo2 = Exo_2({
 })
 
 export const metadata: Metadata = {
-  title: 'Grimdark Legion | Comunidad Warhammer 40K',
-  description: 'En la oscuridad del lejano futuro, solo existe la guerra. Comunidad de Warhammer 40k.',
+  metadataBase: new URL('https://grimdarklegion.com'),
+  title: {
+    default: 'Grimdark Legion | Comunidad Warhammer 40K',
+    template: '%s | Grimdark Legion',
+  },
+  description:
+    'En la oscuridad del lejano futuro, solo existe la guerra. Comunidad de Warhammer 40K: galería de miniaturas, marketplace, wiki de facciones, tiendas y eventos.',
+  openGraph: {
+    type: 'website',
+    locale: 'es_ES',
+    siteName: 'Grimdark Legion',
+    title: 'Grimdark Legion | Comunidad Warhammer 40K',
+    description:
+      'Comunidad de Warhammer 40K: galería de miniaturas, marketplace, wiki de facciones, tiendas y eventos.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Grimdark Legion | Comunidad Warhammer 40K',
+    description:
+      'Comunidad de Warhammer 40K: galería de miniaturas, marketplace, wiki de facciones, tiendas y eventos.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://grimdarklegion.com',
+  },
 }
 
 export default function RootLayout({

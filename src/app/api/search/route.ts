@@ -1,20 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { searchMiniaturesBySimilarity, findSimilarMiniatures } from '@/lib/services/embeddings'
+import { parseQueryParams } from '@/lib/validation/http'
+import { searchQuerySchema } from '@/lib/validation/schemas'
 
 // GET - Semantic search for miniatures
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const query = searchParams.get('q')
-    const miniatureId = searchParams.get('similar_to')
-    const limit = parseInt(searchParams.get('limit') || '10')
-
-    if (!query && !miniatureId) {
-      return NextResponse.json(
-        { error: 'Either "q" (search query) or "similar_to" (miniature ID) is required' },
-        { status: 400 }
-      )
-    }
+    const parsed = parseQueryParams(searchParams, searchQuerySchema)
+    if (!parsed.success) return parsed.response
+    const { q: query, similar_to: miniatureId, limit } = parsed.data
 
     let results
 

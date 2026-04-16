@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { memo, useState, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -23,6 +23,7 @@ import type { ListingCategory } from '@/lib/types/database.types'
 import { Avatar } from '@/components/ui'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/lib/hooks/useAuth'
+import { optimizeImageUrl } from '@/lib/utils'
 import type { Listing, Profile } from '@/lib/types/database.types'
 import { FACTION_ICONS } from '@/components/user/FactionSelector'
 
@@ -72,14 +73,14 @@ const categoryConfig: Record<string, { label: string; icon: typeof Swords }> = {
   other: { label: 'Otros', icon: Package },
 }
 
-export default function ListingCard({ listing, index = 0 }: ListingCardProps) {
+function ListingCard({ listing, index = 0 }: ListingCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [isFavorited, setIsFavorited] = useState(listing.is_favorited || false)
   const { user } = useAuth()
   const supabase = createClient()
 
-  const thumbnailUrl = listing.images?.[0] || '/placeholder-miniature.jpg'
+  const thumbnailUrl = optimizeImageUrl(listing.images?.[0], 600)
   const condition = conditionLabels[listing.condition] || conditionLabels.assembled
 
   const handleFavorite = useCallback(async (e: React.MouseEvent) => {
@@ -306,3 +307,5 @@ export default function ListingCard({ listing, index = 0 }: ListingCardProps) {
     </motion.div>
   )
 }
+
+export default memo(ListingCard)

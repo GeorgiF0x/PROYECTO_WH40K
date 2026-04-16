@@ -11,12 +11,20 @@ import {
   type ReactNode,
 } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { User, Session } from '@supabase/supabase-js'
+import type { User, Session, AuthError, PostgrestError, SupabaseClient } from '@supabase/supabase-js'
 import type { Profile } from '@/lib/types/database.types'
 
 // ── Types ────────────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyError = { message: string } | null | any
+// Derive auth response types from the Supabase client itself so they always
+// match the SDK version in use.
+type Auth = SupabaseClient['auth']
+type SignInPasswordResponse = Awaited<ReturnType<Auth['signInWithPassword']>>
+type SignUpResponse = Awaited<ReturnType<Auth['signUp']>>
+type OAuthResponse = Awaited<ReturnType<Auth['signInWithOAuth']>>
+type ResetPasswordResponse = Awaited<ReturnType<Auth['resetPasswordForEmail']>>
+type UpdateUserResponse = Awaited<ReturnType<Auth['updateUser']>>
+type SignOutResponse = { error: AuthError | null }
+type UpdateProfileResponse = { data: Profile | null; error: PostgrestError | Error | null }
 
 interface AuthContextValue {
   user: User | null
@@ -24,14 +32,14 @@ interface AuthContextValue {
   session: Session | null
   isLoading: boolean
   isAuthenticated: boolean
-  signInWithEmail: (email: string, password: string) => Promise<{ data: any; error: AnyError }>
-  signUpWithEmail: (email: string, password: string) => Promise<{ data: any; error: AnyError }>
-  signInWithGoogle: () => Promise<{ data: any; error: AnyError }>
-  signInWithDiscord: () => Promise<{ data: any; error: AnyError }>
-  signOut: () => Promise<{ error: AnyError }>
-  resetPassword: (email: string) => Promise<{ data: any; error: AnyError }>
-  updatePassword: (newPassword: string) => Promise<{ data: any; error: AnyError }>
-  updateProfile: (updates: Partial<Profile>) => Promise<{ data: Profile | null; error: AnyError }>
+  signInWithEmail: (email: string, password: string) => Promise<SignInPasswordResponse>
+  signUpWithEmail: (email: string, password: string) => Promise<SignUpResponse>
+  signInWithGoogle: () => Promise<OAuthResponse>
+  signInWithDiscord: () => Promise<OAuthResponse>
+  signOut: () => Promise<SignOutResponse>
+  resetPassword: (email: string) => Promise<ResetPasswordResponse>
+  updatePassword: (newPassword: string) => Promise<UpdateUserResponse>
+  updateProfile: (updates: Partial<Profile>) => Promise<UpdateProfileResponse>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -212,67 +220,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase])
 
   // ── Auth actions (stable refs via supabase singleton) ────
+  // NOTE: we return the raw Supabase response objects (not destructured)
+  // so the discriminated union in the SDK types is preserved.
   const signInWithEmail = useCallback(
-    async (email: string, password: string) => {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-      return { data, error }
-    },
+    (email: string, password: string) => supabase.auth.signInWithPassword({ email, password }),
     [supabase]
   )
 
   const signUpWithEmail = useCallback(
-    async (email: string, password: string) => {
-      const { data, error } = await supabase.auth.signUp({
+    (email: string, password: string) =>
+      supabase.auth.signUp({
         email,
         password,
         options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-      })
-      return { data, error }
-    },
+      }),
     [supabase]
   )
 
-  const signInWithGoogle = useCallback(async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    })
-    return { data, error }
-  }, [supabase])
+  const signInWithGoogle = useCallback(
+    () =>
+      supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      }),
+    [supabase]
+  )
 
-  const signInWithDiscord = useCallback(async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'discord',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    })
-    return { data, error }
-  }, [supabase])
+  const signInWithDiscord = useCallback(
+    () =>
+      supabase.auth.signInWithOAuth({
+        provider: 'discord',
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      }),
+    [supabase]
+  )
 
   const signOut = useCallback(async () => {
-    const { error } = await supabase.auth.signOut()
-    if (!error) {
+    const result = await supabase.auth.signOut()
+    if (!result.error) {
       setUser(null)
       setProfile(null)
       setSession(null)
     }
-    return { error }
+    return result
   }, [supabase])
 
   const resetPassword = useCallback(
-    async (email: string) => {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    (email: string) =>
+      supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
-      })
-      return { data, error }
-    },
+      }),
     [supabase]
   )
 
   const updatePassword = useCallback(
-    async (newPassword: string) => {
-      const { data, error } = await supabase.auth.updateUser({ password: newPassword })
-      return { data, error }
-    },
+    (newPassword: string) => supabase.auth.updateUser({ password: newPassword }),
     [supabase]
   )
 

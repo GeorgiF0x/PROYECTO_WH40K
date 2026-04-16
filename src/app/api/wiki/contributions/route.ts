@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { WikiContributionCreateInput } from '@/lib/supabase/wiki.types'
 import type { Json } from '@/lib/types/database.types'
+import { parseJsonBody, parseQueryParams } from '@/lib/validation/http'
+import {
+  wikiContributionPostSchema,
+  wikiContributionsListQuerySchema,
+} from '@/lib/validation/schemas'
 
 // GET - List contributions (users: own, admins: all/filtered)
 export async function GET(request: NextRequest) {
@@ -9,10 +13,9 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
     const { searchParams } = new URL(request.url)
 
-    const status = searchParams.get('status')
-    const pageId = searchParams.get('page_id')
-    const limit = parseInt(searchParams.get('limit') || '20')
-    const offset = parseInt(searchParams.get('offset') || '0')
+    const parsedQuery = parseQueryParams(searchParams, wikiContributionsListQuerySchema)
+    if (!parsedQuery.success) return parsedQuery.response
+    const { status, page_id: pageId, limit, offset } = parsedQuery.data
 
     // Check auth
     const { data: { user } } = await supabase.auth.getUser()
@@ -89,19 +92,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body: WikiContributionCreateInput = await request.json()
-
-    // Validate: must have either page_id (edit suggestion) or faction_id+suggested_title (new article)
-    if (!body.page_id && (!body.faction_id || !body.suggested_title)) {
-      return NextResponse.json(
-        { error: 'Either page_id or faction_id+suggested_title is required' },
-        { status: 400 }
-      )
-    }
-
-    if (!body.content) {
-      return NextResponse.json({ error: 'content is required' }, { status: 400 })
-    }
+    const parsed = await parseJsonBody(request, wikiContributionPostSchema)
+    if (!parsed.success) return parsed.response
+    const body = parsed.data
 
     // If editing existing page, verify it exists
     if (body.page_id) {
@@ -121,9 +114,9 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('wiki_contributions')
       .insert({
-        page_id: body.page_id || null,
-        faction_id: body.faction_id || null,
-        suggested_title: body.suggested_title || null,
+        page_id: body.page_id ?? null,
+        faction_id: body.faction_id ?? null,
+        suggested_title: body.suggested_title ?? null,
         content: body.content as Json,
         contributor_id: user.id,
         status: 'pending',

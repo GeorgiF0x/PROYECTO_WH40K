@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -68,7 +69,7 @@ function QuillDecoration({ className }: { className?: string }) {
   )
 }
 
-export function CreatorCard({ creator, index = 0, featured = false }: CreatorCardProps) {
+function CreatorCardImpl({ creator, index = 0, featured = false }: CreatorCardProps) {
   const config = creator.creator_type ? creatorTypeConfig[creator.creator_type] : null
 
   return (
@@ -245,3 +246,5 @@ export function CreatorCard({ creator, index = 0, featured = false }: CreatorCar
     </motion.div>
   )
 }
+
+export const CreatorCard = memo(CreatorCardImpl)

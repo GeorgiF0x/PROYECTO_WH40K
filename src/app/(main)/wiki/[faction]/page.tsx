@@ -26,7 +26,7 @@ import type { WikiPage, WikiCategory } from '@/lib/supabase/wiki.types'
 export default function FactionWikiPage() {
   const params = useParams()
   const searchParams = useSearchParams()
-  const factionId = params.id as string
+  const factionId = params.faction as string
   const faction = getFactionById(factionId)
   const theme = getFactionTheme(factionId)
 

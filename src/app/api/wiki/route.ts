@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { WikiPageCreateInput } from '@/lib/supabase/wiki.types'
 import type { Json } from '@/lib/types/database.types'
+import { parseJsonBody, parseQueryParams } from '@/lib/validation/http'
+import { wikiListQuerySchema, wikiPagePostSchema } from '@/lib/validation/schemas'
 
 // GET - List wiki pages (public: published only, admin: all)
 export async function GET(request: NextRequest) {
@@ -9,12 +10,16 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
     const { searchParams } = new URL(request.url)
 
-    const factionId = searchParams.get('faction_id')
-    const categorySlug = searchParams.get('category')
-    const status = searchParams.get('status')
-    const search = searchParams.get('search')
-    const limit = parseInt(searchParams.get('limit') || '20')
-    const offset = parseInt(searchParams.get('offset') || '0')
+    const parsedQuery = parseQueryParams(searchParams, wikiListQuerySchema)
+    if (!parsedQuery.success) return parsedQuery.response
+    const {
+      faction_id: factionId,
+      category: categorySlug,
+      status,
+      search,
+      limit,
+      offset,
+    } = parsedQuery.data
 
     // Check if user is admin or has wiki role
     const { data: { user } } = await supabase.auth.getUser()
@@ -150,30 +155,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const body: WikiPageCreateInput = await request.json()
-
-    // Validate required fields
-    if (!body.faction_id || !body.title || !body.slug || !body.content) {
-      return NextResponse.json(
-        { error: 'faction_id, title, slug, and content are required' },
-        { status: 400 }
-      )
-    }
+    const parsed = await parseJsonBody(request, wikiPagePostSchema)
+    if (!parsed.success) return parsed.response
+    const body = parsed.data
 
     // Create the page
     const { data, error } = await supabase
       .from('faction_wiki_pages')
       .insert({
         faction_id: body.faction_id,
-        category_id: body.category_id || null,
+        category_id: body.category_id ?? null,
         title: body.title,
         slug: body.slug,
-        excerpt: body.excerpt || null,
+        excerpt: body.excerpt ?? null,
         content: body.content as Json,
-        hero_image: body.hero_image || null,
-        gallery_images: body.gallery_images || null,
+        hero_image: body.hero_image ?? null,
+        gallery_images: body.gallery_images ?? null,
         author_id: user.id,
-        status: body.status || 'draft',
+        status: body.status ?? 'draft',
         published_at: body.status === 'published' ? new Date().toISOString() : null,
       })
       .select()

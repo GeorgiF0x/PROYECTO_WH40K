@@ -599,7 +599,7 @@ export function WikiDashboardClient({ isAdmin, isLexicanum, currentUserId }: Wik
                     {/* Actions */}
                     <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 sm:translate-x-2 sm:group-hover:translate-x-0 transition-all duration-200">
                       {page.status === 'published' && (
-                        <Link href={`/facciones/${page.faction_id}/wiki/${page.slug}`} target="_blank">
+                        <Link href={`/wiki/${page.faction_id}/${page.slug}`} target="_blank">
                           <button
                             className="p-2 rounded-lg text-bone/50 hover:text-bone hover:bg-imperial-gold/10 transition-all duration-200"
                             title="Ver publicado"

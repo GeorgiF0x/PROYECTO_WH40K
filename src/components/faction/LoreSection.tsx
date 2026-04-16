@@ -137,7 +137,7 @@ export function LoreSection({ faction }: LoreSectionProps) {
 
                 {/* Read more hint */}
                 <Link
-                  href={`/facciones/${faction.id}/wiki`}
+                  href={`/wiki/${faction.id}`}
                   className="mt-4 flex items-center gap-2 font-body text-sm opacity-60 group-hover:opacity-100 transition-opacity"
                   style={{ color: faction.color }}
                 >
@@ -235,7 +235,7 @@ export function LoreSection({ faction }: LoreSectionProps) {
             </div>
 
             <Link
-              href={`/facciones/${faction.id}/wiki`}
+              href={`/wiki/${faction.id}`}
               className="flex items-center gap-2 px-6 py-3 rounded-lg font-body font-semibold transition-all hover:scale-105"
               style={{
                 background: `${faction.color}20`,

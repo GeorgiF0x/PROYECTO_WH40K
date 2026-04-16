@@ -11,6 +11,9 @@ export const metadata = {
   description: 'Explora el hub de la comunidad: encuentra tiendas locales, descubre creadores y conecta con otros jugadores.',
 }
 
+// Hub counts — fine to be a few minutes stale.
+export const revalidate = 1800
+
 async function getCounts() {
   const supabase = await createClient()
 

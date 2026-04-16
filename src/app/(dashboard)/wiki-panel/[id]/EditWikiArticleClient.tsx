@@ -357,7 +357,7 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
 
             <div className="flex flex-wrap items-center gap-2">
               {status === 'published' && (
-                <Link href={`/facciones/${page?.faction_id}/wiki/${page?.slug}`} target="_blank">
+                <Link href={`/wiki/${page?.faction_id}/${page?.slug}`} target="_blank">
                   <motion.button
                     className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-void-light/60 border border-bone/10 text-bone/60 hover:bg-bone/5 hover:text-bone transition-all duration-200"
                     whileHover={{ scale: 1.03 }}
@@ -510,7 +510,7 @@ export default function EditWikiArticleClient({ pageId, currentUserId, isAdmin, 
                         placeholder="slug-del-articulo"
                       />
                       <p className="mt-1 text-xs text-bone/40 font-mono">
-                        /facciones/{page?.faction_id}/wiki/{slug}
+                        /wiki/{page?.faction_id}/{slug}
                       </p>
                     </div>
                   </CardContent>

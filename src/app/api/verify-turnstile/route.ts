@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { parseJsonBody } from '@/lib/validation/http'
+import { turnstileVerifySchema } from '@/lib/validation/schemas'
 
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || ''
 
@@ -11,14 +13,9 @@ interface TurnstileVerifyResponse {
 
 export async function POST(request: NextRequest) {
   try {
-    const { token } = await request.json()
-
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: 'Token no proporcionado' },
-        { status: 400 }
-      )
-    }
+    const parsed = await parseJsonBody(request, turnstileVerifySchema)
+    if (!parsed.success) return parsed.response
+    const { token } = parsed.data
 
     if (!TURNSTILE_SECRET_KEY) {
       console.warn('[Turnstile] Secret key not configured, skipping verification')

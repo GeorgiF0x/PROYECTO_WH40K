@@ -5,19 +5,12 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Lock, AlertTriangle, Loader2 } from 'lucide-react'
 import { useAuth } from '@/lib/hooks/useAuth'
 import BootSequence from '@/components/auth/BootSequence'
 import Turnstile from '@/components/auth/Turnstile'
-
-const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'Mínimo 6 caracteres'),
-})
-
-type LoginFormData = z.infer<typeof loginSchema>
+import { loginSchema, type LoginFormData } from '@/lib/validation/auth-schemas'
 
 // Stagger animation variants
 const containerVariants = {

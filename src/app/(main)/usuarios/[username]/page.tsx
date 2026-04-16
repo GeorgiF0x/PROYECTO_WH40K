@@ -6,6 +6,11 @@ interface PageProps {
   params: Promise<{ username: string }>
 }
 
+// Profiles change infrequently (avatar/bio updates). 1 hour CDN cache is a
+// good tradeoff — call revalidatePath('/usuarios/[username]') from the
+// profile-update handler if we need fresher data on edit.
+export const revalidate = 3600
+
 async function getProfile(username: string) {
   const supabase = await createClient()
 
@@ -19,8 +24,18 @@ async function getProfile(username: string) {
     return null
   }
 
-  // Get counts and favorite factions in parallel
-  const [followersResult, followingResult, miniaturesResult, factionsResult] = await Promise.all([
+  // Run every dependent query in parallel — counts, favorite factions,
+  // recent showcase, and the auth call all hit different services and have
+  // no inter-dependencies. Was: 4-batch Promise.all + 2 sequential awaits
+  // (~3 round-trips). Now: single Promise.all (~1 round-trip in practice).
+  const [
+    followersResult,
+    followingResult,
+    miniaturesResult,
+    factionsResult,
+    recentMiniaturesResult,
+    authResult,
+  ] = await Promise.all([
     supabase
       .from('follows')
       .select('*', { count: 'exact', head: true })
@@ -39,6 +54,20 @@ async function getProfile(username: string) {
           .select('id, name, slug, primary_color, secondary_color')
           .in('id', profile.favorite_factions)
       : Promise.resolve({ data: [] }),
+    supabase
+      .from('miniatures')
+      .select(`
+        id,
+        title,
+        thumbnail_url,
+        images,
+        miniature_likes(count),
+        miniature_comments(count)
+      `)
+      .eq('user_id', profile.id)
+      .order('created_at', { ascending: false })
+      .limit(6),
+    supabase.auth.getUser(),
   ])
 
   // Sort factions to match order in favorite_factions
@@ -49,23 +78,8 @@ async function getProfile(username: string) {
       .filter(Boolean) as typeof factions
   }
 
-  // Get recent miniatures for showcase
-  const { data: recentMiniatures } = await supabase
-    .from('miniatures')
-    .select(`
-      id,
-      title,
-      thumbnail_url,
-      images,
-      miniature_likes(count),
-      miniature_comments(count)
-    `)
-    .eq('user_id', profile.id)
-    .order('created_at', { ascending: false })
-    .limit(6)
-
-  // Check if current user is viewing own profile
-  const { data: { user } } = await supabase.auth.getUser()
+  const recentMiniatures = recentMiniaturesResult.data
+  const user = authResult.data.user
   const isOwnProfile = user?.id === profile.id
 
   return {

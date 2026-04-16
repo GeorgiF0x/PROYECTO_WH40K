@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { GalleryPageClient } from './GalleryPageClient'
 import type { MiniatureWithStats } from '@/components/gallery'
+import { getFactions } from '@/lib/cache/factions'
 
 export const metadata: Metadata = {
   title: 'Galerías Prismáticas de Solemnace | Grimdark Legion',
@@ -16,44 +17,32 @@ export const metadata: Metadata = {
 // Revalidate every 5 minutes for fresh content
 export const revalidate = 300
 
-// Faction type for initial data
-type FactionTag = {
-  id: string
-  name: string
-  slug: string
-  primary_color: string | null
-  secondary_color: string | null
-}
-
 export default async function GalleryPage() {
   const supabase = await createClient()
 
-  // Fetch initial miniatures server-side for SEO
-  const { data: initialMiniatures } = await supabase
-    .from('miniatures')
-    .select(`
-      *,
-      profiles:user_id (
-        id,
-        username,
-        display_name,
-        avatar_url
-      )
-    `)
-    .order('created_at', { ascending: false })
-    .limit(24)
-
-  // Fetch faction tags for filters
-  const { data: factionTags } = await supabase
-    .from('tags')
-    .select('id, name, slug, primary_color, secondary_color')
-    .eq('category', 'faction')
-    .order('name')
+  // Run the live miniature fetch and the cached faction list in parallel.
+  // Factions only change a few times a year, so they come from unstable_cache.
+  const [{ data: initialMiniatures }, factionTags] = await Promise.all([
+    supabase
+      .from('miniatures')
+      .select(`
+        *,
+        profiles:user_id (
+          id,
+          username,
+          display_name,
+          avatar_url
+        )
+      `)
+      .order('created_at', { ascending: false })
+      .limit(24),
+    getFactions(),
+  ])
 
   return (
     <GalleryPageClient
       initialMiniatures={(initialMiniatures || []) as MiniatureWithStats[]}
-      factions={(factionTags || []) as FactionTag[]}
+      factions={factionTags}
     />
   )
 }

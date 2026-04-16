@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { parseJsonBody } from '@/lib/validation/http'
+import { scribeApplicationReviewSchema } from '@/lib/validation/schemas'
 
 // PATCH - Approve or reject application
 export async function PATCH(
@@ -34,15 +36,9 @@ export async function PATCH(
     }
 
     // Parse body
-    const body = await request.json()
-    const { action, notes } = body
-
-    if (!action || !['approve', 'reject'].includes(action)) {
-      return NextResponse.json(
-        { error: 'Accion invalida. Usa "approve" o "reject"' },
-        { status: 400 }
-      )
-    }
+    const parsed = await parseJsonBody(request, scribeApplicationReviewSchema)
+    if (!parsed.success) return parsed.response
+    const { action, notes } = parsed.data
 
     // Get application
     const { data: application, error: fetchError } = await supabase

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { WikiPageUpdateInput } from '@/lib/supabase/wiki.types'
+import type { Json } from '@/lib/types/database.types'
+import { parseJsonBody } from '@/lib/validation/http'
+import { wikiPagePutSchema } from '@/lib/validation/schemas'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -106,7 +108,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const isLexicanum = profile?.wiki_role === 'lexicanum'
     const isScribe = profile?.wiki_role === 'scribe'
 
-    const body: WikiPageUpdateInput = await request.json()
+    const parsed = await parseJsonBody(request, wikiPagePutSchema)
+    if (!parsed.success) return parsed.response
+    const body = parsed.data
 
     // Get existing page first
     const { data: existingPage, error: fetchError } = await supabase
@@ -141,7 +145,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (body.title !== undefined) updateData.title = body.title
     if (body.slug !== undefined) updateData.slug = body.slug
     if (body.excerpt !== undefined) updateData.excerpt = body.excerpt
-    if (body.content !== undefined) updateData.content = body.content
+    if (body.content !== undefined) updateData.content = body.content as Json
     if (body.hero_image !== undefined) updateData.hero_image = body.hero_image
     if (body.gallery_images !== undefined) updateData.gallery_images = body.gallery_images
     if (body.status !== undefined) {

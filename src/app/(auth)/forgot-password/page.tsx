@@ -5,16 +5,13 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useAuth } from '@/lib/hooks/useAuth'
 import Turnstile from '@/components/auth/Turnstile'
 import { Mail, ArrowLeft, Send, CheckCircle, AlertCircle, Shield, Sparkles } from 'lucide-react'
-
-const forgotPasswordSchema = z.object({
-  email: z.string().email('Introduce un email válido'),
-})
-
-type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
+import {
+  forgotPasswordSchema,
+  type ForgotPasswordFormData,
+} from '@/lib/validation/auth-schemas'
 
 // Staggered animation variants
 const containerVariants = {

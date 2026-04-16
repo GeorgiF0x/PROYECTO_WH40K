@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { MapPin, Star, Clock, ExternalLink } from 'lucide-react'
 import type { Store } from '@/lib/types/database.types'
 import StoreServiceBadges from './StoreServiceBadges'
+import { optimizeImageUrl } from '@/lib/utils'
 
 export type StoreWithSubmitter = Store & {
   profiles?: {
@@ -29,11 +30,11 @@ const storeTypeLabels: Record<string, { label: string; color: string }> = {
   online_only: { label: 'Solo online', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
 }
 
-export default function StoreCard({ store, index = 0 }: StoreCardProps) {
+function StoreCard({ store, index = 0 }: StoreCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
 
-  const thumbnailUrl = store.images?.[0] || '/placeholder-miniature.jpg'
+  const thumbnailUrl = optimizeImageUrl(store.images?.[0], 600)
   const storeType = storeTypeLabels[store.store_type] || storeTypeLabels.specialist
 
   return (
@@ -162,3 +163,5 @@ export default function StoreCard({ store, index = 0 }: StoreCardProps) {
     </motion.div>
   )
 }
+
+export default memo(StoreCard)

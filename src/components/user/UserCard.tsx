@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 import { Avatar, Badge } from '@/components/ui'
 import type { Profile } from '@/lib/types/database.types'
@@ -10,7 +11,7 @@ interface UserCardProps {
   className?: string
 }
 
-export function UserCard({ user, showBio = false, className = '' }: UserCardProps) {
+function UserCardImpl({ user, showBio = false, className = '' }: UserCardProps) {
   return (
     <Link
       href={`/usuarios/${user.username}`}
@@ -33,3 +34,5 @@ export function UserCard({ user, showBio = false, className = '' }: UserCardProp
     </Link>
   )
 }
+
+export const UserCard = memo(UserCardImpl)

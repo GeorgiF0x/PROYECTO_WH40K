@@ -7,6 +7,10 @@ import MarketplaceCTA from '@/components/marketplace/MarketplaceCTA'
 import type { ListingWithSeller } from '@/components/marketplace'
 import type { ListingCategory } from '@/lib/types/database.types'
 
+// Listings change frequently — revalidate every minute so the CDN serves fresh
+// data while still benefiting from edge caching.
+export const revalidate = 60
+
 interface SearchParams {
   sort?: string
   condition?: string
@@ -27,20 +31,15 @@ async function getListings(searchParams: SearchParams): Promise<{
 
   const { sort = 'recent', condition, type, category, faction, location, q, cursor, favorites } = searchParams
 
-  // If favorites filter is active, get the user's favorite listing IDs first
-  let favoriteListingIds: string[] | null = null
-  if (favorites === 'true') {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      const { data: favs } = await supabase
-        .from('listing_favorites')
-        .select('listing_id')
-        .eq('user_id', user.id)
-      favoriteListingIds = favs?.map((f) => f.listing_id) || []
-    } else {
-      // Not logged in — return empty
-      return { listings: [], nextCursor: null }
-    }
+  // Resolve the current user up-front. The auth call hits a different service
+  // than the listings query, so it costs ~50ms and lets us:
+  //  - short-circuit when the favorites filter is active and there's no user
+  //  - embed the per-user favorites flag directly into the listings query
+  //    (eliminates the separate "is favorited?" round-trip we used to do)
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (favorites === 'true' && !user) {
+    return { listings: [], nextCursor: null }
   }
 
   let query = supabase
@@ -58,16 +57,21 @@ async function getListings(searchParams: SearchParams): Promise<{
         name,
         slug,
         primary_color
-      )
+      )${user ? `,
+      user_favorite:listing_favorites!left(user_id)` : ''}
     `)
     .eq('status', 'active')
 
-  // Filter to only favorited listings
-  if (favoriteListingIds !== null) {
-    if (favoriteListingIds.length === 0) {
-      return { listings: [], nextCursor: null }
-    }
-    query = query.in('id', favoriteListingIds)
+  // When logged in, the embedded relation is filtered server-side so each
+  // listing only carries 0 or 1 row in user_favorite — no payload bloat.
+  if (user) {
+    query = query.eq('user_favorite.user_id', user.id)
+  }
+
+  // "Show me only favorites" mode — restrict the result set to listings the
+  // user has favorited. Uses an inner join via the same filtered relation.
+  if (favorites === 'true' && user) {
+    query = query.not('user_favorite', 'is', null)
   }
 
   // Apply filters (type assertions needed for Supabase enum types)
@@ -127,27 +131,18 @@ async function getListings(searchParams: SearchParams): Promise<{
     return { listings: [], nextCursor: null }
   }
 
-  const listings = (data || []) as unknown as ListingWithSeller[]
+  // Map the embedded relation to the legacy `is_favorited` flag, then drop the
+  // raw relation from the payload so the rest of the app keeps using the same
+  // shape. When there's no user, every listing is implicitly not favorited.
+  type RawListing = ListingWithSeller & { user_favorite?: Array<{ user_id: string }> }
+  const rawListings = (data || []) as unknown as RawListing[]
+  const listings: ListingWithSeller[] = rawListings.map((row) => {
+    const { user_favorite, ...rest } = row
+    return { ...rest, is_favorited: user ? (user_favorite?.length ?? 0) > 0 : false }
+  })
+
   const hasMore = listings.length > 24
   const returnListings = hasMore ? listings.slice(0, 24) : listings
-
-  // Check which listings are favorited by the current user
-  const { data: { user } } = await supabase.auth.getUser()
-  if (user && returnListings.length > 0) {
-    const listingIds = returnListings.map((l) => l.id)
-    const { data: favorites } = await supabase
-      .from('listing_favorites')
-      .select('listing_id')
-      .eq('user_id', user.id)
-      .in('listing_id', listingIds)
-
-    if (favorites) {
-      const favoritedIds = new Set(favorites.map((f) => f.listing_id))
-      returnListings.forEach((listing) => {
-        listing.is_favorited = favoritedIds.has(listing.id)
-      })
-    }
-  }
 
   // Generate next cursor from last item
   let nextCursor: string | null = null
