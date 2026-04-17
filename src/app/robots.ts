@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/perfil', '/mi-galeria', '/wiki-panel', '/dashboard', '/mensajes', '/api/'],
+        disallow: ['/perfil', '/mi-galeria', '/dashboard', '/mensajes', '/api/'],
       },
     ],
     sitemap: 'https://grimdarklegion.com/sitemap.xml',

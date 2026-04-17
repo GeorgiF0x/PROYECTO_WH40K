@@ -20,22 +20,6 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['framer-motion', 'lucide-react'],
   },
-  async redirects() {
-    return [
-      // Wiki routing migration: old /facciones/[id]/wiki/* → /wiki/[id]/*
-      // Permanent (308) so search engines update their index.
-      {
-        source: '/facciones/:factionId/wiki/:slug',
-        destination: '/wiki/:factionId/:slug',
-        permanent: true,
-      },
-      {
-        source: '/facciones/:factionId/wiki',
-        destination: '/wiki/:factionId',
-        permanent: true,
-      },
-    ]
-  },
   async headers() {
     return [
       {

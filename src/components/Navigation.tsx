@@ -58,7 +58,6 @@ const navLinks = [
   { href: '/', label: 'Inicio', icon: Home },
   { href: '/galeria', label: 'Galería', icon: Palette },
   { href: '/comunidad', label: 'Comunidad', icon: MapPin },
-  { href: '/wiki', label: 'Wiki', icon: BookOpen },
   { href: '/usuarios', label: 'Usuarios', icon: Users },
   { href: '/mercado', label: 'Mercado', icon: Scale },
   { href: '/mensajes', label: 'Mensajes', icon: MessageCircle },

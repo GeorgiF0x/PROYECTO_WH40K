@@ -22,7 +22,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
-    { url: `${BASE_URL}/wiki`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
     {
       url: `${BASE_URL}/comunidad`,
       lastModified: new Date(),
@@ -72,21 +71,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  // Dynamic: published wiki articles
-  const { data: wikiPages } = await supabase
-    .from('faction_wiki_pages')
-    .select('slug, faction_id, published_at')
-    .eq('status', 'published')
-    .order('published_at', { ascending: false })
-    .limit(500)
-
-  const wikiRoutes: MetadataRoute.Sitemap = (wikiPages ?? []).map((w) => ({
-    url: `${BASE_URL}/wiki/${w.faction_id}/${w.slug}`,
-    lastModified: w.published_at ? new Date(w.published_at) : undefined,
-    changeFrequency: 'weekly' as const,
-    priority: 0.6,
-  }))
-
   // Dynamic: approved stores
   const { data: stores } = await supabase
     .from('stores')
@@ -113,5 +97,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }))
 
-  return [...staticRoutes, ...factionRoutes, ...wikiRoutes, ...storeRoutes, ...eventRoutes]
+  return [...staticRoutes, ...factionRoutes, ...storeRoutes, ...eventRoutes]
 }

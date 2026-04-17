@@ -130,15 +130,6 @@ export function LoreSection({ faction }: LoreSectionProps) {
                 </p>
 
                 {/* Read more hint */}
-                <Link
-                  href={`/wiki/${faction.id}`}
-                  className="mt-4 flex items-center gap-2 font-body text-sm opacity-60 transition-opacity group-hover:opacity-100"
-                  style={{ color: faction.color }}
-                >
-                  <BookOpen className="h-4 w-4" />
-                  <span>Explorar en la Wiki</span>
-                  <ArrowRight className="h-3 w-3" />
-                </Link>
               </div>
             </motion.article>
           ))}
@@ -223,7 +214,7 @@ export function LoreSection({ faction }: LoreSectionProps) {
             </div>
 
             <Link
-              href={`/wiki/${faction.id}`}
+              href={`/facciones/${faction.id}`}
               className="flex items-center gap-2 rounded-lg px-6 py-3 font-body font-semibold transition-all hover:scale-105"
               style={{
                 background: `${faction.color}20`,
@@ -231,7 +222,7 @@ export function LoreSection({ faction }: LoreSectionProps) {
                 border: `1px solid ${faction.color}40`,
               }}
             >
-              <span>Explorar Wiki</span>
+              <span>Ver facción</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
